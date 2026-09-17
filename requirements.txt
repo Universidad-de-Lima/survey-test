@@ -1,0 +1,20 @@
+pandas>=1.5.0
+jsonschema>=4.0.0
+openpyxl>=3.0.0  # requerido por validar_ia_vs_manual.py (pd.read_excel)
+python-dotenv>=0.19.0  # requerido por build_json.py (load_dotenv)
+
+# ============================================================
+# Motor Cualitativo IA (DeepSeek) — único motor desde v3.2.0
+# ============================================================
+# El motor legacy (spaCy + sentence-transformers) fue eliminado en v3.2.0.
+# El cliente DeepSeek usa urllib (stdlib), NO requiere dependencias extra.
+#
+# DEEPSEEK_API_KEY es OBLIGATORIA para ejecutar el ETL.
+# Configurar en:
+#   - GitHub Actions Secrets (para CI)
+#   - .env local (para desarrollo)
+#
+# Variables opcionales del motor IA:
+#   IA_CUALITATIVO_WORKERS=15    workers concurrentes
+#   IA_CUALITATIVO_MAX_RPM=60    rate limit global
+#   IA_CUALITATIVO_TIMEOUT=60    timeout por llamada (segundos)

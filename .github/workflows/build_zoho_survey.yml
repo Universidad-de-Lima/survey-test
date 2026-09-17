@@ -1,0 +1,274 @@
+name: Build and Deploy Survey
+
+on:
+  push:
+    paths:
+      # Solo disparar cuando cambien cosas que requieran re-build.
+      # NO disparar por JSON generados (zoho-survey/students/*/json/**)
+      # ni por los index.html generados (zoho-survey/students/*/index.html).
+      - 'data/**'
+      - 'zoho-survey/scripts/**'
+      - 'zoho-survey/template/**'
+      - 'zoho-survey/shared/**'
+      - 'zoho-survey/students/*/periodos.json'
+      - 'zoho-survey/**/periodos.json'
+      - 'requirements.txt'
+      - '.github/workflows/build_zoho_survey.yml'
+
+  workflow_dispatch:
+
+  repository_dispatch:
+    types: [csv_upload]
+
+concurrency:
+  # Uploads via repository_dispatch: grupo AISLADO por upload_id (sin cancelacion
+  # cruzada entre uploads distintos). Push/workflow_dispatch: grupo legado por ref.
+  group: ${{ github.event_name == 'repository_dispatch' && format('csv-upload-{0}', github.event.client_payload.upload_id) || format('deploy-legacy-{0}', github.ref) }}
+  # cancel-in-progress: false -> uploads simultaneos NUNCA se cancelan entre si.
+  cancel-in-progress: false
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        # fetch-depth: 0 trae todo el historial, necesario para que
+        # `git pull --rebase` en el step de commit funcione cuando el
+        # remote tiene commits que el runner no conoce.
+        with:
+          fetch-depth: 0
+
+      - name: Descargar CSV desde Release temporal (csv_upload)
+        # Solo para uploads via repository_dispatch. Descarga los assets
+        # del Release temporal a data/temp/{upload_id}/. NUNCA copia al tree.
+        if: github.event_name == 'repository_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ github.event.client_payload.release_id }}
+          UPLOAD_ID: ${{ github.event.client_payload.upload_id }}
+        run: |
+          mkdir -p "data/temp/${UPLOAD_ID}"
+          echo "Descargando assets del release ${RELEASE_ID}..."
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" \
+            --jq '.[] | "(.id)\t(.name)"' | while IFS=$'\t' read ASSET_ID ASSET_NAME; do
+            echo "  -> ${ASSET_NAME}"
+            gh api -H "Accept: application/octet-stream" \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
+              > "data/temp/${UPLOAD_ID}/${ASSET_NAME}"
+          done
+          echo "CSVs descargados:"
+          ls -la "data/temp/${UPLOAD_ID}"
+
+      - name: Copiar uploads a data/ para ETL
+        # build_json.py descubre data/*.csv con "ENCUESTA" en el nombre.
+        # No modifica build_json.py: se copian a data/ (temporal).
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          if ls data/temp/"${{ github.event.client_payload.upload_id }}"/*.csv 1>/dev/null 2>&1; then
+            cp data/temp/"${{ github.event.client_payload.upload_id }}"/*.csv data/
+            echo "CSVs copiados a data/ para procesamiento ETL"
+          fi
+
+      - name: Verify DEEPSEEK_API_KEY
+        # Gate temprano: falla antes de instalar dependencias si la key falta.
+        # El motor legacy fue eliminado en v3.2.0, la key es obligatoria.
+        run: |
+          if [ -z "${{ secrets.DEEPSEEK_API_KEY }}" ]; then
+            echo "ERROR: DEEPSEEK_API_KEY no esta configurada en GitHub Secrets."
+            echo "El motor legacy fue eliminado en v3.2.0. La key es obligatoria."
+            exit 1
+          fi
+          echo "OK: DEEPSEEK_API_KEY configurada."
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        # Sin spaCy/HuggingFace desde v3.2.0 (motor legacy eliminado).
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar CSVs subidos (server-side)
+        # RE-validacion defensiva del navegador. Nunca confiar en metadata JS.
+        # Tras instalar dependencias (importa build_json/lib.io_helper -> pandas).
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          python zoho-survey/scripts/validate_upload_csv.py "data/temp/${{ github.event.client_payload.upload_id }}"
+
+      - name: Sanitize CSV PII (IP, User Agent, URL)
+        # Redacta columnas PII en todos los CSVs de data/ antes del procesamiento ETL.
+        # Idempotente: si el CSV ya esta sanitizado, no hace nada.
+        # Columnas redactadas: Direccion IP, Agente Usuario, URL de la encuesta.
+        # Esto garantiza que ningun CSV con PII llegue al repositorio publico.
+        run: python zoho-survey/scripts/sanitize_csv_pii.py --all
+
+      - name: Run build_json.py
+        # DEEPSEEK_API_KEY se inyecta desde GitHub Secrets (verificada en el gate anterior).
+        # Es OBLIGATORIA desde v3.2.0: el motor legacy (spaCy + sentence-transformers)
+        # fue eliminado y no existe fallback. Si la key falta, el workflow falla antes
+        # de llegar a este step (ver "Verify DEEPSEEK_API_KEY").
+        #
+        # Variables IA_CUALITATIVO_* controlan el comportamiento del motor IA:
+        #   WORKERS=15    → 15 llamadas concurrentes a DeepSeek (speedup ~15x)
+        #   MAX_RPM=60    → rate limit global (DeepSeek permite ~60 RPM)
+        #   TIMEOUT=60    → timeout por llamada individual (segundos)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          IA_CUALITATIVO_WORKERS: "15"
+          IA_CUALITATIVO_MAX_RPM: "60"
+          IA_CUALITATIVO_TIMEOUT: "60"
+        run: |
+          python zoho-survey/scripts/build_json.py
+
+      - name: Validate generated JSON contracts
+        # Gate de calidad: valida los JSONs generados contra schemas Draft-07
+        # e invariantes de negocio. Si falla, el deploy se detiene.
+        # Esto evita que JSONs invalidos lleguen a GitHub Pages.
+        run: python zoho-survey/scripts/validate_generated_json.py
+
+      - name: Exclude exports/ and intermediate/ from Pages artifact
+        # Los ZIPs en zoho-survey/students/*/exports/ contienen comentarios
+        # completos de estudiantes con potencial PII. Se eliminan antes del
+        # upload para que no se desplieguen en GitHub Pages.
+        # Los JSONs en zoho-survey/students/*/intermediate/ (fragmentos_nps.json,
+        # dataset_cualitativo.json) no son consumidos por el frontend y se excluyen
+        # del deploy para reducir el tamano del artifact (~3 MB por periodo).
+        # Ambos se preservan en el repo (commiteados por el bot) para auditoria.
+        run: |
+          find zoho-survey/students -type d -name "exports" -exec rm -rf {} + 2>/dev/null || true
+          find zoho-survey/students -type d -name "intermediate" -exec rm -rf {} + 2>/dev/null || true
+          echo "Directorios exports/ e intermediate/ eliminados del artifact"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact (zoho-survey)
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: './zoho-survey'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Health check post-deploy (DEV-05)
+        # Verifica que las URLs clave respondan 200 tras el deploy.
+        # No bloquea el workflow (informativo), pero registra fallos en logs.
+        if: success()
+        run: |
+          BASE_URL="${{ steps.deployment.outputs.page_url }}"
+          echo "Health check contra: $BASE_URL"
+          sleep 10  # Delay para propagacion de GitHub Pages
+          for path in "" "health.html" "students/undergraduate/periodos.json"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL$path" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "\xe2\x9c\x93 $path -> $STATUS"
+            else
+              echo "\xe2\x9c\x97 $path -> $STATUS (WARNING)"
+            fi
+          done
+
+      - name: Remove uploaded CSVs before bot commit
+        # Los CSVs subidos a data/ son insumo transitorio: después del build,
+        # validación y deploy, se eliminan del estado final de main. El bot
+        # commitea los JSON/HTML generados y las eliminaciones de CSV juntas.
+        if: success()
+        run: |
+          if [ -d data ]; then
+            find data -maxdepth 1 -type f -iname "*.csv" -delete
+            echo "CSVs subidos a data/ eliminados del workspace antes del commit del bot"
+          fi
+
+      - name: Limpiar temporales y Release (csv_upload)
+        # SOLO si TODO el procesamiento fue exitoso. Si falla, el Release
+        # queda para recovery/reintento. El navegador NO elimina (puede que
+        # Actions no haya descargado aun). Actions lo elimina aqui tras exito.
+        if: github.event_name == 'repository_dispatch' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ github.event.client_payload.release_id }}
+          UPLOAD_ID: ${{ github.event.client_payload.upload_id }}
+        run: |
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" && echo "Release temporal eliminado."
+          rm -rf "data/temp/${UPLOAD_ID}"
+          echo "Temporales ${UPLOAD_ID} eliminados (solo estos, no otros uploads)."
+
+      - name: Commit generated JSON
+        # Para uploads via repository_dispatch NO se hace commit/push automatico:
+        # el owner empuja manualmente (regla Fase 3.8.2). El deploy a Pages ya
+        # ocurrio via artifact. El bot NO hace git push en este path.
+        if: github.event_name != 'repository_dispatch'
+        # Commit robusto: integra cambios remotos con rebase antes de push.
+        # [skip ci] evita que el commit del bot dispare un nuevo run del workflow
+        # (defensa en profundidad, aunque GITHUB_TOKEN ya no auto-dispara).
+        #
+        # NOTA: este push ocurre DESPUÉS del deploy a Pages para que el cambio
+        # en la rama main no interfiera con el artifact desplegado por Actions.
+        run: |
+          git config --global user.name "survey-bot"
+          git config --global user.email "survey-bot@users.noreply.github.com"
+
+          git add zoho-survey/
+          # Stagear altas/modificaciones/eliminaciones en data/. Esto permite
+          # que los CSVs subidos por web se borren de main en el commit del bot.
+          git add -A data/ 2>/dev/null || true
+
+          # Salir limpio si no hay cambios (evita commit vacío)
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Auto update survey json [skip ci]"
+
+          # Integrar cambios remotos con rebase antes de push.
+          # Reintenta hasta 3 veces si hay conflictos de JSON (poco probables
+          # porque el bot es el único que toca esos archivos).
+          for i in 1 2 3; do
+            if git pull --rebase origin main; then
+              break
+            else
+              echo "Rebase fallido, intento $i/3. Verificando conflictos..."
+              # Si hay conflictos en JSONs generados (raro: solo el bot los toca),
+              # preferir la versión del bot (más reciente del build actual).
+              # NOTA: conflicto en otros archivos (código, config) indica cambio
+              # manual legítimo y debe fallar para no sobrescribirlo.
+              CONFLICT_FILES=$(git diff --name-only --diff-filter=U 2>/dev/null || echo "")
+              ONLY_JSON=true
+              for f in $CONFLICT_FILES; do
+                case "$f" in
+                  zoho-survey/students/*.json|zoho-survey/students/*/json/*.json|.csv_hash) ;;
+                  *) ONLY_JSON=false ;;
+                esac
+              done
+              if $ONLY_JSON && [ -n "$CONFLICT_FILES" ]; then
+                echo "Conflictos solo en JSONs generados. Resolviendo con --theirs..."
+                git checkout --theirs $CONFLICT_FILES 2>/dev/null || true
+                git add $CONFLICT_FILES
+                git rebase --continue || break
+              else
+                echo "ERROR: Conflictos en archivos no generados. Abortando rebase."
+                git rebase --abort
+                exit 1
+              fi
+            fi
+            sleep 2
+          done
+
+          git push origin HEAD:main

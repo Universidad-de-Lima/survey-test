@@ -1,0 +1,15 @@
+# Ruff configuration for survey-storytelling
+# See: https://docs.astral.sh/ruff/
+
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "I"]
+
+# Ignore line-length for now (adjust later)
+ignore = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"

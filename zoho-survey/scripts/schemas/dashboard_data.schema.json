@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/dashboard_data.json",
+  "title": "Dashboard Data",
+  "description": "Contrato de datos agregados del dashboard (KPIs ejecutivos, NPS, CSAT, hallazgos). Fuente de verdad: build_json.py. El ETL produce claves en minúsculas para NPS; el frontend acepta ambos casings vía nullish coalescing. El contrato canónico es minúsculas.",
+  "type": "object",
+  "required": ["version", "resumen", "hallazgos", "nps", "csat"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Versión del contrato de datos.",
+      "const": "2.0"
+    },
+    "resumen": {
+      "type": "object",
+      "required": ["encuestas", "fecha_inicio", "fecha_fin", "año", "nps", "csat"],
+      "additionalProperties": false,
+      "properties": {
+        "encuestas": { "type": "integer", "minimum": 0 },
+        "carreras": { "type": "integer", "minimum": 0 },
+        "facultades": { "type": "integer", "minimum": 0 },
+        "fecha_inicio": { "type": "string", "format": "date" },
+        "fecha_fin": { "type": "string", "format": "date" },
+        "dias": { "type": "integer", "minimum": 0 },
+        "dias_recoleccion": { "type": "integer", "minimum": 0 },
+        "año": { "type": "integer" },
+        "periodo": { "type": "string", "description": "Identificador del periodo (ej. '2026-1', '2026')" },
+        "nps": {
+          "type": "object",
+          "required": ["score", "promotores", "pasivos", "detractores", "total"],
+          "additionalProperties": false,
+          "properties": {
+            "score": { "type": "number", "minimum": -100, "maximum": 100 },
+            "promotores": { "type": "integer", "minimum": 0 },
+            "pasivos": { "type": "integer", "minimum": 0 },
+            "detractores": { "type": "integer", "minimum": 0 },
+            "total": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "csat": {
+          "type": "object",
+          "required": ["score", "t3b", "total"],
+          "additionalProperties": false,
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+            "t3b": { "type": "integer", "minimum": 0 },
+            "total": { "type": "integer", "minimum": 0 },
+            "t2b": { "type": "integer", "minimum": 0, "description": "Top 2 Box: Totalmente satisfecho + Muy satisfecho. Opcional por compatibilidad con periodos generados antes de la incorporacion del indicador." },
+            "t2b_pct": { "type": "number", "minimum": 0, "maximum": 100, "description": "Top 2 Box expresado como porcentaje. Opcional por compatibilidad backward." },
+            "ponderado": { "type": "number", "minimum": 0, "maximum": 100, "description": "Promedio ponderado de satisfaccion (escala Likert 1-5 normalizada a 0-100). Opcional por compatibilidad backward." }
+          }
+        },
+        "empleabilidad": {
+          "description": "Tasa de empleabilidad (solo encuestas de graduados). Calculada como empleados / total de respuestas a 'Situación laboral'.",
+          "type": "object",
+          "required": ["score", "empleados", "total"],
+          "additionalProperties": false,
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+            "empleados": { "type": "integer", "minimum": 0 },
+            "total": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "hallazgos": {
+      "type": "object",
+      "required": ["csat_pct", "nps_score", "nps_tipo", "nps_etapas", "tendencia", "delta"],
+      "additionalProperties": false,
+      "properties": {
+        "csat_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "nps_score": { "type": "integer", "minimum": -100, "maximum": 100 },
+        "nps_tipo": { "type": "string", "enum": ["Excelente", "Bueno", "Regular", "Pésimo"] },
+        "nps_etapas": {
+          "type": "object",
+          "description": "NPS por etapa académica (Inicial, Intermedio, Avanzado). Objeto vacío si no hay ciclos.",
+          "additionalProperties": { "type": "number" }
+        },
+        "tendencia": { "type": "string", "enum": ["disminuye", "aumenta", "se mantiene"] },
+        "delta": { "type": "integer", "minimum": 0 },
+        "top_dimensiones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "score"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "score": { "type": "number" }
+            }
+          }
+        },
+        "top_facultades": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "score"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "score": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "nps": {
+      "type": "object",
+      "description": "Distribución NPS global. Claves en minúsculas (canónicas); el frontend acepta ambos casings vía nullish coalescing por compatibilidad backward.",
+      "required": ["promotores", "pasivos", "detractores"],
+      "additionalProperties": false,
+      "properties": {
+        "promotores": { "type": "integer", "minimum": 0 },
+        "pasivos": { "type": "integer", "minimum": 0 },
+        "detractores": { "type": "integer", "minimum": 0 },
+        "score": { "type": "number", "minimum": -100, "maximum": 100 }
+      }
+    },
+    "_export": {
+      "type": "object",
+      "description": "Metadatos para exportación de CSVs. Generado por el ETL para enlazar con archivos ZIP estáticos.",
+      "required": ["nombre_encuesta", "fecha_generacion"],
+      "additionalProperties": false,
+      "properties": {
+        "nombre_encuesta": { "type": "string", "description": "Nombre del CSV fuente sanitizado (ej. 'encuesta_de_satisfaccion_estudiantil_pregrado_2026_1')" },
+        "fecha_generacion": { "type": "string", "format": "date", "description": "Fecha en que se generó la exportación (YYYY-MM-DD)" }
+      }
+    },
+    "csat": {
+      "type": "object",
+      "description": "Distribución CSAT global con los 5 niveles Zoho Survey + 2 claves opcionales de visibilidad.",
+      "required": ["Totalmente satisfecho", "Muy satisfecho", "Satisfecho", "Insatisfecho", "Totalmente insatisfecho"],
+      "additionalProperties": false,
+      "properties": {
+        "Totalmente satisfecho": { "type": "integer", "minimum": 0 },
+        "Muy satisfecho": { "type": "integer", "minimum": 0 },
+        "Satisfecho": { "type": "integer", "minimum": 0 },
+        "Insatisfecho": { "type": "integer", "minimum": 0 },
+        "Totalmente insatisfecho": { "type": "integer", "minimum": 0 },
+        "No utilizo": { "type": "integer", "minimum": 0 },
+        "No conozco": { "type": "integer", "minimum": 0 },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  }
+}

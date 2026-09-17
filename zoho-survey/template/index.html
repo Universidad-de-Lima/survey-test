@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="description" content="ENCUESTA DE SATISFACCIÓN ULIMA - Dashboard interactivo con análisis ejecutivo, operativo, detallado y cualitativo.">
+  <meta name="theme-color" content="#FF5117">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="preload" href="./json/dashboard_data.json" as="fetch" crossorigin="anonymous">
+  <link rel="preload" href="./json/filtros.json" as="fetch" crossorigin="anonymous">
+  <link rel="preload" href="./json/dimensiones.json" as="fetch" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{SHARED_PATH}}/css/tokens.css?v={{BUILD_VERSION}}">
+  <link rel="stylesheet" href="{{SHARED_PATH}}/css/reset.css?v={{BUILD_VERSION}}">
+  <link rel="stylesheet" href="{{SHARED_PATH}}/css/layout.css?v={{BUILD_VERSION}}">
+  <link rel="stylesheet" href="{{SHARED_PATH}}/css/components.css?v={{BUILD_VERSION}}">
+  <link rel="stylesheet" href="{{SHARED_PATH}}/css/sections.css?v={{BUILD_VERSION}}">
+</head>
+<body>
+  <div class="main-wrapper visible">
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <header class="sticky-header">
+    <div class="header-brand"></div>
+    <nav aria-label="Secciones del dashboard">
+      <ul class="nav-links">
+        <li><a href="#ejecutivo">Ejecutivo</a></li>
+        <li><a href="#operativo">Operativo</a></li>
+        <li><a href="#detallado">Detallado</a></li>
+        <li><a href="#cualitativo">Cualitativo</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="progress-bar" role="presentation" aria-hidden="true">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true"></div>
+  <div class="error-banner" id="error-banner" role="alert" aria-live="assertive" hidden></div>
+  <main class="main-content" id="main-content">
+    <h1 class="sr-only">ENCUESTA DE SATISFACCIÓN Universidad de Lima</h1>
+
+    <!-- ============================================================ EJECUTIVO -->
+    <section id="ejecutivo" class="section" aria-labelledby="ejecutivo-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="ejecutivo-heading">ANÁLISIS EJECUTIVO</h2>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value color-csat" id="kpi-csat-value">--%</div>
+          <div class="kpi-label color-csat">Nivel de Satisfacción</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill bg-csat" id="kpi-csat-bar" style="width: 0%;"></div></div>
+          <div class="kpi-meta color-csat" id="kpi-csat-meta">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value color-t2b" id="kpi-t2b-value">--%</div>
+          <div class="kpi-label color-t2b">Top 2 Box</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill bg-t2b" id="kpi-t2b-bar" style="width: 0%;"></div></div>
+          <div class="kpi-meta color-t2b" id="kpi-t2b-meta">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value color-ponderado" id="kpi-ponderado-value">--%</div>
+          <div class="kpi-label color-ponderado">Promedio Ponderado</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill bg-ponderado" id="kpi-ponderado-bar" style="width: 0%;"></div></div>
+          <div class="kpi-meta color-ponderado" id="kpi-ponderado-meta">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value color-nps" id="kpi-nps-value">--</div>
+          <div class="kpi-label color-nps">Índice de Promotores Netos</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill bg-nps" id="kpi-nps-bar" style="width: 0%;"></div></div>
+          <div class="kpi-meta color-nps" id="kpi-nps-meta">--</div>
+        </div>
+        <div class="kpi-card" id="kpi-emplea-card">
+          <div class="kpi-value color-emplea" id="kpi-emplea-value">--%</div>
+          <div class="kpi-label color-emplea">Empleabilidad</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill bg-emplea" id="kpi-emplea-bar" style="width: 0%;"></div></div>
+          <div class="kpi-meta color-emplea" id="kpi-emplea-meta">--</div>
+        </div>
+      </div>
+      <h3 class="subsection-title">Distribución del Nivel de Satisfacción</h3>
+      <div class="csat-distribution">
+        <div class="csat-bar" id="csat-bar"></div>
+        <div class="legend" id="csat-legend"></div>
+      </div>
+      <h3 class="subsection-title">Composición del Índice de Promotores Netos</h3>
+      <div class="csat-distribution">
+        <div class="csat-bar" id="nps-bar"></div>
+        <div class="legend" id="nps-legend"></div>
+      </div>
+      <div class="insight-box info" aria-live="polite">
+        <div class="insight-title">Hallazgos</div>
+        <p class="insight-text" id="insight-hallazgos">Cargando...</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ OPERATIVO -->
+    <section id="operativo" class="section" aria-labelledby="operativo-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="operativo-heading">ANÁLISIS OPERATIVO</h2>
+      </div>
+      <h3 class="subsection-title">Nivel de satisfacción</h3>
+      <div class="filter-container" role="group" aria-label="Filtros de análisis operativo" style="margin-top: 16px;">
+        <div class="filter-group">
+          <label class="filter-label" for="filter-facultad-top3">Facultad:</label>
+          <select class="filter-select" id="filter-facultad-top3"><option value="">Todas las unidades académicas</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="filter-carrera-top3">Carrera:</label>
+          <select class="filter-select" id="filter-carrera-top3"><option value="">Todas las carreras</option></select>
+        </div>
+        <div class="filter-ciclo-actions">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-ciclo-top3">Ciclo:</label>
+            <select class="filter-select" id="filter-ciclo-top3" data-multiselect="true"><option value="">Todos los ciclos</option></select>
+          </div>
+        </div>
+        <button class="filter-reset" id="reset-top3" type="button">Limpiar</button>
+      </div>
+      <div class="grid-2" id="top3-cards">
+        <div class="card"><div class="card-title">Académico</div><div class="bar-chart" id="chart-academico"></div></div>
+        <div class="card"><div class="card-title">Servicios al estudiante</div><div class="bar-chart" id="chart-admin-bienestar"></div></div>
+        <div class="card"><div class="card-title">Docencia</div><div class="bar-chart" id="chart-docencia"></div></div>
+        <div class="card"><div class="card-title">Tecnología</div><div class="bar-chart" id="chart-tecnologia"></div></div>
+        <div class="card"><div class="card-title">Desarrollo Profesional</div><div class="bar-chart" id="chart-desarrollo"></div></div>
+        <div class="card"><div class="card-title">Infraestructura</div><div class="bar-chart" id="chart-infraestructura"></div></div>
+      </div>
+      <h3 class="subsection-title">Radar General - Nivel de satisfacción</h3>
+      <div class="filter-container filter-container-wrap" role="group" aria-label="Filtros del radar">
+        <div class="filter-group filter-group-full">
+          <label class="filter-label" for="filter-categoria-radar">Categoría:</label>
+          <select class="filter-select" id="filter-categoria-radar" data-multiselect="true" multiple><option value="">Todas las categorías</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="filter-facultad-radar">Facultad:</label>
+          <select class="filter-select" id="filter-facultad-radar"><option value="">Todas las unidades académicas</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="filter-carrera-radar">Carrera:</label>
+          <select class="filter-select" id="filter-carrera-radar"><option value="">Todas las carreras</option></select>
+        </div>
+        <div class="filter-ciclo-actions">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-ciclo-radar">Ciclo:</label>
+            <select class="filter-select" id="filter-ciclo-radar" data-multiselect="true"><option value="">Todos los ciclos</option></select>
+          </div>
+        </div>
+        <button class="filter-reset" id="reset-radar" type="button">Limpiar</button>
+      </div>
+      <div class="card radar-container">
+        <svg class="radar-svg" viewBox="-40 -40 600 600" preserveAspectRatio="xMidYMid meet"
+             id="radar-chart" aria-label="Gráfico radar de satisfacción por dimensión" role="img"></svg>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background: var(--gray-700);"></div>≥93 % (Fortaleza)</div>
+          <div class="legend-item"><div class="legend-dot" style="background: var(--gray-400);"></div>80-92 % (Adecuado)</div>
+          <div class="legend-item"><div class="legend-dot" style="background: var(--ulima-red);"></div>&lt;80 % (Atención)</div>
+        </div>
+      </div>
+      <div class="insight-box success" aria-live="polite">
+        <div class="insight-title">Fortalezas</div>
+        <p class="insight-text" id="insight-fortaleza">Cargando...</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ DETALLADO -->
+    <section id="detallado" class="section" aria-labelledby="detallado-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="detallado-heading">ANÁLISIS DETALLADO</h2>
+      </div>
+      <h3 class="subsection-title">Nivel de satisfacción detallado</h3>
+      <div class="filter-container" role="group" aria-label="Filtros de nivel de satisfacción detallado">
+        <div class="filter-group">
+          <label class="filter-label" for="filter-facultad-preguntas">Facultad:</label>
+          <select class="filter-select" id="filter-facultad-preguntas"><option value="">Todas las unidades académicas</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="filter-carrera-preguntas">Carrera:</label>
+          <select class="filter-select" id="filter-carrera-preguntas"><option value="">Todas las carreras</option></select>
+        </div>
+        <div class="filter-ciclo-actions">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-ciclo-preguntas">Ciclo:</label>
+            <select class="filter-select" id="filter-ciclo-preguntas" data-multiselect="true"><option value="">Todos los ciclos</option></select>
+          </div>
+        </div>
+        <button class="filter-reset" id="reset-preguntas" type="button">Limpiar</button>
+      </div>
+      <div class="table-scroll">
+      <table class="survey-table" id="tabla-preguntas" role="region" aria-label="Satisfaccion por pregunta">
+          <caption class="sr-only">Detalle de satisfaccion por pregunta y dimension</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width: 25%;">DIMENSIÓN</th>
+            <th scope="col" class="text-center" style="width: 12%;">RESPUESTAS</th>
+            <th scope="col" class="text-center" style="width: 12%;">Top 3 Box</th>
+            <th scope="col" class="text-center" style="width: 12%;">Top 2 Box</th>
+            <th scope="col" class="text-center" style="width: 12%;">Ponderado</th>
+            <th scope="col" class="text-center" style="width: 12%;">CATEGORÍA</th>
+            <th scope="col" class="text-center" style="width: 15%;">DISTRIBUCIÓN</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-preguntas"></tbody>
+      </table>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-800);"></div> Totalmente satisfecho</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-500);"></div> Muy satisfecho</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-300);"></div> Satisfecho</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--ulima-orange);"></div> Insatisfecho</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--ulima-red);"></div> Totalmente insatisfecho</div>
+      </div>
+      <div class="insight-box warning">
+        <div class="insight-title">Nota</div>
+        <p class="insight-text">
+          El <strong>Top 3 Box</strong> se calcula dividiendo la suma de las respuestas
+          "<strong>Totalmente satisfecho</strong>", "<strong>Muy satisfecho</strong>" y "<strong>Satisfecho</strong>"
+          entre el total de respuestas, excluyendo "<strong>No conozco</strong>", "<strong>No utilizo</strong>" y las respuestas <strong>vacías</strong>.
+        </p>
+      </div>
+      <h3 class="subsection-title">Detalle por Carrera</h3>
+      <div class="filter-container" role="group" aria-label="Filtros de detalle por carrera">
+        <div class="filter-group">
+          <label class="filter-label" for="filter-facultad-detalle">Facultad:</label>
+          <select class="filter-select" id="filter-facultad-detalle"><option value="">Todas las unidades académicas</option></select>
+        </div>
+        <div class="filter-ciclo-actions">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-ciclo-detalle">Ciclo:</label>
+            <select class="filter-select" id="filter-ciclo-detalle" data-multiselect="true"><option value="">Todos los ciclos</option></select>
+          </div>
+        </div>
+        <button class="filter-reset" id="reset-detalle" type="button">Limpiar</button>
+      </div>
+      <div class="table-scroll">
+      <table class="survey-table" id="tabla-detalle" role="region" aria-label="NPS y CSAT por carrera">
+          <caption class="sr-only">Detalle de NPS y CSAT por carrera</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width: 15%;">CARRERA</th>
+            <th scope="col" class="text-center" style="width: 17%;">ENCUESTAS</th>
+            <th scope="col" class="text-center" style="width: 17%;">Nivel de Satisfacción</th>
+            <th scope="col" class="text-center" style="width: 17%;">VS PROMEDIO <span id="detalle-promedio-ref"></span></th>
+            <th scope="col" class="text-center" style="width: 17%;">Índice de Promotores Netos</th>
+            <th scope="col" class="text-center" style="width: 17%;">VS PROMEDIO <span id="detalle-promedio-nps-ref"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-detalle"></tbody>
+      </table>
+      </div>
+      <h3 class="subsection-title">Visibilidad de Servicios (No conozco / No utilizo)</h3>
+      <div class="filter-container" role="group" aria-label="Filtros de visibilidad de servicios">
+        <div class="filter-group">
+          <label class="filter-label" for="filter-facultad-visibilidad">Facultad:</label>
+          <select class="filter-select" id="filter-facultad-visibilidad"><option value="">Todas las unidades académicas</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="filter-carrera-visibilidad">Carrera:</label>
+          <select class="filter-select" id="filter-carrera-visibilidad"><option value="">Todas las carreras</option></select>
+        </div>
+        <div class="filter-ciclo-actions">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-ciclo-visibilidad">Ciclo:</label>
+            <select class="filter-select" id="filter-ciclo-visibilidad" data-multiselect="true"><option value="">Todos los ciclos</option></select>
+          </div>
+        </div>
+        <button class="filter-reset" id="reset-visibilidad" type="button">Limpiar</button>
+      </div>
+      <div class="table-scroll">
+      <table class="survey-table" id="tabla-visibilidad" role="region" aria-label="Visibilidad de servicios">
+          <caption class="sr-only">Visibilidad de servicios por carrera</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width: 35%;">DIMENSIÓN</th>
+            <th scope="col" class="text-center" style="width: 15%;">RESPUESTAS</th>
+            <th scope="col" class="text-center" style="width: 15%;">NO CONOZCO</th>
+            <th scope="col" class="text-center" style="width: 15%;">NO UTILIZO</th>
+            <th scope="col" class="text-center" style="width: 20%;">DISTRIBUCIÓN</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-visibilidad"></tbody>
+      </table>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-800);"></div> No conozco</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-500);"></div> No utilizo</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-300);"></div> Conozco/Utilizo</div>
+      </div>
+      <div class="insight-box pink" aria-live="polite">
+        <div class="insight-title">Oportunidad de mejora</div>
+        <p class="insight-text" id="insight-atencion">Cargando...</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ CUALITATIVO -->
+    <section id="cualitativo" class="section" aria-labelledby="cualitativo-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="cualitativo-heading">ANÁLISIS CUALITATIVO</h2>
+      </div>
+
+
+
+      <div class="kpi-grid" id="sentiment-kpis"></div>
+
+      <h3 class="subsection-title" style="margin-top: 32px;">Respuestas por sentimiento</h3>
+
+      <!-- Métricas Macro y Distribuciones -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Distribución de sentimientos</div>
+          <div class="bar-chart" id="sentimiento-bar-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Ideas por segmento NPS</div>
+          <div id="seg-nps-container"></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 24px;">
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="card-title">Categorías — menciones totales</div>
+          <div id="categorias-barras-container"></div>
+        </div>
+      </div>
+
+
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Aspectos más positivos</div>
+          <div class="bar-chart" id="aspectos-positivos-container"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Aspectos más negativos</div>
+          <div class="bar-chart" id="aspectos-negativos-container"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Intensidad en aspectos positivos</div>
+          <div class="bar-chart" id="intensidad-positivos-container"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Intensidad en aspectos negativos</div>
+          <div class="bar-chart" id="intensidad-negativos-container"></div>
+        </div>
+      </div>
+
+
+      <h3 class="subsection-title" style="margin-top:32px;">Respuestas por carrera — distribución NPS completa</h3>
+      
+
+
+      <div class="table-scroll" style="margin-bottom: 24px;">
+        <table class="survey-table" id="tabla-nps-carrera" role="region" aria-label="Distribucion NPS por carrera">
+          <caption class="sr-only">Distribucion NPS completa por carrera</caption>
+          <thead>
+            <tr>
+              <th scope="col" style="width: 20%;">CARRERA</th>
+              <th scope="col" class="text-center" style="width: 16%;">TEXTO ABIERTO</th>
+              <th scope="col" class="text-center" style="width: 16%;">IDEAS ANALIZADAS</th>
+              <th scope="col" class="text-center" style="width: 16%;">PROMOTORES</th>
+              <th scope="col" class="text-center" style="width: 16%;">PASIVOS</th>
+              <th scope="col" class="text-center" style="width: 16%;">DETRACTORES</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-nps-carrera">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Detalle de ideas -->
+      <h3 class="subsection-title" style="margin-top:32px;">Detalle de ideas</h3>
+      <p style="color:var(--gray-500); font-size:12px; margin-bottom:12px; line-height:1.5;">
+        Busque y filtre las respuestas textuales de los alumnos. La columna "Idea analizada" corrige faltas ortográficas y modismos comunes para facilitar su lectura rápida sin alterar su significado original.
+      </p>
+
+
+      <!-- Explorador Controls -->
+      <div class="filter-container" role="group" aria-label="Controles del explorador cualitativo" style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+        <div class="filter-group" style="flex: 1; min-width: 200px;">
+          <input type="text" id="explorador-search" class="filter-select" placeholder="Buscar palabras clave en comentarios..." style="width: 100%; padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--gray-300); font-size: var(--text-md); font-family: inherit; background-image: none; cursor: text;">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="explorador-categoria">Tema Padre:</label>
+          <select class="filter-select" id="explorador-categoria">
+            <option value="">Todos los temas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="explorador-sentimiento">Sentimiento:</label>
+          <select class="filter-select" id="explorador-sentimiento">
+            <option value="">Todos</option>
+            <option value="positivo">Positivo</option>
+            <option value="neutro">Neutro</option>
+            <option value="negativo">Negativo</option>
+          </select>
+        </div>
+
+        <button class="filter-reset" id="explorador-reset" type="button" style="margin-left: auto;">
+          Limpiar
+        </button>
+      </div>
+
+      <!-- Tabla Exploradora -->
+      <div class="table-scroll" style="margin-bottom: 12px;">
+        <table class="survey-table" id="tabla-explorador-comentarios" role="region" aria-label="Explorador de comentarios cualitativos">
+          <caption class="sr-only">Explorador de comentarios con filtros de sentimiento y tema</caption>
+          <thead>
+            <tr>
+              <th scope="col" style="width: 16%; text-align: left;">Carrera</th>
+              <th scope="col" style="width: 5%;" class="text-center">Ciclo</th>
+              <th scope="col" style="width: 5%;" class="text-center">NPS</th>
+              <th scope="col" style="width: 34%;">Texto abierto</th>
+              <th scope="col" style="width: 18%;">Idea analizada</th>
+              <th scope="col" style="width: 12%;">Tema</th>
+              <th scope="col" style="width: 5%;" class="text-center">Sentimiento</th>
+              <th scope="col" style="width: 5%;" class="text-center">Intensidad</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-explorador-comentarios">
+            <!-- Dynamic Comments -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
+        <span id="explorador-pagination-info" style="font-size: 12px; color: var(--text2); font-weight: 500;">Mostrando 0-0 de 0 comentarios</span>
+        <div style="display: flex; gap: 8px;">
+          <button id="explorador-export-csv" class="filter-reset" style="padding: 4px 10px; font-size: 12px;">Descargar</button>
+          <button id="explorador-btn-prev" class="filter-reset" style="padding: 4px 10px; font-size: 12px;" disabled>Anterior</button>
+          <button id="explorador-btn-next" class="filter-reset" style="padding: 4px 10px; font-size: 12px;" disabled>Siguiente</button>
+        </div>
+      </div>
+
+      <div class="insight-box info" aria-live="polite" style="margin-top:20px;">
+        <div class="insight-title">Análisis IA</div>
+        <p class="insight-text" id="insight-cualitativo">Cargando análisis cualitativo...</p>
+        <div id="insight-cualitativo-categorias" style="margin-top: 12px;"></div>
+      </div>
+
+      <div class="insight-box warning" style="margin-top: 20px;">
+        <div class="insight-title">Nota</div>
+        <p class="insight-text">
+          Análisis semántico automatizado de los comentarios de alumnos. Los comentarios se agrupan en categorías temáticas y se analiza su sentimiento e intensidad mediante modelos de embeddings locales (offline).
+        </p>
+      </div>
+  </section>
+
+  </main>
+  <footer class="footer">
+    <div class="footer-logo">
+      <img class="footer-logo-img"
+           src="{{SHARED_PATH}}/img/logo-isotipo.png"
+           alt="Universidad de Lima, isotipo"
+           loading="lazy" width="250" height="84">
+    </div>
+    <div id="footer-fuente">Fuente: <span id="footer-fuente-texto">Cargando...</span></div>
+    <div id="footer-anio"></div>
+    <div class="mt-2" id="footer-periodo">Periodo: Cargando... · Dirección de Planificación y Acreditación</div>
+  </footer>
+  </div>
+  <script src="{{SHARED_PATH}}/js/config/constants.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/utils/formatters.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/utils/metrics.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/utils/sanitizer.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/utils/dom-helpers.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/tooltip.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/progress-bar.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/custom-select.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/multiselect.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/filter-controller.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/radar-chart.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/components/sentiment-view.js?v={{BUILD_VERSION}}" defer></script>
+  <script src="{{SHARED_PATH}}/js/dashboard.js?v={{BUILD_VERSION}}" defer></script>
+</body>
+</html>

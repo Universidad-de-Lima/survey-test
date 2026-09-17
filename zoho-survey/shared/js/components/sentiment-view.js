@@ -1,0 +1,1045 @@
+/**
+ * SURVEY SENTIMENT VIEW — Renderizador del análisis cualitativo y semántico.
+ *
+ * Muestra KPIs de comentarios, chips de temas semánticos principales,
+ * tarjetas de insights cualitativos (insatisfacción/mejora/fortalezas) con frases reales,
+ * y la tabla detallada de comentarios agrupados por carrera.
+ *
+ * Dependencias: SurveyFormatters, SurveyDOMHelpers, SurveySanitizer (globales)
+ *
+ * @module components/sentiment-view
+ * @version 3.0.0
+ */
+window.SurveySentimentView = (() => {
+  'use strict';
+
+  const _fmt = window.SurveyFormatters;
+  const _dh = window.SurveyDOMHelpers;
+  const _san = window.SurveySanitizer;
+  const _ttp = window.SurveyTooltip;
+
+  const C = window.SURVEY_CONFIG || {};
+  const CICLOS_ESTUDIOS_GENERALES = C.CICLOS_ESTUDIOS_GENERALES;
+
+  const esEstudiosGen = _dh.esEstudiosGen;
+  const $ = _dh.$;
+
+  // State for the Paginated Comment Explorador
+  const state = {
+    originalComments: [],
+    filteredComments: [],
+    currentPage: 0,
+    pageSize: 7,
+    sentimentCache: null
+  };
+
+  function colorPorTipo(tipo) {
+    if (tipo === 'negativo') {
+      return { border: 'var(--ulima-red)', bg: 'var(--sentiment-neg-bg, var(--danger-pastel))', label: 'Insatisfacción' };
+    }
+    if (tipo === 'positivo') {
+      return { border: 'var(--success-text)', bg: 'var(--sentiment-pos-bg, var(--success-pastel))', label: 'Fortaleza reconocida' };
+    }
+    return { border: 'var(--ulima-orange)', bg: 'var(--sentiment-neu-bg, var(--warning-pastel))', label: 'Oportunidad de mejora' };
+  }
+
+  // Helper to create legend items with CSP-friendly event listeners
+  function createLegendItem(colorVar, label, value, valLower) {
+    const div = document.createElement('div');
+    div.className = 'legend-item';
+    div.style.cursor = 'pointer';
+
+    const dot = document.createElement('div');
+    dot.className = 'legend-dot';
+    dot.style.background = colorVar;
+
+    div.appendChild(dot);
+    const formattedValue = window.SurveyFormatters ? window.SurveyFormatters.formatInteger(value) : value.toLocaleString('en-US');
+    div.appendChild(document.createTextNode(`${label}: ${formattedValue}`));
+
+    div.addEventListener('click', () => {
+      const select = $('explorador-sentimiento');
+      if (select) {
+        select.value = valLower;
+        applyExploradorFilters();
+        const explSec = $('tabla-explorador-comentarios');
+        if (explSec) explSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    return div;
+  }
+
+  function drawSentimentBars(stats) {
+    const container = $('sentimiento-bar-chart');
+    if (!container) return;
+    container.innerHTML = '';
+    // Set fixed height to match Ideas por segmento NPS
+    container.style.cssText = 'height: 180px; display: flex; flex-direction: column; justify-content: center;';
+
+    const pos = stats.pos.total;
+    const neu = stats.neu.total;
+    const neg = stats.neg.total;
+    const total = pos + neu + neg;
+    if (total === 0) return;
+
+    const data = [
+      { label: 'Positivo', value: pos, color: 'var(--success-text)', breakdown: stats.pos },
+      { label: 'Neutro', value: neu, color: 'var(--gray-400)', breakdown: stats.neu },
+      { label: 'Negativo', value: neg, color: 'var(--ulima-red)', breakdown: stats.neg }
+    ];
+
+    const fragment = document.createDocumentFragment();
+    data.forEach((item, index) => {
+      if (item.value === 0) return;
+      
+      const pct = Math.round((item.value / total) * 100);
+      const barValueOutside = pct < 20;
+
+      const barItem = document.createElement('div');
+      barItem.className = 'bar-item';
+      barItem.innerHTML = `
+        <div class="bar-label" style="width: 80px;">${item.label}</div>
+        <div class="bar-container">
+          <div class="bar-fill animated" style="width:${pct}%; background-color:${item.color}; animation-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${_fmt.formatPctSimple(item.value, total)}</span>
+          </div>
+        </div>
+      `;
+
+      // Tooltip events
+      barItem.addEventListener('mouseenter', (e) => {
+        const b = item.breakdown;
+        let html = '<table style="border-collapse:collapse;font-size:11px;">';
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Promotores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.prom)}</td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Pasivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pas)}</td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Detractores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.det)}</td></tr>`;
+        html += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${item.label}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, total)})</td></tr>`;
+        html += '</table>';
+        // raw=true justificado en todos los tooltips de este modulo:
+        // los valores interpolados son numericos (formatInteger/formatPctSimple)
+        // o ya escapados con _san.escapeHTML(). No hay input de usuario sin escapar.
+        _ttp.show(e, html, true);
+      });
+      barItem.addEventListener('mousemove', (e) => {
+        _ttp.move(e);
+      });
+      barItem.addEventListener('mouseleave', () => {
+        _ttp.hide();
+      });
+
+      fragment.appendChild(barItem);
+    });
+
+    container.appendChild(fragment);
+  }
+
+  function renderMetricCards(comments, cache, totalRespuestasGlobal, npsData) {
+    const kpiGrid = $('sentiment-kpis');
+    if (!kpiGrid) return;
+    
+    // totalRespuestasGlobal es el valor exacto de dashboard_data.json.resumen.encuestas
+    // pasado por dashboard.js. Fallback a comments.length si no está disponible.
+    const totalGlobal = totalRespuestasGlobal || comments.length;
+    const totalRespuestas = totalGlobal;
+    
+    let textAbierto = 0, ideas = 0, neg = 0, pos = 0, neu = 0, sumInt = 0;
+    
+    comments.forEach(c => {
+      if (c.es_valido) {
+        ideas++;
+        if (c.sentimiento === 'positivo') pos++;
+        else if (c.sentimiento === 'negativo') neg++;
+        else neu++;
+        sumInt += (c.intensidad || 0);
+      }
+    });
+
+    const uniqueIds = new Set(comments.map(c => c.id_encuesta || c.comentario_id_original));
+    textAbierto = uniqueIds.size;
+
+  // NPS promotores/pasivos/detractores entregados explícitamente por dashboard.js / portal
+  // (desacoplado del DOM #nps-legend; ver SentimentView.init npsData). CAL-04 mantenido
+  // como fallback si no se provee npsData.
+  let promotores = 0, pasivos = 0, detractores = 0;
+  if (npsData && (npsData.promotores != null || npsData.pasivos != null || npsData.detractores != null)) {
+    promotores = Number(npsData.promotores) || 0;
+    pasivos = Number(npsData.pasivos) || 0;
+    detractores = Number(npsData.detractores) || 0;
+  } else {
+    // CAL-04: fallback legacy (periodos generados antes del fix) leyendo #nps-legend
+    const npsLegend = document.getElementById('nps-legend');
+    if (npsLegend) {
+      const dp = npsLegend.getAttribute('data-promotores');
+      const dpa = npsLegend.getAttribute('data-pasivos');
+      const dd = npsLegend.getAttribute('data-detractores');
+      if (dp !== null) promotores = parseInt(dp, 10) || 0;
+      else if (dp === null && npsLegend.textContent) {
+        const matchProm = npsLegend.textContent.match(/Promotores:\s*([\d,]+)/);
+        if (matchProm) promotores = parseInt(matchProm[1].replace(/,/g, ''), 10);
+      }
+      if (dpa !== null) pasivos = parseInt(dpa, 10) || 0;
+      else if (dpa === null && npsLegend.textContent) {
+        const matchPas = npsLegend.textContent.match(/Pasivos:\s*([\d,]+)/);
+        if (matchPas) pasivos = parseInt(matchPas[1].replace(/,/g, ''), 10);
+      }
+      if (dd !== null) detractores = parseInt(dd, 10) || 0;
+      else if (dd === null && npsLegend.textContent) {
+        const matchDet = npsLegend.textContent.match(/Detractores:\s*([\d,]+)/);
+        if (matchDet) detractores = parseInt(matchDet[1].replace(/,/g, ''), 10);
+      }
+    }
+  }
+
+    const intensidadProm = ideas > 0 ? (sumInt / ideas) : 0; 
+
+    const pctPos = ideas > 0 ? Math.round((pos/ideas)*100) : 0;
+    const pctNeu = ideas > 0 ? Math.round((neu/ideas)*100) : 0;
+    const pctNeg = ideas > 0 ? Math.round((neg/ideas)*100) : 0;
+
+    const esPortal = !!(window.SurveyPortalData && window.svg);
+
+        const createKpiCard = (label, value, color, icon) => {
+          if (esPortal) {
+            return (
+              '<div class="survey-kpi">' +
+                '<div class="survey-kpi-bar-top" style="background:' + color + ';"></div>' +
+                '<div class="survey-kpi-body">' +
+                  '<p class="survey-kpi-value" style="color:' + color + ';">' + value + '</p>' +
+                  '<p class="survey-kpi-label">' + label + '</p>' +
+                '</div>' +
+                '<div class="survey-kpi-icon" style="background:' + color + ';">' + window.svg(icon) + '</div>' +
+              '</div>'
+            );
+          }
+          return (
+            `<div class="kpi-card" style="flex: 1 1 18%; min-width: 150px; margin: 0;">
+              <div class="kpi-value ${color}">${value}</div>
+              <div class="kpi-label ${color}">${label}</div>
+            </div>`
+          );
+        };
+
+        // Row 1: Total encuestados, Promotores, Pasivos, Detractores, Con texto abierto
+        // Row 2: Intensidad prom., Positivas, Neutras, Negativas, Ideas analizadas
+        if (esPortal) {
+          kpiGrid.className = 'survey-kpi-grid';
+          kpiGrid.innerHTML = [
+            createKpiCard('Total encuestados', totalRespuestas, 'var(--amber)', 'users'),
+                        createKpiCard('Promotores', promotores, 'var(--emerald)', 'trending-up'),
+                        createKpiCard('Pasivos', pasivos, '#666666', 'circle-dot'),
+                        createKpiCard('Detractores', detractores, '#FF5117', 'alert-triangle'),
+                        createKpiCard('Con texto abierto', textAbierto, '#1A73E8', 'file-text'),
+                        createKpiCard('Intensidad prom.', _fmt.formatDecimal(intensidadProm, 2), 'var(--amber)', 'gauge'),
+            createKpiCard('Positivas', pos, 'var(--emerald)', 'check-circle'),
+            createKpiCard('Neutras', neu, '#666666', 'circle'),
+            createKpiCard('Negativas', neg, '#FF5117', 'alert-circle'),
+            createKpiCard('Ideas analizadas', ideas, '#1A73E8', 'clipboard-list')
+          ].join('');
+        } else {
+          kpiGrid.style.display = 'block';
+          kpiGrid.innerHTML = `
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; width: 100%; margin-bottom: 16px;">
+              ${createKpiCard('Total encuestados', totalRespuestas, 'color-emplea')}
+              ${createKpiCard('Promotores', promotores, 'color-csat')}
+              ${createKpiCard('Pasivos', pasivos, 'color-emplea')}
+              ${createKpiCard('Detractores', detractores, 'color-negative')}
+              ${createKpiCard('Con texto abierto', textAbierto, 'color-emplea')}
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; width: 100%;">
+              ${createKpiCard('Intensidad prom.', _fmt.formatDecimal(intensidadProm, 2), 'color-emplea')}
+              ${createKpiCard('Positivas', pos, 'color-csat')}
+              ${createKpiCard('Neutras', neu, 'color-emplea')}
+              ${createKpiCard('Negativas', neg, 'color-negative')}
+              ${createKpiCard('Ideas analizadas', ideas, 'color-emplea')}
+            </div>
+          `;
+        }
+  }
+
+  function renderSentimentDistribution(comments) {
+    const stats = {
+      pos: { total: 0, prom: 0, pas: 0, det: 0 },
+      neu: { total: 0, prom: 0, pas: 0, det: 0 },
+      neg: { total: 0, prom: 0, pas: 0, det: 0 }
+    };
+    
+    comments.forEach(c => {
+      if (!c.es_valido) return;
+      
+      const nps = Number(c.nps_score);
+      let npsKey = 'det';
+      if (nps >= 9) npsKey = 'prom';
+      else if (nps >= 7) npsKey = 'pas';
+
+      let sentKey = 'neu';
+      if (c.sentimiento === 'positivo') sentKey = 'pos';
+      else if (c.sentimiento === 'negativo') sentKey = 'neg';
+      
+      stats[sentKey].total++;
+      stats[sentKey][npsKey]++;
+    });
+
+    drawSentimentBars(stats);
+  }
+
+  // Draw Top categorías — menciones totales (Vertical Bars)
+  function renderTopCategoriesBars(comments) {
+    const container = $('categorias-barras-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+    // Horizontal flex row with bottom alignment for the columns
+    container.style.cssText = 'display: flex; align-items: flex-end; justify-content: space-around; height: 180px; padding-top: 10px; padding-bottom: 10px; gap: 4px;';
+    
+    const stats = {};
+
+    comments.forEach(c => {
+      if (!c.es_valido) return;
+      const cat = c.categoria_padre || c.categoria || 'Otros';
+      if (!stats[cat]) stats[cat] = { total: 0 };
+      stats[cat][c.sentimiento] = (stats[cat][c.sentimiento] || 0) + 1;
+      stats[cat].total++;
+    });
+
+    const sortedCats = Object.keys(stats).sort((a, b) => stats[b].total - stats[a].total);
+
+    if (sortedCats.length === 0) {
+      container.style.cssText = '';
+      container.innerHTML = '<p style="color:var(--gray-500);font-size:12px;text-align:center;padding:20px 0;">No hay menciones registradas.</p>';
+      return;
+    }
+
+    const maxTotal = stats[sortedCats[0]].total;
+
+    sortedCats.forEach(cat => {
+      const s = stats[cat];
+      const heightPct = Math.max(10, (s.total / maxTotal) * 100);
+      
+      const posCount = s['positivo'] || 0;
+      const neuCount = s['neutro'] || 0;
+      const negCount = s['negativo'] || 0;
+
+      const pPct = (posCount / s.total) * 100;
+      const nPct = (neuCount / s.total) * 100;
+      const negPct = (negCount / s.total) * 100;
+
+      const col = document.createElement('div');
+      col.style.cssText = 'display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; gap:6px;';
+      col.innerHTML = `
+        <div style="font-size:11px; font-weight:600; color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
+        <div style="width:36px; height:${heightPct}%; background:var(--gray-200); border-radius:4px 4px 0 0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;">
+          <div style="width:100%; height:${pPct}%; background:var(--success-text);"></div>
+          <div style="width:100%; height:${nPct}%; background:var(--gray-400);"></div>
+          <div style="width:100%; height:${negPct}%; background:var(--ulima-red);"></div>
+        </div>
+        <div style="font-size:10px; font-weight:600; color:var(--dark); text-align:center; white-space:normal; line-height:1.1; max-width:64px; height:24px; overflow:hidden;">${_san.escapeHTML(cat)}</div>
+      `;
+
+      // Tooltip enriquecido con conteos + porcentajes (2 decimales), consistente
+      // con el resto de la app. Reemplaza al title HTML nativo.
+      let tooltipHtml = '<table style="border-collapse:collapse;font-size:11px;">';
+      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(posCount)} (${_fmt.formatPctSimple(posCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(neuCount)} (${_fmt.formatPctSimple(neuCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(negCount)} (${_fmt.formatPctSimple(negCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
+      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${_san.escapeHTML(cat)}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(s.total)} menciones</td></tr>`;
+      tooltipHtml += '</table>';
+      col.addEventListener('mouseenter', (e) => { if (_ttp) _ttp.show(e, tooltipHtml, true); });
+      col.addEventListener('mousemove', (e) => { if (_ttp) _ttp.move(e); });
+      col.addEventListener('mouseleave', () => { if (_ttp) _ttp.hide(); });
+
+      container.appendChild(col);
+    });
+  }
+
+  function renderNPSSegmentBars(comments) {
+    const container = $('seg-nps-container');
+    if (!container) return;
+    container.innerHTML = '';
+    container.style.cssText = 'height: 180px; display: flex; flex-direction: column; justify-content: center;';
+
+    const stats = {
+      'Promotor': { total: 0, pos: 0, neu: 0, neg: 0 },
+      'Pasivo': { total: 0, pos: 0, neu: 0, neg: 0 },
+      'Detractor': { total: 0, pos: 0, neu: 0, neg: 0 }
+    };
+
+    let totalIdeas = 0;
+    comments.forEach(c => {
+      if (!c.es_valido) return;
+      const nps = Number(c.nps_score);
+      let seg = '';
+      if (nps >= 9) seg = 'Promotor';
+      else if (nps >= 7) seg = 'Pasivo';
+      else seg = 'Detractor';
+      c.segmento_nps = seg;
+      
+      stats[seg].total++;
+      if (c.sentimiento === 'positivo') stats[seg].pos++;
+      else if (c.sentimiento === 'negativo') stats[seg].neg++;
+      else stats[seg].neu++;
+      
+      totalIdeas++;
+    });
+
+    if (totalIdeas === 0) return;
+
+    const data = [
+      { label: 'Promotores', value: stats['Promotor'].total, color: 'var(--success-text)', breakdown: stats['Promotor'] },
+      { label: 'Pasivos', value: stats['Pasivo'].total, color: 'var(--gray-400)', breakdown: stats['Pasivo'] },
+      { label: 'Detractores', value: stats['Detractor'].total, color: 'var(--ulima-red)', breakdown: stats['Detractor'] }
+    ];
+
+    const fragment = document.createDocumentFragment();
+    data.forEach((item, index) => {
+      if (item.value === 0) return;
+      
+      const pct = Math.round((item.value / totalIdeas) * 100);
+      const barValueOutside = pct < 20;
+
+      const barItem = document.createElement('div');
+      barItem.className = 'bar-item';
+      barItem.innerHTML = `
+        <div class="bar-label" style="width: 80px;">${item.label}</div>
+        <div class="bar-container">
+          <div class="bar-fill animated" style="width:${pct}%; background-color:${item.color}; animation-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${_fmt.formatPctSimple(item.value, totalIdeas)}</span>
+          </div>
+        </div>
+      `;
+
+      // Tooltip events
+      barItem.addEventListener('mouseenter', (e) => {
+        const b = item.breakdown;
+        let html = '<table style="border-collapse:collapse;font-size:11px;">';
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pos)}</td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neu)}</td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neg)}</td></tr>`;
+        html += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
+        html += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${item.label}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, totalIdeas)})</td></tr>`;
+        html += '</table>';
+        _ttp.show(e, html, true);
+      });
+      barItem.addEventListener('mousemove', (e) => {
+        _ttp.move(e);
+      });
+      barItem.addEventListener('mouseleave', () => {
+        _ttp.hide();
+      });
+
+      fragment.appendChild(barItem);
+    });
+
+    container.appendChild(fragment);
+  }
+
+  // Generic Aspects & Intensity lists rendering
+  function _renderList(containerId, data, isIntensity, isPos) {
+    const container = $(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    if (data.length === 0) {
+      container.innerHTML = '<span style="font-size:12px; color:var(--gray-500);">Data insuficiente</span>';
+      return;
+    }
+    
+    const maxVal = Math.max(...data.map(d => d.val));
+    const fragment = document.createDocumentFragment();
+
+    data.forEach((item, index) => {
+      let pct = 0;
+      let displayVal = '';
+      if (isIntensity) {
+        pct = (item.val / 5) * 100;
+        displayVal = _fmt.formatDecimal(item.val, 2);
+      } else {
+        pct = maxVal > 0 ? (item.val / maxVal) * 100 : 0;
+        displayVal = _fmt.formatInteger(item.val);
+      }
+      pct = Math.round(pct);
+      const barValueOutside = pct < 20;
+      const color = isPos ? 'var(--success-text)' : 'var(--ulima-red)';
+
+      const barItem = document.createElement('div');
+      barItem.className = 'bar-item';
+      barItem.innerHTML = `
+        <div class="bar-label">${_san.escapeHTML(item.name)}</div>
+        <div class="bar-container">
+          <div class="bar-fill animated" style="width:${pct}%; background-color:${color}; animation-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${displayVal}</span>
+          </div>
+        </div>
+      `;
+
+      const tooltipText = isIntensity ? 
+        `<table style="border-collapse:collapse;font-size:11px;"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">Intensidad promedio ${displayVal}</td></tr></table>` : 
+        `<table style="border-collapse:collapse;font-size:11px;"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${_fmt.formatInteger(item.val)} menciones</td></tr></table>`;
+        
+      barItem.addEventListener('mouseenter', (e) => {
+        _ttp.show(e, tooltipText, true);
+      });
+      barItem.addEventListener('mousemove', (e) => _ttp.move(e));
+      barItem.addEventListener('mouseleave', () => _ttp.hide());
+
+      fragment.appendChild(barItem);
+    });
+    container.appendChild(fragment);
+  }
+
+  function getAspectData(comments, filterSentimiento, isIntensity) {
+    let total = 0;
+    const aspStats = {};
+    comments.forEach(c => {
+      if (!c.es_valido) return;
+      if (c.sentimiento !== filterSentimiento) return;
+      total++;
+      const aspect = c.aspecto_normalizado || c.categoria || 'Otros';
+      if (!aspStats[aspect]) aspStats[aspect] = { count: 0, intSum: 0 };
+      aspStats[aspect].count++;
+      aspStats[aspect].intSum += (c.intensidad || 0);
+    });
+    
+    const aspects = Object.keys(aspStats);
+    let result = [];
+    if (isIntensity) {
+      result = aspects.map(a => ({ name: a, val: aspStats[a].count > 0 ? (aspStats[a].intSum / aspStats[a].count) : 0, count: aspStats[a].count }))
+        .filter(a => a.count > 0)
+        .sort((a, b) => b.val - a.val).slice(0, 5);
+    } else {
+      result = aspects.map(a => ({ name: a, val: aspStats[a].count }))
+        .filter(a => a.val > 0)
+        .sort((a, b) => b.val - a.val).slice(0, 5);
+    }
+    return { data: result, total };
+  }
+
+  function renderPositiveAspects(comments) {
+    const res = getAspectData(comments, 'positivo', false);
+    _renderList('aspectos-positivos-container', res.data, false, true);
+  }
+
+  function renderNegativeAspects(comments) {
+    const res = getAspectData(comments, 'negativo', false);
+    _renderList('aspectos-negativos-container', res.data, false, false);
+  }
+
+  function renderPositiveIntensity(comments) {
+    const res = getAspectData(comments, 'positivo', true);
+    _renderList('intensidad-positivos-container', res.data, true, true);
+  }
+
+  function renderNegativeIntensity(comments) {
+    const res = getAspectData(comments, 'negativo', true);
+    _renderList('intensidad-negativos-container', res.data, true, false);
+  }
+
+  function renderCareerNPSTable(comments) {
+    const tbody = $('tbody-nps-carrera');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    const carStats = {};
+    comments.forEach(c => {
+      const car = c.carrera || 'No Definida';
+      if (!carStats[car]) {
+        carStats[car] = {
+          totalIdeas: 0,
+          uniqueComments: new Set(),
+          prom: 0,
+          pas: 0,
+          det: 0
+        };
+      }
+      carStats[car].totalIdeas++;
+      const commentId = c.comentario_id_original || c.id || c.comentario_original;
+      if (commentId) {
+        if (!carStats[car].uniqueComments.has(commentId)) {
+          carStats[car].uniqueComments.add(commentId);
+          if (c.nps_score >= 9) carStats[car].prom++;
+          else if (c.nps_score >= 7) carStats[car].pas++;
+          else carStats[car].det++;
+        }
+      } else {
+        if (c.nps_score >= 9) carStats[car].prom++;
+        else if (c.nps_score >= 7) carStats[car].pas++;
+        else carStats[car].det++;
+      }
+    });
+
+    const sortedCars = Object.keys(carStats).sort((a, b) => 
+      (carStats[b].uniqueComments.size - carStats[a].uniqueComments.size) || 
+      (carStats[b].totalIdeas - carStats[a].totalIdeas)
+    );
+    
+    sortedCars.forEach(car => {
+      const s = carStats[car];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="color:var(--dark);">${_san.escapeHTML(car)}</td>
+        <td class="text-center">${s.uniqueComments.size}</td>
+        <td class="text-center">${s.totalIdeas}</td>
+        <td class="text-center" style="font-weight:600; color:var(--success-text);">${s.prom}</td>
+        <td class="text-center" style="font-weight:600; color:var(--dark);">${s.pas}</td>
+        <td class="text-center" style="font-weight:600; color:var(--ulima-red);">${s.det}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+
+  // Populate dynamic category selector
+  function populateExploradorTopicsDropdown(comentarios) {
+    const select = $('explorador-categoria');
+    if (!select) return;
+
+    const currentVal = select.value;
+    const categories = [...new Set(comentarios.filter(c => c.es_valido).map(c => c.categoria_padre || c.categoria))].filter(Boolean).sort();
+
+    select.innerHTML = '<option value="">Todos los temas</option>';
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      select.appendChild(opt);
+    });
+
+    if (categories.includes(currentVal)) {
+      select.value = currentVal;
+    }
+
+    if (select.__custom) {
+      select.__custom.update();
+    }
+  }
+
+  function resetExploradorFilters() {
+    const searchInput = $('explorador-search');
+    if (searchInput) searchInput.value = '';
+    
+    const catSelect = $('explorador-categoria');
+    if (catSelect) {
+      catSelect.value = '';
+      if (catSelect.__custom) catSelect.__custom.update();
+    }
+    
+    const sentSelect = $('explorador-sentimiento');
+    if (sentSelect) {
+      sentSelect.value = '';
+      if (sentSelect.__custom) sentSelect.__custom.update();
+    }
+    
+    applyExploradorFilters();
+  }
+
+  // Filter comments for the paginated list
+  function applyExploradorFilters() {
+    const searchVal = $('explorador-search')?.value.toLowerCase() || '';
+    const catVal = $('explorador-categoria')?.value || '';
+    const sentVal = $('explorador-sentimiento')?.value || '';
+
+    // First, apply the independent business filters for this specific block
+    const baseComments = getFilteredSubset('sent');
+
+    // Then, apply the explorador specific filters
+    state.filteredComments = baseComments.filter(c => {
+      const itemParent = c.categoria_padre || c.categoria;
+      if (catVal && itemParent !== catVal) return false;
+      if (sentVal && c.sentimiento !== sentVal) return false;
+
+      if (searchVal) {
+        const inOrig = c.fragmento_original?.toLowerCase().includes(searchVal);
+        const inCorregido = c.fragmento_mostrar?.toLowerCase().includes(searchVal);
+        const inCarrera = c.carrera?.toLowerCase().includes(searchVal);
+        const inCat = itemParent?.toLowerCase().includes(searchVal);
+        if (!inOrig && !inCorregido && !inCarrera && !inCat) return false;
+      }
+
+      return true;
+    });
+
+    state.currentPage = 0;
+    renderExplorerTable();
+    updateExploradorPagination();
+  }
+
+  // Render rows in the comments table
+  function renderExplorerTable() {
+    const tbody = $('tbody-explorador-comentarios');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    const start = state.currentPage * state.pageSize;
+    const end = Math.min(start + state.pageSize, state.filteredComments.length);
+    const pageComments = state.filteredComments.slice(start, end);
+
+    if (pageComments.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color:var(--gray-500); padding: 24px;">No se encontraron comentarios con los filtros actuales.</td></tr>';
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    pageComments.forEach(c => {
+      const tr = document.createElement('tr');
+
+      let sentBadge = '';
+      if (!c.es_valido) {
+        const motivoLabel = c.motivo_invalidez === 'spam_o_ruido' ? 'Ruido' : 'Sin opinión';
+        sentBadge = `<span style="background:var(--gray-200); color:var(--gray-600); border-radius:12px; padding:3px 8px; font-size:11px; font-weight:700;">${motivoLabel}</span>`;
+      } else {
+        let bg = 'var(--gray-200)', fg = 'var(--gray-700)', label = 'Neutro';
+        if (c.sentimiento === 'positivo') {
+          bg = 'var(--success-pastel)';
+          fg = 'var(--success-text)';
+          label = 'Positivo';
+        } else if (c.sentimiento === 'negativo') {
+          bg = 'var(--danger-pastel)';
+          fg = 'var(--ulima-red)';
+          label = 'Negativo';
+        }
+        sentBadge = `<span style="background:${bg}; color:${fg}; border-radius:12px; padding:3px 8px; font-size:11px; font-weight:700;">${label}</span>`;
+      }
+
+      let npsBg = 'var(--gray-200)', npsFg = 'var(--gray-700)';
+      if (c.nps_score >= 9) {
+        npsBg = 'var(--success-pastel)';
+        npsFg = 'var(--success-text)';
+      } else if (c.nps_score >= 7) {
+        npsBg = 'var(--warning-pastel)';
+        npsFg = 'var(--warning-text)';
+      } else {
+        npsBg = 'var(--danger-pastel)';
+        npsFg = 'var(--ulima-red)';
+      }
+      const npsBadge = `<span style="background:${npsBg}; color:${npsFg}; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">${c.nps_score}</span>`;
+
+      let safeCiclo = '-';
+      if (c.ciclo) {
+        safeCiclo = _fmt.formatCicloText(c.ciclo).replace(/\s*ciclo\s*/i, '');
+      }
+
+      const textoAbiertoText = c.comentario_original || c.fragmento_original;
+      const textoAbierto = _san.escapeHTML(textoAbiertoText);
+
+      const ideaAnalizadaText = c.fragmento_mostrar || c.fragmento_original;
+      const displayIdeaAnalizada = c.es_valido
+        ? _san.escapeHTML(ideaAnalizadaText)
+        : `<span style="color:var(--gray-400); font-style:italic;">[Invalidado: ${_san.escapeHTML(c.motivo_invalidez)}]</span> "${_san.escapeHTML(ideaAnalizadaText)}"`;
+
+      tr.innerHTML = `
+        <td style="color:var(--dark); text-align:left;">${_san.escapeHTML(c.carrera)}</td>
+        <td class="text-center" style="color:var(--text2);">${safeCiclo}</td>
+        <td class="text-center">${npsBadge}</td>
+        <td style="line-height:1.4; color:var(--text); text-align:left;">${textoAbierto}</td>
+        <td style="line-height:1.4; color:var(--text); text-align:left;">${displayIdeaAnalizada}</td>
+        <td style="color:var(--text2);">${_san.escapeHTML(c.categoria || '-')}</td>
+        <td class="text-center">${sentBadge}</td>
+        <td class="text-center" style="font-weight:600; color:var(--dark);">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>
+      `;
+      fragment.appendChild(tr);
+    });
+    tbody.appendChild(fragment);
+  }
+
+  function updateExploradorPagination() {
+    const total = state.filteredComments.length;
+    const prevBtn = $('explorador-btn-prev');
+    const nextBtn = $('explorador-btn-next');
+    const info = $('explorador-pagination-info');
+
+    if (!prevBtn || !nextBtn || !info) return;
+
+    const start = state.currentPage * state.pageSize;
+    const end = Math.min(start + state.pageSize, total);
+
+    prevBtn.disabled = state.currentPage === 0;
+    nextBtn.disabled = end >= total;
+
+    if (total === 0) {
+      info.textContent = 'Mostrando 0-0 de 0 comentarios';
+    } else {
+      info.textContent = `Mostrando ${start + 1}-${end} de ${total} comentarios`;
+    }
+  }
+
+  // Export: descarga el ZIP pre-generado por el ETL.
+  // Los ZIPs se guardan en ./exports/ (no en ./json/) para evitar
+  // que se desplieguen en GitHub Pages. Si el ZIP no está disponible,
+  // se muestra un modal estilizado en lugar de alert() nativo.
+  function exportCSV() {
+    const exp = state.exportConfig;
+    if (!exp || !exp.nombre_encuesta || !exp.fecha_generacion) {
+      _showExportModal('La exportación ZIP no está disponible para este período.');
+      return;
+    }
+    const zipName = `data_${exp.nombre_encuesta}_${exp.fecha_generacion}.zip`;
+    const zipUrl = `./exports/${zipName}`;
+    // Verificar disponibilidad del ZIP antes de iniciar descarga.
+    // Si el ZIP no se despliega en GitHub Pages, mostrar modal informativo.
+    fetch(zipUrl, { method: 'HEAD' })
+      .then(resp => {
+        if (resp.ok) {
+          const link = document.createElement('a');
+          link.setAttribute('href', zipUrl);
+          link.setAttribute('download', zipName);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          _showExportModal('La exportación ZIP no está disponible para este período.');
+        }
+      })
+      .catch(() => {
+        _showExportModal('La exportación ZIP no está disponible para este período.');
+      });
+  }
+
+  // Modal estilizado para mensajes de exportación (reemplaza alert() nativo).
+  // Cumple la regla ESLint no-alert y mejora la UX.
+  function _showExportModal(message) {
+    // Reutilizar overlay existente si ya está en el DOM
+    let overlay = document.getElementById('export-modal-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'export-modal-overlay';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-labelledby', 'export-modal-title');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+      const modal = document.createElement('div');
+      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Roboto,sans-serif;';
+      const title = document.createElement('h3');
+      title.id = 'export-modal-title';
+      title.textContent = 'Exportación no disponible';
+      title.style.cssText = 'margin:0 0 12px 0;font-size:16px;color:#111827;';
+      const body = document.createElement('p');
+      body.textContent = message;
+      body.style.cssText = 'margin:0 0 20px 0;font-size:14px;color:#6B7280;line-height:1.5;';
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'Cerrar';
+      closeBtn.setAttribute('type', 'button');
+      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size:14px;cursor:pointer;font-family:Roboto,sans-serif;';
+      closeBtn.addEventListener('click', () => overlay.remove());
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+      modal.appendChild(title);
+      modal.appendChild(body);
+      modal.appendChild(closeBtn);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      // Focus inicial en el boton para accesibilidad por teclado
+      closeBtn.focus();
+    }
+  }
+
+  // Set up event listeners
+  function setupExploradorListeners() {
+    const searchInput = $('explorador-search');
+    if (searchInput && !searchInput.dataset.listener) {
+      searchInput.addEventListener('input', () => {
+        applyExploradorFilters();
+      });
+      searchInput.dataset.listener = 'true';
+    }
+
+    const _cs = window.SurveyCustomSelect;
+
+    const catSelect = $('explorador-categoria');
+    if (catSelect && !catSelect.__custom && _cs) {
+      catSelect.__custom = _cs.create(catSelect, () => {
+        applyExploradorFilters();
+      });
+    }
+
+    const sentSelect = $('explorador-sentimiento');
+    if (sentSelect && !sentSelect.__custom && _cs) {
+      sentSelect.__custom = _cs.create(sentSelect, () => {
+        applyExploradorFilters();
+      });
+    }
+
+
+
+    const exportBtn = $('explorador-export-csv');
+    if (exportBtn && !exportBtn.dataset.listener) {
+      exportBtn.addEventListener('click', () => {
+        exportCSV();
+      });
+      exportBtn.dataset.listener = 'true';
+    }
+
+    const resetBtn = $('explorador-reset');
+    if (resetBtn && !resetBtn.dataset.listener) {
+      resetBtn.addEventListener('click', () => {
+        resetExploradorFilters();
+      });
+      resetBtn.dataset.listener = 'true';
+    }
+
+    const prevBtn = $('explorador-btn-prev');
+    if (prevBtn && !prevBtn.dataset.listener) {
+      prevBtn.addEventListener('click', () => {
+        if (state.currentPage > 0) {
+          state.currentPage--;
+          renderExplorerTable();
+          updateExploradorPagination();
+        }
+      });
+      prevBtn.dataset.listener = 'true';
+    }
+
+    const nextBtn = $('explorador-btn-next');
+    if (nextBtn && !nextBtn.dataset.listener) {
+      nextBtn.addEventListener('click', () => {
+        const total = state.filteredComments.length;
+        if ((state.currentPage + 1) * state.pageSize < total) {
+          state.currentPage++;
+          renderExplorerTable();
+          updateExploradorPagination();
+        }
+      });
+      nextBtn.dataset.listener = 'true';
+    }
+  }
+
+  function getFilteredSubset(prefix) {
+    if (!state.originalComments) return [];
+    let filtroFac = $(`filter-facultad-${prefix}`)?.value || '';
+    let filtroCar = $(`filter-carrera-${prefix}`)?.value || '';
+    const filtroCiclo = _dh.getSelectedValues($(`filter-ciclo-${prefix}`)) || '';
+    
+    // Defensa extra contra valores residuales del select original (placeholders sin value vacío)
+    if (filtroFac.toLowerCase().includes('todas')) filtroFac = '';
+    if (filtroCar.toLowerCase().includes('todas')) filtroCar = '';
+
+    return state.originalComments.filter(c => {
+      if (filtroCar && c.carrera !== filtroCar) return false;
+      if (filtroFac) {
+        if (esEstudiosGen(filtroFac)) {
+          const cycles = filtroCiclo ? (Array.isArray(filtroCiclo) ? filtroCiclo : [filtroCiclo]) : CICLOS_ESTUDIOS_GENERALES;
+          if (!cycles.includes(c.ciclo)) return false;
+        } else if (c.facultad !== filtroFac) {
+          return false;
+        }
+      } else if (filtroCiclo) {
+        const selectedCycles = Array.isArray(filtroCiclo) ? filtroCiclo : [filtroCiclo];
+        if (selectedCycles.length > 0 && !selectedCycles.includes(c.ciclo)) return false;
+      }
+      return true;
+    });
+  }
+
+  function init(sentimientoData, totalRespuestasGlobal, exportConfig, npsData) {
+    if (!sentimientoData) return;
+
+    // Cargar comentarios directamente desde la raíz del JSON
+    state.originalComments = sentimientoData.comentarios || [];
+    state.sentimentCache = sentimientoData;
+    state.totalRespuestasGlobal = totalRespuestasGlobal;
+    state.exportConfig = exportConfig || null;
+  state.npsData = npsData || null;
+
+    const kpiGrid = $('sentiment-kpis');
+    if (kpiGrid && (!sentimientoData.topicos || !sentimientoData.topicos.length)) {
+      kpiGrid.innerHTML = `<p style="color:var(--gray-500);font-size:13px;padding:20px 0;">
+        No hay datos de análisis semántico disponibles para este período.</p>`;
+    }
+
+    // Renderizar insights IA (Fase 8)
+    renderInsightsIA(sentimientoData);
+  }
+
+  function updateMacro() {
+    const subset = getFilteredSubset('sent');
+    renderMetricCards(subset, state.sentimentCache, state.totalRespuestasGlobal, state.npsData);
+    renderSentimentDistribution(subset);
+    renderNPSSegmentBars(subset);
+    renderTopCategoriesBars(subset);
+  }
+
+  function updateAspectos() {
+    const subset = getFilteredSubset('sent');
+    renderPositiveAspects(subset);
+    renderNegativeAspects(subset);
+    renderPositiveIntensity(subset);
+    renderNegativeIntensity(subset);
+  }
+
+  function updateNpsCarrera() {
+    const subset = getFilteredSubset('sent');
+    renderCareerNPSTable(subset);
+  }
+
+  function updateDetalle() {
+    const subset = getFilteredSubset('sent');
+    populateExploradorTopicsDropdown(subset);
+    setupExploradorListeners();
+    applyExploradorFilters();
+  }
+
+  /**
+   * Renderiza los insights IA (global + por categoría padre) en el div huérfano
+   * #insight-cualitativo y #insight-cualitativo-categorias.
+   * Fase 8: conecta el campo insights_ia del JSON (generado por insights_generator.py)
+   * con el frontend que antes estaba desconectado.
+   */
+  function renderInsightsIA(sentimientoData) {
+    const insights = sentimientoData && sentimientoData.insights_ia;
+    const divGlobal = $('insight-cualitativo');
+    const divCategorias = $('insight-cualitativo-categorias');
+
+    // Fallback: si no hay insights o no hay div, mostrar mensaje
+    if (!divGlobal) return;
+
+    if (!insights || (!insights.global && !insights.por_categoria_padre)) {
+      divGlobal.textContent = 'No hay análisis cualitativo disponible para este período.';
+      if (divCategorias) divCategorias.innerHTML = '';
+      return;
+    }
+
+    // Renderizar insight global (escape por seguridad)
+    divGlobal.textContent = insights.global || 'Análisis no disponible.';
+
+    // Renderizar insights por categoría padre
+    if (!divCategorias) return;
+    divCategorias.innerHTML = '';
+
+    const porCat = insights.por_categoria_padre || {};
+    const categorias = Object.keys(porCat);
+
+    if (categorias.length === 0) {
+      return;
+    }
+
+    categorias.forEach((cat) => {
+      const texto = porCat[cat];
+      if (!texto) return;
+
+      const item = document.createElement('div');
+      item.style.cssText = 'margin-top:10px;padding:8px 12px;background:var(--surface, #F4F8FC);border-left:3px solid var(--ulima-orange, #FF5117);border-radius:4px;';
+
+      const titulo = document.createElement('div');
+      titulo.style.cssText = 'font-size:12px;font-weight:600;color:var(--text1, #1A2B40);margin-bottom:4px;';
+      titulo.textContent = cat;
+
+      const desc = document.createElement('div');
+      desc.style.cssText = 'font-size:12px;color:var(--text2, #6878A0);line-height:1.5;';
+      desc.textContent = texto;
+
+      item.appendChild(titulo);
+      item.appendChild(desc);
+      divCategorias.appendChild(item);
+    });
+  }
+
+  return {
+    init,
+    updateMacro,
+    updateAspectos,
+    updateNpsCarrera,
+    updateDetalle,
+    applyExploradorFilters,
+    renderInsightsIA
+  };
+})();

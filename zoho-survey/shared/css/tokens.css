@@ -1,0 +1,143 @@
+/* ============================================================
+   TOKENS — Design tokens y variables CSS
+   Fuente canónica de colores, tipografía, espaciado y estados.
+   ============================================================ */
+
+:root {
+  /* ── Colores institucionales ── */
+  --ulima-orange: #FF5117;
+  --ulima-orange-rgb: 255, 81, 23;
+  --ulima-orange-soft: rgba(var(--ulima-orange-rgb), 0.15);
+  --ulima-red: #FF0000;
+  --ulima-blue: #2563EB;
+  --ulima-blue-soft: rgba(37, 99, 235, 0.12);
+  --ulima-gray: #97999B;
+
+  /* ── Escala de grises ── */
+  --gray-900: #111827;
+  --gray-000: #000000;
+  --gray-800: #1F2937;
+  --gray-700: #374151;
+  --gray-600: #4B5563;
+  --gray-500: #6B7280;
+  --gray-400: #9CA3AF;
+  --gray-300: #D1D5DB;
+  --gray-200: #E5E7EB;
+  --gray-100: #F3F4F6;
+  --gray-50: #F9FAFB;
+  --white: #FFFFFF;
+  --black: #000000;
+
+  /* ── Estados semánticos ── */
+  --success-pastel: #ebfff5;
+  --success-text: #065F46;
+  --warning-pastel: #FEF3C7;
+  --warning-text: #92400E;
+  --danger-pastel: #FEE2E2;
+  --danger-text: #991B1B;
+
+  /* ── Tipografía ── */
+  --font-family-primary: 'Roboto', sans-serif;
+  --font-family-display: 'Roboto', sans-serif;
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+  --font-black: 900;
+
+  /* ── Accesibilidad ── */
+  --focus-outline: 2px solid var(--ulima-orange);
+  --focus-outline-offset: 2px;
+
+  /* ── Splash ── */
+  --splash-bg: #F37021;
+
+  /* ── Capas z-index ── */
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-filter-open: 1040;
+  --z-filter-panel: 1051;
+  --z-tooltip: 1100;
+  --z-overlay: 9998;
+  --z-skip-link: 9999;
+  --z-splash: 99999;
+
+  /* ── Espaciado Utilitario ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 48px;
+  --space-5xl: 68px;
+
+  --brand: var(--ulima-orange);
+  --brand-dark: #cc3e0e;
+  --brand-light: #ff7a4d;
+  --ink: #1a1410;
+  --deep: #F37021;
+  --muted: #6b5e55;
+  --surface: #faf8f6;
+  --panel-bg: #2a221c;
+
+  /* ── Escala Tipográfica ── */
+  --text-xxs: 8px;
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-md: 12px;
+  --text-lg: 13px;
+  --text-xl: 14px;
+  --text-2xl: 18px;
+  --text-3xl: 24px;
+  --text-4xl: 36px;
+
+  /* ── Radios de Borde ── */
+    --radius-xs: 2px;
+    --radius-sm: 3px;
+    --radius-md: 4px;
+    --radius-lg: 8px;
+    --radius-full: 9999px;
+
+    /* ── Layout Portal ── */
+    --header-h: 56px;
+    --sidebar-w: 288px;
+    --footer-h: 44px;
+
+    /* ── Colores Accent (portal) ── */
+    --emerald: #10B981;
+    --emerald-50: #ecfdf5;
+    --emerald-100: #d1fae5;
+    --teal: #14B8A6;
+    --teal-50: #f0fdfa;
+    --amber: #F59E0B;
+    --amber-50: #fffbeb;
+    --amber-100: #fef3c7;
+    --rose: #F43F5E;
+    --rose-50: #fff1f2;
+    --rose-100: #ffe4e6;
+    --orange: #FF5117;
+    --sky: #0EA5E9;
+    --sky-50: #f0f9ff;
+    --violet: #8B5CF6;
+    --violet-50: #f5f3ff;
+
+    /* ── Sombras ── */
+    --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-dropdown: 0 8px 20px rgba(15, 23, 42, 0.08);
+    --shadow-dropdown-dark: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  /* ── Niveles de satisfacción (Radar y KPIs) ── */
+  --satisfaction-high: var(--gray-700);
+  --satisfaction-medium: var(--gray-400);
+  --satisfaction-low: var(--ulima-red);
+
+  /* ── Fondos semánticos de sentimiento ── */
+  --positive-color: #00B04F;
+  --sentiment-neg-bg: var(--danger-pastel);
+  --sentiment-pos-bg: var(--success-pastel);
+  --sentiment-neu-bg: var(--warning-pastel);
+}

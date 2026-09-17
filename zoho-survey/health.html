@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Check — Survey Storytelling</title>
+<style>
+  :root {
+    --green: #16a34a;
+    --red: #dc2626;
+    --orange: #f59e0b;
+    --gray: #6b7280;
+    --bg: #f9fafb;
+    --card-bg: #fff;
+    --text: #111827;
+    --border: #e5e7eb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; }
+  .subtitle { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+  .summary {
+    display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+  }
+  .summary-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    flex: 1 1 180px;
+    min-width: 140px;
+    text-align: center;
+  }
+  .summary-card .value { font-size: 28px; font-weight: 700; }
+  .summary-card .label { font-size: 12px; color: var(--gray); margin-top: 4px; }
+  .ok { color: var(--green); }
+  .warn { color: var(--orange); }
+  .err { color: var(--red); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+  .status-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .dot-ok { background: var(--green); }
+  .dot-err { background: var(--red); }
+  .dot-warn { background: var(--orange); }
+  .dot-pending { background: var(--gray); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .info { font-size: 12px; color: var(--gray); margin-top: 24px; }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>🏥 Health Check — Survey Storytelling</h1>
+<p class="subtitle">Verificación de integridad de dashboards y contratos JSON</p>
+
+<div class="summary">
+  <div class="summary-card">
+    <div class="value" id="sum-total">—</div>
+    <div class="label">Periodos</div>
+  </div>
+  <div class="summary-card">
+    <div class="value ok" id="sum-ok">—</div>
+    <div class="label">✅ Saludables</div>
+  </div>
+  <div class="summary-card">
+    <div class="value err" id="sum-err">—</div>
+    <div class="label">❌ Con errores</div>
+  </div>
+</div>
+
+<h2>Dashboards por periodo</h2>
+<table>
+  <thead>
+    <tr><th>Estado</th><th>Tipo</th><th>Periodo</th><th>HTML</th><th>JSONs</th><th>Último build</th></tr>
+  </thead>
+  <tbody id="results-body">
+    <tr><td colspan="6" style="text-align:center;padding:24px;">Verificando...</td></tr>
+  </tbody>
+</table>
+
+<p class="info">
+  <a href="index.html">← Volver al portal de encuestas</a> &nbsp;|&nbsp;
+  Última verificación: <span id="check-time">—</span>
+</p>
+
+<script>
+'use strict';
+
+const SURVEY_TYPES = [
+  { id: 'undergraduate', label: 'Estudiantes Pregrado', path: 'students/undergraduate' },
+  { id: 'graduate', label: 'Graduados Pregrado', path: 'students/graduate' },
+  { id: 'postgraduate', label: 'Estudiantes Posgrado', path: 'students/postgraduate' },
+  { id: 'alumni-ug', label: 'Egresados Pregrado', path: 'alumni/undergraduate' },
+  { id: 'alumni-pg', label: 'Egresados Posgrado', path: 'alumni/postgraduate' },
+  { id: 'faculty-ug', label: 'Docentes Pregrado', path: 'facultystaff/undergraduate' },
+  { id: 'faculty-pg', label: 'Docentes Posgrado', path: 'facultystaff/postgraduate' },
+  { id: 'nonfaculty', label: 'No Docentes', path: 'nonfacultystaff' },
+  { id: 'employers', label: 'Empleadores', path: 'employers' }
+];
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const REQUIRED_JSON_FILES = [
+  'dashboard_data.json', 'filtros.json', 'dimensiones.json',
+  'ids.json', 'nps_ciclo_carrera.json', 'csat_ciclo_carrera.json',
+  'sentimiento.json'
+];
+
+async function checkUrl(url) {
+  try {
+    const resp = await fetch(url, { method: 'HEAD' });
+    return resp.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function getRelativePath(surveyPath, periodId) {
+  return surveyPath + '/' + periodId;
+}
+
+async function run() {
+  const tbody = document.getElementById('results-body');
+  let totalOk = 0, totalErr = 0, totalPeriods = 0;
+  let rowsHtml = '';
+
+  for (const survey of SURVEY_TYPES) {
+    // Fetch periodos.json
+    let periods = [];
+    try {
+      const resp = await fetch(survey.path + '/periodos.json');
+      if (resp.ok) {
+        periods = await resp.json();
+      }
+    } catch (e) {
+      // Sin periodos o archivo no existe — tipo sin datos aún
+    }
+
+    if (periods.length === 0) {
+      rowsHtml += `<tr>
+        <td><span class="status-dot dot-warn"></span>Sin datos</td>
+        <td>${esc(survey.label)}</td>
+        <td colspan="4" style="color:var(--gray)">No hay periodos configurados</td>
+      </tr>`;
+      continue;
+    }
+
+    for (const period of periods) {
+      totalPeriods++;
+      const relPath = getRelativePath(survey.path, period.id);
+      const htmlOk = await checkUrl(relPath + '/index.html');
+
+      let jsonErrors = 0;
+      let jsonTotal = 0;
+      for (const jsonFile of REQUIRED_JSON_FILES) {
+        jsonTotal++;
+        const ok = await checkUrl(relPath + '/json/' + jsonFile);
+        if (!ok) jsonErrors++;
+      }
+
+      const allOk = htmlOk && jsonErrors === 0;
+      if (allOk) totalOk++; else totalErr++;
+
+      let statusHtml, statusLabel;
+      if (allOk) {
+        statusHtml = '<span class="status-dot dot-ok"></span>';
+        statusLabel = 'OK';
+      } else {
+        statusHtml = '<span class="status-dot dot-err"></span>';
+        statusLabel = htmlOk ? 'JSONs faltantes' : 'HTML faltante';
+      }
+
+      rowsHtml += `<tr>
+        <td>${statusHtml}${statusLabel}</td>
+        <td>${esc(survey.label)}</td>
+        <td><strong>${esc(period.label || period.id)}</strong>${period.isNew ? ' <span style="color:var(--orange);font-size:11px;">★ NUEVO</span>' : ''}</td>
+        <td>${htmlOk ? '<span class="ok">✓</span>' : '<span class="err">✗</span>'}</td>
+        <td>${jsonErrors === 0 ? '<span class="ok">✓ ' + jsonTotal + '/' + jsonTotal + '</span>' : '<span class="err">✗ ' + jsonErrors + ' errores</span>'}</td>
+        <td style="color:var(--gray)">—</td>
+      </tr>`;
+    }
+  }
+
+  tbody.innerHTML = rowsHtml || '<tr><td colspan="6" style="text-align:center;padding:24px;">Sin datos disponibles</td></tr>';
+
+  document.getElementById('sum-total').textContent = totalPeriods;
+  document.getElementById('sum-ok').textContent = totalOk;
+  document.getElementById('sum-err').textContent = totalErr;
+  document.getElementById('check-time').textContent = new Date().toLocaleString('es-PE');
+}
+
+run().catch(err => {
+  document.getElementById('results-body').innerHTML =
+    '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--red)">Error: ' + esc(err && err.message ? err.message : err) + '</td></tr>';
+});
+</script>
+</body>
+</html>

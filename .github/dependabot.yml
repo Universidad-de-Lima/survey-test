@@ -1,0 +1,37 @@
+# Dependabot auto-updates
+# See: https://docs.github.com/en/code-security/dependabot
+
+version: 2
+updates:
+  # Track GitHub Actions versions
+  # NOTA: Solo actualizaciones minor/patch para evitar breaking changes
+  # Las major updates requieren revisión manual del workflow
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    ignore:
+      # Pin major versions to avoid breaking changes
+      - dependency-name: "actions/checkout"
+        versions: [">=6"]
+      - dependency-name: "actions/cache"
+        versions: [">=5"]
+      - dependency-name: "actions/setup-node"
+        versions: [">=5"]
+      - dependency-name: "actions/upload-pages-artifact"
+        versions: [">=6"]
+    groups:
+      actions:
+        patterns:
+          - "actions/*"
+          - "github/*"
+
+  # Track npm dependencies (dev only)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    versioning-strategy: increase
+    open-pull-requests-limit: 5

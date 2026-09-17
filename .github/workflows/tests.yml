@@ -1,0 +1,138 @@
+name: Tests
+
+on:
+  pull_request:
+    paths:
+      - 'zoho-survey/scripts/**'
+      - 'zoho-survey/shared/js/**'
+      - 'zoho-survey/students/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.github/workflows/tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'zoho-survey/scripts/**'
+      - 'zoho-survey/shared/js/**'
+      - 'zoho-survey/students/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.github/workflows/tests.yml'
+
+jobs:
+  python-tests:
+    name: Python unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        # Sin SpaCy/HuggingFace desde v3.2.0 (motor legacy eliminado).
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Ruff linter (Python style)
+        # Linting Python con ruff. Configuracion en ruff.toml.
+        # Reglas: pycodestyle (E/W) + Pyflakes (F) + isort (I).
+        # Fase 2: informativo (no bloquea). Fase 3: se hara estricto
+        # tras auto-fixear las 211 violaciones existentes.
+        run: |
+          pip install ruff
+          ruff check zoho-survey/scripts/ --exit-zero || true
+          ruff format --check zoho-survey/scripts/ --exit-zero || true
+
+      - name: Run Python tests (unittest)
+        working-directory: zoho-survey/scripts
+        run: python -m unittest discover tests/ -v
+
+      - name: Validate JSON contracts (schema Draft-07 + invariantes)
+        run: python zoho-survey/scripts/validate_generated_json.py
+
+  js-tests:
+    name: JavaScript unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install JS dependencies (jsdom for DOM tests)
+        run: npm install
+
+      - name: Run ESLint (JS style)
+        # Linting JS con ESLint. Configuracion en .eslintrc.json.
+        # Reglas: no-unused-vars, no-undef, no-alert, no-implied-eval, no-var.
+        # Fase 2: informativo (no bloquea). Fase 3: se hara estricto.
+        run: |
+          npx eslint zoho-survey/shared/js/ tests/ --no-eslintrc --config .eslintrc.json || true
+
+      - name: Verify JS syntax (all modules)
+        run: |
+          for f in zoho-survey/shared/js/config/*.js \
+                   zoho-survey/shared/js/utils/*.js \
+                   zoho-survey/shared/js/components/*.js \
+                   zoho-survey/shared/js/portal/*.js \
+                   zoho-survey/shared/js/dashboard.js \
+                   zoho-survey/shared/js/portal.js \
+                   zoho-survey/shared/js/portal-upload.js \
+                   zoho-survey/shared/js/portal-upload-ui.js \
+                   zoho-survey/shared/js/bridge-local-dev.js \
+                   tests/test-framework.js \
+                   tests/unit/*.js; do
+            node -c "$f" || exit 1
+          done
+          echo "✓ Todos los archivos JS pasaron verificación de sintaxis"
+
+      - name: Run JS unit tests (Node)
+        run: |
+          node -e "
+          global.window = { location: { hostname: 'localhost' } };
+          global.document = {
+            getElementById: () => null,
+            querySelectorAll: () => [],
+            addEventListener: () => {},
+            createElement: () => ({ style:{}, classList:{add:()=>{}}, setAttribute:()=>{}, appendChild:()=>{} }),
+          };
+          require('./zoho-survey/shared/js/config/constants.js');
+          require('./zoho-survey/shared/js/utils/formatters.js');
+          require('./zoho-survey/shared/js/utils/metrics.js');
+          require('./zoho-survey/shared/js/utils/sanitizer.js');
+          require('./zoho-survey/shared/js/utils/dom-helpers.js');
+          require('./zoho-survey/shared/js/components/tooltip.js');
+          require('./zoho-survey/shared/js/components/custom-select.js');
+          require('./zoho-survey/shared/js/components/multiselect.js');
+          require('./zoho-survey/shared/js/components/filter-controller.js');
+          require('./zoho-survey/shared/js/components/sentiment-view.js');
+          require('./zoho-survey/shared/js/portal-upload.js');
+          require('./tests/test-framework.js');
+          require('./tests/unit/test-config.js');
+          require('./tests/unit/test-formatters.js');
+          require('./tests/unit/test-metrics.js');
+          require('./tests/unit/test-sanitizer.js');
+          require('./tests/unit/test-insights-ia.js');
+          require('./tests/unit/test-sentiment-view.js');
+          require('./tests/unit/test-filter-controller.js');
+          require('./tests/unit/test-upload-validator.js');
+          const r = window.TestFramework.summary();
+          console.log('Tests: ' + r.passed + ' passed, ' + r.failed + ' failed, ' + r.total + ' total');
+          if (r.failed > 0) {
+            r.results.filter(x => x.type === 'fail').forEach(t => console.log('FAIL: ' + t.name + ' -> ' + t.error));
+            process.exit(1);
+          }
+          console.log('✓ Todos los tests JS pasaron');
+          "
+
+      - name: Run JS DOM tests (jsdom)
+        run: node tests/unit/test-dom.js

@@ -1,0 +1,233 @@
+/* ============================================================
+   SECTIONS — Estilos específicos por sección y responsive
+   Incluye: splash, tablas específicas, media queries, scrollbars
+   ============================================================ */
+
+/* ── Splash screen ── */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-splash);
+  background: var(--splash-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash img {
+  max-width: 300px;
+}
+
+/* ── Centrado de encabezados en tablas específicas ── */
+#tabla-preguntas th.text-center,
+#tabla-detalle th.text-center,
+#tabla-visibilidad th.text-center,
+#tabla-nps-carrera th.text-center {
+  text-align: center !important;
+}
+
+/* ── Top 3 Box / CATEGORÍA / NO CONOZCO / NO UTILIZO en una sola línea ── */
+#tabla-preguntas td:nth-child(2),
+#tabla-preguntas td:nth-child(3),
+#tabla-visibilidad td:nth-child(2),
+#tabla-visibilidad td:nth-child(3) {
+  white-space: nowrap;
+}
+
+/* ── Custom scrollbars para tablas en móvil ── */
+/* (styles moved to .table-scroll in components.css) */
+
+/* ============================================================
+   MEDIA QUERIES
+   ============================================================ */
+
+/* ── ≤1100px: Filtros compactos ── */
+@media (max-width: 1100px) {
+  .filter-container {
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    overflow: visible;
+  }
+  .filter-group {
+    gap: var(--space-xs);
+  }
+  .filter-label {
+    font-size: 10px;
+    letter-spacing: 0.3px;
+  }
+  .filter-select,
+  .filter-custom-toggle,
+  .filter-multiselect-toggle {
+    font-size: 11px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .filter-reset {
+    font-size: 10px;
+    padding: 5px 10px;
+    min-width: 72px;
+  }
+}
+
+/* ── ≤768px: Tablet ── */
+@media (max-width: 768px) {
+  #tabla-detalle {
+    min-width: 900px;
+  }
+  #tabla-preguntas,
+  #tabla-visibilidad,
+  #tabla-sentimiento-carrera {
+    min-width: 750px;
+  }
+  .sticky-header {
+    flex-direction: column;
+    padding: 8px 12px;
+    gap: var(--space-xs);
+  }
+  .header-brand {
+    gap: var(--space-sm);
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+  .nav-links a { font-size: 9px; padding: 4px 8px; }
+  .main-content { padding: var(--space-lg) var(--space-md); }
+  .section { margin-bottom: var(--space-3xl); }
+  .section-title { font-size: 15px; }
+  .radar-svg text {
+    font-size: 12px !important;
+    font-weight: var(--font-medium) !important;
+  }
+  .filter-container {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+  .filter-group {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 140px;
+  }
+  .filter-ciclo-actions {
+    flex: 1 1 100%;
+    gap: var(--space-sm);
+  }
+  .filter-ciclo-actions .filter-group {
+    flex: 1 1 auto;
+  }
+  .filter-reset {
+    margin-left: auto;
+  }
+  .filter-select,
+  .filter-custom-toggle,
+  .filter-multiselect-toggle {
+    font-size: 10px;
+    padding: 4px 24px 4px 8px;
+  }
+  .filter-reset {
+    flex: 0 0 auto;
+    min-width: 64px;
+    padding: 4px 8px;
+    text-align: center;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  .bar-label { width: 140px; font-size: 10px; }
+  .bar-container {
+    margin-right: 40px;
+  }
+  .bar-value {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dark) !important;
+    margin-left: 6px;
+    min-width: auto;
+    font-size: 10px;
+  }
+  .bar-value::before, .bar-value-outside::before {
+    display: none !important;
+  }
+  .card { padding: var(--space-lg); }
+  .card-title { font-size: 12px; }
+  .insight-box { padding: var(--space-md) var(--space-lg); }
+  .footer-logo-img { width: 180px; }
+  .splash img { max-width: 200px; }
+  .subsection-title { font-size: 13px; }
+  .table-scroll {
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .survey-table th {
+    top: 0;
+  }
+  :root {
+    --sticky-header-h: 38px; /* Taller vertical menu in tablet */
+  }
+}
+
+/* ── ≤480px: Mobile ── */
+@media (max-width: 480px) {
+  .sticky-header { padding: var(--space-xs) var(--space-sm); }
+  .nav-links a { font-size: 8px; padding: 3px 6px; }
+  .main-content { padding: var(--space-md) var(--space-sm); }
+  .section-title { font-size: 13px; }
+  .filter-group {
+    flex: 1 1 100%;
+  }
+  .radar-svg text {
+    font-size: 14px !important;
+    font-weight: var(--font-bold) !important;
+  }
+  .bar-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    margin-bottom: var(--space-md);
+  }
+  .bar-label {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+    min-height: auto;
+    font-size: 10px;
+  }
+  .bar-container {
+    margin-right: 40px;
+  }
+  .bar-value {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dark) !important;
+    margin-left: 6px;
+    min-width: auto;
+  }
+  .bar-value::before {
+    display: none !important;
+  }
+  .bar-value-outside::before {
+    display: none !important;
+  }
+  .csat-bar { font-size: 9px; }
+  .legend { font-size: 9px; }
+  .footer-logo-img { width: 140px; }
+  .splash img { max-width: 160px; }
+  .table-scroll {
+    max-height: 300px;
+  }
+  :root {
+    --sticky-header-h: 26px; /* Compact mobile menu */
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "survey-test",
+  "version": "3.8.2",
+  "private": true,
+  "description": "Dashboard estático de encuestas de satisfacción — Universidad de Lima",
+  "scripts": {
+    "build:json": "cd zoho-survey/students && python ../scripts/build_json.py",
+    "validate:json": "python zoho-survey/scripts/validate_generated_json.py undergraduate graduate",
+    "start": "python -m http.server 8080",
+    "dev": "python -m http.server 8080",
+    "test:js": "node -e \"global.window={location:{hostname:'localhost'}};global.document={getElementById:()=>null,querySelectorAll:()=>[],addEventListener:()=>{},createElement:()=>({style:{},classList:{add:()=>{}},setAttribute:()=>{},appendChild:()=>{}})};require('./zoho-survey/shared/js/config/constants.js');require('./zoho-survey/shared/js/utils/formatters.js');require('./zoho-survey/shared/js/utils/metrics.js');require('./zoho-survey/shared/js/utils/sanitizer.js');require('./zoho-survey/shared/js/utils/dom-helpers.js');require('./zoho-survey/shared/js/components/tooltip.js');require('./zoho-survey/shared/js/components/custom-select.js');require('./zoho-survey/shared/js/components/multiselect.js');require('./zoho-survey/shared/js/components/filter-controller.js');require('./zoho-survey/shared/js/components/sentiment-view.js');require('./zoho-survey/shared/js/portal-upload.js');require('./tests/test-framework.js');require('./tests/unit/test-config.js');require('./tests/unit/test-formatters.js');require('./tests/unit/test-metrics.js');require('./tests/unit/test-sanitizer.js');require('./tests/unit/test-sentiment-view.js');require('./tests/unit/test-filter-controller.js');require('./tests/unit/test-insights-ia.js');require('./tests/unit/test-upload-validator.js');const r=window.TestFramework.summary();console.log('Tests: '+r.passed+' passed, '+r.failed+' failed, '+r.total+' total');if(r.failed>0){r.results.filter(x=>x.type==='fail').forEach(t=>console.log('FAIL: '+t.name+' -> '+t.error));process.exit(1);}\"",
+    "test:js:dom": "node tests/unit/test-dom.js",
+    "test:py": "cd zoho-survey/scripts && python -m unittest discover tests/",
+    "test:all": "npm run test:js && npm run test:js:dom && npm run test:py"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.0",
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

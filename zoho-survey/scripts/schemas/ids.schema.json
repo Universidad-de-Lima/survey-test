@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/ids.json",
+  "title": "Conteos por Facultad/Carrera/Ciclo",
+  "description": "Conteo de respuestas válidas agregadas por facultad/carrera/ciclo. La suma total debe ser > 0. Fuente de verdad: build_json.py.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["facultad", "carrera", "ciclo", "total"],
+    "additionalProperties": false,
+    "properties": {
+      "facultad": { "type": "string", "minLength": 1 },
+      "carrera": { "type": "string", "minLength": 1 },
+      "ciclo": { "type": "string" },
+      "total": { "type": "integer", "minimum": 0 }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/nps_ciclo_carrera.json",
+  "title": "NPS por Ciclo y Carrera",
+  "description": "Distribución NPS agregada por facultad/carrera/ciclo. Claves en minúsculas (canónicas). Fuente de verdad: build_json.py.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["facultad", "carrera", "ciclo", "promotores", "pasivos", "detractores"],
+    "additionalProperties": false,
+    "properties": {
+      "facultad": { "type": "string", "minLength": 1 },
+      "carrera": { "type": "string", "minLength": 1 },
+      "ciclo": { "type": "string" },
+      "promotores": { "type": "integer", "minimum": 0 },
+      "pasivos": { "type": "integer", "minimum": 0 },
+      "detractores": { "type": "integer", "minimum": 0 },
+      "score": { "type": "number", "minimum": -100, "maximum": 100 }
+    }
+  }
+}

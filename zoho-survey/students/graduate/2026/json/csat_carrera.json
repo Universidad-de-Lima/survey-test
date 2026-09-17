@@ -1,0 +1,110 @@
+[
+  {
+    "carrera": "Administración",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 48,
+    "Muy satisfecho": 22,
+    "Satisfecho": 11,
+    "Insatisfecho": 2,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 97.59
+  },
+  {
+    "carrera": "Arquitectura",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 7,
+    "Muy satisfecho": 9,
+    "Satisfecho": 6,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Comunicación",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 62,
+    "Muy satisfecho": 41,
+    "Satisfecho": 34,
+    "Insatisfecho": 1,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 99.28
+  },
+  {
+    "carrera": "Contabilidad y Finanzas",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 8,
+    "Muy satisfecho": 2,
+    "Satisfecho": 2,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Ingeniería Ambiental",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 1,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Ingeniería Civil",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 1,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Ingeniería Industrial",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 72,
+    "Muy satisfecho": 21,
+    "Satisfecho": 14,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Ingeniería de Sistemas",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 15,
+    "Muy satisfecho": 10,
+    "Satisfecho": 3,
+    "Insatisfecho": 1,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 96.55
+  },
+  {
+    "carrera": "Negocios Internacionales",
+    "facultad": "Otra",
+    "Totalmente satisfecho": 20,
+    "Muy satisfecho": 13,
+    "Satisfecho": 5,
+    "Insatisfecho": 1,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 97.44
+  }
+]

@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/sentimiento.json",
+  "title": "Sentimiento",
+  "description": "Análisis cualitativo de comentarios NPS (tópicos, frases, distribución, comentarios individuales e insights). Fuente de verdad: build_json.py. Versión 3.0 del contrato.",
+  "type": "object",
+  "required": ["version", "resumen", "insights_ia", "topicos", "comentarios", "por_carrera", "por_ciclo"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "3.0"
+    },
+    "resumen": {
+      "type": "object",
+      "required": [
+        "total_respuestas", "total_con_comentario", "total_analizados",
+        "comentarios_invalidos", "distribucion_sentimiento", "distribucion_intensidad",
+        "pasivos", "detractores", "nota"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_respuestas": { "type": "integer", "minimum": 0 },
+        "total_con_comentario": { "type": "integer", "minimum": 0 },
+        "total_analizados": { "type": "integer", "minimum": 0 },
+        "comentarios_invalidos": { "type": "integer", "minimum": 0 },
+        "distribucion_sentimiento": {
+          "type": "object",
+          "required": ["positivo", "neutro", "negativo"],
+          "additionalProperties": false,
+          "properties": {
+            "positivo": { "type": "integer", "minimum": 0 },
+            "neutro": { "type": "integer", "minimum": 0 },
+            "negativo": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "distribucion_intensidad": {
+          "type": "object",
+          "required": ["alta", "media", "baja"],
+          "additionalProperties": false,
+          "properties": {
+            "alta": { "type": "integer", "minimum": 0 },
+            "media": { "type": "integer", "minimum": 0 },
+            "baja": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "pasivos": { "type": "integer", "minimum": 0 },
+        "detractores": { "type": "integer", "minimum": 0 },
+        "nota": { "type": "string" }
+      }
+    },
+    "insights_ia": {
+      "type": "object",
+      "required": ["global", "por_categoria_padre"],
+      "additionalProperties": false,
+      "properties": {
+        "global": {
+          "type": "string",
+          "description": "Insight global del periodo. NO debe contener 'Pendiente de Clasificación' como tema relevante.",
+          "minLength": 10
+        },
+        "por_categoria_padre": {
+          "type": "object",
+          "description": "Insights narrativos por categoría padre oficial (7 categorías: Académico, Administrativo y Bienestar, Infraestructura, Tecnología, Docencia, Desarrollo Profesional).",
+          "additionalProperties": { "type": "string", "minLength": 5 },
+          "propertyNames": {
+            "pattern": "^(Académico|Administrativo y Bienestar|Infraestructura|Tecnología|Docencia|Desarrollo Profesional|.+)$"
+          }
+        }
+      }
+    },
+    "topicos": {
+      "type": "array",
+      "description": "Tópicos globales con conteos por sentimiento.",
+      "items": {
+        "type": "object",
+        "required": ["topico", "total_comentarios", "positivos", "negativos", "neutros"],
+        "additionalProperties": false,
+        "properties": {
+          "topico": { "type": "string" },
+          "total_comentarios": { "type": "integer", "minimum": 0 },
+          "positivos": { "type": "integer", "minimum": 0 },
+          "negativos": { "type": "integer", "minimum": 0 },
+          "neutros": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "comentarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "carrera", "facultad", "ciclo", "nps_score",
+          "sentimiento", "intensidad", "categoria", "categoria_padre",
+          "fragmento_original", "fragmento_mostrar", "es_valido"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "carrera": { "type": "string" },
+          "facultad": { "type": "string" },
+          "ciclo": { "type": "string" },
+          "nps_score": { "type": "integer", "minimum": 0, "maximum": 10 },
+          "sentimiento": { "type": "string", "enum": ["positivo", "negativo", "neutro"] },
+          "intensidad": { "type": "number", "minimum": 1, "maximum": 5 },
+          "categoria": { "type": "string" },
+          "categoria_padre": { "type": "string" },
+          "fragmento_original": { "type": "string" },
+          "fragmento_mostrar": { "type": "string" },
+          "es_valido": { "type": "boolean" },
+          "motivo_invalidez": { "type": ["string", "null"], "description": "Razón de invalidez si es_valido=false; null cuando el comentario es válido." },
+          "aspecto_normalizado": { "type": "string" },
+          "comentario_id_original": { "type": "string" },
+          "comentario_original": { "type": "string" },
+          "fragmento_secuencia": { "type": "integer", "minimum": 0 },
+          "es_fragmento": { "type": "boolean" }
+        }
+      }
+    },
+    "por_carrera": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["carrera", "total", "pasivos", "detractores"],
+        "additionalProperties": true,
+        "properties": {
+          "carrera": { "type": "string" },
+          "facultad": { "type": "string" },
+          "total": { "type": "integer", "minimum": 0 },
+          "pasivos": { "type": "integer", "minimum": 0 },
+          "detractores": { "type": "integer", "minimum": 0 },
+          "comentarios_invalidos": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "por_ciclo": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ciclo", "total", "pasivos", "detractores"],
+        "additionalProperties": true,
+        "properties": {
+          "ciclo": { "type": "string" },
+          "total": { "type": "integer", "minimum": 0 },
+          "pasivos": { "type": "integer", "minimum": 0 },
+          "detractores": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

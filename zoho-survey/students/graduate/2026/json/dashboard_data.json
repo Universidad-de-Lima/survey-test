@@ -1,0 +1,77 @@
+{
+  "version": "2.0",
+  "resumen": {
+    "encuestas": 432,
+    "carreras": 9,
+    "facultades": 1,
+    "fecha_inicio": "2026-04-16",
+    "fecha_fin": "2026-07-10",
+    "dias": 86,
+    "dias_recoleccion": 13,
+    "año": 2026,
+    "periodo": "2026",
+    "nps": {
+      "score": 85.42,
+      "promotores": 379,
+      "pasivos": 43,
+      "detractores": 10,
+      "total": 432
+    },
+    "csat": {
+      "score": 98.84,
+      "t3b": 427,
+      "total": 432,
+      "t2b": 352,
+      "t2b_pct": 81.48,
+      "ponderado": 86.89814814814815
+    },
+    "empleabilidad": {
+      "score": 87.73,
+      "empleados": 379,
+      "total": 432
+    }
+  },
+  "hallazgos": {
+    "csat_pct": 98,
+    "nps_score": 85,
+    "nps_tipo": "Excelente",
+    "nps_etapas": {},
+    "tendencia": "se mantiene",
+    "delta": 0,
+    "top_dimensiones": [
+      {
+        "name": "Metodologías",
+        "score": 99.54
+      },
+      {
+        "name": "Calidad de la formación académica",
+        "score": 99.54
+      }
+    ],
+    "top_facultades": [
+      {
+        "name": "Otra",
+        "score": 98.84
+      }
+    ]
+  },
+  "nps": {
+    "promotores": 379,
+    "pasivos": 43,
+    "detractores": 10,
+    "score": 85.42
+  },
+  "csat": {
+    "Totalmente satisfecho": 234,
+    "Muy satisfecho": 118,
+    "Satisfecho": 75,
+    "Insatisfecho": 5,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0
+  },
+  "_export": {
+    "nombre_encuesta": "encuesta_de_satisfacción_graduados_pregrado_2026",
+    "fecha_generacion": "2026-09-04"
+  }
+}

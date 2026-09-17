@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Playwright / test artifacts
+test-results/
+tests/screenshots/
+tests/snapshots/
+
+# Artefactos binarios generados por ETL
+*.zip
+
+# Artefactos intermedios del ETL (se regeneran en cada build, no se commitean)
+# IM-025: evita el ruido en Git (el bot hacia commit del borrado en cada build)
+zoho-survey/students/**/intermediate/
+zoho-survey/students/**/exports/
+zoho-survey/alumni/**/intermediate/
+zoho-survey/alumni/**/exports/
+zoho-survey/employers/**/intermediate/
+zoho-survey/employers/**/exports/
+zoho-survey/facultystaff/**/intermediate/
+zoho-survey/facultystaff/**/exports/
+zoho-survey/nonfacultystaff/**/intermediate/
+zoho-survey/nonfacultystaff/**/exports/
+
+# Caché y logging de IA
+ia_cache.json
+.csv_hash
+AI_STATE.md
+AI_ACTION_LOG.md
+*.cache
+
+# Datos fuente: los CSVs se commitean al repo (sanitizados automaticamente
+# por zoho-survey/scripts/sanitize_csv_pii.py antes del procesamiento ETL).
+# Las columnas PII (Direccion IP, Agente Usuario, URL de la encuesta) se
+# redactan in-place, por lo que los CSVs en data/ no contienen PII.
+# POLITICA DE INGESTA (v3.2.0+): sanitizar localmente ANTES del commit;
+# CSVs NUNCA deben entrar al Git history (contienen PII en NPS comments).
+# Las uploads via repository_dispatch trabajan en data/temp/{upload_id}/,
+# pero data/ en general se ignora para prevenir commits accidentales.
+data/
+
+# Environment files (secrets never committed)
+.env
+.env.*
+!.env.example
+# la sanitizacion en CI es defensa en profundidad, no control primario.
+
+# Misc
+Mejoras/
+*.log
+*.tmp
+*.bak
+*.orig
+node_modules/
+testsprite_tests/tmp/config.json

@@ -1,0 +1,171 @@
+{
+  "_descripcion": "Contexto institucional de la Universidad de Lima para el análisis cualitativo de la IA. Este archivo es la fuente editable de contexto que se inyecta en el system_prompt de DeepSeek. Editar este archivo NO requiere tocar código Python.",
+  "_ubicacion": "zoho-survey/scripts/config/contexto_universidad.json",
+  "_como_se_usa": "Cargado por prompts_cualitativo.py en build_system_prompt(). El contexto se inyecta como reglas de negocio hard (la IA NO debe clasificar en dimensiones que el estudiante no evalúa).",
+
+  "sedes": {
+    "campus_principal": "Campus principal de la Universidad de Lima",
+    "sede_mayorazgo": "Sede Mayorazgo (sede adicional)"
+  },
+
+  "edificios": {
+    "_descripcion": "Edificios del campus. Informativo: la IA los conoce para entender comentarios que mencionan edificios específicos (ej: 'los ascensores de O no funcionan'), pero los clasifica en las dimensiones existentes (Aulas de clase, Espacios comunes, etc.) según el contexto.",
+    "_nota": "Los ambientes se adaptan para cada clase-carrera: un mismo aula puede usarse para diferentes carreras en distintos horarios.",
+    "lista": ["A1", "A2", "D1", "D2", "D3", "E1", "E2", "H", "I1", "I2", "L1", "L2", "L3", "M", "MS", "N", "O1", "O2", "O"],
+    "edificios_especiales": {
+      "M": "Biblioteca (el edificio M es la biblioteca de la universidad)",
+      "MS": "Edificio anexo a la biblioteca",
+      "O": "Edificio O (mencionado en comentarios por sus ascensores)"
+    },
+    "espacios_en_implementacion": [
+      "Salones adicionales",
+      "Laboratorios nuevos",
+      "Cafeterías en implementación"
+    ]
+  },
+
+  "restricciones_por_ciclo": {
+    "_descripcion": "REGLA HARD: si el estudiante está en un ciclo que NO evalúa una dimensión, la IA NO debe clasificar su comentario en esa dimensión. Debe redirigir a la dimensión más cercana que SÍ aplique.",
+    "ciclos_1_y_2_estudios_generales": {
+      "_nota": "Estos ciclos corresponden al Programa de Estudios Generales (ciclo común antes de especializarse).",
+      "dimensiones_no_evaluan": [
+        "Perfil del egreso de la carrera",
+        "Plan curricular y perfil de egreso",
+        "Equipamiento tecnológico en laboratorios",
+        "Condiciones ambientales en laboratorios",
+        "Software especializado empleado en la carrera",
+        "Intercambio estudiantil",
+        "Ayuda financiera"
+      ],
+      "redireccion_sugerida": "Si un estudiante de 1° o 2° ciclo menciona 'laboratorios', clasificar en 'Aulas de clase' o 'Espacios comunes' (no en 'Equipamiento tecnológico en laboratorios')."
+    },
+    "ciclos_7_en_adelante": {
+      "_nota": "A partir del 7° ciclo los estudiantes realizan prácticas preprofesionales.",
+      "dimensiones_aplican": [
+        "Empleabilidad, vinculación y ALUMNI"
+      ],
+      "redireccion_sugerida": "Si un estudiante de ciclo < 7 menciona 'prácticas', 'empleo' o 'ALUMNI', clasificar en 'Satisfacción estudiantil' (no en 'Empleabilidad, vinculación y ALUMNI' porque aún no evalúa esa dimensión)."
+    }
+  },
+
+  "restricciones_por_carrera": {
+    "_descripcion": "REGLA HARD: si la carrera del estudiante NO evalúa una dimensión, la IA NO debe clasificar su comentario en esa dimensión.",
+    "derecho": {
+      "dimensiones_no_evalua": [
+        "Equipamiento tecnológico en laboratorios",
+        "Condiciones ambientales en laboratorios",
+        "Software especializado empleado en la carrera"
+      ],
+      "redireccion_sugerida": "Si un estudiante de Derecho menciona 'laboratorios' o 'software', clasificar en 'Aulas de clase' o 'Espacios comunes' (Derecho no tiene laboratorios propios)."
+    },
+    "psicologia": {
+      "_nota": "Psicología dura 12 ciclos (como Derecho).",
+      "dimensiones_no_evalua_especificamente": "Verificar contra el CSV si menciona laboratorios — Psicología puede tener laboratorios de observación clínica."
+    },
+    "comunicacion": {
+      "_nota": "Comunicación es la carrera que los estudiantes a veces llaman 'periodismo' en sus comentarios. Si un comentario menciona 'periodismo', 'periodista' o 'press', se refiere a la carrera de Comunicación."
+    }
+  },
+
+  "alias_carreras": {
+    "_descripcion": "Nombres coloquiales que los estudiantes usan para referirse a carreras oficiales. La IA debe mapearlos a la carrera oficial al clasificar.",
+    "periodismo": "Comunicación",
+    "periodista": "Comunicación",
+    "press": "Comunicación",
+    "sistemas": "Ingeniería de Sistemas",
+    "industrial": "Ingeniería Industrial",
+    "civil": "Ingeniería Civil",
+    "meca": "Ingeniería Mecatrónica",
+    "mecatronica": "Ingeniería Mecatrónica",
+    "ambiental": "Ingeniería Ambiental",
+    "admin": "Administración",
+    "marketing": "Marketing",
+    "negocios": "Negocios Internacionales",
+    "conta": "Contabilidad y Finanzas",
+    "finanzas": "Contabilidad y Finanzas",
+    "der": "Derecho",
+    "psico": "Psicología",
+    "arqui": "Arquitectura",
+    "economía": "Economía",
+    "economia": "Economía"
+  },
+
+  "reglas_clasificacion_especificas": {
+    "_descripcion": "REGLAS HARD de clasificación para casos frecuentes que la IA confunde. Estas reglas tienen PRIORIDAD sobre la heurística general. Si un comentario menciona las palabras clave, clasificar SIEMPRE en la dimensión indicada.",
+
+    "metodologias": {
+      "dimension_correcta": "Metodologías",
+      "categoria_padre": "Docencia",
+      "palabras_clave": ["metodología", "metodologías", "metodologia", "metodologias", "aula invertida", "flipped classroom", "método de enseñanza", "metodo de enseñanza", "forma de enseñar", "manera de enseñar"],
+      "no_clasificar_en": ["Calidad de la enseñanza en la carrera", "Calidad de la formación académica"],
+      "ejemplos": [
+        "Muy buena metodología de enseñanza → Metodologías (Docencia)",
+        "No me gusta mucho su metodologia de enseñanza → Metodologías (Docencia)",
+        "Debido a la nueva metodología de estudio, de aula invertida → Metodologías (Docencia)",
+        "Directamente no tengo quejas con la metodología → Metodologías (Docencia)"
+      ]
+    },
+
+    "disponibilidad_para_asesorias": {
+      "dimension_correcta": "Disponibilidad para asesorías",
+      "categoria_padre": "Docencia",
+      "palabras_clave": ["asesoría", "asesorías", "asesoria", "asesorias", "disposición para asesorar", "tiempo para asesorar", "apoyo en asesorías", "dudas en asesorías", "críticas en asesorías"],
+      "no_clasificar_en": ["Calidad de la enseñanza en la carrera", "Claridad de los recursos académicos", "Cursos del programa y contenidos"],
+      "ejemplos": [
+        "asesorías no todas son aptas para todos → Disponibilidad para asesorías (Docencia)",
+        "Profes deben guiar, apoyar el interés, tener disposición para dudas y dar críticas en asesorías → Disponibilidad para asesorías (Docencia)",
+        "Considero que en el tema de asesoría a los cursos especializados → Disponibilidad para asesorías (Docencia)"
+      ],
+      "_nota_categoria_padre": "IMPORTANTE: 'Disponibilidad para asesorías' SIEMPRE pertenece a la categoría padre 'Docencia', NUNCA a 'Académico'. Si la IA la clasifica en 'Académico', es un error."
+    },
+
+    "distincion_empleabilidad_vs_perspectivas": {
+      "_descripcion": "DISTINCIÓN CRÍTICA: dos dimensiones distintas que la IA confunde.",
+      "empleabilidad_vinculacion_y_alumni": {
+        "dimension": "Empleabilidad, vinculación y ALUMNI",
+        "categoria_padre": "Administrativo y Bienestar",
+        "que_es": "Es el SERVICIO institucional de la universidad: una agencia de empleo que busca empleadores para que los alumnos realicen prácticas preprofesionales, cumplan el plan de estudios y se gradúen. Los empleadores evalúan a los practicantes.",
+        "palabras_clave_servicio": ["convenios con empresas", "prácticas preprofesionales", "bolsa de trabajo", "contacto con empleadores", "ALUMNI", "egresados vinculados", "vinculación profesional"],
+        "cuando_usar": "Cuando el comentario habla sobre el SERVICIO que ofrece la universidad para conectar estudiantes con empresas."
+      },
+      "mejora_en_perspectivas_de_empleo": {
+        "dimension": "Mejora en perspectivas de empleo",
+        "categoria_padre": "Desarrollo Profesional",
+        "que_es": "Es la PERCEPCIÓN del estudiante sobre su propia empleabilidad futura: si la universidad le abre puertas en el mundo laboral, si tiene prestigio laboral, si facilita conseguir empleo al graduarse.",
+        "palabras_clave_percepcion": ["prestigio en el mundo laboral", "facilita acceso a empleos", "nos quita empleabilidad", "oportunidades laborales", "perspectivas de empleo", "empleabilidad futura", "salida laboral", "inserción laboral"],
+        "cuando_usar": "Cuando el comentario habla de la PERCEPCIÓN del estudiante sobre su futuro laboral o el prestigio laboral de la universidad."
+      },
+      "ejemplos": [
+        "No nos dan muchas oportunidades siendo de Psicología clínica, no tenemos convenios → Mejora en perspectivas de empleo (Desarrollo Profesional) [habla de oportunidades y convenios, percepción personal]",
+        "Eso nos quita empleabilidad → Mejora en perspectivas de empleo (Desarrollo Profesional) [percepción de empleabilidad personal]",
+        "Es una universidad que tiene buen prestigio en el mundo laboral y facilita el acceso a empleos → Mejora en perspectivas de empleo (Desarrollo Profesional) [prestigio laboral, percepción personal]",
+        "El servicio de ALUMNI me consiguió una práctica → Empleabilidad, vinculación y ALUMNI (Administrativo y Bienestar) [habla del servicio]"
+      ]
+    },
+
+    "categorias_padre_docencia": {
+      "_descripcion": "REGLA HARD: las siguientes dimensiones SIEMPRE pertenecen a la categoría padre 'Docencia', NUNCA a 'Académico'. Si la IA las clasifica en 'Académico', es un error.",
+      "dimensiones_docencia": [
+        "Transmisión de conocimientos",
+        "Transmisión de experiencias",
+        "Metodologías",
+        "Conocimientos actualizados",
+        "Compromiso",
+        "Retroalimentación",
+        "Disponibilidad para asesorías",
+        "Cumplimiento de normas y programas"
+      ],
+      "categoria_padre_correcta": "Docencia",
+      "categoria_padre_incorrecta": "Académico"
+    }
+  },
+
+  "reglas_negocio_adicionales": {
+    "programa_estudios_generales": "El Programa de Estudios Generales cubre los ciclos 1° y 2°. Es un ciclo común antes de especializarse. Los estudiantes de Estudios Generales NO evalúan dimensiones específicas de carrera (perfil de egreso, plan curricular, laboratorios, software, intercambio, ayuda financiera).",
+    "duracion_carreras": "La mayoría de carreras duran 10 ciclos. Derecho y Psicología duran 12 ciclos.",
+    "practicas_preprofesionales": "Las prácticas preprofesionales comienzan a partir del 7° ciclo. Por eso 'Empleabilidad, vinculación y ALUMNI' solo aplica desde 7° ciclo en adelante.",
+    "biblioteca": "La biblioteca está en el edificio M. Tiene material bibliográfico físico y digital.",
+    "aula_virtual": "El aula virtual usa Blackboard. Las videoconferencias usan Zoom. El portal web institucional se llama 'Mi Ulima'.",
+    "wifi_campus": "El Wi-Fi del campus da acceso a Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual."
+  }
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "facultad": "Facultad de Arquitectura",
+    "carrera": "Arquitectura",
+    "ciclo": "NA",
+    "total": 370
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Administración",
+    "ciclo": "NA",
+    "total": 373
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Contabilidad y Finanzas",
+    "ciclo": "NA",
+    "total": 222
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Marketing",
+    "ciclo": "NA",
+    "total": 304
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Negocios Internacionales",
+    "ciclo": "NA",
+    "total": 307
+  },
+  {
+    "facultad": "Facultad de Comunicación",
+    "carrera": "Comunicación",
+    "ciclo": "NA",
+    "total": 366
+  },
+  {
+    "facultad": "Facultad de Derecho",
+    "carrera": "Derecho",
+    "ciclo": "NA",
+    "total": 479
+  },
+  {
+    "facultad": "Facultad de Economía",
+    "carrera": "Economía",
+    "ciclo": "NA",
+    "total": 232
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Ambiental",
+    "ciclo": "NA",
+    "total": 17
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Civil",
+    "ciclo": "NA",
+    "total": 312
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Industrial",
+    "ciclo": "NA",
+    "total": 444
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Mecatrónica",
+    "ciclo": "NA",
+    "total": 44
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería de Sistemas",
+    "ciclo": "NA",
+    "total": 338
+  },
+  {
+    "facultad": "Facultad de Psicología",
+    "carrera": "Psicología",
+    "ciclo": "NA",
+    "total": 431
+  }
+]
