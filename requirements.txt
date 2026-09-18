@@ -1,6 +1,5 @@
 pandas>=1.5.0
 jsonschema>=4.0.0
-openpyxl>=3.0.0  # SOLO lo usa validar_ia_vs_manual.py (pd.read_excel): herramienta manual sin entrada en CI
 
 # ============================================================
 # Motor Cualitativo IA (DeepSeek) — único motor desde v3.2.0

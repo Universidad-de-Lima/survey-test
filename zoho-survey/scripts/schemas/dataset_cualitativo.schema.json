@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/dataset_cualitativo.schema.json",
   "title": "Dataset Cualitativo (intermedio ETL)",
-  "description": "Schema para dataset_cualitativo.json. Archivo intermedio producido por el motor IA (DeepSeek) y consumido por validar_ia_vs_manual.py. No es consumido por el frontend.",
+  "description": "Schema para dataset_cualitativo.json. Archivo intermedio producido por el motor IA (DeepSeek) como trazabilidad del ETL; no lo consume el frontend ni ningun validador automatico.",
   "type": "object",
   "required": ["metadata", "data"],
   "additionalProperties": false,
