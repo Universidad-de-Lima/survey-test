@@ -5,7 +5,7 @@
   "description": "Dashboard estático de encuestas de satisfacción — Universidad de Lima",
   "devDependencies": {
     "jsdom": "^25.0.0",
-    "eslint": "^9.0.0"
+    "eslint": "^10.10.0"
   },
   "engines": {
     "node": ">=22.0.0"
