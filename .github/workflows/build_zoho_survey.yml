@@ -3,15 +3,12 @@ name: Build and Deploy Survey
 on:
   push:
     paths:
-      # Solo disparar cuando cambien cosas que requieran re-build.
-      # NO disparar por JSON generados (zoho-survey/students/*/json/**)
-      # ni por los index.html generados (zoho-survey/students/*/index.html).
-      - 'data/**'
-      - 'zoho-survey/scripts/**'
-      - 'zoho-survey/template/**'
-      - 'zoho-survey/shared/**'
-      - 'zoho-survey/students/*/periodos.json'
-      - 'zoho-survey/**/periodos.json'
+      # El artifact que se sube a Pages es ./zoho-survey completo: cualquier
+      # cambio bajo esa carpeta debe redesplegarse (antes, un cambio en
+      # zoho-survey/health.html o zoho-survey/index.html NO disparaba el deploy).
+      # El ETL sigue condicionado al gate "Detectar CSVs a procesar", asi que un
+      # cambio estatico cuesta solo un deploy, no una corrida de IA.
+      - 'zoho-survey/**'
       - 'requirements.txt'
       - '.github/workflows/build_zoho_survey.yml'
 
