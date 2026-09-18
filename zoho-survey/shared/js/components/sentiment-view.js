@@ -43,33 +43,6 @@ window.SurveySentimentView = (() => {
     return { border: 'var(--ulima-orange)', bg: 'var(--sentiment-neu-bg, var(--warning-pastel))', label: 'Oportunidad de mejora' };
   }
 
-  // Helper to create legend items with CSP-friendly event listeners
-  function createLegendItem(colorVar, label, value, valLower) {
-    const div = document.createElement('div');
-    div.className = 'legend-item';
-    div.style.cursor = 'pointer';
-
-    const dot = document.createElement('div');
-    dot.className = 'legend-dot';
-    dot.style.background = colorVar;
-
-    div.appendChild(dot);
-    const formattedValue = window.SurveyFormatters ? window.SurveyFormatters.formatInteger(value) : value.toLocaleString('en-US');
-    div.appendChild(document.createTextNode(`${label}: ${formattedValue}`));
-
-    div.addEventListener('click', () => {
-      const select = $('explorador-sentimiento');
-      if (select) {
-        select.value = valLower;
-        applyExploradorFilters();
-        const explSec = $('tabla-explorador-comentarios');
-        if (explSec) explSec.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-
-    return div;
-  }
-
   function drawSentimentBars(stats) {
     const container = $('sentimiento-bar-chart');
     if (!container) return;

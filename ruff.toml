@@ -1,4 +1,4 @@
-# Ruff configuration for survey-storytelling
+# Ruff configuration for survey-test
 # See: https://docs.astral.sh/ruff/
 
 target-version = "py311"

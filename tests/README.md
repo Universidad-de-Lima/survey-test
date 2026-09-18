@@ -2,44 +2,16 @@
 
 Infraestructura de tests unitarios para `survey-test`. No usa dependencias npm ni Vitest; se ejecuta en navegador con un mini-framework propio (`tests/test-framework.js`) o en Node con jsdom.
 
-## Ejecutar Tests
+## Ejecución de Tests
 
-### Opción 1: Navegador (recomendado para desarrollo)
+Los tests se ejecutan **solo en GitHub Actions** (`.github/workflows/tests.yml`), en cada push a `main` y en cada PR. No se instala ni se ejecuta nada en local.
 
-Abrir directamente:
+| Job | Qué ejecuta |
+|---|---|
+| `python-tests` | `python -m unittest discover tests/` en `zoho-survey/scripts/`, Ruff (informativo) y la validación de contratos JSON |
+| `js-tests` | Verificación de sintaxis (`node -c`), tests JS en Node, tests DOM con jsdom y ESLint (informativo) |
 
-```text
-tests/run-tests.html
-```
-
-O servir el repositorio y abrir la ruta en navegador:
-
-```bash
-npm start
-# http://localhost:8080/tests/run-tests.html
-```
-
-### Opción 2: Node (sin DOM, para CI)
-
-```bash
-npm run test:js
-```
-
-Ejecuta los tests que no requieren DOM real (usan un stub mínimo de `window`/`document`).
-
-### Opción 3: Node con jsdom (para tests que necesitan DOM real)
-
-```bash
-npm run test:js:dom
-```
-
-Ejecuta `tests/unit/test-dom.js` con jsdom.
-
-### Opción 4: CI (GitHub Actions)
-
-Los tests se ejecutan automáticamente en cada PR y push a `main` vía `.github/workflows/tests.yml`:
-- `python-tests`: ejecuta `python -m unittest discover tests/` en `zoho-survey/scripts/`.
-- `js-tests`: ejecuta `npm run test:js` + `npm run test:js:dom` + verificación de sintaxis con `node -c`.
+El detalle de cada job y su resultado se consulta en la pestaña **Actions** del repositorio.
 
 ## Estructura
 

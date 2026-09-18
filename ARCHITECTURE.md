@@ -87,16 +87,16 @@ Para mayor detalle de responsabilidades:
 
 | Modulo | Lineas | Responsabilidad | Estado |
 | --- | --- | --- | --- |
-| `lib/config.py` | 345 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
+| `lib/config.py` | 485 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
 | `lib/metrics.py` | 98 | Funciones puras de calculo de NPS (`calc_nps`), CSAT (`calc_csat`) y Promedio Ponderado. | Activo. |
-| `lib/io_helper.py` | 164 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
-| `lib/ia_cualitativo.py` | 404 | Motor de analisis cualitativo basado en DeepSeek. **Unico motor desde v3.2.0** (motor legacy eliminado). Deduplicacion por ID de comentario (sin cache). | Activo (requiere `DEEPSEEK_API_KEY` obligatoria). |
+| `lib/io_helper.py` | 227 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
+| `lib/ia_cualitativo.py` | 540 | Motor de analisis cualitativo basado en DeepSeek. **Unico motor desde v3.2.0** (motor legacy eliminado). Deduplicacion por ID de comentario (sin cache). Umbral fail-closed: aborta si mas del 20% de los comentarios falla por API (`IA_CUALITATIVO_MAX_FALLOS_API_PCT`). | Activo (requiere `DEEPSEEK_API_KEY` obligatoria). |
 | `lib/prompts_cualitativo.py` | 785 | Prompts exactos para DeepSeek (system + user). Fuente de verdad de los prompts usados en el ETL. | Activo (Fase IA). |
 | `lib/insights_generator.py` | 262 | Generador de insights deterministas (sin LLM). Produce `insights_ia.global` y `insights_ia.por_categoria_padre` a partir de datos ya procesados. | Activo. |
 | `lib/csv_exporter.py` | 169 | Exportacion de CSVs y ZIPs con proteccion formula injection y redaccion PII. ZIPs se guardan en `exports/` (no desplegados en Pages). | Activo. |
 | `lib/dashboard_builder.py` | 57 | Ensamblado de `dashboard_data.json` desde metricas pre-calculadas. | Activo. |
 | `lib/periodos_updater.py` | 58 | Actualizacion de `periodos.json` por nivel, marcando `isNew: true` en el mas reciente. | Activo. |
-| `lib/ia_client.py` | 216 | Cliente HTTP DeepSeek (urllib stdlib) con reintentos, backoff exponencial y rate limiting. | Activo. |
+| `lib/ia_client.py` | 225 | Cliente HTTP DeepSeek (urllib stdlib) con reintentos, backoff exponencial y rate limiting. | Activo. |
 | `lib/ia_filtro_ruido.py` | 147 | Pre-filtro de comentarios ruidosos (15 criterios regex) antes de llamar a DeepSeek. | Activo. |
 | `lib/ia_validacion.py` | 263 | Validacion y correccion de respuestas DeepSeek. Redaccion PII post-LLM. | Activo. |
 

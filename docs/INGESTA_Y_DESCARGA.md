@@ -69,7 +69,7 @@ El workflow se dispara con concurrencia aislada por `upload_id`:
 
 ## 2. ETL y generación de ZIPs
 
-Corre `build_json.py` en GitHub Actions (paso 14) y localmente con `npm run build:json`.
+Corre `build_json.py` **solo en GitHub Actions** (paso `Run build_json.py` del workflow de build, condicionado al gate `Detectar CSVs a procesar`). Los scripts `npm run build:json` / `npm run validate:json` / `npm run test:*` de `package.json` son el **espejo** de los comandos que ejecuta el runner y no forman parte del flujo del proyecto.
 
 ### What consume DeepSeek
 

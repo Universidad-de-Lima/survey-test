@@ -1,89 +1,48 @@
-# Entorno de Desarrollo — survey-test
+# Entorno de ejecución — survey-test
 
-Este documento describe el flujo de trabajo para editar el proyecto localmente y probar los cambios en GitHub Actions / GitHub Pages.
+> **Regla del proyecto: nada se ejecuta en local.** El ETL, las pruebas, la validación de contratos y el despliegue ocurren **exclusivamente en GitHub Actions**. La verificación se hace sobre el resultado del workflow (paso a paso) y, cuando se requiere el log íntegro, sobre el log del run.
 
-> **Regla fundamental:** GitHub es el entorno de producción. El primer `push` al repositorio se realiza manualmente; los posteriores se automatizan tras validación y autorización.
-
-## Flujo de trabajo
+## Ciclo de trabajo
 
 ```
-Local (edición + validación estática) → commit → push → GitHub Actions (tests + ETL + deploy) → GitHub Pages
+Editar archivos → commit → push a main → GitHub Actions (pruebas + ETL si hay CSV + deploy) → verificar en Actions
 ```
 
-### 1. Requisitos locales
+Ningún paso requiere Python, Node ni dependencias instaladas en el equipo: solo Git.
 
-- Python 3.11+ (recomendado; CI usa 3.11).
-- Node.js 18+ (recomendado; CI usa 18).
-- Git.
-- Credenciales Git configuradas.
+| Fase | Dónde corre | Workflow | Qué ejecuta |
+|---|---|---|---|
+| Pruebas | GitHub Actions | `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, validación de contratos JSON, Ruff y ESLint (informativos) |
+| ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (DeepSeek + fallback NVIDIA) → validación de JSON |
+| Despliegue | GitHub Actions | `build_zoho_survey.yml` | Artifact → GitHub Pages → health check → commit del bot si hay JSON nuevos |
 
-Instalar dependencias:
+Ambos workflows se disparan con **cualquier push a `main`** (sin filtros de `paths`), para que ningún cambio quede sin verificar.
 
-```bash
-pip install -r requirements.txt
-npm install   # solo si se requiere jsdom/eslint
-```
+## Cómo se envían los datos (sin entorno local)
 
-### 2. Validación local
+1. **Portal "Subir datos"** (recomendado): `zoho-survey/index.html` → Release DRAFT temporal → `repository_dispatch[csv_upload]`.
+2. **Release con tag + `workflow_dispatch`** (alternativa sin navegador): subir el CSV como asset de un Release (preferiblemente **DRAFT**) y lanzar *Build and Deploy Survey* con el input `release_tag`.
 
-Antes de cada `push` ejecutar:
+En ambos caminos el CSV se descarga **solo en el runner**, se sanitiza, se procesa y se **borra antes del commit del bot** (el commit aborta si detecta un CSV en staging).
 
-```bash
-# Tests unitarios JS (no requieren DOM ni API keys)
-npm run test:js
+Sin CSV en `data/`, el workflow **no** ejecuta el ETL ni exige `DEEPSEEK_API_KEY`: solo valida contratos y despliega el sitio.
 
-# Tests unitarios Python
-npm run test:py
+## Secretos
 
-# Validación de contratos JSON ya generados
-npm run validate:json
+| Secreto / variable | Dónde se configura | Para qué |
+|---|---|---|
+| `DEEPSEEK_API_KEY` | Settings → Secrets and variables → Actions | Motor IA principal del ETL |
+| `NVIDIA_API_KEY` | Ídem (opcional) | Fallback cuando DeepSeek falla o no está configurado |
 
-# Sintaxis de todos los módulos JS
-node -c zoho-survey/shared/js/portal-upload.js
-node -c zoho-survey/shared/js/portal-upload-ui.js
-# ... (ver .github/workflows/tests.yml)
-```
+`.env` es local y **no** interviene en el ciclo: las claves viven en GitHub Secrets.
 
-> El ETL completo (`npm run build:json`) no se ejecuta localmente porque requiere `DEEPSEEK_API_KEY` y consume tokens. Su prueba autoritativa ocurre en GitHub Actions.
+## Verificación del resultado
 
-### 3. Vista estática local (opcional)
+| Quiero saber… | Cómo |
+|---|---|
+| ¿Pasó o falló? ¿En qué paso? | Pestaña **Actions** → run → job → pasos con su conclusión |
+| ¿Cuál fue el mensaje de error? | Anotaciones del check-run del job (`check-runs/<job_id>/annotations`) |
+| ¿El sitio está en pie? | `https://universidad-de-lima.github.io/survey-test/` y `health.html` |
+| ¿Los contratos JSON son válidos? | Paso `Validate generated JSON contracts` del workflow de build |
 
-Para previsualizar HTML/JS sin JSONs generados:
-
-```bash
-npm start
-# Abrir http://localhost:8080/zoho-survey/
-```
-
-Esta vista estática no ejecuta el ETL ni la ingesta.
-
-### 4. Subida de datos
-
-La carga de CSVs se realiza desde el portal publicado en GitHub Pages (`https://universidad-de-lima.github.io/survey-test`):
-
-1. Abrir el portal.
-2. Clic en **"Subir datos"**.
-3. Ingresar PAT de GitHub (solo en memoria del navegador).
-4. Seleccionar hasta 10 CSVs válidos.
-5. El frontend crea un Release **DRAFT** temporal, sube los assets y dispara `repository_dispatch`.
-6. GitHub Actions descarga, valida, sanitiza, ejecuta el ETL y elimina el Release temporal.
-
-Ver detalles en `docs/INGESTA_Y_DESCARGA.md` y `SECURITY.md`.
-
-## Seguridad local
-
-- `.env` contiene secretos y está en `.gitignore`. Nunca commitearlo.
-- Los CSVs en `data/` están en `.gitignore`. No subirlos a GitHub.
-- Sanitizar PII con `python zoho-survey/scripts/sanitize_csv_pii.py --all` antes de cualquier commit accidental.
-
-## Migración / publicación en GitHub
-
-El primer push al repositorio remoto lo realiza el propietario:
-
-```bash
-git remote add origin https://github.com/Universidad-de-Lima/survey-test.git
-git branch -M main
-git push -u origin main
-```
-
-Asegurarse de configurar el secreto `DEEPSEEK_API_KEY` en el repositorio de GitHub para que el ETL pueda ejecutarse.
+Documentación relacionada: [`README.md`](README.md), [`docs/developer-guide.md`](docs/developer-guide.md), [`docs/INGESTA_Y_DESCARGA.md`](docs/INGESTA_Y_DESCARGA.md), [`tests/README.md`](tests/README.md), [`SECURITY.md`](SECURITY.md).

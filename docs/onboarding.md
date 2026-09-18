@@ -103,26 +103,22 @@ Si la sección aparece con error, verificar que `sentimiento.json` existe y que
 
 ---
 
-## Comandos útiles
+## Verificación de cambios
 
-Algunos comandos se ejecutan localmente para validar cambios antes del `push`; el ETL completo corre en GitHub Actions.
+El proyecto se verifica **en GitHub Actions**; no se ejecuta nada en local.
 
-```bash
-# Validar estructura de JSONs ya generados
-npm run validate:json
-
-# Iniciar servidor local estático (solo HTML/JS, sin ETL)
-npm start
-
-# Ejecutar tests unitarios JS
-npm run test:js
-
-# Ejecutar tests unitarios Python
-npm run test:py
-
-# Generar JSONs desde CSVs (solo si se configura DEEPSEEK_API_KEY localmente)
-npm run build:json
 ```
+Flujo: editar archivos → commit → push a main → verificar el run en Actions
+```
+
+Cada push dispara:
+
+| Workflow | Qué verifica |
+|---|---|
+| `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, contratos JSON, Ruff y ESLint (informativos) |
+| `build_zoho_survey.yml` | Gate `Detectar CSVs` (el ETL solo corre si hay CSV en `data/`), validación de contratos y deploy a GitHub Pages |
+
+Los datos de entrada del ETL se envían por el portal **"Subir datos"** o por un **Release con tag + `workflow_dispatch`** (ver `docs/INGESTA_Y_DESCARGA.md`).
 
 ---
 

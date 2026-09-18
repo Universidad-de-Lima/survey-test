@@ -47,21 +47,16 @@ zoho-survey/facultystaff/**/exports/
 zoho-survey/nonfacultystaff/**/intermediate/
 zoho-survey/nonfacultystaff/**/exports/
 
-# Caché y logging de IA
-ia_cache.json
+# Huella de idempotencia del ETL (versionada: <HASH_VERSION>:<sha256 del CSV>)
 .csv_hash
-AI_STATE.md
-AI_ACTION_LOG.md
-*.cache
 
-# Datos fuente: los CSVs se commitean al repo (sanitizados automaticamente
-# por zoho-survey/scripts/sanitize_csv_pii.py antes del procesamiento ETL).
-# Las columnas PII (Direccion IP, Agente Usuario, URL de la encuesta) se
-# redactan in-place, por lo que los CSVs en data/ no contienen PII.
-# POLITICA DE INGESTA (v3.2.0+): sanitizar localmente ANTES del commit;
-# CSVs NUNCA deben entrar al Git history (contienen PII en NPS comments).
-# Las uploads via repository_dispatch trabajan en data/temp/{upload_id}/,
-# pero data/ en general se ignora para prevenir commits accidentales.
+# Datos fuente: los CSVs NUNCA se commitean (contienen comentarios NPS con PII
+# potencial) y este repositorio es público.
+# POLITICA DE INGESTA (v3.2.0+): los CSVs entran SOLO por el portal ("Subir
+# datos" -> Release DRAFT temporal -> repository_dispatch) o por un Release con
+# tag + workflow_dispatch; Actions los descarga a data/, los sanitiza, ejecuta el
+# ETL y los borra antes del commit del bot. La sanitización en CI es defensa en
+# profundidad, no control primario.
 data/
 
 # Environment files (secrets never committed)

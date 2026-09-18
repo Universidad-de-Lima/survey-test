@@ -8,7 +8,7 @@ The data types handled:
 | Type | Example | Status |
 |---|---|---|
 | **PII directa** | IP address, User Agent | 🟢 **Mitigada por Arquitectura A (Fase 3.8.2):** los CSVs subidos **no se commitean**; se descargan a un runner efímero, se redimen con `sanitize_csv_pii.py` antes del ETL y se borran. El Release temporal se mantiene como **DRAFT** (no público) y se elimina tras procesar. `data/` está en `.gitignore` y el commit de resultados está desactivado para uploads. |
-| **PII cuasi-identificadora** | Free-text comments (comentarios NPS abiertos) | 🟢 **Mitigada.** Los comentarios se envían a DeepSeek/NVIDIA después de aplicar `enmascarar_pii.py`. En `sentimiento.json` el campo `comentario_original` se guarda ofuscado (emails, teléfonos y códigos de estudiante reemplazados por placeholders). No hay caché persistente (deduplicación por ID en `sentimiento.json`). |
+| **PII cuasi-identificadora** | Free-text comments (comentarios NPS abiertos) | 🟢 **Mitigada.** Los comentarios se envían a DeepSeek/NVIDIA después de aplicar `enmascarar_pii` (`zoho-survey/scripts/lib/io_helper.py`). En `sentimiento.json` el campo `comentario_original` se guarda ofuscado (emails, teléfonos y códigos de estudiante reemplazados por placeholders). No hay caché persistente (deduplicación por ID en `sentimiento.json`). |
 | **Aggregated metrics** | NPS, CSAT scores | 🟢 No PII exposure |
 
 ## Reporting Vulnerability

@@ -161,7 +161,7 @@ Si se modifica la estructura de cualquier JSON generado:
 - [ ] Actualizar `CONTRACTS.md` con el nuevo contrato.
 - [ ] Actualizar `build_json.py` para producir la nueva estructura.
 - [ ] Actualizar el frontend (`dashboard.js` o componente relevante) para consumir la nueva estructura.
-- [ ] Ejecutar `npm run validate:json` y verificar que pasa.
+- [ ] Verificar que el paso `Validate generated JSON contracts` del workflow pasa.
 - [ ] Verificar que los JSONs existentes siguen siendo validos (o regenerarlos).
 
 ## Advertencias Importantes Para Agentes IA

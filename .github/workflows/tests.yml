@@ -76,7 +76,6 @@ jobs:
                    zoho-survey/shared/js/portal.js \
                    zoho-survey/shared/js/portal-upload.js \
                    zoho-survey/shared/js/portal-upload-ui.js \
-                   zoho-survey/shared/js/bridge-local-dev.js \
                    tests/test-framework.js \
                    tests/unit/*.js; do
             node -c "$f" || exit 1

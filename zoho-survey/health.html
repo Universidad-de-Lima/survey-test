@@ -83,7 +83,7 @@
 </head>
 <body>
 
-<h1>🏥 Health Check — Survey Storytelling</h1>
+<h1>🏥 Health Check — Encuestas Universidad de Lima</h1>
 <p class="subtitle">Verificación de integridad de dashboards y contratos JSON</p>
 
 <div class="summary">
@@ -186,6 +186,19 @@ async function run() {
     }
 
     for (const period of periods) {
+      // Placeholder de nivel sin datos: periodos.json declara
+      // {id:'proximamente', label:'Próximamente', url:'underconstruction.html'}.
+      // No es un fallo de integridad: no existen <id>/index.html ni <id>/json/.
+      if (period.id === 'proximamente') {
+        totalPeriods++;
+        rowsHtml += `<tr>
+          <td><span class="status-dot dot-pending"></span>Pendiente</td>
+          <td>${esc(survey.label)}</td>
+          <td><strong>${esc(period.label || period.id)}</strong></td>
+          <td colspan="3" style="color:var(--gray)">Nivel sin datos todavía (placeholder declarado)</td>
+        </tr>`;
+        continue;
+      }
       totalPeriods++;
       const relPath = getRelativePath(survey.path, period.id);
       const htmlOk = await checkUrl(relPath + '/index.html');

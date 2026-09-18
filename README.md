@@ -9,34 +9,27 @@ Arquitectura: Portal v5.0 (`index.html` + `portal.js` + módulos `portal/*`) par
 
 ## Quick Start
 
-El procesamiento de CSVs y la generación de JSONs se ejecutan en **GitHub Actions**. Para trabajar localmente solo se editan archivos; las pruebas funcionales ocurren tras el `push`:
+**Regla del proyecto: nada se ejecuta en local.** El procesamiento de CSVs, la generación de JSONs, las pruebas y el despliegue ocurren exclusivamente en **GitHub Actions**; la verificación se hace sobre los resultados del workflow.
 
 ```bash
 # 1. Clonar el repositorio
-
 git clone https://github.com/Universidad-de-Lima/survey-test.git
 cd survey-test
 
-# 2. Validar sintaxis y tests unitarios (no requieren API keys)
-npm run test:js
-npm run test:py
+# 2. Editar los archivos necesarios
 
-# 3. Hacer cambios, commit y push
-
+# 3. Commit y push (cada push a main se prueba y se despliega en Actions)
 git add .
 git commit -m "descripción del cambio"
 git push origin main
 
-# 4. GitHub Actions compila, valida y despliega automáticamente
-#    Ver progreso en: https://github.com/Universidad-de-Lima/survey-test/actions
+# 4. Verificar en GitHub Actions: cada push dispara "Tests" (unittest + JS + jsdom
+#    + sintaxis + contratos JSON) y "Build and Deploy Survey" (deploy a Pages).
+#    Los datos de entrada del ETL se envían por Release + workflow_dispatch:
+#    ver docs/INGESTA_Y_DESCARGA.md
 ```
 
-Para una vista local estática (solo HTML/JS, sin JSONs generados):
-
-```bash
-npm start
-# Abrir http://localhost:8080/zoho-survey/
-```
+Punto de entrada técnico del ciclo: `docs/developer-guide.md`.
 
 ## Subir datos (Ingesta de encuestas)
 

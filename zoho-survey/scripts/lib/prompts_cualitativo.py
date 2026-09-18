@@ -17,7 +17,7 @@ Compatibilidad: DeepSeek API (OpenAI-compatible). Modelo por defecto
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 
@@ -777,10 +777,3 @@ RATING_TO_SCORE = {
     "No utilizo": 0,
     "No conozco": 0,
 }
-
-
-def rating_to_score(rating: Optional[str]) -> Optional[int]:
-    """Convierte un rating textual CSAT a score numérico. None si no mapea."""
-    if rating is None:
-        return None
-    return RATING_TO_SCORE.get(rating)

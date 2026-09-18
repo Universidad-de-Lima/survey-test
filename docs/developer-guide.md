@@ -23,7 +23,7 @@ Antes de realizar cambios, familiarízate con los siguientes documentos según t
 | Stack | HTML, CSS, Vanilla JS, Python |
 | Dependencias Runtime | 0 |
 | Dependencias ETL | pandas, jsonschema, openpyxl, python-dotenv |
-| Ejecución de Tests | Local (`npm run test:js`, `npm run test:py`) + CI GitHub Actions |
+| Ejecución de Tests | **Solo** GitHub Actions (`tests.yml`): unittest + JS + jsdom + sintaxis |
 
 ## Puntos de Entrada Comunes
 
@@ -48,18 +48,17 @@ Antes de realizar cambios, familiarízate con los siguientes documentos según t
 
 ### 1. Cambiar una Meta de NPS o CSAT
 1. Edita el objeto correspondiente en [zoho-survey/shared/js/config/constants.js](zoho-survey/shared/js/config/constants.js).
-2. Valida localmente con `npm run test:js`.
-3. Haz `commit` y `push`; GitHub Actions ejecuta tests y despliega.
-4. Verifica visualmente en GitHub Pages.
+2. Haz `commit` y `push`: GitHub Actions ejecuta la suite completa y despliega.
+3. Verifica visualmente en GitHub Pages.
 
 ### 2. Agregar un Aspecto Semántico para NPS
 1. La taxonomía y reglas viven en [zoho-survey/scripts/lib/prompts_cualitativo.py](zoho-survey/scripts/lib/prompts_cualitativo.py) (prompt system para DeepSeek).
 2. Si el aspecto corresponde a una nueva categoría, agregala en [zoho-survey/scripts/lib/config.py](zoho-survey/scripts/lib/config.py) en `CATEGORIA_DIMENSION_PREGRADO` (o `CATEGORIA_DIMENSION_GRADUADO` según el nivel).
 3. Haz `commit` y `push`; GitHub Actions regenera los JSONs con el nuevo prompt.
-4. Valida que no haya errores de schema con `npm run validate:json` localmente (contra JSONs ya generados) o revisando el log de Actions.
+4. Verifica en el log del run (o en la pestaña Actions) que no hay errores de schema: el paso `Validate generated JSON contracts` es el gate.
 
 ### 3. Agregar un Nuevo Periodo de Encuesta (Ingesta de Datos)
-1. Sanitiza el CSV con `python zoho-survey/scripts/sanitize_csv_pii.py <ruta_csv>`.
+1. Verifica el nombre del CSV contra las reglas canónicas (ver `CONTRACTS.md`); la sanitización de PII la hace el workflow, no el equipo.
 2. Sube el CSV mediante el botón **"Subir datos"** del portal en GitHub Pages.
 3. GitHub Actions valida, procesa y genera los JSONs del nuevo periodo.
 4. Verifica en GitHub Pages que el nuevo periodo aparece en el portal y carga correctamente.
@@ -74,8 +73,8 @@ Para detalles de adición y ejecución de pruebas unitarias, consulta [tests/REA
 - [ ] Las rutas de archivos modificadas han sido validadas contra el árbol real.
 - [ ] No se han realizado ediciones manuales a los archivos JSON generados en `zoho-survey/students/**/json/`.
 - [ ] Si se modificó la estructura de datos, se actualizaron coherentemente los validadores de Python y [CONTRACTS.md](CONTRACTS.md).
-- [ ] Se ejecutaron `npm run test:js` y `npm run test:py` localmente sin fallos.
-- [ ] Se corrió con éxito `npm run validate:json` antes del commit.
+- [ ] El push ejecutó `tests.yml` en verde (Python + JS + jsdom + sintaxis).
+- [ ] El paso `Validate generated JSON contracts` del workflow de build pasó sin errores.
 
 ---
 

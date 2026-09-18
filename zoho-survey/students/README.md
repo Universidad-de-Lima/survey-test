@@ -31,7 +31,7 @@ Módulo del dominio de encuestas estudiantiles. Implementa el pipeline desde los
 | `../scripts/validate_generated_json.py`                         | Validates JSON contract compliance              |
 | `../template/index.html`                                        | Scaffold copied to new periods                  |
 | `../../docs/filter-logic.md`                                     | Filter cascade logic specification              |
-| `JSON_SCHEMA.md`                                                | JSON contract schema documentation              |
+| `../../CONTRACTS.md`                                             | Contratos de datos (version humana) + `../scripts/schemas/` |
 
 ## Data Flow
 
@@ -43,14 +43,13 @@ Módulo del dominio de encuestas estudiantiles. Implementa el pipeline desde los
 
 ## Execution Flow
 
-1. User places CSV file in `../../data/` (project root) with naming convention `ENCUESTA DE SATISFACCIÓN {LEVEL} - {PERIOD}.csv`
-2. User runs `python ../scripts/build_json.py` from `zoho-survey/students/` or `python scripts/build_json.py` from project root
-3. Script detects level from filename keywords (GRADUADOS, PREGRADO, POSGRADO, etc.)
-4. Extracts period from filename via regex `(20\d{2}(?:-[12])?)`
-5. Transforms CSV data through 21 pipeline steps (column mapping, aggregation, NPS/CSAT, qualitative IA with DeepSeek, insights)
-6. Writes 12+ JSON files to `{level}/{period}/json/`
-7. Copies `../template/index.html` if period `/index.html` doesn't exist
-8. Updates `{level}/periodos.json` with new period entry
+Todo ocurre en GitHub Actions; no hay ejecución local.
+
+1. El CSV se envía por el portal ("Subir datos") o se adjunta a un Release y se lanza `workflow_dispatch` con `release_tag`.
+2. Actions lo descarga a `data/` (solo en el runner) y valida nombre y headers (`validate_upload_csv.py`).
+3. Sanitiza PII (`sanitize_csv_pii.py`) y ejecuta `build_json.py`, que detecta el nivel por palabras clave del nombre (GRADUADOS, PREGRADO, POSGRADO, …) y el periodo por regex `(20\d{2}(?:-[12])?)`.
+4. Transforma el CSV en 21 pasos (mapeo de columnas, agregación, NPS/CSAT, IA cualitativa con DeepSeek, insights).
+5. Escribe los JSON del periodo en `{level}/{period}/json/`, copia `../template/index.html` si falta y actualiza `{level}/periodos.json`.
 
 ## Dependencies
 
@@ -63,23 +62,14 @@ Módulo del dominio de encuestas estudiantiles. Implementa el pipeline desde los
 - `periodos.json` por nivel — auto-generado por `build_json.py`. Define orden cronológico y flag `isNew`.
 - La detección de nivel se hace por nombre de archivo. Orden de prioridad: `NO DOCENTES` → `EMPLEADORES` → `EGRESADOS` → `DOCENTES` → `GRADUADOS` → `ESTUDIANTIL/ESTUDIANTES`.
 
-## Technical Debt
+## Deuda técnica y mejoras
 
-- **Posgrado sin datos**: La estructura `postgraduate/` existe pero no contiene datos procesados.
-- **Archivos legado**: `nps_carrera.json` y `csat_carrera.json` aún se generan como fallback para encuestas sin ciclo. El dashboard moderno solo los consume cuando `has_ciclo=false`.
-- **Template no versionado**: `../template/index.html` no tiene control de versiones. Cambios no se reflejan retroactivamente.
-- **CSV filename validation**: No hay validación pre-ETL del formato de nombre de archivo.
-
-## Improvement Opportunities
-
-- Agregar flag `--level` a `build_json.py` para procesar un nivel específico sin scanear todos los CSVs.
-- Migrar legacy JSON generation a un flag `--legacy` o eliminarlo.
-- Agregar version metadata a `../template/index.html` para detectar templates desactualizados.
+El registro único de deuda técnica del proyecto vive en [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) (§ "Deuda Técnica Vigente"). No se duplica aquí.
 
 ## AI Agent Notes
 
-- Documentación detallada de contratos en `JSON_SCHEMA.md` y lógica de filtros en `../../docs/filter-logic.md`.
+- Contratos de datos: `../../CONTRACTS.md` y los schemas de `../scripts/schemas/`. Lógica de filtros: `../../docs/filter-logic.md`.
 - El ETL copia `../template/index.html` solo si no existe en el directorio del periodo.
-- Validar JSON localmente: `python ../scripts/validate_generated_json.py {nivel}` desde `zoho-survey/students/` o `python scripts/validate_generated_json.py {nivel}` desde la raíz.
-- Los archivos CSV deben estar en `../../data/` con prefijo `ENCUESTA` en el nombre.
+- La validación de contratos y los tests corren **solo en GitHub Actions**; no se ejecutan comandos en local.
+- Los CSV llegan al runner por el portal o por un Release con tag (prefijo `ENCUESTA` en el nombre) y nunca se commitean.
 - El entry point del navegador es `zoho-survey/index.html` (no `students/undergraduate/index.html`).

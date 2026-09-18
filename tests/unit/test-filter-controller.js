@@ -31,26 +31,9 @@
   }
 
   // ── Helpers para simular la lógica de getCiclosForFiltro ──
-  // Como getCiclosForFiltro es interna al IIFE, replicamos su lógica
-  // exacta para testearla. Esto garantiza que si la implementación
-  // cambia, los tests fallen.
-
-  function esEstudiosGenLocal(facultad) {
-    return facultad === PROGRAMA_ESTUDIOS_GENERALES;
-  }
-
-  function getCiclosForFiltroLocal(facultad, carrera, cacheFiltros) {
-    if (esEstudiosGenLocal(facultad)) {
-      return CICLOS_ESTUDIOS_GENERALES;
-    }
-    const maxCiclos = (FACULTADES_12_CICLOS.includes(facultad) || CARRERAS_12_CICLOS.includes(carrera))
-      ? 12
-      : 10;
-    return (cacheFiltros.ciclos || []).filter(c => {
-      const num = parseInt(c, 10);
-      return !isNaN(num) && num <= maxCiclos;
-    });
-  }
+  // Como getCiclosForFiltro es interna al IIFE, los tests la ejercitan vía
+  // la API pública (fc.getCiclosForFiltro). Las réplicas locales que existían
+  // aquí (getCiclosForFiltroLocal / esEstudiosGenLocal) estaban muertas.
 
   describe('SurveyFilterController — API surface', () => {
     it('setup existe y acepta 3 parámetros', () => {

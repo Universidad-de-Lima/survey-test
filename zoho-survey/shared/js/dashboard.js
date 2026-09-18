@@ -916,25 +916,6 @@ const SurveyDashboard = (() => {
     tbody.appendChild(fragment);
   }
 
-  function normalizeDistributionHeights(tbody) {
-    const aboveW = tbody.querySelectorAll('.csat-labels-above');
-    const belowW = tbody.querySelectorAll('.csat-labels-below');
-    let maxH = 0;
-    aboveW.forEach((w) => { const h = parseFloat(w.style.height) || 0; if (h > maxH) maxH = h; });
-    belowW.forEach((w) => { const h = parseFloat(w.style.height) || 0; if (h > maxH) maxH = h; });
-    if (maxH > 0) {
-      tbody.querySelectorAll('.distribution-bar, .visibility-bar').forEach((bar) => {
-        const td = bar.parentElement;
-        let wa = td.querySelector('.csat-labels-above');
-        let wb = td.querySelector('.csat-labels-below');
-        if (!wa) { wa = document.createElement('div'); wa.className = 'csat-labels-above'; td.insertBefore(wa, bar); }
-        if (!wb) { wb = document.createElement('div'); wb.className = 'csat-labels-below'; td.appendChild(wb); }
-        wa.style.height = maxH + 'px';
-        wb.style.height = maxH + 'px';
-      });
-    }
-  }
-
   function renderDetalleCarreras() {
     const fac = $('filter-facultad-detalle').value;
     const cic = _dh.getSelectedValues($('filter-ciclo-detalle'));
@@ -1071,7 +1052,6 @@ const SurveyDashboard = (() => {
     const tbody = $('tbody-visibilidad');
     if (!tbody) return;
     const fragment = document.createDocumentFragment();
-    const fmtV = (val) => (val < 0 ? '' : Math.round(val) + ' %');
     data.forEach((item) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `

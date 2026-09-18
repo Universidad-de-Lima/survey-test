@@ -216,55 +216,28 @@
     });
   }
 
-  // Local development mode: use local server instead of GitHub API
-  var LOCAL_API_BASE = 'http://localhost:8000/api';
-  var useLocalMode = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
   function uploadToServer(files, token) {
     return Promise.resolve().then(function () {
       var uploadId = (crypto.randomUUID ? crypto.randomUUID() : 'su_' + Date.now());
       var repo = parseRepo();
-      var formData = new FormData();
-      for (var i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-      }
 
-      if (useLocalMode) {
-        return fetch(LOCAL_API_BASE + '/upload', {
-          method: 'POST',
-          body: formData
-        }).then(function (res) {
-          if (!res.ok) {
-            return res.text().then(function (txt) {
-              throw new Error('Server error ' + res.status + ': ' + txt.slice(0, 300));
-            });
-          }
-          return res.json();
+      // Regla del proyecto: el flujo es SIEMPRE GitHub (Release DRAFT temporal
+      // + repository_dispatch). No hay servidor local ni modo de desarrollo
+      // local, por lo que no existe rama alternativa.
+      return createRelease(repo, token, uploadId).then(function (release) {
+        var releaseId = release.id;
+        return Promise.all(files.map(function (file) {
+          return uploadAsset(release, file, token);
+        })).then(function () {
+          return dispatchWorkflow(repo, token, uploadId, releaseId, files);
         });
-      } else {
-        return createRelease(repo, token, uploadId).then(function (release) {
-          var releaseId = release.id;
-          return Promise.all(files.map(function (file) {
-            return uploadAsset(release, file, token);
-          })).then(function () {
-            return dispatchWorkflow(repo, token, uploadId, releaseId, files);
-          });
-        });
-      }
+      });
     });
   }
 
   function checkJobStatus(jobId) {
-    if (useLocalMode) {
-      return fetch(LOCAL_API_BASE + '/jobs/' + jobId).then(function (res) {
-        if (!res.ok) throw new Error('Failed to get job status');
-        return res.json();
-      }).then(function (data) {
-        return { status: data.status, message: data.message, output_files: data.output_files };
-      });
-    }
-    // En producción no se hace polling desde el cliente; GitHub Actions se
-    // supervisa directamente en la pestaña Actions del repositorio.
+    // No hay servidor propio: el estado del job solo existe en GitHub Actions,
+    // que se supervisa en la pestaña Actions del repositorio.
     return Promise.resolve({ status: 'unknown', message: 'El estado del job no está disponible en el cliente. Verifica GitHub Actions.', output_files: [] });
   }
 
@@ -272,13 +245,12 @@
     var host = window.location.hostname;
     var path = window.location.pathname || '';
     var parts = path.split('/').filter(function (s) { return s; });
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return 'ulima-saa/' + (parts[0] || 'survey-test');
-    }
+    // GitHub Pages: <owner>.github.io/<repo>
     var m = host.match(/^([^.]+)\.github\.io$/);
     if (m) {
       return m[1] + '/' + (parts[0] || 'survey-test');
     }
+    // Fallback: repositorio canónico del proyecto.
     return 'Universidad-de-Lima/survey-test';
   }
 
@@ -355,7 +327,6 @@
     dispatchWorkflow: dispatchWorkflow,
     parseRepo: parseRepo,
     uploadToServer: uploadToServer,
-    checkJobStatus: checkJobStatus,
-    useLocalMode: useLocalMode
+    checkJobStatus: checkJobStatus
   };
 })();
