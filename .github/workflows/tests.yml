@@ -1,24 +1,12 @@
 name: Tests
 
 on:
+  # Regla del proyecto: cada cambio se sube y se prueba en GitHub Actions.
+  # Sin filtros de paths: cualquier push a main o PR ejecuta la suite completa.
   pull_request:
-    paths:
-      - 'zoho-survey/scripts/**'
-      - 'zoho-survey/shared/js/**'
-      - 'zoho-survey/students/**'
-      - 'tests/**'
-      - 'requirements.txt'
-      - '.github/workflows/tests.yml'
   push:
     branches:
       - main
-    paths:
-      - 'zoho-survey/scripts/**'
-      - 'zoho-survey/shared/js/**'
-      - 'zoho-survey/students/**'
-      - 'tests/**'
-      - 'requirements.txt'
-      - '.github/workflows/tests.yml'
 
 jobs:
   python-tests:

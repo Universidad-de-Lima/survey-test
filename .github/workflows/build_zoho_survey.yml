@@ -16,6 +16,11 @@ on:
       - '.github/workflows/build_zoho_survey.yml'
 
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag del Release que contiene el/los CSV a procesar (ej. csv-2026-1). Dejar vacio para solo desplegar el sitio sin ejecutar el ETL.'
+        required: false
+        type: string
 
   repository_dispatch:
     types: [csv_upload]
@@ -82,9 +87,43 @@ jobs:
             echo "CSVs copiados a data/ para procesamiento ETL"
           fi
 
+      - name: Descargar CSV desde Release por tag (workflow_dispatch)
+        # Via alternativa al portal para ejecutar el ETL 100% en GitHub:
+        # el owner sube el CSV como asset de un Release y lanza este workflow
+        # indicando el tag. Los CSV se descargan directamente a data/ (temporal).
+        # El Release NO se elimina aqui: es del owner (solo el flujo del portal,
+        # repository_dispatch, borra su propio Release DRAFT temporal).
+        if: github.event_name == 'workflow_dispatch' && inputs.release_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          echo "Descargando CSVs del Release '${RELEASE_TAG}' a data/ ..."
+          gh release download "${RELEASE_TAG}" --pattern '*.csv' --dir data/ --clobber
+          ls -la data/*.csv
+
+      - name: Detectar CSVs a procesar
+        # Gate del ETL: sin CSV en data/ no se sanitiza, no se llama a la API IA
+        # y no se exige DEEPSEEK_API_KEY. Un push de HTML/CSS/JS solo despliega
+        # el sitio estatico y valida los contratos JSON ya versionados.
+        id: csv
+        run: |
+          shopt -s nullglob
+          csvs=(data/*.csv)
+          if [ ${#csvs[@]} -gt 0 ]; then
+            echo "hay_csv=true" >> "$GITHUB_OUTPUT"
+            echo "CSVs encontrados: ${#csvs[@]}"
+            for f in "${csvs[@]}"; do echo "  - $f"; done
+          else
+            echo "hay_csv=false" >> "$GITHUB_OUTPUT"
+            echo "Sin CSVs en data/: se omite el ETL (solo deploy estatico + validacion de contratos)."
+          fi
+
       - name: Verify DEEPSEEK_API_KEY
-        # Gate temprano: falla antes de instalar dependencias si la key falta.
-        # El motor legacy fue eliminado en v3.2.0, la key es obligatoria.
+        # Gate temprano, SOLO cuando hay CSVs que procesar: falla antes de
+        # instalar dependencias si la key falta. El motor legacy fue eliminado
+        # en v3.2.0, la key es obligatoria para el analisis cualitativo con IA.
+        if: steps.csv.outputs.hay_csv == 'true'
         run: |
           if [ -z "${{ secrets.DEEPSEEK_API_KEY }}" ]; then
             echo "ERROR: DEEPSEEK_API_KEY no esta configurada en GitHub Secrets."
@@ -116,18 +155,19 @@ jobs:
         # Idempotente: si el CSV ya esta sanitizado, no hace nada.
         # Columnas redactadas: Direccion IP, Agente Usuario, URL de la encuesta.
         # Esto garantiza que ningun CSV con PII llegue al repositorio publico.
+        if: steps.csv.outputs.hay_csv == 'true'
         run: python zoho-survey/scripts/sanitize_csv_pii.py --all
 
       - name: Run build_json.py
-        # DEEPSEEK_API_KEY se inyecta desde GitHub Secrets (verificada en el gate anterior).
-        # Es OBLIGATORIA desde v3.2.0: el motor legacy (spaCy + sentence-transformers)
-        # fue eliminado y no existe fallback. Si la key falta, el workflow falla antes
-        # de llegar a este step (ver "Verify DEEPSEEK_API_KEY").
+        # SOLO corre si hay CSV en data/ (ver "Detectar CSVs a procesar").
+        # DEEPSEEK_API_KEY se inyecta desde GitHub Secrets (verificada en el gate
+        # anterior, que a su vez solo se evalua cuando hay CSVs).
         #
         # Variables IA_CUALITATIVO_* controlan el comportamiento del motor IA:
         #   WORKERS=15    → 15 llamadas concurrentes a DeepSeek (speedup ~15x)
         #   MAX_RPM=60    → rate limit global (DeepSeek permite ~60 RPM)
         #   TIMEOUT=60    → timeout por llamada individual (segundos)
+        if: steps.csv.outputs.hay_csv == 'true'
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           IA_CUALITATIVO_WORKERS: "15"
@@ -187,13 +227,17 @@ jobs:
       - name: Remove uploaded CSVs before bot commit
         # Los CSVs subidos a data/ son insumo transitorio: después del build,
         # validación y deploy, se eliminan del estado final de main. El bot
-        # commitea los JSON/HTML generados y las eliminaciones de CSV juntas.
-        if: success()
+        # commitea los JSON/HTML generados.
+        # if: always() es OBLIGATORIO: si un paso previo falla (por ejemplo el
+        # ETL), este paso NO debe saltarse, porque el commit del bot corre más
+        # abajo y un CSV con comentarios NPS no puede llegar a un repo publico.
+        if: always()
         run: |
           if [ -d data ]; then
             find data -maxdepth 1 -type f -iname "*.csv" -delete
-            echo "CSVs subidos a data/ eliminados del workspace antes del commit del bot"
+            echo "CSVs en data/ eliminados del workspace antes del commit del bot"
           fi
+          ls -la data/ 2>/dev/null || true
 
       - name: Limpiar temporales y Release (csv_upload)
         # SOLO si TODO el procesamiento fue exitoso. Si falla, el Release
@@ -213,7 +257,10 @@ jobs:
         # Para uploads via repository_dispatch NO se hace commit/push automatico:
         # el owner empuja manualmente (regla Fase 3.8.2). El deploy a Pages ya
         # ocurrio via artifact. El bot NO hace git push en este path.
-        if: github.event_name != 'repository_dispatch'
+        # success() es explicito: en Actions, declarar "if:" SUSTITUYE la
+        # condicion implicita, asi que sin success() este paso correria incluso
+        # tras un fallo previo y podria stagear restos de data/.
+        if: success() && github.event_name != 'repository_dispatch'
         # Commit robusto: integra cambios remotos con rebase antes de push.
         # [skip ci] evita que el commit del bot dispare un nuevo run del workflow
         # (defensa en profundidad, aunque GITHUB_TOKEN ya no auto-dispara).
@@ -225,9 +272,17 @@ jobs:
           git config --global user.email "survey-bot@users.noreply.github.com"
 
           git add zoho-survey/
-          # Stagear altas/modificaciones/eliminaciones en data/. Esto permite
-          # que los CSVs subidos por web se borren de main en el commit del bot.
-          git add -A data/ 2>/dev/null || true
+
+          # Fail-closed: ningun CSV puede quedar en el area de staging.
+          # Los CSV contienen comentarios NPS con PII potencial y este repo es
+          # publico. Si algo llega aqui, se aborta el commit (y con el, el push).
+          STAGED_CSV=$(git diff --cached --name-only | grep -E '^data/.*\.csv$' || true)
+          if [ -n "$STAGED_CSV" ]; then
+            echo "ABORTADO: hay CSVs en el area de staging; no se commitea nada."
+            echo "$STAGED_CSV"
+            git reset
+            exit 1
+          fi
 
           # Salir limpio si no hay cambios (evita commit vacío)
           if git diff --cached --quiet; then
