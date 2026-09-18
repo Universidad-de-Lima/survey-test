@@ -17,8 +17,11 @@ Uso principal (integrado en build_json.py):
 
 Variables de entorno:
   - DEEPSEEK_API_KEY (obligatorio para modo IA).
-  - IA_CUALITATIVO_MODEL (opcional, default "deepseek-v4-flash").
+  - IA_CUALITATIVO_MODEL (opcional, default "deepseek-chat").
   - IA_CUALITATIVO_MAX_RPM (opcional, default 60).
+  - IA_CUALITATIVO_MAX_FALLOS_API_PCT (opcional, default 20): umbral fail-closed.
+    Si mas de ese porcentaje de comentarios falla por API, el ETL aborta y no se
+    publica sentimiento.json. 0 = estricto, 100 = desactivado.
   - (caché IA eliminado — la verificación por ID reemplaza al caché)
 """
 
@@ -46,6 +49,59 @@ except ImportError:
     _pd = None
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# UMBRAL FAIL-CLOSED DE FALLOS DE API
+# ============================================================
+
+# Motivo que registra la unidad placeholder cuando NINGUN motor pudo responder.
+MOTIVO_FALLO_API = "Error de API (todos los motores fallaron)"
+
+# Muestra minima para aplicar el umbral: con pocos comentarios una tasa alta no
+# es significativa y bloquearia el build sin motivo.
+MIN_INTENTOS_UMBRAL = 10
+
+# Workers maximos cuando NVIDIA es el motor activo (free tier ~30 req/min).
+NVIDIA_MAX_WORKERS = 3
+
+
+def _umbral_fallos_pct() -> float:
+    """Lee el umbral de fallos (porcentaje) desde el entorno. Default 20."""
+    try:
+        return float(os.environ.get("IA_CUALITATIVO_MAX_FALLOS_API_PCT", "20"))
+    except (TypeError, ValueError):
+        return 20.0
+
+
+def evaluar_fallo_masivo(intentos_api: int, fallos_api: int) -> Optional[str]:
+    """Evalua si la tasa de fallos de API obliga a abortar el ETL.
+
+    Fail-closed: si mas del `IA_CUALITATIVO_MAX_FALLOS_API_PCT` por ciento de los
+    comentarios enviados a la IA no pudo analizarse con NINGUN motor, los
+    indicadores cualitativos no son representativos y no deben publicarse.
+
+    Devuelve el mensaje de error si hay que abortar, o None si el build puede
+    continuar. `IA_CUALITATIVO_MAX_FALLOS_API_PCT=0` = modo estricto (cualquier
+    fallo aborta); un valor alto (p. ej. 100) desactiva el umbral.
+    """
+    if intentos_api <= 0 or fallos_api <= 0:
+        return None
+    if intentos_api < MIN_INTENTOS_UMBRAL:
+        return None
+    umbral = _umbral_fallos_pct()
+    tasa = (fallos_api / intentos_api) * 100.0
+    if tasa <= umbral:
+        return None
+    return (
+        f"Fallo de API masivo en el analisis cualitativo: "
+        f"{fallos_api}/{intentos_api} comentarios ({tasa:.1f}%) no pudieron "
+        f"analizarse con ningun motor (umbral "
+        f"IA_CUALITATIVO_MAX_FALLOS_API_PCT={umbral:.0f}%, muestra minima "
+        f"{MIN_INTENTOS_UMBRAL}). No se publica sentimiento.json para este "
+        "periodo: revisa la clave/cuota de DeepSeek (y NVIDIA_API_KEY como "
+        "respaldo) y relanza el ETL."
+    )
 
 
 # ============================================================
@@ -114,7 +170,7 @@ def analizar_comentario(comentario: str,
 
     # Ambos fallaron
     return _placeholder(comentario, "Ambos motores (DeepSeek + fallback) fallaron o devolvieron respuesta invalida.",
-                       "Error de API (todos los motores fallaron)")
+                       MOTIVO_FALLO_API)
 
 
 def _placeholder(comentario: str, detalle: str, motivo: str) -> dict:
@@ -197,7 +253,11 @@ def analizar_dataset_cualitativo(
     ruido_filtrado = 0
 
     total_rows = len(df_sent)
-    workers = DEFAULT_WORKERS
+    # NVIDIA (free tier) no tolera 15 llamadas concurrentes: su cliente ya se
+    # construye con max_rpm=15 (1 llamada/4 s), asi que reducir el pool evita
+    # tormentas de 429/timeouts cuando NVIDIA es el motor activo.
+    workers = (NVIDIA_MAX_WORKERS if client.provider == "nvidia"
+               else DEFAULT_WORKERS)
     logger.info(
         f"Iniciando analisis IA de {total_rows} comentarios "
         f"(modelo: {client.model}, {workers} workers, timeout={client.timeout}s)."
@@ -316,11 +376,27 @@ def analizar_dataset_cualitativo(
 
     cache_hits = 0  # sin cache
 
+    # C-1 (fail-closed): intentos enviados realmente a la IA y cuantos no pudo
+    # analizar NINGUN motor. Antes quedaban como placeholders invalidos, el run
+    # se daba por bueno (errores=0) y se publicaba sentimiento.json calculado
+    # sobre una muestra irrelevante (incidente 2026-1: 892 de 898).
+    intentos_api = len(fut_map)
+    fallos_api = sum(
+        1 for d in dataset_cualitativo
+        if d.get("motivo_invalidez") == MOTIVO_FALLO_API
+    )
+    tasa_fallos_api = (
+        round((fallos_api / intentos_api) * 100.0, 1) if intentos_api else 0.0
+    )
+
     metadata = {
         "total_encuestas": total_comentarios,
         "total_fragmentos": total_unidades,
         "errores": errores,
         "ruido_filtrado": ruido_filtrado,
+        "fallos_api": fallos_api,
+        "intentos_api": intentos_api,
+        "tasa_fallos_api": tasa_fallos_api,
         "cache_hits": cache_hits,
         "tiempo_segundos": round(_elapsed, 2),
         "stats_sentimiento": {
@@ -338,9 +414,17 @@ def analizar_dataset_cualitativo(
     logger.info(
         f"Analisis IA completado: {total_comentarios} comentarios, "
         f"{total_unidades} unidades, {errores} errores, "
-        f"{ruido_filtrado} ruido pre-filtrado. "
+        f"{ruido_filtrado} ruido pre-filtrado, "
+        f"{fallos_api}/{intentos_api} fallos de API ({tasa_fallos_api}%). "
         f"Tiempo: {_elapsed:.1f}s."
     )
+
+    # Umbral fail-closed: se evalua ANTES de escribir nada, de modo que el ETL
+    # aborta y no se publica sentimiento.json poco fiable.
+    error_umbral = evaluar_fallo_masivo(intentos_api, fallos_api)
+    if error_umbral:
+        logger.error(error_umbral)
+        raise RuntimeError(error_umbral)
 
     return dataset_cualitativo, metadata
 

@@ -11,7 +11,8 @@ Metodología base:
   - Triangulación mixta cualitativa-cuantitativa: reglas de sesgo por contexto NPS
     y cross-reference con calificaciones CSAT por dimensión.
 
-Compatibilidad: DeepSeek API (OpenAI-compatible), modelos `deepseek-v4-flash`.
+Compatibilidad: DeepSeek API (OpenAI-compatible). Modelo por defecto
+`deepseek-chat`, configurable con `IA_CUALITATIVO_MODEL`.
 """
 
 import json

@@ -109,6 +109,8 @@ El pipeline genera hasta 11 archivos por periodo en `zoho-survey/students/{level
 
 > **Nota sobre `fragmentos_nps.json` y `dataset_cualitativo.json`:** Son archivos intermedios del ETL consumidos internamente por `build_json.py` para producir `sentimiento.json`. El frontend no los consume directamente. `dataset_cualitativo.json` tiene schema formal (`dataset_cualitativo.schema.json`, validación manual opcional); `fragmentos_nps.json` no tiene schema formal porque es un dato de trabajo sin consumidores externos.
 
+> **Umbral fail-closed de calidad (C-1):** `metadata` incluye `fallos_api`, `intentos_api` y `tasa_fallos_api`. Si `tasa_fallos_api` supera `IA_CUALITATIVO_MAX_FALLOS_API_PCT` (default 20%, con muestra mínima de 10 intentos), el ETL **aborta** y no escribe `sentimiento.json` para ese periodo: los indicadores cualitativos no son representativos y no deben publicarse.
+
 Los archivos legacy (`nps_carrera.json`, `csat_carrera.json`) se validan solo si existen; el validador emite advertencia. El frontend los carga como fallback síncrono solo en encuestas sin ciclos (`has_ciclo=false`, ej. graduados).
 
 ## Convencion de claves NPS

@@ -594,14 +594,15 @@ def main() -> None:
             if deepseek_key:
                 _primary_client = DeepSeekClient(api_key=deepseek_key)
             if nvidia_key:
-                # NVIDIA API gratuita: ~30 req/min. Limitar workers y rate para evitar 429.
+                # NVIDIA API gratuita: ~30 req/min. El rate se limita aqui
+                # (max_rpm=15) y el tamano del pool cuando NVIDIA es el motor
+                # activo se decide en lib/ia_cualitativo.py (NVIDIA_MAX_WORKERS).
                 _fallback_client = DeepSeekClient(
                     api_key=nvidia_key,
                     model=FALLBACK_MODEL,
                     max_rpm=15,
                     provider="nvidia",
                 )
-                _nvidia_max_workers = 3
 
             # Merge columnas CSAT por dimension en df_sent (para cross-reference)
             _dimension_cols = [d for d in categoria_dim.keys()

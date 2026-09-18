@@ -94,11 +94,13 @@ Además, existe un **fallback a NVIDIA** (`NVIDIA_API_KEY`) que se activa autom�
 | `IA_CUALITATIVO_WORKERS` | entero (default 15) | Workers concurrentes para IA. |
 | `IA_CUALITATIVO_MAX_RPM` | entero (default 60) | Rate limit de API. |
 | `IA_CUALITATIVO_TIMEOUT` | entero (default 60s) | Timeout por llamada. |
+| `IA_CUALITATIVO_MAX_FALLOS_API_PCT` | entero (default 20) | Umbral fail-closed: si un porcentaje mayor de comentarios falla por API (DeepSeek y NVIDIA), el ETL aborta y no publica `sentimiento.json` para ese periodo. `0` = estricto; `100` = desactivado. |
 
 **Motor IA (DeepSeek + fallback NVIDIA):**
 - Una sola llamada API ejecuta 5 tareas: segmentación → sentimiento con reglas NPS → intensidad → clasificación taxonómica → cross-reference CSAT.
 - Deduplicación por ID: `build_json.py` usa `sentimiento.json` como fuente de verdad; solo envía a DeepSeek los comentarios nuevos (sin caché persistente).
-- Rate limit: 60 RPM, 15 workers concurrentes. Timeout: 60s por llamada.
+- Rate limit: 60 RPM y 15 workers con DeepSeek; con NVIDIA como motor activo, 15 RPM y 3 workers (free tier). Timeout: 60s por llamada.
+- Fail-closed de calidad: si más del 20% de los comentarios fracasa por API, el build falla y no se publica `sentimiento.json` (en vez de publicar indicadores calculados sobre una muestra irrelevante).
 - Costo estimado: ~$0.50 por build completo (solo comentarios nuevos).
 
 ### Ejecutar el motor IA
