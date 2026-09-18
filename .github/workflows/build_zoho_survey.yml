@@ -2,6 +2,11 @@ name: Build and Deploy Survey
 
 on:
   push:
+    # Solo la rama principal despliega: el entorno github-pages rechaza el deploy
+    # desde ramas de PR (environment protection rules), lo que generaba runs en
+    # rojo en cada push de dependabot sin aportar informacion.
+    branches:
+      - main
     paths:
       # El artifact que se sube a Pages es ./zoho-survey completo: cualquier
       # cambio bajo esa carpeta debe redesplegarse (antes, un cambio en

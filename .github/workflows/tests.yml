@@ -60,7 +60,7 @@ jobs:
         run: npm install
 
       - name: Run ESLint (JS style)
-        # ESLint 9 con configuracion flat (eslint.config.js).
+        # ESLint 9 con configuracion flat (eslint.config.mjs).
         # Reglas: no-unused-vars, no-undef, no-alert, no-implied-eval, no-var.
         # Informativo mientras exista backlog de hallazgos, pero fail-closed ante
         # una configuracion que no cargue: exit 1 = hallazgos (no bloquea);
@@ -72,7 +72,7 @@ jobs:
           code=$?
           set -e
           if [ "$code" -ge 2 ]; then
-            echo "ERROR: ESLint no pudo ejecutarse (revisar eslint.config.js)"
+            echo "ERROR: ESLint no pudo ejecutarse (revisar eslint.config.mjs)"
             exit 1
           fi
           echo "ESLint informativo: exit=$code (1 = hay hallazgos, no bloquea)"

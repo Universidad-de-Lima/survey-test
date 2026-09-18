@@ -1,11 +1,15 @@
 /**
- * ESLint 9 — configuracion flat.
+ * ESLint 9/10 — configuracion flat en ESM (.mjs).
  *
- * Motivo de la migracion: el proyecto tenia .eslintrc.json (formato eslintrc) y
- * el workflow lo invocaba con `--no-eslintrc --config .eslintrc.json`. En ESLint
- * 9 el flag `--no-eslintrc` fue ELIMINADO (sustituido por `--no-config-lookup`) y
- * el formato eslintrc esta deprecado, de modo que el paso de lint no analizaba
- * nada y el `|| true` ocultaba el fallo. Estas reglas equivalen a las originales.
+ * Motivo: el proyecto tenia .eslintrc.json (formato eslintrc) y el workflow lo
+ * invocaba con `--no-eslintrc --config .eslintrc.json`. En ESLint 9 ese flag fue
+ * ELIMINADO (sustituido por `--no-config-lookup`) y el formato eslintrc esta
+ * deprecado, de modo que el paso de lint no analizaba nada y el `|| true`
+ * ocultaba el fallo.
+ *
+ * Se usa .mjs con `export default` (no .js con module.exports) para ser
+ * compatible tanto con ESLint 9 como con ESLint 10, que ya no acepta la
+ * configuracion flat en formato CommonJS.
  *
  * El paso de CI trata el resultado asi:
  *   - exit 0  -> sin hallazgos
@@ -81,7 +85,7 @@ const RULES = {
   'no-var': 'warn',
 };
 
-module.exports = [
+export default [
   {
     // Los JSON generados por el ETL y las dependencias no se lintean.
     ignores: ['node_modules/**', 'zoho-survey/**/json/**', 'tests/screenshots/**'],
@@ -101,17 +105,7 @@ module.exports = [
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'commonjs',
-      globals: Object.assign({}, BROWSER_GLOBALS, {
-        require: 'readonly',
-        module: 'readonly',
-        process: 'readonly',
-        __dirname: 'readonly',
-        global: 'readonly',
-        Buffer: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-      }),
+      globals: { ...BROWSER_GLOBALS, require: 'readonly', module: 'readonly', process: 'readonly', __dirname: 'readonly', global: 'readonly', Buffer: 'readonly' },
     },
     rules: RULES,
   },
