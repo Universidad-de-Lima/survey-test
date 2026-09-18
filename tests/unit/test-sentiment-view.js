@@ -4,7 +4,7 @@
  * Valida funciones puras y lógica de estado del módulo cualitativo.
  * No prueba renderizado DOM completo (requiere jsdom + fixtures HTML).
  *
- * Ejecutar en navegador: abrir tests/run-tests.html
+ * Ejecutar: ver el job `js-tests` en GitHub Actions
  * Ejecutar en CI: node (tests.yml)
  */
 (() => {

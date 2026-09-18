@@ -17,7 +17,6 @@ El detalle de cada job y su resultado se consulta en la pestaña **Actions** del
 
 ```text
 tests/
-├── run-tests.html              # Runner HTML para navegador
 ├── test-framework.js           # Mini-framework: assert, describe, it, renderTo
 └── unit/
     ├── test-config.js          # SURVEY_CONFIG (9 tests)
@@ -37,9 +36,8 @@ tests/
 
 1. Crear `tests/unit/test-<nombre>.js`.
 2. Usar el patrón IIFE y `window.TestFramework`.
-3. Registrar el archivo con `<script>` en `tests/run-tests.html`.
-4. Para ejecución en CI, añadir el archivo al script inline en `package.json` (`test:js`) y en `.github/workflows/tests.yml`.
-5. Abrir el runner y verificar el resultado.
+3. Añadirlo al runner inline del job correspondiente en `.github/workflows/tests.yml` (única vía de ejecución del proyecto).
+4. Haz `push`: el job falla si algún test falla y el detalle se ve en la pestaña Actions.
 
 ```javascript
 (() => {

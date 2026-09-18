@@ -37,8 +37,8 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
 
 ### Frontend JS (`zoho-survey/shared/js/`)
 
-- **13 modulos IIFE** expuestos via `window.Survey*`.
-- **`dashboard.js`** (~1278 lineas): orquestador principal.
+- **13 modulos IIFE** en `shared/js/` (22 archivos JS; 19 simbolos `window.Survey*`).
+- **`dashboard.js`**: orquestador principal del dashboard por periodo.
 - **Orden de carga critico**: ver `shared/README.md`. `dom-helpers.js` debe cargarse antes que `custom-select.js`.
 - Las funciones globales son `window.SurveyTooltip.show/hide` (NO `window.showTooltip/hideTooltip`).
 
@@ -114,8 +114,13 @@ No debe:
 
 ## Reglas GitHub Actions
 
+**Regla de ejecucion: nada corre en local.** El ETL, los tests, la validacion de contratos y el despliegue ocurren unicamente en GitHub Actions; la verificacion se hace sobre el run.
+
 Los workflows deben:
 
+- ser la unica via de ejecucion del proyecto (sin pasos manuales locales)
+- dispararse con cualquier push a `main` (sin filtros de `paths` que dejen cambios sin verificar)
+- condicionar los pasos que exigen secretos a que exista trabajo real (p. ej. CSV en `data/`)
 - minimizar commits innecesarios
 - evitar loops automaticos
 - evitar regeneraciones redundantes
@@ -133,7 +138,7 @@ Los siguientes archivos son single points of failure. Modificarlos requiere actu
 | `zoho-survey/scripts/validate_generated_json.py` | Validacion de contratos. Cambios deben sincronizarse con schemas. |
 | `zoho-survey/scripts/schemas/*.schema.json` | Fuente formal de tipos. Cambios deben propagarse a ETL, validador y CONTRACTS.md. |
 | `zoho-survey/template/index.html` | IDs HTML son contratos publicos con `dashboard.js` y `filter-controller.js`. |
-| `zoho-survey/shared/js/dashboard.js` | Orquestador monolitico (~1278 lineas). |
+| `zoho-survey/shared/js/dashboard.js` | Orquestador monolitico del dashboard por periodo. |
 | `zoho-survey/shared/js/config/constants.js` | Metas y reglas de negocio consumidas por 4 modulos. |
 
 ## Respuestas Tecnicas

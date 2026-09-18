@@ -60,11 +60,22 @@ jobs:
         run: npm install
 
       - name: Run ESLint (JS style)
-        # Linting JS con ESLint. Configuracion en .eslintrc.json.
+        # ESLint 9 con configuracion flat (eslint.config.js).
         # Reglas: no-unused-vars, no-undef, no-alert, no-implied-eval, no-var.
-        # Fase 2: informativo (no bloquea). Fase 3: se hara estricto.
+        # Informativo mientras exista backlog de hallazgos, pero fail-closed ante
+        # una configuracion que no cargue: exit 1 = hallazgos (no bloquea);
+        # exit >= 2 = error de configuracion (bloquea, para que una config rota
+        # no quede oculta como ocurría con el `--no-eslintrc` de ESLint 8).
         run: |
-          npx eslint zoho-survey/shared/js/ tests/ --no-eslintrc --config .eslintrc.json || true
+          set +e
+          npx eslint zoho-survey/shared/js tests
+          code=$?
+          set -e
+          if [ "$code" -ge 2 ]; then
+            echo "ERROR: ESLint no pudo ejecutarse (revisar eslint.config.js)"
+            exit 1
+          fi
+          echo "ESLint informativo: exit=$code (1 = hay hallazgos, no bloquea)"
 
       - name: Verify JS syntax (all modules)
         run: |

@@ -5,7 +5,7 @@
  * Las funciones esEstudiosGen y getCiclosForFiltro son internas al IIFE;
  * las validamos indirectamente a través de la API pública y configuración.
  *
- * Ejecutar en navegador: abrir tests/run-tests.html
+ * Ejecutar: ver el job `js-tests` en GitHub Actions
  * Ejecutar en CI: node (tests.yml)
  */
 (() => {

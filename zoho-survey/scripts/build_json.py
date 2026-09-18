@@ -699,15 +699,31 @@ def main() -> None:
                 )
             else:
                 logging.info("No hay comentarios nuevos. Se reutilizan los datos existentes.")
+                # M-8: este dict debe tener la MISMA forma que el de un run real
+                # (schema dataset_cualitativo -> metadata.additionalProperties=false).
+                # Antes omitia 'usage' (KeyError al construir el log de resumen) e
+                # incluia 'modelo_ia', que no esta declarado en el schema.
                 _datos_fragmentos_nuevos, _dataset_nuevo, _ia_metadata = [], [], {
                     "total_encuestas": 0,
                     "total_fragmentos": 0,
                     "errores": 0,
                     "ruido_filtrado": 0,
+                    "fallos_api": 0,
+                    "intentos_api": 0,
+                    "tasa_fallos_api": 0,
                     "cache_hits": 0,
                     "tiempo_segundos": 0,
-                    "stats_sentimiento": {},
-                    "modelo_ia": "deepseek (sin novedades este run)",
+                    "stats_sentimiento": {
+                        "total_opinion_units": 0,
+                        "positivos": 0,
+                        "negativos": 0,
+                        "neutros": 0,
+                    },
+                    "usage": {
+                        "input_tokens": 0,
+                        "output_tokens": 0,
+                        "total_tokens": 0,
+                    },
                 }
 
             dataset_cualitativo = _dataset_existente + _dataset_nuevo

@@ -2,7 +2,7 @@
  * TESTS — SurveyMetrics (gemelo JS de lib/metrics.py)
  *
  * Verifica que las funciones JS produzcan los mismos resultados que su
- * contraparte Python sobre los mismos inputs. Ejecutar: abrir tests/run-tests.html.
+ * contraparte Python sobre los mismos inputs. Ejecutar: ver el job `js-tests` en GitHub Actions.
  *
  * Contrato verificado:
  * - calcBoxScore(subset, total): (subset / total) * 100, 0 si total=0.

@@ -2,7 +2,7 @@
  * TESTS — SurveySanitizer
  *
  * Prueba las funciones de sanitización HTML.
- * Ejecutar: abrir tests/run-tests.html en el navegador.
+ * Ejecutar: ver el job `js-tests` en GitHub Actions.
  */
 (() => {
   'use strict';

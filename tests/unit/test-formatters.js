@@ -2,7 +2,7 @@
  * TESTS — SurveyFormatters
  *
  * Prueba todas las funciones de formateo exportadas por utils/formatters.js.
- * Ejecutar: abrir tests/run-tests.html en el navegador.
+ * Ejecutar: ver el job `js-tests` en GitHub Actions.
  *
  * Contrato verificado (v1.1.0):
  * - formatDecimal(n, digits=2): SIEMPRE muestra `digits` decimales, incluso
