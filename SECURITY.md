@@ -28,7 +28,7 @@ If you discover PII exposure or security issue:
 
 ## Environment Variables
 
-See `.env.example` for required and optional environment variables, including:
+See `docs/developer-guide.md` (§ "Configuración del Motor Cualitativo") for required and optional environment variables, including:
 - `DEEPSEEK_API_KEY` (principal)
 - `NVIDIA_API_KEY` (fallback)
 - `IA_CUALITATIVO_*` (workers, RPM, timeout, modelos)

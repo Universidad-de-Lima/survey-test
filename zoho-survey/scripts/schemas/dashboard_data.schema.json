@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/dashboard_data.json",
+  "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/dashboard_data.schema.json",
   "title": "Dashboard Data",
   "description": "Contrato de datos agregados del dashboard (KPIs ejecutivos, NPS, CSAT, hallazgos). Fuente de verdad: build_json.py. El ETL produce claves en minúsculas para NPS; el frontend acepta ambos casings vía nullish coalescing. El contrato canónico es minúsculas.",
   "type": "object",

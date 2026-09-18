@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/dimensiones.json",
+  "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/dimensiones.schema.json",
   "title": "Dimensiones",
   "description": "Agregados por facultad/carrera/ciclo/categoría/dimensión. Fuente de verdad: build_json.py. Versión implícita del contrato.",
   "type": "array",

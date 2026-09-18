@@ -59,10 +59,11 @@ zoho-survey/nonfacultystaff/**/exports/
 # profundidad, no control primario.
 data/
 
-# Environment files (secrets never committed)
+# Environment files (secrets never committed). No hay .env.example: las
+# variables se documentan en docs/developer-guide.md y viven en GitHub Secrets,
+# ya que el proyecto no se ejecuta en local.
 .env
 .env.*
-!.env.example
 # la sanitizacion en CI es defensa en profundidad, no control primario.
 
 # Misc

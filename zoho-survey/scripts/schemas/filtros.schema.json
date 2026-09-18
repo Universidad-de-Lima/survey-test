@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/filtros.json",
+  "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/filtros.schema.json",
   "title": "Filtros",
   "description": "Metadatos de filtros para la cascada Facultad → Carrera → Ciclo.",
   "type": "object",

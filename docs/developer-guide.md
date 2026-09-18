@@ -22,7 +22,7 @@ Antes de realizar cambios, familiarízate con los siguientes documentos según t
 | Tipo | SPA estática para GitHub Pages |
 | Stack | HTML, CSS, Vanilla JS, Python |
 | Dependencias Runtime | 0 |
-| Dependencias ETL | pandas, jsonschema, openpyxl, python-dotenv |
+| Dependencias ETL | pandas, jsonschema (openpyxl solo para la herramienta manual `validar_ia_vs_manual.py`) |
 | Ejecución de Tests | **Solo** GitHub Actions (`tests.yml`): unittest + JS + jsdom + sintaxis |
 
 ## Puntos de Entrada Comunes

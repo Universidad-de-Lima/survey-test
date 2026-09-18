@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 # Rutas base
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # survey-storytelling/
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # survey-test/
 ZOHO_DIR = ROOT_DIR / "zoho-survey"
 
 # Orden canónico del template (13 scripts: template/index.html → dashboards individuales)

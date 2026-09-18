@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/ids.json",
+  "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/ids.schema.json",
   "title": "Conteos por Facultad/Carrera/Ciclo",
   "description": "Conteo de respuestas válidas agregadas por facultad/carrera/ciclo. La suma total debe ser > 0. Fuente de verdad: build_json.py.",
   "type": "array",

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://universidad-de-lima.github.io/survey-storytelling/schemas/sentimiento.json",
+  "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/sentimiento.schema.json",
   "title": "Sentimiento",
   "description": "Análisis cualitativo de comentarios NPS (tópicos, frases, distribución, comentarios individuales e insights). Fuente de verdad: build_json.py. Versión 3.0 del contrato.",
   "type": "object",

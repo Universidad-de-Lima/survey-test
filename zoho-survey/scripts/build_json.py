@@ -5,7 +5,6 @@ Importa mapeos centralizados, calcula métricas de NPS/CSAT,
 clasifica tópicos cualitativos y genera archivos JSON de contratos de datos.
 """
 
-from dotenv import load_dotenv
 import pandas as pd
 import json
 import os
@@ -17,7 +16,8 @@ from shutil import copyfile
 from collections import defaultdict
 from typing import Dict, List, Set
 
-load_dotenv()  # Cargar .env antes de usar variables de entorno
+# Sin python-dotenv: el proyecto se ejecuta unicamente en GitHub Actions, donde
+# las variables llegan por entorno (Secrets). No se lee ningun archivo .env.
 
 # Importar configuración, métricas, nlp e io_helpers modularizados
 from lib.config import (
@@ -578,7 +578,8 @@ def main() -> None:
             if not deepseek_key and not nvidia_key:
                 raise RuntimeError(
                     "Ni DEEPSEEK_API_KEY ni NVIDIA_API_KEY están configuradas. "
-                    "Configure al menos una de las claves en environment variables o en .env local."
+                    "Configure al menos una de las claves en GitHub Actions Secrets "
+                    "(Settings → Secrets and variables → Actions)."
                 )
             if deepseek_key:
                 logging.info("Modo IA Cualitativo ACTIVADO (DeepSeek primario).")
