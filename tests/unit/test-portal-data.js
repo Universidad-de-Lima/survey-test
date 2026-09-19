@@ -37,30 +37,70 @@
     });
   });
 
-  describe('portal-data — faseConDatos', () => {
-    it('1.0 sin periodos reales no tiene datos', () => {
-      assert.equal(core.faseConDatos('1.0', [], []), false);
+  describe('portal-data — nivelDeFase', () => {
+    it('mapea cada item con datos a su carpeta', () => {
+      assert.equal(core.nivelDeFase('1.0'), 'students/undergraduate');
+      assert.equal(core.nivelDeFase('1.1'), 'students/postgraduate');
+      assert.equal(core.nivelDeFase('1.2'), 'students/graduate');
+      assert.equal(core.nivelDeFase('1.3'), 'alumni/undergraduate');
+      assert.equal(core.nivelDeFase('1.4'), 'alumni/postgraduate');
+      assert.equal(core.nivelDeFase('1.5'), 'facultystaff/undergraduate');
+      assert.equal(core.nivelDeFase('1.6'), 'facultystaff/postgraduate');
+      assert.equal(core.nivelDeFase('1.7'), 'nonfacultystaff');
+      assert.equal(core.nivelDeFase('1.8'), 'employers');
     });
 
-    it('1.0 con un periodo real si tiene datos', () => {
-      assert.equal(core.faseConDatos('1.0', ['2026-1'], []), true);
+    it('el item de preguntas (1.9) no tiene carpeta de datos', () => {
+      assert.equal(core.nivelDeFase('1.9'), null);
     });
 
-    it('1.2 depende de la lista de graduados', () => {
-      assert.equal(core.faseConDatos('1.2', ['2026-1'], []), false);
-      assert.equal(core.faseConDatos('1.2', [], ['2026']), true);
+    it('un item desconocido no tiene carpeta', () => {
+      assert.equal(core.nivelDeFase('9.9'), null);
     });
 
-    it('las demas fases no tienen dashboard de datos propio', () => {
-      assert.equal(core.faseConDatos('1.1', ['2026-1'], ['2026']), false);
-      assert.equal(core.faseConDatos('1.3', ['2026-1'], ['2026']), false);
+    it('cada carpeta del mapa existe en el repositorio con su periodos.json', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const raiz = path.resolve(__dirname, '..', '..');
+      Object.keys(core.NIVELES_FASE).forEach(id => {
+        const archivo = path.join(raiz, 'zoho-survey', core.NIVELES_FASE[id], 'periodos.json');
+        assert.isTrue(fs.existsSync(archivo), 'falta ' + archivo);
+      });
     });
   });
 
-  describe('portal-data — tieneDatosDeFase (estado real al arrancar)', () => {
-    it('sin nada cargado, 1.0 y 1.2 no tienen datos', () => {
+  describe('portal-data — periodosDeFase / faseConDatos (puros)', () => {
+    const MAPA = { '1.0': ['2026-1', '2025-2'], '1.1': [] };
+
+    it('devuelve los periodos del item pedido', () => {
+      assert.deepEqual(core.periodosDeFase('1.0', MAPA), ['2026-1', '2025-2']);
+    });
+
+    it('un item sin periodos devuelve lista vacia', () => {
+      assert.deepEqual(core.periodosDeFase('1.1', MAPA), []);
+      assert.deepEqual(core.periodosDeFase('1.2', MAPA), []);
+    });
+
+    it('faseConDatos distingue con y sin datos', () => {
+      assert.equal(core.faseConDatos('1.0', MAPA), true);
+      assert.equal(core.faseConDatos('1.1', MAPA), false);
+    });
+
+    it('sin mapa no falla', () => {
+      assert.deepEqual(core.periodosDeFase('1.0', null), []);
+      assert.equal(core.faseConDatos('1.0', null), false);
+    });
+  });
+
+  describe('portal-data — estado real al arrancar', () => {
+    it('sin nada cargado, ningun item tiene datos', () => {
       assert.equal(data.tieneDatosDeFase('1.0'), false);
-      assert.equal(data.tieneDatosDeFase('1.2'), false);
+      assert.equal(data.tieneDatosDeFase('1.1'), false);
+      assert.equal(data.tieneDatosDeFase('1.8'), false);
+    });
+
+    it('getPeriodosDeFase devuelve lista vacia sin datos', () => {
+      assert.deepEqual(data.getPeriodosDeFase('1.0'), []);
     });
   });
 })();
