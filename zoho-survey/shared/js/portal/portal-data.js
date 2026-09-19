@@ -51,15 +51,40 @@
   let DEFAULT_PERIODO = null;
   let PERIODOS_LIST = [];
   let GRADUATE_DATA = null;
+  let GRADUATE_PERIODO = null;
+  let GRADUATE_PERIODOS_LIST = [];
+
+  // Entrada marcadora de "todavía no hay nada publicado" en periodos.json.
+  const URL_PLACEHOLDER = 'underconstruction.html';
+
+  // ── Helper puro: solo periodos reales (el marcador no es un periodo) ──
+  function periodosReales(entradas) {
+    return (Array.isArray(entradas) ? entradas : [])
+      .filter(p => p && typeof p.id === 'string' && p.id.trim() !== '' && p.url !== URL_PLACEHOLDER)
+      .map(p => p.id);
+  }
+
+  // ── Helper puro: ¿esta fase del portal tiene datos publicados? ──
+  function faseConDatos(phaseId, listaPeriodos, listaGraduados) {
+    if (phaseId === '1.0') return (listaPeriodos || []).length > 0;
+    if (phaseId === '1.2') return (listaGraduados || []).length > 0;
+    return false;
+  }
+
+  // ── Con el estado real ya cargado ──
+  function tieneDatosDeFase(phaseId) {
+    return faseConDatos(phaseId, PERIODOS_LIST, GRADUATE_PERIODOS_LIST);
+  }
 
   // ── Carga de periodos ──
   async function loadPeriodos() {
     try {
       const res = await fetch('./students/undergraduate/periodos.json', { cache: 'no-store' });
       const periodos = await res.json();
-      const nuevo = periodos.find(p => p.isNew === true);
-      DEFAULT_PERIODO = nuevo ? nuevo.id : (periodos[0] && periodos[0].id);
-      PERIODOS_LIST = periodos.map(p => p.id);
+      PERIODOS_LIST = periodosReales(periodos);
+      const nuevo = (Array.isArray(periodos) ? periodos : [])
+        .find(p => p && p.isNew === true && PERIODOS_LIST.indexOf(p.id) !== -1);
+      DEFAULT_PERIODO = nuevo ? nuevo.id : (PERIODOS_LIST[0] || null);
     } catch (e) {
       DEFAULT_PERIODO = null;
       PERIODOS_LIST = [];
@@ -120,16 +145,14 @@
   }
 
   // ── Datos de graduados (fase 1.2) ──
-  let GRADUATE_PERIODO = null;
-  let GRADUATE_PERIODOS_LIST = [];
-
   async function loadGraduatePeriodos() {
     try {
       const res = await fetch('./students/graduate/periodos.json', { cache: 'no-store' });
       const periodos = await res.json();
-      const nuevo = periodos.find(p => p.isNew === true);
-      GRADUATE_PERIODO = nuevo ? nuevo.id : (periodos[0] && periodos[0].id);
-      GRADUATE_PERIODOS_LIST = periodos.map(p => p.id);
+      GRADUATE_PERIODOS_LIST = periodosReales(periodos);
+      const nuevo = (Array.isArray(periodos) ? periodos : [])
+        .find(p => p && p.isNew === true && GRADUATE_PERIODOS_LIST.indexOf(p.id) !== -1);
+      GRADUATE_PERIODO = nuevo ? nuevo.id : (GRADUATE_PERIODOS_LIST[0] || null);
     } catch (e) {
       GRADUATE_PERIODO = null;
       GRADUATE_PERIODOS_LIST = [];
@@ -443,7 +466,9 @@
     fmtNum: fmtNum,
     formatCicloText: formatCicloText,
     satColorPortal: satColorPortal,
-    esEstudiosGen: esEstudiosGen
+    esEstudiosGen: esEstudiosGen,
+    periodosReales: periodosReales,
+    faseConDatos: faseConDatos
   };
 
   window.SurveyPortalData = {
@@ -476,6 +501,7 @@
     getGraduatePeriodo: function () { return GRADUATE_PERIODO; },
     getGraduatePeriodosList: function () { return GRADUATE_PERIODOS_LIST; },
     setSurveyData: function (d) { SURVEY_DATA = d; },
-    getGraduateData: function () { return GRADUATE_DATA; }
+    getGraduateData: function () { return GRADUATE_DATA; },
+    tieneDatosDeFase: tieneDatosDeFase
   };
 })();
