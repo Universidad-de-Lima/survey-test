@@ -520,12 +520,7 @@
     getPeriodosDeFase: function (phaseId) { return periodosDeFase(phaseId); },
     getPeriodoDeFase: getPeriodoDeFase,
     tieneDatosDeFase: tieneDatosDeFase,
-    nivelDeFase: nivelDeFase,
-    // ── Alias temporales (se eliminan al migrar todos los consumidores) ──
-    getDefaultNivel: function () { return nivelDeFase('1.0'); },
-    getDefaultPeriodo: function () { return getPeriodoDeFase('1.0'); },
-    getPeriodosList: function () { return periodosDeFase('1.0'); },
-    getGraduatePeriodo: function () { return getPeriodoDeFase('1.2'); },
-    getGraduatePeriodosList: function () { return periodosDeFase('1.2'); }
+    nivelDeFase: nivelDeFase
+
   };
 })();
