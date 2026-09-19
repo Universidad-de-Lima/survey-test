@@ -384,6 +384,13 @@
     const svg = window.svg;
     const ICONS = window.ICONS;
     const D = _data.getSurveyData();
+    if (!D || !D.resumen) {
+      // Sin datos no se puede pintar el dashboard. Se registra el motivo y se
+      // deja lo que ya haya en pantalla (portal.js muestra "en construccion"),
+      // en lugar de lanzar una excepcion que congelaba el indicador de carga.
+      console.error('[portal] renderSurveyView sin datos: no se renderiza el dashboard.');
+      return;
+    }
     const r = D.resumen;
     const nivel = window.state.activePhaseId === '1.2' ? 'students/graduate' : 'students/undergraduate';
     const metaCardHtml = await _dashboard.renderMetaCard(window.state.activeFile, nivel);

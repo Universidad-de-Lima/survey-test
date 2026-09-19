@@ -386,7 +386,7 @@ function renderArtifactViewer(phaseId) {
   if (!phase) { renderPending('Item desconocido: ' + phaseId); return; }
   const files = (phase.id === '1.0' && window.SurveyPortalData.getPeriodosList().length > 0) ? window.SurveyPortalData.getPeriodosList() :
       (phase.id === '1.2' && window.SurveyPortalData.getGraduatePeriodosList().length > 0) ? window.SurveyPortalData.getGraduatePeriodosList() :
-      phase.artifact.split('|');
+      (phase.artifact || '').split('|').filter(function (f) { return f !== ''; });
   if (!state.activeFile || files.indexOf(state.activeFile) === -1) {
     state.activeFile = files[0];
   }
@@ -447,8 +447,9 @@ async function loadActiveFile(phase) {
   if (!body) return;
   const filename = state.activeFile;
 
-  // Encuestas en construcción: mostrar página en construcción
-  if (UNDER_CONSTRUCTION.indexOf(phase.id) !== -1) {
+  // Fases en construcción declaradas + fases cuyo dashboard todavía no tiene
+  // datos publicados: ambas muestran la misma página.
+  if (UNDER_CONSTRUCTION.indexOf(phase.id) !== -1 || !window.SurveyPortalData.tieneDatosDeFase(phase.id)) {
     body.innerHTML = renderUnderConstruction();
     return;
   }
