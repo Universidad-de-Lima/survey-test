@@ -48,7 +48,6 @@ survey-test/
 ├── tests/                   # Mini-framework de pruebas unitarias en navegador.
 ├── zoho-survey/             # Aplicacion estatica principal.
 │   ├── index.html           # Portal v5.0 publicado en GitHub Pages (multi-fase).
-│   ├── underconstruction.html # Pagina de mantenimiento.
 │   ├── health.html          # Pagina de health check de contratos JSON por periodo.
 │   ├── shared/              # Recursos compartidos (CSS, JS, imagenes).
 │   │   ├── css/             # Capas CSS (tokens, reset, layout, components, sections, loader) + portal/.

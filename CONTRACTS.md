@@ -372,6 +372,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 - `filtros.facultad_carrera` debe cubrir todas las facultades listadas en `filtros.facultades`.
 - `dimensiones.json` debe contener al menos una fila con `total > 0`.
 - `periodos.json` debe tener exactamente un item con `isNew: true`.
+- Un nivel **sin datos publicados** puede tener `periodos.json` con una única entrada *marcadora*: `{"id":"proximamente","label":"Próximamente","url":"underconstruction.html","isNew":true}`. Esa entrada **no es un periodo real**: el validador la omite (no existe carpeta de periodo que validar) y el portal muestra "PÁGINA EN CONSTRUCCIÓN" en lugar del dashboard. El portal la identifica por `url` (`URL_PLACEHOLDER` en `zoho-survey/shared/js/portal/portal-data.js`); por eso, al publicar un periodo real, basta con que su entrada no apunte a `underconstruction.html`.
 - NPS debe estar entre -100 y 100.
 - CSAT debe estar entre 0 y 100.
 - Los IDs de carrera en `filtros.json` deben coincidir con los usados por los JSON de NPS/CSAT.

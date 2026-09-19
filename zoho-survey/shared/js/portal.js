@@ -458,6 +458,14 @@ async function loadActiveFile(phase) {
   if (phase.id === '1.0' || phase.id === '1.2') {
     body.innerHTML = '<div class="state-box"><div class="spinner"></div><p style="font-size:13px;">Cargando dashboard…</p></div>';
     await window.SurveyPortalData.initSurveyData(phase.id === '1.2' ? 'students/graduate' : window.SurveyPortalData.getDefaultNivel(), filename);
+    if (!window.SurveyPortalData.getSurveyData()) {
+      // El periodo figura en periodos.json pero sus datos no se pudieron leer
+      // (carpeta/JSON ausentes). Sin este aviso la pantalla se quedaba en
+      // "Cargando dashboard…" de forma indefinida.
+      body.innerHTML = '<div class="state-box error">' + svg('alert-circle', 28) +
+        '<p style="font-size:13px;">No se pudieron cargar los datos del periodo "' + escapeHtml(String(filename)) + '". Revisa que existan los archivos JSON de ese periodo.</p></div>';
+      return;
+    }
     window.SurveyPortalSurvey.renderSurveyView();
     return;
   }
