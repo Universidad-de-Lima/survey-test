@@ -15,6 +15,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - `python-dotenv` y `load_dotenv()`: el ETL no lee archivos `.env` (nada corre en local).
 
 ### Fixed
+- Portal: los ítems 1.0 (Estudiantes Pregrado) y 1.2 (Graduados Pregrado) quedaban en "Cargando dashboard…" de forma indefinida cuando el nivel solo tenía la entrada marcadora de `periodos.json` (proyecto sin datos). El marcador ya no se cuenta como periodo real (`periodosReales`), las fases sin datos muestran "PÁGINA EN CONSTRUCCIÓN" igual que el ítem 1.1 (`tieneDatosDeFase`), la vista de encuesta ya no lanza excepción cuando no hay datos y el contador de avance del pie deja de contar 1.0 y 1.2 como completados.
 - Flujo de subida de CSVs (`portal-upload.js`, `portal-upload-ui.js`): `parseRepo` ahora detecta correctamente owner/repo desde GitHub Pages; `upload_id` usa UUID v4; el Release temporal ya no se publica (`publishRelease` eliminado); se limpia el Release en caso de error.
 - Seguridad: escaping de `motivo_invalidez` en `sentiment-view.js`; escaping de nombres de dimensión en `formatters.js`; `comentario_original` en `sentimiento.json` se guarda ofuscado con `enmascarar_pii`.
 - Modelo DeepSeek por defecto corregido a `deepseek-chat` en `ia_client.py`.
