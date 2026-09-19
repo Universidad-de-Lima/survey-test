@@ -618,19 +618,11 @@ $('mobileOverlay').addEventListener('click', (e) => {
 // ---------- Initial render ----------
 async function init() {
   // Load initial data
-  await window.SurveyPortalData.loadPeriodos();
-  await window.SurveyPortalData.loadGraduatePeriodos();
+  await window.SurveyPortalData.loadPeriodosDeNiveles();
 
-  // Update phase 1.0 artifact dynamically from periodos.json
-  const periodos = window.SurveyPortalData.getPeriodosList();
-  if (periodos.length > 0) {
-    PORTAL_PHASES[0].artifact = periodos.join('|');
-    PORTAL_PHASES[0].artifactLabel = periodos.join(' + ');
-  }
-
-  const periodo = state.activeFile || window.SurveyPortalData.getDefaultPeriodo();
+  const periodo = state.activeFile || window.SurveyPortalData.getPeriodoDeFase('1.0');
   if (periodo) {
-    await window.SurveyPortalData.initSurveyData(window.SurveyPortalData.getDefaultNivel(), periodo);
+    await window.SurveyPortalData.initSurveyData(window.SurveyPortalData.nivelDeFase('1.0'), periodo);
   }
   await window.SurveyPortalData.loadGraduateData();
 

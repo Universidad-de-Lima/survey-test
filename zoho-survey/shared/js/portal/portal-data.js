@@ -47,12 +47,7 @@
 
   let SURVEY_DATA = null;
   const SURVEY_DATA_CACHE = {};
-  const DEFAULT_NIVEL = 'students/undergraduate';
-  let DEFAULT_PERIODO = null;
-  let PERIODOS_LIST = [];
   let GRADUATE_DATA = null;
-  let GRADUATE_PERIODO = null;
-  let GRADUATE_PERIODOS_LIST = [];
 
   // Entrada marcadora de "todavía no hay nada publicado" en periodos.json.
   const URL_PLACEHOLDER = 'underconstruction.html';
@@ -64,31 +59,68 @@
       .map(p => p.id);
   }
 
-  // ── Helper puro: ¿esta fase del portal tiene datos publicados? ──
-  function faseConDatos(phaseId, listaPeriodos, listaGraduados) {
-    if (phaseId === '1.0') return (listaPeriodos || []).length > 0;
-    if (phaseId === '1.2') return (listaGraduados || []).length > 0;
-    return false;
+  // ── Qué carpeta de datos corresponde a cada ítem del portal ──
+  // (misma lista de niveles que usa health.html; el ítem 1.9 es el asistente
+  // de preguntas y no tiene carpeta de datos propia)
+  const NIVELES_FASE = {
+    '1.0': 'students/undergraduate',
+    '1.1': 'students/postgraduate',
+    '1.2': 'students/graduate',
+    '1.3': 'alumni/undergraduate',
+    '1.4': 'alumni/postgraduate',
+    '1.5': 'facultystaff/undergraduate',
+    '1.6': 'facultystaff/postgraduate',
+    '1.7': 'nonfacultystaff',
+    '1.8': 'employers'
+  };
+
+  function nivelDeFase(phaseId) {
+    return NIVELES_FASE[phaseId] || null;
+  }
+
+  // Periodos publicados por ítem: { '1.0': ['2026-1', '2025-2'], ... }
+  let PERIODOS_POR_FASE = {};
+  // Periodo marcado como nuevo (isNew) por ítem, o el primero disponible
+  let PERIODO_NUEVO_POR_FASE = {};
+
+  // ── Helpers puros (reciben el mapa, así se prueban sin red) ──
+  function periodosDeFase(phaseId, mapa) {
+    const m = mapa || PERIODOS_POR_FASE;
+    return m[phaseId] || [];
+  }
+
+  function faseConDatos(phaseId, mapa) {
+    return periodosDeFase(phaseId, mapa).length > 0;
   }
 
   // ── Con el estado real ya cargado ──
   function tieneDatosDeFase(phaseId) {
-    return faseConDatos(phaseId, PERIODOS_LIST, GRADUATE_PERIODOS_LIST);
+    return faseConDatos(phaseId);
   }
 
-  // ── Carga de periodos ──
-  async function loadPeriodos() {
-    try {
-      const res = await fetch('./students/undergraduate/periodos.json', { cache: 'no-store' });
-      const periodos = await res.json();
-      PERIODOS_LIST = periodosReales(periodos);
-      const nuevo = (Array.isArray(periodos) ? periodos : [])
-        .find(p => p && p.isNew === true && PERIODOS_LIST.indexOf(p.id) !== -1);
-      DEFAULT_PERIODO = nuevo ? nuevo.id : (PERIODOS_LIST[0] || null);
-    } catch (e) {
-      DEFAULT_PERIODO = null;
-      PERIODOS_LIST = [];
-      console.warn('[portal] No se pudo cargar periodos.json:', e);
+  function getPeriodoDeFase(phaseId) {
+    return PERIODO_NUEVO_POR_FASE[phaseId] || null;
+  }
+
+  // ── Carga del periodos.json de TODOS los niveles, de una vez ──
+  async function loadPeriodosDeNiveles() {
+    PERIODOS_POR_FASE = {};
+    PERIODO_NUEVO_POR_FASE = {};
+    for (const phaseId of Object.keys(NIVELES_FASE)) {
+      const nivel = NIVELES_FASE[phaseId];
+      try {
+        const res = await fetch('./' + nivel + '/periodos.json', { cache: 'no-store' });
+        const periodos = await res.json();
+        const reales = periodosReales(periodos);
+        PERIODOS_POR_FASE[phaseId] = reales;
+        const nuevo = (Array.isArray(periodos) ? periodos : [])
+          .find(p => p && p.isNew === true && reales.indexOf(p.id) !== -1);
+        PERIODO_NUEVO_POR_FASE[phaseId] = nuevo ? nuevo.id : (reales[0] || null);
+      } catch (e) {
+        PERIODOS_POR_FASE[phaseId] = [];
+        PERIODO_NUEVO_POR_FASE[phaseId] = null;
+        console.warn('[portal] No se pudo cargar periodos.json de ' + nivel + ':', e);
+      }
     }
   }
 
@@ -145,29 +177,14 @@
   }
 
   // ── Datos de graduados (fase 1.2) ──
-  async function loadGraduatePeriodos() {
-    try {
-      const res = await fetch('./students/graduate/periodos.json', { cache: 'no-store' });
-      const periodos = await res.json();
-      GRADUATE_PERIODOS_LIST = periodosReales(periodos);
-      const nuevo = (Array.isArray(periodos) ? periodos : [])
-        .find(p => p && p.isNew === true && GRADUATE_PERIODOS_LIST.indexOf(p.id) !== -1);
-      GRADUATE_PERIODO = nuevo ? nuevo.id : (GRADUATE_PERIODOS_LIST[0] || null);
-    } catch (e) {
-      GRADUATE_PERIODO = null;
-      GRADUATE_PERIODOS_LIST = [];
-      console.warn('[portal] No se pudo cargar periodos.json de graduados:', e);
-    }
-  }
-
   async function loadGraduateData() {
-    if (!GRADUATE_PERIODO) await loadGraduatePeriodos();
-    if (!GRADUATE_PERIODO) {
+    const periodo = getPeriodoDeFase('1.2');
+    if (!periodo) {
       GRADUATE_DATA = null;
       return;
     }
     try {
-      const res = await fetch('./students/graduate/' + GRADUATE_PERIODO + '/json/dashboard_data.json', { cache: 'no-store' });
+      const res = await fetch('./students/graduate/' + periodo + '/json/dashboard_data.json', { cache: 'no-store' });
       if (!res.ok) {
         GRADUATE_DATA = null;
         console.warn('[portal] dashboard_data.json de graduados no disponible (' + res.status + ')');
@@ -468,7 +485,10 @@
     satColorPortal: satColorPortal,
     esEstudiosGen: esEstudiosGen,
     periodosReales: periodosReales,
-    faseConDatos: faseConDatos
+    faseConDatos: faseConDatos,
+    nivelDeFase: nivelDeFase,
+    periodosDeFase: periodosDeFase,
+    NIVELES_FASE: NIVELES_FASE
   };
 
   window.SurveyPortalData = {
@@ -495,13 +515,19 @@
     MAX_CICLOS_ESPECIALES: MAX_CICLOS_ESPECIALES,
     getSurveyData: function () { return SURVEY_DATA; },
     getSurveyDataCache: function () { return SURVEY_DATA_CACHE; },
-    getDefaultNivel: function () { return DEFAULT_NIVEL; },
-    getDefaultPeriodo: function () { return DEFAULT_PERIODO; },
-    getPeriodosList: function () { return PERIODOS_LIST; },
-    getGraduatePeriodo: function () { return GRADUATE_PERIODO; },
-    getGraduatePeriodosList: function () { return GRADUATE_PERIODOS_LIST; },
     setSurveyData: function (d) { SURVEY_DATA = d; },
     getGraduateData: function () { return GRADUATE_DATA; },
-    tieneDatosDeFase: tieneDatosDeFase
+    // ── Acceso genérico por ítem ──
+    loadPeriodosDeNiveles: loadPeriodosDeNiveles,
+    getPeriodosDeFase: function (phaseId) { return periodosDeFase(phaseId); },
+    getPeriodoDeFase: getPeriodoDeFase,
+    tieneDatosDeFase: tieneDatosDeFase,
+    nivelDeFase: nivelDeFase,
+    // ── Alias temporales (se eliminan al migrar todos los consumidores) ──
+    getDefaultNivel: function () { return nivelDeFase('1.0'); },
+    getDefaultPeriodo: function () { return getPeriodoDeFase('1.0'); },
+    getPeriodosList: function () { return periodosDeFase('1.0'); },
+    getGraduatePeriodo: function () { return getPeriodoDeFase('1.2'); },
+    getGraduatePeriodosList: function () { return periodosDeFase('1.2'); }
   };
 })();
