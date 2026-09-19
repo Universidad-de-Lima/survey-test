@@ -114,6 +114,7 @@ jobs:
           require('./zoho-survey/shared/js/components/filter-controller.js');
           require('./zoho-survey/shared/js/components/sentiment-view.js');
           require('./zoho-survey/shared/js/portal-upload.js');
+          require('./zoho-survey/shared/js/portal/portal-data.js');
           require('./tests/test-framework.js');
           require('./tests/unit/test-config.js');
           require('./tests/unit/test-formatters.js');
@@ -123,6 +124,7 @@ jobs:
           require('./tests/unit/test-sentiment-view.js');
           require('./tests/unit/test-filter-controller.js');
           require('./tests/unit/test-upload-validator.js');
+          require('./tests/unit/test-portal-data.js');
           const r = window.TestFramework.summary();
           console.log('Tests: ' + r.passed + ' passed, ' + r.failed + ' failed, ' + r.total + ' total');
           if (r.failed > 0) {
