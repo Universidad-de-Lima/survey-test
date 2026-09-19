@@ -15,7 +15,12 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - `python-dotenv` y `load_dotenv()`: el ETL no lee archivos `.env` (nada corre en local).
 
 ### Fixed
-- Portal: los ítems 1.0 (Estudiantes Pregrado) y 1.2 (Graduados Pregrado) quedaban en "Cargando dashboard…" de forma indefinida cuando el nivel solo tenía la entrada marcadora de `periodos.json` (proyecto sin datos). El marcador ya no se cuenta como periodo real (`periodosReales`), las fases sin datos muestran "PÁGINA EN CONSTRUCCIÓN" igual que el ítem 1.1 (`tieneDatosDeFase`), la vista de encuesta ya no lanza excepción cuando no hay datos y el contador de avance del pie deja de contar 1.0 y 1.2 como completados.
+- Portal: los botones de periodos de los ítems 1.1 a 1.8 mostraban nombres de documentos (`AUDIT-REVIEW.md`, `AUDIT-REPORT-v2.md`) que ya no existen en el repositorio, en lugar de los periodos publicados del grupo correspondiente. Ahora todos los ítems usan su propio `periodos.json` mediante una única lista ítem→carpeta (`NIVELES_FASE`).
+- Portal: la pestaña de periodo se muestra **aunque haya un solo periodo** (antes exigía dos), porque es la forma de saber a qué periodo corresponden los datos que se están viendo.
+- Portal: el contador de avance del pie y el subtítulo de las tarjetas del resumen se calculan para todos los ítems (antes solo miraban 1.0 y 1.2).
+- Portal: eliminados los campos `artifact`/`artifactLabel` de los 10 ítems (residuo de una etapa anterior; nombraban documentos inexistentes).
+- Portal: los ítems 1.0 y 1.2 ya detectan por sí mismos su carpeta de datos (`nivelDeFase`), en lugar de tenerla escrita a mano en cuatro archivos.
+- Portal: los ítems 1.0 y 1.2 (Estudiantes Pregrado) y 1.2 (Graduados Pregrado) quedaban en "Cargando dashboard…" de forma indefinida cuando el nivel solo tenía la entrada marcadora de `periodos.json` (proyecto sin datos). El marcador ya no se cuenta como periodo real (`periodosReales`), las fases sin datos muestran "PÁGINA EN CONSTRUCCIÓN" igual que el ítem 1.1 (`tieneDatosDeFase`), la vista de encuesta ya no lanza excepción cuando no hay datos y el contador de avance del pie deja de contar 1.0 y 1.2 como completados.
 - Flujo de subida de CSVs (`portal-upload.js`, `portal-upload-ui.js`): `parseRepo` ahora detecta correctamente owner/repo desde GitHub Pages; `upload_id` usa UUID v4; el Release temporal ya no se publica (`publishRelease` eliminado); se limpia el Release en caso de error.
 - Seguridad: escaping de `motivo_invalidez` en `sentiment-view.js`; escaping de nombres de dimensión en `formatters.js`; `comentario_original` en `sentimiento.json` se guarda ofuscado con `enmascarar_pii`.
 - Modelo DeepSeek por defecto corregido a `deepseek-chat` en `ia_client.py`.

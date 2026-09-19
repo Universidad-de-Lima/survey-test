@@ -27,7 +27,7 @@ tests/
     ├── test-filter-controller.js  # SurveyFilterController (16 tests)
     ├── test-insights-ia.js     # Insights IA (4 tests)
     ├── test-upload-validator.js # Validación ingesta CSV (35 tests, TestFramework)
-    ├── test-portal-data.js     # Capa de datos del portal: periodos reales y fases con datos (9 tests, TestFramework)
+    ├── test-portal-data.js     # Capa de datos del portal: periodos reales, mapeo ítem→carpeta y fases con datos (14 tests, TestFramework)
     └── test-dom.js             # Tests con jsdom (33 tests, dialecto propio)
 ```
 
@@ -81,7 +81,7 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | --- | --- | --- |
 | `test-dom.js` | 33 | `SurveyFormatters`, `SurveySanitizer`, `SurveyDomHelpers`, `SurveyTooltip` (con DOM real) |
 
-### Total: 141 tests TestFramework (97 base + 35 de `test-upload-validator.js` + 9 de `test-portal-data.js`) + 33 tests jsdom = 174 tests
+### Total: 146 tests TestFramework (94 base + 35 de `test-upload-validator.js` + 14 de `test-portal-data.js`) + 33 tests jsdom = 179 tests
 
 > **Historial:** un snapshot previo de auditoría reportaba `test-sanitizer.js` vacío y
 > `test-sentiment-view.js` ausente; ambos fueron verificados y restaurados/implementados
