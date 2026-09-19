@@ -8,7 +8,7 @@ The data types handled:
 | Type | Example | Status |
 |---|---|---|
 | **PII directa** | IP address, User Agent | 🟢 **Mitigada por Arquitectura A (Fase 3.8.2):** los CSVs subidos **no se commitean**; se descargan a un runner efímero, se redimen con `sanitize_csv_pii.py` antes del ETL y se borran. El Release temporal se mantiene como **DRAFT** (no público) y se elimina tras procesar. `data/` está en `.gitignore` y el commit de resultados está desactivado para uploads. |
-| **PII cuasi-identificadora** | Free-text comments (comentarios NPS abiertos) | 🟢 **Mitigada.** Los comentarios se envían a DeepSeek/NVIDIA después de aplicar `enmascarar_pii` (`zoho-survey/scripts/lib/io_helper.py`). En `sentimiento.json` el campo `comentario_original` se guarda ofuscado (emails, teléfonos y códigos de estudiante reemplazados por placeholders). No hay caché persistente (deduplicación por ID en `sentimiento.json`). |
+| **PII cuasi-identificadora** | Free-text comments (comentarios NPS abiertos) | 🟢 **Mitigada.** Los comentarios se envían a los motores IA (Google, NVIDIA, OpenCode) después de aplicar `enmascarar_pii` (`zoho-survey/scripts/lib/io_helper.py`). En `sentimiento.json` el campo `comentario_original` se guarda ofuscado (emails, teléfonos y códigos de estudiante reemplazados por placeholders). No hay caché persistente (deduplicación por ID en `sentimiento.json`). |
 | **Aggregated metrics** | NPS, CSAT scores | 🟢 No PII exposure |
 
 ## Reporting Vulnerability
@@ -29,9 +29,10 @@ If you discover PII exposure or security issue:
 ## Environment Variables
 
 See `docs/developer-guide.md` (§ "Configuración del Motor Cualitativo") for required and optional environment variables, including:
-- `DEEPSEEK_API_KEY` (principal)
-- `NVIDIA_API_KEY` (fallback)
-- `IA_CUALITATIVO_*` (workers, RPM, timeout, modelos)
+- `GOOGLE_API_KEY` (Google Gemini, primero en la cadena)
+- `NVIDIA_API_KEY` (NVIDIA NIM, 4 modelos)
+- `OPENCODE_API_KEY` (OpenCode)
+- `IA_CUALITATIVO_CADENA` (orden y modelos) e `IA_CUALITATIVO_*` (workers, RPM, timeout)
 
 ## Flujo de Ingesta y Descarga — Documentación completa
 

@@ -45,9 +45,9 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 | Si necesitas... | Ve a... |
 |---|---|
 | Ver los dashboards | `zoho-survey/` en GitHub Pages |
-| Agregar un nuevo periodo | `data/` → colocar CSV |
+| Agregar un nuevo periodo | Portal **Subir datos** (`zoho-survey/index.html` en GitHub Pages) o un Release + `workflow_dispatch` |
 | Cambiar metas (NPS, CSAT) | `zoho-survey/shared/js/config/constants.js` |
-| Cambiar cómo se clasifican los comentarios | `zoho-survey/scripts/lib/prompts_cualitativo.py` (taxonomía DeepSeek) |
+| Cambiar cómo se clasifican los comentarios | `zoho-survey/scripts/lib/prompts_cualitativo.py` (taxonomía del análisis IA) |
 | Ver si todo está bien | `zoho-survey/health.html` en GitHub Pages (verifica integridad de dashboards/JSONs) |
 | Ver historial de cambios | `docs/CHANGELOG.md` |
 | Entender la arquitectura | `ARCHITECTURE.md` |

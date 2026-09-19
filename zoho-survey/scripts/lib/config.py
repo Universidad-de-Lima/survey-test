@@ -244,7 +244,7 @@ CATEGORIA_DIMENSION_GRADUADO: Dict[str, str] = {
 # 3a-bis. TAXONOMÍA UNIFICADA (pregrado + graduado)
 # ============================================================
 # Unión de CATEGORIA_DIMENSION_PREGRADO + CATEGORIA_DIMENSION_GRADUADO.
-# Se pasa al system_prompt de DeepSeek para que la IA tenga TODAS las
+# Se pasa al system_prompt del motor IA para que este tenga TODAS las
 # dimensiones disponibles al clasificar comentarios de cualquier nivel.
 #
 # Esto resuelve el bug por el cual comentarios de pregrado sobre
@@ -336,10 +336,10 @@ EMPLEABILIDAD_CATEGORIAS: List[str] = [
 # ============================================================
 
 # El motor legacy (spaCy + sentence-transformers) fue eliminado en v3.2.0.
-# El motor IA (DeepSeek) es el unico motor cualitativo desde v3.2.0.
-# DEEPSEEK_API_KEY es obligatoria para ejecutar el ETL.
+# El motor IA es una cadena de motores (Google, NVIDIA, OpenCode) desde v3.9.0.
+# Al menos UNA clave de motor es obligatoria para ejecutar el ETL.
 # Variables de entorno del motor IA:
-# - DEEPSEEK_API_KEY: obligatoria (sin fallback legacy).
+# - GOOGLE_API_KEY / NVIDIA_API_KEY / OPENCODE_API_KEY: al menos una.
 # - IA_CUALITATIVO_WORKERS: workers concurrentes (default: 15).
 # - IA_CUALITATIVO_MAX_RPM: rate limit global (default: 60).
 # - IA_CUALITATIVO_TIMEOUT: timeout por llamada (default: 60s).

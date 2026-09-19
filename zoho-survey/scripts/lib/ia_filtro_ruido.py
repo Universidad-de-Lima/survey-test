@@ -1,8 +1,8 @@
 """
-IA FILTRO RUIDO — Filtro pre-DeepSeek de comentarios ruidosos.
+IA FILTRO RUIDO — Filtro de comentarios ruidosos previo a los motores IA.
 
 Detecta comentarios que son claramente ruido (vacíos, solo puntuación,
-teclazos, etc.) sin necesidad de llamar a la API de DeepSeek.
+teclazos, etc.) sin necesidad de llamar a ninguna API.
 Genera unidades placeholder inválidas en el mismo formato que la API.
 """
 
@@ -70,7 +70,7 @@ _FRASES_CORTAS_VALIDAS = {
 # ============================================================
 
 def es_ruido_pre_filtro(comentario: str) -> Tuple[bool, str]:
-    """Evalúa si un comentario es ruido sin llamar a DeepSeek.
+    """Evalúa si un comentario es ruido sin llamar a ningún motor IA.
 
     Retorna (True, motivo) si es ruido, (False, "") si parece válido.
     Aplica 15 criterios en orden de especificidad.
@@ -132,7 +132,7 @@ def es_ruido_pre_filtro(comentario: str) -> Tuple[bool, str]:
 
 
 def generar_unidad_ruido(motivo: str) -> dict:
-    """Genera una unidad placeholder inválida (compatible con schema DeepSeek)."""
+    """Genera una unidad placeholder inválida (compatible con el schema del dataset)."""
     return {
         "orden": 1,
         "texto": "[ruido detectado]",

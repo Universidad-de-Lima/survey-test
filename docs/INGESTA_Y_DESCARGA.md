@@ -47,10 +47,10 @@ El workflow se dispara con concurrencia aislada por `upload_id`:
 
 9. **Download CSVs** → `data/temp/{upload_id}/` desde Release assets (NUNCA al tree).
 10. **Copy a `data/`** → CSVs copiados `data/` para que ETL los descubra (`ENCUESTA DE SATISFACCION.*.csv`).
-11. **Verify DEEPSEEK_API_KEY** → gate temprano (falla si falta).
+11. **Verify claves de los motores IA** → gate temprano (falla si no hay ninguna).
 12. **Server-side validate** → `validate_upload_csv.py` re-valida nombre/headers/tamaño/duplicados.
 13. **Sanitize PII** → `sanitize_csv_pii.py --all` redacta IP/UA/URL **in-place** (defensa en profundidad).
-14. **Run build_json.py** con `DEEPSEEK_API_KEY` → ETL completo (ver sección 2).
+14. **Run build_json.py** con las claves de los motores → ETL completo (ver sección 2).
 15. **Validate JSON contracts** → `validate_generated_json.py` (schemas + invariantes `isNew`).
 16. **Eliminar temporalidades** → `find .../exports -exec rm`, `find .../intermediate -exec rm` (153-156).
 17. **Deploy a GitHub Pages** → artifact `./zoho-survey`.
@@ -71,11 +71,11 @@ El workflow se dispara con concurrencia aislada por `upload_id`:
 
 Corre `build_json.py` **solo en GitHub Actions** (paso `Run build_json.py` del workflow de build, condicionado al gate `Detectar CSVs a procesar`). Los comandos canónicos de ejecución viven en `.github/workflows/*.yml`; `package.json` no define scripts de ejecución local (la regla del proyecto es que nada corre en local).
 
-### What consume DeepSeek
+### Qué consumen los motores IA
 
-- Comentarios NPS abiertos → enviados a DeepSeek (prompts de `prompts_cualitativo.py`).
+- Comentarios NPS abiertos → enviados a los motores de la cadena (prompts de `prompts_cualitativo.py`).
 - Salida: `sentimiento.json`, `intermediate/dataset_cualitativo.json`, `intermediate/fragmentos_nps.json`.
-- Comentarios **ofuscados** antes DeepSeek (Fase 3.5) para proteger PII.
+- Comentarios **ofuscados** antes de enviarlos (Fase 3.5) para proteger PII.
 
 ### Qué produce `exports/`
 
@@ -177,4 +177,4 @@ Hacer que el flujo de descarga siga el mismo patrón que el upload: **temp en Gi
 - **CSV originales**: nunca en Git (sanitizados + borrados CI).
 - **ZIPs**: actualmente NO se publican en Pages (borrados CI). Bajo el plan de arreglo, tampoco se persistirían.
 - **PAT del owner**: solo memoria del navegador (frontend); `GITHUB_TOKEN` en Actions.
-- **PII**: IP/UA/URL redimidos `sanitize_csv_pii.py`; comentarios ofuscados antes DeepSeek.
+- **PII**: IP/UA/URL redimidos `sanitize_csv_pii.py`; comentarios ofuscados antes de enviarlos a los motores IA.

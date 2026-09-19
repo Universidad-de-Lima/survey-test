@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://universidad-de-lima.github.io/survey-test/scripts/schemas/dataset_cualitativo.schema.json",
   "title": "Dataset Cualitativo (intermedio ETL)",
-  "description": "Schema para dataset_cualitativo.json. Archivo intermedio producido por el motor IA (DeepSeek) como trazabilidad del ETL; no lo consume el frontend ni ningun validador automatico.",
+  "description": "Schema para dataset_cualitativo.json. Archivo intermedio producido por los motores IA de la cadena como trazabilidad del ETL; no lo consume el frontend ni ningun validador automatico.",
   "type": "object",
   "required": ["metadata", "data"],
   "additionalProperties": false,
@@ -70,7 +70,11 @@
           "comentario_original": { "type": "string" },
           "es_valido": { "type": "boolean" },
           "motivo_invalidez": { "type": ["string", "null"] },
-          "motor": { "type": "string", "enum": ["deepseek", "nvidia"] }
+          "motor": {
+            "type": "string",
+          "enum": ["google", "nvidia", "opencode", "filtro", "desconocido"],
+          "description": "Servicio de la cadena que clasifico el comentario. 'filtro' = descartado por el pre-filtro de ruido (ningun motor lo analizo). 'desconocido' = comentario reutilizado de una ejecucion anterior: el JSON publicado no guarda con que motor se clasifico."
+        }
         }
       }
     }

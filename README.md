@@ -1,11 +1,11 @@
-# survey-test v3.8.2
+# survey-test v3.9.0
 
 [![Build and Deploy](https://github.com/Universidad-de-Lima/survey-test/actions/workflows/build_zoho_survey.yml/badge.svg)](https://github.com/Universidad-de-Lima/survey-test/actions/workflows/build_zoho_survey.yml)
 [![Tests](https://github.com/Universidad-de-Lima/survey-test/actions/workflows/tests.yml/badge.svg)](https://github.com/Universidad-de-Lima/survey-test/actions/workflows/tests.yml)
 
 Sistema estático de visualización de encuestas de satisfacción para la Universidad de Lima. Convierte CSV exportados desde Zoho Survey en dashboards interactivos, sin backend ni base de datos, desplegables en GitHub Pages.
 
-Arquitectura: Portal v5.0 (`index.html` + `portal.js` + módulos `portal/*`) para navegación multi-fase; dashboards individuales por periodo (`template/index.html` + `dashboard.js` + componentes) renderizan JSONs estáticos generados por ETL Python (`build_json.py`) con motor IA DeepSeek y fallback NVIDIA.
+Arquitectura: Portal v5.0 (`index.html` + `portal.js` + módulos `portal/*`) para navegación multi-fase; dashboards individuales por periodo (`template/index.html` + `dashboard.js` + componentes) renderizan JSONs estáticos generados por ETL Python (`build_json.py`) con cadena de motores IA (Google, NVIDIA, OpenCode).
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ Punto de entrada técnico del ciclo: `docs/developer-guide.md`.
 - **Sin servicios externos**: GitHub Pages + API + GitHub Actions (no hay Cloudflare, Supabase ni backend).
 - **Sin tokens expuestos**: el PAT del owner vive solo en memoria del navegador y se usa contra `api.github.com`; Actions usa `GITHUB_TOKEN`.
 - **Sin CSV en el historial**: el CSV viaja a un Release temporal que se borra; `data/` está en `.gitignore` y el commit está desactivado para uploads.
-- Los CSVs se limpian (IP/UA/URL) antes del ETL y los comentarios NPS se ofuscan antes de DeepSeek.
+- Los CSVs se limpian (IP/UA/URL) antes del ETL y los comentarios NPS se ofuscan antes de enviarlos a los motores IA.
 
 > Ingesta implementada en Fase 3.8.2. Ver `ARCHITECTURE.md` § "Ingesta De Encuestas" y `docs/INGESTA_Y_DESCARGA.md`.
 ## Documentación del Proyecto

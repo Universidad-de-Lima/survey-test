@@ -4,6 +4,16 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 
 ## [Unreleased]
 
+### Changed
+- **Motor cualitativo**: el esquema "DeepSeek + respaldo NVIDIA" se reemplaza por una **cadena de motores** (Google → NVIDIA → OpenCode) que se intentan en orden; orden y modelos configurables sin tocar código con `IA_CUALITATIVO_CADENA`. El servicio DeepSeek se retira del proyecto (clave `DEEPSEEK_API_KEY` en desuso). Claves de la cadena: `GOOGLE_API_KEY`, `NVIDIA_API_KEY`, `OPENCODE_API_KEY` (basta una).
+- `dataset_cualitativo.schema.json`: el campo `motor` admite `google`, `nvidia`, `opencode`, `filtro` (descartado por el pre-filtro de ruido) y `desconocido` (comentario reutilizado).
+- Workflow de pruebas: Node.js 18 → 22 (LTS); deploy solo desde `main`.
+- Documentación sincronizada con la cadena de motores (`ARCHITECTURE.md`, `CONTRACTS.md`, `DEV_ENVIRONMENT.md`, `SECURITY.md`, `docs/*`, `AGENTS.md`).
+
+### Removed
+- `zoho-survey/scripts/validar_ia_vs_manual.py` (herramienta manual sin entrada en CI) y su dependencia `openpyxl`.
+- `python-dotenv` y `load_dotenv()`: el ETL no lee archivos `.env` (nada corre en local).
+
 ### Fixed
 - Flujo de subida de CSVs (`portal-upload.js`, `portal-upload-ui.js`): `parseRepo` ahora detecta correctamente owner/repo desde GitHub Pages; `upload_id` usa UUID v4; el Release temporal ya no se publica (`publishRelease` eliminado); se limpia el Release en caso de error.
 - Seguridad: escaping de `motivo_invalidez` en `sentiment-view.js`; escaping de nombres de dimensión en `formatters.js`; `comentario_original` en `sentimiento.json` se guarda ofuscado con `enmascarar_pii`.

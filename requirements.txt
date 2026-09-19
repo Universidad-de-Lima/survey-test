@@ -2,17 +2,25 @@ pandas>=1.5.0
 jsonschema>=4.0.0
 
 # ============================================================
-# Motor Cualitativo IA (DeepSeek) — único motor desde v3.2.0
+# Motor Cualitativo IA — cadena de motores desde v3.9.0
 # ============================================================
-# El motor legacy (spaCy + sentence-transformers) fue eliminado en v3.2.0.
-# El cliente DeepSeek usa urllib (stdlib), NO requiere dependencias extra.
+# El motor legacy (spaCy + sentence-transformers) fue eliminado en v3.2.0 y el
+# servicio DeepSeek se retiro en v3.9.0. El analisis usa una cadena ordenada:
+# Google (Gemini) -> NVIDIA (4 modelos) -> OpenCode. Los clientes usan urllib
+# (stdlib): NO requieren dependencias extra.
 #
-# DEEPSEEK_API_KEY es OBLIGATORIA para ejecutar el ETL.
-# Se configura UNICAMENTE en GitHub Actions Secrets (Settings → Secrets and
-# variables → Actions): el proyecto no se ejecuta en local, no hay .env.
+# Al menos UNA de estas claves es obligatoria para ejecutar el ETL, y se
+# configura UNICAMENTE en GitHub Actions Secrets (Settings -> Secrets and
+# variables -> Actions): el proyecto no se ejecuta en local, no hay .env.
+#   GOOGLE_API_KEY     Google Gemini
+#   NVIDIA_API_KEY     NVIDIA NIM
+#   OPENCODE_API_KEY   OpenCode
 #
 # Variables opcionales del motor IA:
+#   IA_CUALITATIVO_CADENA    orden y modelos ("servicio:modelo,servicio:modelo");
+#                            sin ella se usa la cadena por defecto de lib/ia_client.py
 #   IA_CUALITATIVO_WORKERS=15    workers concurrentes
-#   IA_CUALITATIVO_MAX_RPM=60    rate limit global
+#   IA_CUALITATIVO_MAX_RPM=60    llamadas por minuto y motor
 #   IA_CUALITATIVO_TIMEOUT=60    timeout por llamada (segundos)
 #   IA_CUALITATIVO_MAX_FALLOS_API_PCT=20  umbral fail-closed de fallos de API
+#   IA_CUALITATIVO_OPENCODE_URL  direccion de OpenCode (por defecto, plan Go)

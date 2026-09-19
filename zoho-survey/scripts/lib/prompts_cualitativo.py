@@ -1,5 +1,5 @@
 """
-PROMPTS CUALITATIVO — Prompts exactos para el análisis cualitativo con DeepSeek.
+PROMPTS CUALITATIVO — Prompts exactos para el análisis cualitativo con motores IA.
 
 Este módulo es la FUENTE DE VERDAD de los prompts. Tanto el pipeline Python (ETL)
 como el playground Next.js deben usar prompts idénticos a estos para garantizar
@@ -11,8 +11,8 @@ Metodología base:
   - Triangulación mixta cualitativa-cuantitativa: reglas de sesgo por contexto NPS
     y cross-reference con calificaciones CSAT por dimensión.
 
-Compatibilidad: DeepSeek API (OpenAI-compatible). Modelo por defecto
-`deepseek-chat`, configurable con `IA_CUALITATIVO_MODEL`.
+Compatibilidad: servicios con formato de OpenAI (NVIDIA, OpenCode) y Google Gemini.
+El modelo lo fija cada entrada de IA_CUALITATIVO_CADENA.
 """
 
 import json
@@ -242,7 +242,7 @@ def build_system_prompt(taxonomia_oficial: Dict[str, str],
         categorias_padre: lista de categorías padre oficiales (ordenadas).
 
     Returns:
-        System prompt completo (string) listo para enviar a DeepSeek.
+        System prompt completo (string) listo para enviar a un motor IA.
     """
     # Construir lista de dimensiones agrupada por categoría padre
     lineas_tax = []
@@ -679,7 +679,7 @@ def build_user_prompt(comentario: str,
                   para comentarios que hablan de la facultad en general, no de la carrera.
 
     Returns:
-        User prompt listo para enviar a DeepSeek.
+        User prompt listo para enviar a un motor IA.
     """
     segmento = "Promotor" if nps_score >= 9 else ("Pasivo" if nps_score >= 7 else "Detractor")
 

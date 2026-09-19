@@ -13,7 +13,7 @@ Ningún paso requiere Python, Node ni dependencias instaladas en el equipo: solo
 | Fase | Dónde corre | Workflow | Qué ejecuta |
 |---|---|---|---|
 | Pruebas | GitHub Actions | `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, validación de contratos JSON, Ruff y ESLint (informativos) |
-| ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (DeepSeek + fallback NVIDIA) → validación de JSON |
+| ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (cadena de motores IA: Google → NVIDIA → OpenCode) → validación de JSON |
 | Despliegue | GitHub Actions | `build_zoho_survey.yml` | Artifact → GitHub Pages → health check → commit del bot si hay JSON nuevos |
 
 Ambos workflows se disparan con **cualquier push a `main`** (sin filtros de `paths`), para que ningún cambio quede sin verificar.
@@ -25,14 +25,18 @@ Ambos workflows se disparan con **cualquier push a `main`** (sin filtros de `pat
 
 En ambos caminos el CSV se descarga **solo en el runner**, se sanitiza, se procesa y se **borra antes del commit del bot** (el commit aborta si detecta un CSV en staging).
 
-Sin CSV en `data/`, el workflow **no** ejecuta el ETL ni exige `DEEPSEEK_API_KEY`: solo valida contratos y despliega el sitio.
+Sin CSV en `data/`, el workflow **no** ejecuta el ETL ni exige claves de los motores IA: solo valida contratos y despliega el sitio.
 
 ## Secretos
 
 | Secreto / variable | Dónde se configura | Para qué |
 |---|---|---|
-| `DEEPSEEK_API_KEY` | Settings → Secrets and variables → Actions | Motor IA principal del ETL |
-| `NVIDIA_API_KEY` | Ídem (opcional) | Fallback cuando DeepSeek falla o no está configurado |
+| `GOOGLE_API_KEY` | Settings → Secrets and variables → Actions | Primer motor de la cadena (Google Gemini) |
+| `NVIDIA_API_KEY` | Ídem (opcional) | Motores 2.º a 5.º (NVIDIA NIM: kimi-k3, deepseek-v4-pro, nemotron, muse-glimmer) |
+| `OPENCODE_API_KEY` | Ídem (opcional) | Último motor de la cadena (OpenCode) |
+| `IA_CUALITATIVO_CADENA` (variable, no secreto) | Ídem → pestaña **Variables** | Orden y modelos de la cadena, sin tocar código |
+
+Al menos **una** de las tres claves debe estar configurada cuando hay CSV que procesar.
 
 `.env` es local y **no** interviene en el ciclo: las claves viven en GitHub Secrets.
 

@@ -19,7 +19,7 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
 
 ### ETL Python (`zoho-survey/scripts/`)
 
-- **`build_json.py`** (~945 lineas): orquestador del pipeline CSV → JSON.
+- **`build_json.py`** (~953 lineas): orquestador del pipeline CSV → JSON.
 - **`lib/`** contiene **12 modulos activos** (motor legacy eliminado en v3.2.0, `ia_cache.py` eliminado en Fase 0):
   - `config.py` — mapeos de columnas y catalogos de negocio.
   - `metrics.py` — `calc_nps`, `calc_csat` (funciones puras).
@@ -27,11 +27,11 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
   - `csv_exporter.py` — exportacion de CSVs/ZIPs con proteccion formula injection y redaccion PII.
   - `dashboard_builder.py` — ensamblado de `dashboard_data.json`.
   - `periodos_updater.py` — actualizacion de `periodos.json`.
-  - `ia_cualitativo.py` — motor IA con DeepSeek (`DEEPSEEK_API_KEY`) y fallback NVIDIA (`NVIDIA_API_KEY`).
-  - `prompts_cualitativo.py` — prompts Bardin/Braun&Clarke para DeepSeek.
-  - `ia_client.py` — cliente HTTP DeepSeek (urllib stdlib) con reintentos.
+  - `ia_cualitativo.py` — orquestador del analisis cualitativo por **cadena de motores** (Google → NVIDIA → OpenCode), orden y modelos configurables con `IA_CUALITATIVO_CADENA`.
+  - `prompts_cualitativo.py` — prompts Bardin/Braun&Clarke para los motores IA.
+  - `ia_client.py` — cliente HTTP de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos.
   - `ia_filtro_ruido.py` — pre-filtro de comentarios ruidosos (15 criterios regex).
-  - `ia_validacion.py` — validacion de respuestas DeepSeek + redaccion PII post-LLM.
+  - `ia_validacion.py` — validacion de respuestas de los motores IA + redaccion PII post-LLM.
   - `insights_generator.py` — sintesis determinista de insights (sin LLM).
 - **`schemas/`** contiene **8 JSON Schemas Draft-07** (incluye `dataset_cualitativo.schema.json`).
 
@@ -171,8 +171,8 @@ Si se modifica la estructura de cualquier JSON generado:
 
 ## Advertencias Importantes Para Agentes IA
 
-1. **No confiar en documentación de motor legacy**: el motor spaCy/keyword matching fue eliminado en v3.2.0. La versión actual usa DeepSeek como motor principal (`lib/ia_cualitativo.py`) con fallback a NVIDIA. No existe `scripts/README.md` (eliminado por obsoleto).
-2. **Motor legacy eliminado** (v3.2.0): los modulos `nlp.py`, `segmentacion_nps.py`, `aspect_extraction.py`, `sentiment_engine.py` fueron eliminados. `enmascarar_pii` se reubico a `io_helper.py`. `DEEPSEEK_API_KEY` es obligatoria para el motor principal; `NVIDIA_API_KEY` activa el fallback.
+1. **No confiar en documentación de motor legacy**: el motor spaCy/keyword matching fue eliminado en v3.2.0. La versión actual usa una **cadena de motores IA** (`lib/ia_cualitativo.py`): Google (Gemini) → NVIDIA (4 modelos) → OpenCode, con el orden y los modelos configurables con `IA_CUALITATIVO_CADENA`. No existe `scripts/README.md` (eliminado por obsoleto).
+2. **Motor legacy eliminado** (v3.2.0): los modulos `nlp.py`, `segmentacion_nps.py`, `aspect_extraction.py`, `sentiment_engine.py` fueron eliminados. `enmascarar_pii` se reubico a `io_helper.py`. Desde v3.9.0 basta con UNA clave de la cadena (`GOOGLE_API_KEY`, `NVIDIA_API_KEY` u `OPENCODE_API_KEY`); el servicio DeepSeek quedo retirado.
 3. **`lib/config.py` constantes legacy**: ~~`TOPICOS` y `STOPWORDS` no se usan en modulos activos.~~ **ELIMINADO**.
 4. **Sin spaCy desde v3.2.0**: el motor legacy (spaCy + sentence-transformers) fue eliminado. `requirements.txt` ya no incluye `spacy`, `sentence-transformers`, ni `scikit-learn`.
 5. **`dataset_cualitativo.json` TIENE schema formal**: `dataset_cualitativo.schema.json` existe (archivo intermedio, validación manual opcional). `fragmentos_nps.json` no tiene schema formal (intermedio sin consumidores externos).

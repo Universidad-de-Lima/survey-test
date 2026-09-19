@@ -192,7 +192,7 @@ def main() -> None:
         # ── DETECCIÓN DE CSV MODIFICADO ──────────────────────────
         # Si el CSV no cambió desde el último build Y los JSON ya existen,
         # saltar el reprocesamiento completo (ahorra tiempo de CPU y ETL).
-        # El caché IA (ia_cache.json) ya evita re-pagar DeepSeek; esto
+        # El caché IA (ia_cache.json) ya evita re-pagar el analisis; esto
         # adicionalmente evita releer el CSV, recalcular métricas y
         # reescribir JSONs idénticos.
         if not csv_cambiado(csv_file, ruta_salida):
@@ -568,42 +568,32 @@ def main() -> None:
             df_sent = df_sent.dropna(subset=["nps_score"])
 
             # ================================================================
-            # ANALISIS CUALITATIVO CON IA (DeepSeek con fallback a NVIDIA)
-            # El motor legacy (spaCy + sentence-transformers) fue eliminado en v3.2.0.
-            # DEEPSEEK_API_KEY es el motor primario; NVIDIA_API_KEY es el fallback.
-            # Si ninguna está configurada, el ETL falla.
+            # ANALISIS CUALITATIVO CON IA (CADENA DE MOTORES)
+            # El motor legacy (spaCy + sentence-transformers) fue eliminado en
+            # v3.2.0. Desde v3.9.0 el analisis usa una cadena ordenada de
+            # motores: Google (Gemini) -> NVIDIA (4 modelos) -> OpenCode.
+            # El orden y los modelos se cambian SIN tocar codigo con la
+            # variable IA_CUALITATIVO_CADENA ("servicio:modelo,servicio:modelo").
+            # Si ningun motor tiene su clave configurada, el ETL falla.
             # ================================================================
-            deepseek_key = os.environ.get("DEEPSEEK_API_KEY", "")
-            nvidia_key = os.environ.get("NVIDIA_API_KEY", "")
-            if not deepseek_key and not nvidia_key:
-                raise RuntimeError(
-                    "Ni DEEPSEEK_API_KEY ni NVIDIA_API_KEY están configuradas. "
-                    "Configure al menos una de las claves en GitHub Actions Secrets "
-                    "(Settings → Secrets and variables → Actions)."
-                )
-            if deepseek_key:
-                logging.info("Modo IA Cualitativo ACTIVADO (DeepSeek primario).")
-            else:
-                logging.info("Modo IA Cualitativo ACTIVADO (NVIDIA fallback - DeepSeek no configurado).")
             from lib.config import DIMENSIONES_SIN_CSAT
             from lib.ia_cualitativo import generar_salidas_cualitativas_ia
-            from lib.ia_client import DeepSeekClient, FALLBACK_MODEL
+            from lib.ia_client import construir_motores, claves_faltantes, leer_cadena
 
-            # Configurar cliente primario (DeepSeek) y fallback (NVIDIA)
-            _primary_client = None
-            _fallback_client = None
-            if deepseek_key:
-                _primary_client = DeepSeekClient(api_key=deepseek_key)
-            if nvidia_key:
-                # NVIDIA API gratuita: ~30 req/min. El rate se limita aqui
-                # (max_rpm=15) y el tamano del pool cuando NVIDIA es el motor
-                # activo se decide en lib/ia_cualitativo.py (NVIDIA_MAX_WORKERS).
-                _fallback_client = DeepSeekClient(
-                    api_key=nvidia_key,
-                    model=FALLBACK_MODEL,
-                    max_rpm=15,
-                    provider="nvidia",
+            _motores = construir_motores()
+            if not _motores:
+                raise RuntimeError(
+                    "Ningun motor del analisis cualitativo tiene su clave "
+                    "configurada. Configure en GitHub Actions Secrets "
+                    "(Settings -> Secrets and variables -> Actions) al menos una de: "
+                    + ", ".join(claves_faltantes())
+                    + f". Cadena pedida: {leer_cadena()}"
                 )
+            logging.info(
+                "Modo IA Cualitativo ACTIVADO. Cadena: "
+                + " -> ".join(m.etiqueta for m in _motores)
+            )
+            _motor_primario = _motores[0].servicio
 
             # Merge columnas CSAT por dimension en df_sent (para cross-reference)
             _dimension_cols = [d for d in categoria_dim.keys()
@@ -619,7 +609,7 @@ def main() -> None:
             # En lugar de un caché oculto (ia_cache.json), usamos el propio
             # sentimiento.json como fuente de verdad: si un comentario ya fue
             # procesado (su ID está en el JSON existente), se salta. Solo se
-            # envían a DeepSeek los comentarios NUEVOS.
+            # envían a los motores de la cadena los comentarios NUEVOS.
             #
             # Para forzar reprocesamiento (ej: cambiaste el prompt y quieres
             # ver los cambios reflejados): borra el sentimiento.json del
@@ -665,7 +655,7 @@ def main() -> None:
                                 "comentario_original": enmascarar_pii(_com.get("comentario_original", ""))[0],
                                 "es_valido": _com.get("es_valido", True),
                                 "motivo_invalidez": _com.get("motivo_invalidez", ""),
-                                "motor": "deepseek",
+                                "motor": "desconocido",
                             })
                     logging.info(
                         f"JSON existente cargado: {len(_ids_procesados)} "
@@ -695,7 +685,7 @@ def main() -> None:
                         df_sent=_df_nuevos,
                         taxonomia=CATEGORIA_DIMENSION_UNIFICADA,
                         csat_columns_map=_csat_cols_map,
-                        fallback_client=_fallback_client,
+                        motores=_motores,
                     )
                 )
             else:
@@ -731,7 +721,7 @@ def main() -> None:
             datos_fragmentos = _datos_fragmentos_nuevos
             
             # Escribir fragmentos_nps.json (formato compatible con el legado)
-            _motor_str = "deepseek" if deepseek_key else "nvidia"
+            _motor_str = _motor_primario
             fragmentos_payload = {
                 "metadata": {
                     "version": "2.0",

@@ -1,8 +1,8 @@
 """
-IA VALIDACION — Validación y corrección de respuestas de DeepSeek.
+IA VALIDACION — Validación y corrección de respuestas de los motores IA.
 
 Valida y corrige unidades individuales y respuestas completas de la API
-de DeepSeek, asegurando consistencia de tipos, campos requeridos y
+de los motores IA, asegurando consistencia de tipos, campos requeridos y
 coherencia entre dimensiones y categorías padre.
 """
 
@@ -108,7 +108,7 @@ def _normalizar_pendiente(value: Any) -> Any:
 
 
 def _normalizar_unidad(unidad: dict) -> dict:
-    """Normaliza variaciones de formato de DeepSeek antes de validar."""
+    """Normaliza variaciones de formato de los motores IA antes de validar."""
     unidad["sentimiento"] = _normalizar_sentimiento(unidad.get("sentimiento"))
     if "intensidad" in unidad:
         unidad["intensidad"] = _normalizar_intensidad(unidad.get("intensidad"))
@@ -220,7 +220,7 @@ def corregir_unidad(unidad: dict) -> dict:
 def validar_respuesta_ia(respuesta: dict,
                          taxonomia: Dict[str, str]
                          ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
-    """Valida y sanea la respuesta completa de DeepSeek.
+    """Valida y sanea la respuesta completa del motor IA.
 
     Retorna (respuesta_saneada, None) o (None, mensaje_error).
     Descarta unidades inválidas y re-numera secuencialmente.

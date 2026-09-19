@@ -85,8 +85,8 @@ Más una de carrera:
 
 ### PII
 
-- **IP / User-Agent / URL de encuesta**: redimidos por `sanitize_csv_pii.py` antes del ETL (no llegan a DeepSeek ni a Pages).
-- **Comentario NPS**: ofuscado con `ofuscar_pii_para_llm` antes de DeepSeek (Fase 3.5).
+- **IP / User-Agent / URL de encuesta**: redimidos por `sanitize_csv_pii.py` antes del ETL (no llegan a los motores IA ni a Pages).
+- **Comentario NPS**: ofuscado con `ofuscar_pii_para_llm` antes de enviarlo a los motores IA (Fase 3.5).
 - **Nunca** se commitean: `data/` está en `.gitignore`; el Release temporal se elimina tras procesar.
 
 ## Salida JSON v2.0

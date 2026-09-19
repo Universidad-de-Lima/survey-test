@@ -3,10 +3,10 @@ TESTS — Integración del ETL (smoke test)
 
 Test de integración que verifica que las funciones clave del ETL (metrics, io_helper,
 insights_generator) funcionan correctamente encadenadas, simulando el flujo de
-build_json.py sin requerir DEEPSEEK_API_KEY.
+build_json.py sin requerir claves de los motores IA.
 
 No es un test end-to-end completo (no ejecuta build_json.py:main()) porque el motor IA
-requiere DEEPSEEK_API_KEY. En su lugar, prueba las funciones puras con datos mock
+requiere al menos una clave de motor IA. En su lugar, prueba las funciones puras con datos mock
 que simulan la salida del ETL.
 """
 
@@ -151,7 +151,7 @@ class TestETLIntegrationInsights(unittest.TestCase):
                 "comentario_original": "buenos profesores",
                 "es_valido": True,
                 "motivo_invalidez": None,
-                "motor": "deepseek",
+                "motor": "google",
             },
             {
                 "id_encuesta": "R2", "id_fragmento": "R2_01",
@@ -170,7 +170,7 @@ class TestETLIntegrationInsights(unittest.TestCase):
                 "comentario_original": "wifi lento",
                 "es_valido": True,
                 "motivo_invalidez": None,
-                "motor": "deepseek",
+                "motor": "google",
             },
         ]
 
@@ -197,7 +197,7 @@ class TestETLIntegrationInsights(unittest.TestCase):
                 "sub_aspectos": [], "sentimiento": "neutro",
                 "intensidad": 3, "confianza_sentimiento": 0.5,
                 "comentario_original": "test", "es_valido": True,
-                "motivo_invalidez": None, "motor": "deepseek",
+                "motivo_invalidez": None, "motor": "google",
             },
         ]
 

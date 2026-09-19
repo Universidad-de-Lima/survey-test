@@ -165,7 +165,7 @@ def enmascarar_pii(texto: str) -> str:
 
 
 def ofuscar_pii_para_llm(texto: str):
-    """Ofusca PII en texto para enviar a LLM (DeepSeek).
+    """Ofusca PII en texto para enviarlo a un LLM externo.
 
     A diferencia de enmascarar_pii(), usa placeholders numerados para que
     el LLM pueda distinguir multiples ocurrencias del mismo tipo:

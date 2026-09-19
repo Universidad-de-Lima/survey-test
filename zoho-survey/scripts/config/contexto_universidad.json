@@ -1,5 +1,5 @@
 {
-  "_descripcion": "Contexto institucional de la Universidad de Lima para el análisis cualitativo de la IA. Este archivo es la fuente editable de contexto que se inyecta en el system_prompt de DeepSeek. Editar este archivo NO requiere tocar código Python.",
+  "_descripcion": "Contexto institucional de la Universidad de Lima para el análisis cualitativo de la IA. Este archivo es la fuente editable de contexto que se inyecta en el system_prompt de los motores IA. Editar este archivo NO requiere tocar código Python.",
   "_ubicacion": "zoho-survey/scripts/config/contexto_universidad.json",
   "_como_se_usa": "Cargado por prompts_cualitativo.py en build_system_prompt(). El contexto se inyecta como reglas de negocio hard (la IA NO debe clasificar en dimensiones que el estudiante no evalúa).",
 

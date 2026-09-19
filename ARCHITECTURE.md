@@ -16,15 +16,16 @@ graph TD
     JSON --> DASH
     CSV --> |hash| CACHE[.csv_hash<br/>detección de cambios]
 
-    subgraph ETL Cualitativo IA [Motor IA — DeepSeek + fallback NVIDIA]
-        IA[lib/ia_cualitativo.py] --> |primario| DEEPSEEK[DeepSeek API]
-        IA --> |fallback| NVIDIA[NVIDIA API]
+    subgraph ETL Cualitativo IA [Motor IA — cadena: Google → NVIDIA → OpenCode]
+        IA[lib/ia_cualitativo.py] --> |1.º| GOOGLE[Google Gemini API]
+        IA --> |2.º a 5.º| NVIDIA[NVIDIA NIM API]
+        IA --> |6.º| OPENCODE[OpenCode API]
         IAPROMPT[lib/prompts_cualitativo.py] --> IA
         IA --> |genera| DC2[dataset_cualitativo.json]
         DC2 --> ST2[sentimiento.json v3.0]
         IAGEN[lib/insights_generator.py] --> |síntesis determinista| ST2
     end
-    ETL --> |DEEPSEEK_API_KEY obligatoria; NVIDIA_API_KEY fallback| IA
+    ETL --> |cadena en IA_CUALITATIVO_CADENA; al menos una clave| IA
 
     subgraph Ingesta Web [Subir datos (Fase 3.8.2)]
         BROWSER[Browser GitHub Pages] -->|PAT owner (memoria)| GH[api.github.com]
@@ -90,28 +91,30 @@ Para mayor detalle de responsabilidades:
 | `lib/config.py` | 485 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
 | `lib/metrics.py` | 98 | Funciones puras de calculo de NPS (`calc_nps`), CSAT (`calc_csat`) y Promedio Ponderado. | Activo. |
 | `lib/io_helper.py` | 227 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
-| `lib/ia_cualitativo.py` | 540 | Motor de analisis cualitativo basado en DeepSeek. **Unico motor desde v3.2.0** (motor legacy eliminado). Deduplicacion por ID de comentario (sin cache). Umbral fail-closed: aborta si mas del 20% de los comentarios falla por API (`IA_CUALITATIVO_MAX_FALLOS_API_PCT`). | Activo (requiere `DEEPSEEK_API_KEY` obligatoria). |
-| `lib/prompts_cualitativo.py` | 785 | Prompts exactos para DeepSeek (system + user). Fuente de verdad de los prompts usados en el ETL. | Activo (Fase IA). |
+| `lib/ia_cualitativo.py` | 558 | Orquestador del analisis cualitativo por **cadena de motores** (Google -> NVIDIA -> OpenCode), retirado el motor unico DeepSeek en v3.9.0 (motor legacy eliminado en v3.2.0). Deduplicacion por ID de comentario (sin cache). Umbral fail-closed: aborta si mas del 20% de los comentarios falla por API (`IA_CUALITATIVO_MAX_FALLOS_API_PCT`). | Activo (requiere al menos una clave de motores IA). |
+| `lib/prompts_cualitativo.py` | 779 | Prompts exactos para los motores IA (system + user). Fuente de verdad de los prompts usados en el ETL. | Activo (Fase IA). |
 | `lib/insights_generator.py` | 262 | Generador de insights deterministas (sin LLM). Produce `insights_ia.global` y `insights_ia.por_categoria_padre` a partir de datos ya procesados. | Activo. |
 | `lib/csv_exporter.py` | 169 | Exportacion de CSVs y ZIPs con proteccion formula injection y redaccion PII. ZIPs se guardan en `exports/` (no desplegados en Pages). | Activo. |
 | `lib/dashboard_builder.py` | 57 | Ensamblado de `dashboard_data.json` desde metricas pre-calculadas. | Activo. |
 | `lib/periodos_updater.py` | 58 | Actualizacion de `periodos.json` por nivel, marcando `isNew: true` en el mas reciente. | Activo. |
-| `lib/ia_client.py` | 225 | Cliente HTTP DeepSeek (urllib stdlib) con reintentos, backoff exponencial y rate limiting. | Activo. |
-| `lib/ia_filtro_ruido.py` | 147 | Pre-filtro de comentarios ruidosos (15 criterios regex) antes de llamar a DeepSeek. | Activo. |
-| `lib/ia_validacion.py` | 263 | Validacion y correccion de respuestas DeepSeek. Redaccion PII post-LLM. | Activo. |
+| `lib/ia_client.py` | 421 | Cliente de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos, backoff exponencial y limite de ritmo por motor. Orden y modelos configurables con `IA_CUALITATIVO_CADENA`. | Activo. |
+| `lib/ia_filtro_ruido.py` | 147 | Pre-filtro de comentarios ruidosos (15 criterios regex) antes de llamar a los motores IA. | Activo. |
+| `lib/ia_validacion.py` | 263 | Validacion y correccion de respuestas de los motores IA. Redaccion PII post-LLM. | Activo. |
 
 **Modulos eliminados en v3.2.0** (motor legacy): `lib/nlp.py`, `lib/segmentacion_nps.py`, `lib/aspect_extraction.py`, `lib/sentiment_engine.py`, `lib/sentimiento_builder.py`, `lib/ia_cache.py` (eliminado en limpieza Fase 0; reemplazado por deduplicacion por ID).
 
-### Flujo cualitativo (v3.2.0) — Motor unico IA
+### Flujo cualitativo (v3.9.0) — Cadena de motores IA
 
-Desde v3.2.0, el ETL usa un unico motor cualitativo (DeepSeek IA). El motor legacy
-(spaCy + sentence-transformers) fue eliminado. `DEEPSEEK_API_KEY` es obligatoria.
+Desde v3.9.0 el ETL usa una **cadena ordenada de motores IA** (Google -> NVIDIA -> OpenCode),
+configurable con `IA_CUALITATIVO_CADENA`: si un motor falla o no valida su respuesta, se pasa al
+siguiente. Basta con que UNA clave de la cadena este configurada. El motor legacy
+(spaCy + sentence-transformers) fue eliminado en v3.2.0.
 
 ```
 Comentario NPS (CSV)
-    |  una única llamada a DeepSeek (15 workers concurrentes, rate limit 60 RPM)
+    |  se intentan los motores en orden hasta que uno responda (15 workers; 60 RPM por motor, 15 en NVIDIA)
     v
-ia_cualitativo.py → DeepSeek API
+ia_cualitativo.py → motores de la cadena (Google / NVIDIA / OpenCode)
     |  ejecuta 5 tareas en conjunto con coherencia de contexto:
     |  1. Segmentación en Meaning Units (Bardin, 2011)
     |  2. Clasificación de sentimiento con reglas de sesgo por contexto NPS
@@ -127,12 +130,12 @@ sentimiento.json v3.0 + insights_ia (vía insights_generator.py)
 
 **Deduplicacion por ID (sin cache IA):** en lugar de un cache oculto (`ia_cache.json`,
 eliminado), `build_json.py` usa `sentimiento.json` como fuente de verdad: si un comentario
-ya fue procesado (su ID esta en el JSON existente), se salta. Solo se envian a DeepSeek los
+ya fue procesado (su ID esta en el JSON existente), se salta. Solo se envian a los motores IA los
 comentarios NUEVOS. Para forzar reprocesamiento, borrar el `sentimiento.json` del periodo.
 
 ### Optimizacion: deteccion de cambios por hash
 
-`build_json.py` implementa una optimizacion de skip: antes de procesar un CSV, calcula su hash SHA256 y lo compara con `.csv_hash` (guardado en el directorio de salida del periodo). Si el CSV no cambio desde el ultimo build Y todos los JSONs ya existen, se salta el reprocesamiento completo. Esto ahorra tiempo de CPU, llamadas a DeepSeek (costos), y reescritura de archivos identicos. La huella es versionada (`ETL_OUTPUT_VERSION` + hash) para forzar reproceso controlado cuando cambian reglas internas.
+`build_json.py` implementa una optimizacion de skip: antes de procesar un CSV, calcula su hash SHA256 y lo compara con `.csv_hash` (guardado en el directorio de salida del periodo). Si el CSV no cambio desde el ultimo build Y todos los JSONs ya existen, se salta el reprocesamiento completo. Esto ahorra tiempo de CPU, llamadas a los motores IA (costos), y reescritura de archivos identicos. La huella es versionada (`ETL_OUTPUT_VERSION` + hash) para forzar reproceso controlado cuando cambian reglas internas.
 
 ### Outputs generados por periodo
 
@@ -151,7 +154,7 @@ En `json/` (consumidos por frontend):
 
 En `intermediate/` (no consumidos por frontend):
 10. `fragmentos_nps.json` — Meaning Units extraidas.
-11. `dataset_cualitativo.json` — dataset detallado de fragmentos clasificados por DeepSeek.
+11. `dataset_cualitativo.json` — dataset detallado de fragmentos clasificados por los motores IA.
 
 Adicionalmente:
 - `json/.csv_hash` — huella versionada del CSV fuente (deteccion de cambios).
@@ -164,7 +167,7 @@ Adicionalmente:
 - Normalizar columnas de Zoho Survey a nombres internos definidos en `lib/config.py`.
 - Calcular agregados NPS, CSAT y empleabilidad cuando corresponde.
 - Generar datos por facultad, carrera, ciclo y dimension.
-- Enviar comentarios NPS a DeepSeek para analisis cualitativo (sentimiento, intensidad, aspectos, categoria).
+- Enviar comentarios NPS a los motores IA para analisis cualitativo (sentimiento, intensidad, aspectos, categoria).
 - Copiar el template del periodo y actualizar `periodos.json`.
 - Mantener idempotencia: correr el script dos veces con la misma entrada debe producir el mismo resultado (con caveat: si el CSV no tiene fechas validas, se usa `pd.Timestamp.now()` como fallback, lo que rompe idempotencia en ese edge case).
 
@@ -348,7 +351,7 @@ build_json.py procesa las 7 categorias. resolver_config_etl (lib/config.py) resu
 
 | # | Dónde puede aparecer | Estado en Arquitectura A |
 | --- | --- | --- |
-| 1 | Comentario NPS hacia DeepSeek | 🔴 Ofuscado con `ofuscar_pii_para_llm` (Fase 3.5) antes del LLM |
+| 1 | Comentario NPS hacia los motores IA | 🔴 Ofuscado con `ofuscar_pii_para_llm` (Fase 3.5) antes del LLM |
 | 2 | PII temporal (Release + runner) | 🟡 Draft + `data/temp/{upload_id}/` efímero; redimido en ETL |
 | 3 | PII en Git | 🟢 Cero — `data/` gitignored; commit gated `!= repository_dispatch` |
 | 4 | PII publicada en Pages | 🟢 Cero — solo JSON/HTML sanitizados |
@@ -366,7 +369,7 @@ Los CSV de prueba con IP están cubiertos por `sanitize_csv_pii.py` (redime `Dir
 ### Errores y reintentos
 
 - Upload/Actions falla → el Release DRAFT persiste; reintento con **nuevo** `upload_id`.
-- DeepSeek falla → reintentos con backoff (`ia_client.py`).
+- Un motor falla o no valida su respuesta → se pasa al siguiente de la cadena; cada motor reintenta con backoff (`ia_client.py`).
 - Validate/JSON/Deploy falla → job falla; cleanup no corre (gated `success()`); recovery manual.
 
 

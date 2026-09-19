@@ -106,7 +106,7 @@ jobs:
 
       - name: Detectar CSVs a procesar
         # Gate del ETL: sin CSV en data/ no se sanitiza, no se llama a la API IA
-        # y no se exige DEEPSEEK_API_KEY. Un push de HTML/CSS/JS solo despliega
+        # ni se exigen las claves de los motores. Un push de HTML/CSS/JS solo despliega
         # el sitio estatico y valida los contratos JSON ya versionados.
         id: csv
         run: |
@@ -121,18 +121,32 @@ jobs:
             echo "Sin CSVs en data/: se omite el ETL (solo deploy estatico + validacion de contratos)."
           fi
 
-      - name: Verify DEEPSEEK_API_KEY
+      - name: Verify claves de los motores IA
         # Gate temprano, SOLO cuando hay CSVs que procesar: falla antes de
-        # instalar dependencias si la key falta. El motor legacy fue eliminado
-        # en v3.2.0, la key es obligatoria para el analisis cualitativo con IA.
+        # instalar dependencias si no hay NINGUNA clave de motor. Desde v3.9.0
+        # el analisis cualitativo usa una cadena de motores configurable con
+        # IA_CUALITATIVO_CADENA; basta con que UNA de las claves este
+        # configurada para que el ETL pueda analizar los comentarios.
         if: steps.csv.outputs.hay_csv == 'true'
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         run: |
-          if [ -z "${{ secrets.DEEPSEEK_API_KEY }}" ]; then
-            echo "ERROR: DEEPSEEK_API_KEY no esta configurada en GitHub Secrets."
-            echo "El motor legacy fue eliminado en v3.2.0. La key es obligatoria."
+          if [ -z "${GOOGLE_API_KEY}${NVIDIA_API_KEY}${OPENCODE_API_KEY}" ]; then
+            echo "ERROR: ninguna clave de motor esta configurada en GitHub Secrets."
+            echo "El motor legacy fue eliminado en v3.2.0. Configure al menos una de:"
+            echo "  GOOGLE_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY"
             exit 1
           fi
-          echo "OK: DEEPSEEK_API_KEY configurada."
+          for clave in GOOGLE_API_KEY NVIDIA_API_KEY OPENCODE_API_KEY; do
+            eval "valor=\$$clave"
+            if [ -n "$valor" ]; then
+              echo "OK: $clave configurada."
+            else
+              echo "AVISO: $clave ausente; los motores de ese servicio se omitiran."
+            fi
+          done
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -162,16 +176,24 @@ jobs:
 
       - name: Run build_json.py
         # SOLO corre si hay CSV en data/ (ver "Detectar CSVs a procesar").
-        # DEEPSEEK_API_KEY se inyecta desde GitHub Secrets (verificada en el gate
-        # anterior, que a su vez solo se evalua cuando hay CSVs).
+        # Las claves de los motores se inyectan desde GitHub Secrets (el gate
+        # anterior, que a su vez solo se evalua cuando hay CSVs, exige al menos
+        # una). Los servicios sin clave simplemente se omiten de la cadena.
         #
         # Variables IA_CUALITATIVO_* controlan el comportamiento del motor IA:
-        #   WORKERS=15    → 15 llamadas concurrentes a DeepSeek (speedup ~15x)
-        #   MAX_RPM=60    → rate limit global (DeepSeek permite ~60 RPM)
+        #   CADENA        orden y modelos ("servicio:modelo,servicio:modelo").
+        #                 Vacio = cadena por defecto de lib/ia_client.py.
+        #   WORKERS=15    → 15 llamadas concurrentes
+        #   MAX_RPM=60    → limite de ritmo por motor (NVIDIA: 15)
         #   TIMEOUT=60    → timeout por llamada individual (segundos)
         if: steps.csv.outputs.hay_csv == 'true'
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          # La cadena se cambia desde GitHub, sin tocar codigo:
+          # Settings → Secrets and variables → Actions → pestaña Variables.
+          IA_CUALITATIVO_CADENA: ${{ vars.IA_CUALITATIVO_CADENA }}
           IA_CUALITATIVO_WORKERS: "15"
           IA_CUALITATIVO_MAX_RPM: "60"
           IA_CUALITATIVO_TIMEOUT: "60"

@@ -1,13 +1,14 @@
 """
-IA CUALITATIVO — Orquestador del analisis cualitativo basado en DeepSeek.
+IA CUALITATIVO — Orquestador del análisis cualitativo por cadena de motores.
 
-Este modulo es la capa de integracion entre build_json.py y los 4 submodulos
-especializados: ia_client (cliente DeepSeek), ia_validacion (validacion),
-ia_filtro_ruido (pre-filtrado), e ia_validacion (validacion de respuestas).
+Este módulo es la capa de integración entre build_json.py y los submódulos
+especializados: ia_client (motores), ia_validacion (validación), ia_filtro_ruido
+(pre-filtrado).
 
-Reemplaza a los 3 modulos locales (segmentacion_nps.py, aspect_extraction.py,
-sentiment_engine.py) por una unica llamada a DeepSeek que ejecuta las 5 tareas
-en conjunto, con coherencia de contexto y reglas de sesgo NPS aplicadas.
+Desde v3.9.0 el análisis usa una CADENA DE MOTORES ordenada: se intenta el
+primero y, si falla o devuelve una respuesta inválida, se pasa al siguiente.
+Sustituye al esquema anterior de "motor primario + un respaldo" (DeepSeek con
+respaldo NVIDIA), que quedó obsoleto al incorporar Google y OpenCode.
 
 Uso principal (integrado en build_json.py):
   from lib.ia_cualitativo import generar_salidas_cualitativas_ia
@@ -15,12 +16,19 @@ Uso principal (integrado en build_json.py):
       df_sent=df_sent, taxonomia=..., csat_columns_map=...
   )
 
-Variables de entorno:
-  - DEEPSEEK_API_KEY (obligatorio para modo IA).
-  - IA_CUALITATIVO_MODEL (opcional, default "deepseek-chat").
-  - IA_CUALITATIVO_MAX_RPM (opcional, default 60).
+Variables de entorno (las claves, una por servicio):
+  - GOOGLE_API_KEY    (Google Gemini).
+  - NVIDIA_API_KEY    (NVIDIA NIM: 4 modelos en la cadena por defecto).
+  - OPENCODE_API_KEY  (OpenCode).
+  Al menos una es obligatoria: sin ninguna, el ETL falla.
+
+  - IA_CUALITATIVO_CADENA (opcional): orden y modelos de la cadena, en formato
+    "servicio:modelo" separado por comas. Sin esta variable se usa la cadena por
+    defecto de lib/ia_client.py.
+  - IA_CUALITATIVO_MAX_RPM (opcional, default 60): llamadas por minuto y motor.
+  - IA_CUALITATIVO_TIMEOUT (opcional, default 60): segundos por llamada.
   - IA_CUALITATIVO_MAX_FALLOS_API_PCT (opcional, default 20): umbral fail-closed.
-    Si mas de ese porcentaje de comentarios falla por API, el ETL aborta y no se
+    Si más de ese porcentaje de comentarios falla por API, el ETL aborta y no se
     publica sentimiento.json. 0 = estricto, 100 = desactivado.
   - (caché IA eliminado — la verificación por ID reemplaza al caché)
 """
@@ -29,11 +37,10 @@ import logging
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # CacheManager eliminado — verificación por ID en build_json.py
-from .ia_client import DeepSeekClient, DEFAULT_WORKERS
+from .ia_client import MotorIA, construir_motores, DEFAULT_WORKERS
 from .ia_filtro_ruido import es_ruido_pre_filtro, generar_unidad_ruido
 from .ia_validacion import validar_respuesta_ia
 from .io_helper import ofuscar_pii_para_llm
@@ -55,15 +62,22 @@ logger = logging.getLogger(__name__)
 # UMBRAL FAIL-CLOSED DE FALLOS DE API
 # ============================================================
 
-# Motivo que registra la unidad placeholder cuando NINGUN motor pudo responder.
+# Motivo que registra la unidad placeholder cuando NINGÚN motor pudo responder.
 MOTIVO_FALLO_API = "Error de API (todos los motores fallaron)"
 
-# Muestra minima para aplicar el umbral: con pocos comentarios una tasa alta no
-# es significativa y bloquearia el build sin motivo.
+# Muestra mínima para aplicar el umbral: con pocos comentarios una tasa alta no
+# es significativa y bloquearía el build sin motivo.
 MIN_INTENTOS_UMBRAL = 10
 
-# Workers maximos cuando NVIDIA es el motor activo (free tier ~30 req/min).
+# Workers máximos cuando el PRIMER motor de la cadena es NVIDIA (plan gratuito
+# ~30 req/min). Los demás motores de la cadena se autorregulan con su propio
+# límite de ritmo (ver lib/ia_client.py).
 NVIDIA_MAX_WORKERS = 3
+
+# Valor del campo "motor" para las unidades descartadas por el pre-filtro de
+# ruido: no las clasificó ningún motor, y decirlo así es más honesto que
+# atribuírselas a uno.
+MOTOR_FILTRO_RUIDO = "filtro"
 
 
 def _umbral_fallos_pct() -> float:
@@ -75,11 +89,11 @@ def _umbral_fallos_pct() -> float:
 
 
 def evaluar_fallo_masivo(intentos_api: int, fallos_api: int) -> Optional[str]:
-    """Evalua si la tasa de fallos de API obliga a abortar el ETL.
+    """Evalúa si la tasa de fallos de API obliga a abortar el ETL.
 
-    Fail-closed: si mas del `IA_CUALITATIVO_MAX_FALLOS_API_PCT` por ciento de los
-    comentarios enviados a la IA no pudo analizarse con NINGUN motor, los
-    indicadores cualitativos no son representativos y no deben publicarse.
+    Fail-closed: si más del `IA_CUALITATIVO_MAX_FALLOS_API_PCT` por ciento de los
+    comentarios enviados a la IA no pudo analizarse con NINGÚN motor de la cadena,
+    los indicadores cualitativos no son representativos y no deben publicarse.
 
     Devuelve el mensaje de error si hay que abortar, o None si el build puede
     continuar. `IA_CUALITATIVO_MAX_FALLOS_API_PCT=0` = modo estricto (cualquier
@@ -96,11 +110,11 @@ def evaluar_fallo_masivo(intentos_api: int, fallos_api: int) -> Optional[str]:
     return (
         f"Fallo de API masivo en el analisis cualitativo: "
         f"{fallos_api}/{intentos_api} comentarios ({tasa:.1f}%) no pudieron "
-        f"analizarse con ningun motor (umbral "
+        f"analizarse con ningun motor de la cadena (umbral "
         f"IA_CUALITATIVO_MAX_FALLOS_API_PCT={umbral:.0f}%, muestra minima "
         f"{MIN_INTENTOS_UMBRAL}). No se publica sentimiento.json para este "
-        "periodo: revisa la clave/cuota de DeepSeek (y NVIDIA_API_KEY como "
-        "respaldo) y relanza el ETL."
+        "periodo: revisa las claves y cuotas de los servicios de la cadena "
+        "(GOOGLE_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY) y relanza el ETL."
     )
 
 
@@ -113,64 +127,61 @@ def analizar_comentario(comentario: str,
                         csat_ratings: Dict[str, str],
                         taxonomia: Dict[str, str],
                         categorias_padre: List[str],
-                        client: DeepSeekClient,
-                        fallback_client: Optional[DeepSeekClient] = None,
+                        motores: List[MotorIA],
                         id_encuesta: str = "",
                         carrera: str = "",
                         ciclo: str = "",
                         facultad: str = "") -> Dict[str, Any]:
     """Analiza un comentario completo y devuelve {unidades: [...]}.
 
-    El fallback se activa en DOS casos:
-      1. Error de API (RuntimeError) en el cliente primario.
-      2. Respuesta del primario no valida (validar_respuesta_ia -> None).
+    Recorre la cadena de motores en orden. Se pasa al siguiente motor en DOS
+    casos:
+      1. Error de API (RuntimeError) en el motor actual.
+      2. Respuesta del motor actual no valida (validar_respuesta_ia -> None).
 
-    Si ambos clientes fallan, devuelve una unidad placeholder no valida.
+    Si ningún motor de la cadena responde, devuelve una unidad placeholder no
+    válida, que el umbral fail-closed contabiliza como fallo de API.
     """
     system_prompt = build_system_prompt(taxonomia, categorias_padre)
     user_prompt = build_user_prompt(comentario, nps_score, csat_ratings, id_encuesta, carrera, ciclo, facultad)
 
-    def _try_client(active_client: DeepSeekClient) -> Optional[Dict[str, Any]]:
-        """Llama a un cliente y valida su respuesta. Retorna dict saneado o None."""
-        provider_label = "NVIDIA" if active_client.provider == "nvidia" else "DeepSeek"
+    def _try_motor(motor: MotorIA) -> Optional[Dict[str, Any]]:
+        """Llama a un motor y valida su respuesta. Retorna dict saneado o None."""
         try:
-            raw = active_client.chat_completion(
+            raw = motor.chat_completion(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
-                temperature=0.1,
                 max_tokens=10000,
             )
         except RuntimeError as e:
-            logger.error(f"{provider_label} fallo para {id_encuesta}: {e}")
+            logger.error(f"{motor.etiqueta} fallo para {id_encuesta}: {e}")
             return None
         if not raw:
-            logger.warning(f"{provider_label} devolvio respuesta vacia para {id_encuesta}.")
+            logger.warning(f"{motor.etiqueta} devolvio respuesta vacia para {id_encuesta}.")
             return None
         sanada, err = validar_respuesta_ia(raw, taxonomia)
         if sanada is None:
-            logger.warning(f"{provider_label} respuesta invalida para {id_encuesta}: {err}")
+            logger.warning(f"{motor.etiqueta} respuesta invalida para {id_encuesta}: {err}")
             return None
         return sanada
 
-    clients_to_try: List[Tuple[DeepSeekClient, str]] = [(client, client.provider)]
-    if fallback_client is not None:
-        clients_to_try.append((fallback_client, fallback_client.provider))
-
-    for idx, (active_client, provider_name) in enumerate(clients_to_try):
+    for idx, motor in enumerate(motores):
         if idx > 0:
-            logger.warning(f"Intentando fallback ({provider_name}) para {id_encuesta}...")
-        sanada = _try_client(active_client)
+            logger.warning(f"Intentando el siguiente motor ({motor.etiqueta}) para {id_encuesta}...")
+        sanada = _try_motor(motor)
         if sanada is not None:
-            if provider_name != "deepseek":
-                if isinstance(sanada, dict) and "unidades" in sanada:
-                    for u in sanada["unidades"]:
-                        if isinstance(u, dict):
-                            u["_motor_actual"] = provider_name
+            if isinstance(sanada, dict) and "unidades" in sanada:
+                for u in sanada["unidades"]:
+                    if isinstance(u, dict):
+                        u["_motor_actual"] = motor.servicio
             return sanada
 
-    # Ambos fallaron
-    return _placeholder(comentario, "Ambos motores (DeepSeek + fallback) fallaron o devolvieron respuesta invalida.",
-                       MOTIVO_FALLO_API)
+    # Ningún motor de la cadena respondió
+    return _placeholder(
+        comentario,
+        "Ningun motor de la cadena respondio o devolvio una respuesta invalida.",
+        MOTIVO_FALLO_API,
+    )
 
 
 def _placeholder(comentario: str, detalle: str, motivo: str) -> dict:
@@ -203,33 +214,26 @@ def analizar_dataset_cualitativo(
     df_sent,
     taxonomia: Dict[str, str],
     csat_columns_map: Dict[str, str],
+    motores: Optional[List[MotorIA]] = None,
     progress_every: int = 25,
-    fallback_client: Optional[DeepSeekClient] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Analiza cualitativamente todo el dataset de comentarios NPS.
+
+    Si no se pasan motores, construye la cadena desde las variables de entorno
+    (IA_CUALITATIVO_CADENA + las claves de cada servicio).
 
     Returns:
         (dataset_cualitativo, metadata) donde dataset_cualitativo es una
         lista de dicts (uno por unidad) y metadata contiene estadisticas.
     """
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
-    if not api_key and fallback_client is None:
-        raise RuntimeError("DEEPSEEK_API_KEY no configurada y no hay fallback_client.")
-
-    client = DeepSeekClient(api_key=api_key) if api_key else None
-    if client is None:
-        # Si no hay DeepSeek, usar el fallback como primario
-        client = fallback_client
-        fallback_client = None
-
-    if fallback_client is None:
-        nvidia_api_key = os.environ.get("NVIDIA_API_KEY", "")
-        if nvidia_api_key and client.provider != "nvidia":
-            nvidia_model = os.environ.get("IA_CUALITATIVO_FALLBACK_MODEL", "nemotron-3-ultra-550b-a55b")
-            fallback_client = DeepSeekClient(api_key=nvidia_api_key, model=nvidia_model, provider="nvidia")
-            logger.info(f"Cliente NVIDIA fallback configurado (modelo: {nvidia_model}).")
-        else:
-            logger.warning("NVIDIA_API_KEY no configurada; no hay fallback disponible.")
+    if motores is None:
+        motores = construir_motores()
+    if not motores:
+        raise RuntimeError(
+            "Ningun motor del analisis cualitativo tiene su clave configurada. "
+            "Configure al menos una de GOOGLE_API_KEY, NVIDIA_API_KEY, "
+            "OPENCODE_API_KEY."
+        )
 
     categorias_padre = sorted(set(taxonomia.values()))
 
@@ -253,14 +257,18 @@ def analizar_dataset_cualitativo(
     ruido_filtrado = 0
 
     total_rows = len(df_sent)
-    # NVIDIA (free tier) no tolera 15 llamadas concurrentes: su cliente ya se
-    # construye con max_rpm=15 (1 llamada/4 s), asi que reducir el pool evita
-    # tormentas de 429/timeouts cuando NVIDIA es el motor activo.
-    workers = (NVIDIA_MAX_WORKERS if client.provider == "nvidia"
+    # NVIDIA (plan gratuito) no tolera 15 llamadas concurrentes: su cliente ya
+    # se construye con su propio limite de ritmo (15 llamadas/minuto), asi que
+    # reducir el pool evita tormentas de 429/timeouts cuando NVIDIA es el
+    # PRIMER motor de la cadena. Si encabeza otro servicio, se usa el pool
+    # normal: cada motor de la cadena se autorregula.
+    primer_motor = motores[0]
+    workers = (NVIDIA_MAX_WORKERS if primer_motor.servicio == "nvidia"
                else DEFAULT_WORKERS)
     logger.info(
-        f"Iniciando analisis IA de {total_rows} comentarios "
-        f"(modelo: {client.model}, {workers} workers, timeout={client.timeout}s)."
+        f"Iniciando analisis IA de {total_rows} comentarios. Cadena: "
+        + " -> ".join(m.etiqueta for m in motores)
+        + f". {workers} workers, timeout={primer_motor.timeout}s."
     )
 
     # Pre-coleccionar tasks
@@ -272,7 +280,8 @@ def analizar_dataset_cualitativo(
         if comentario_val is None:
             continue
         comentario = str(comentario_val).strip()
-        # Ofuscar PII antes de enviar a DeepSeek (evita que datos sensibles lleguen al LLM)
+        # Ofuscar PII antes de enviar el comentario al LLM (evita que datos
+        # sensibles salgan del repositorio hacia cualquier proveedor).
         comentario, _pii_map = ofuscar_pii_para_llm(comentario)
 
         if not comentario or comentario.lower() == "nan":
@@ -317,15 +326,14 @@ def analizar_dataset_cualitativo(
                     res_id, "01", facultad, carrera, ciclo, nps,
                     satisfaccion_global, comentario[:100], "", "",
                     "", [], "neutro", 1, 1.0, comentario,
-                    False, motivo, "deepseek"
+                    False, motivo, MOTOR_FILTRO_RUIDO
                 ))
                 continue
 
             future = executor.submit(
                 _analizar_un_comentario, comentario, nps, csat_ratings,
-                taxonomia, categorias_padre, client, res_id,
+                taxonomia, categorias_padre, motores, res_id,
                 facultad, carrera, ciclo, satisfaccion_global,
-                fallback_client=fallback_client
             )
             fut_map[future] = (res_id, facultad, carrera, ciclo,
                                satisfaccion_global, nps, comentario)
@@ -341,7 +349,7 @@ def analizar_dataset_cualitativo(
                 for unidad in unidades:
                     es_valido = unidad.get("es_valido", True)
                     sent = unidad.get("sentimiento", "neutro").lower()
-                    motor_real = unidad.get("_motor_actual", "deepseek")
+                    motor_real = unidad.get("_motor_actual", primer_motor.servicio)
                     dataset_cualitativo.append(_build_item(
                         res_id, f"{unidad['orden']:02d}",
                         facultad, carrera, ciclo, nps,
@@ -377,9 +385,10 @@ def analizar_dataset_cualitativo(
     cache_hits = 0  # sin cache
 
     # C-1 (fail-closed): intentos enviados realmente a la IA y cuantos no pudo
-    # analizar NINGUN motor. Antes quedaban como placeholders invalidos, el run
-    # se daba por bueno (errores=0) y se publicaba sentimiento.json calculado
-    # sobre una muestra irrelevante (incidente 2026-1: 892 de 898).
+    # analizar NINGUN motor de la cadena. Antes quedaban como placeholders
+    # invalidos, el run se daba por bueno (errores=0) y se publicaba
+    # sentimiento.json calculado sobre una muestra irrelevante
+    # (incidente 2026-1: 892 de 898).
     intentos_api = len(fut_map)
     fallos_api = sum(
         1 for d in dataset_cualitativo
@@ -388,6 +397,17 @@ def analizar_dataset_cualitativo(
     tasa_fallos_api = (
         round((fallos_api / intentos_api) * 100.0, 1) if intentos_api else 0.0
     )
+
+    # Uso agregado de toda la cadena (tokens de todos los motores que
+    # respondieron, no solo del primero).
+    usage_total = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0,
+                   "llamadas": 0}
+    for motor in motores:
+        _u = motor.usage
+        usage_total["input_tokens"] += _u.get("input_tokens", 0)
+        usage_total["output_tokens"] += _u.get("output_tokens", 0)
+        usage_total["total_tokens"] += _u.get("total_tokens", 0)
+        usage_total["llamadas"] += _u.get("llamadas", 0)
 
     metadata = {
         "total_encuestas": total_comentarios,
@@ -408,7 +428,7 @@ def analizar_dataset_cualitativo(
             "neutros": sum(1 for d in dataset_cualitativo
                            if d["sentimiento"] == "neutro" and d["es_valido"]),
         },
-        "usage": client.usage,
+        "usage": usage_total,
     }
 
     logger.info(
@@ -463,9 +483,8 @@ def _build_item(res_id, ord_id, facultad, carrera, ciclo, nps,
 
 
 def _analizar_un_comentario(comentario, nps, csat_ratings, taxonomia,
-                            categorias_padre, client, res_id,
-                            facultad, carrera, ciclo, satisfaccion_global,
-                            fallback_client=None):
+                            categorias_padre, motores, res_id,
+                            facultad, carrera, ciclo, satisfaccion_global):
     """Helper para ejecutar en ThreadPoolExecutor."""
     return analizar_comentario(
         comentario=comentario,
@@ -473,8 +492,7 @@ def _analizar_un_comentario(comentario, nps, csat_ratings, taxonomia,
         csat_ratings=csat_ratings,
         taxonomia=taxonomia,
         categorias_padre=categorias_padre,
-        client=client,
-        fallback_client=fallback_client,
+        motores=motores,
         id_encuesta=res_id,
         carrera=carrera,
         ciclo=ciclo,
@@ -490,7 +508,7 @@ def generar_salidas_cualitativas_ia(
     df_sent,
     taxonomia: Dict[str, str],
     csat_columns_map: Dict[str, str],
-    fallback_client: Optional[DeepSeekClient] = None,
+    motores: Optional[List[MotorIA]] = None,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, Any]]:
     """Capa de integracion con build_json.py.
 
@@ -501,7 +519,7 @@ def generar_salidas_cualitativas_ia(
         df_sent=df_sent,
         taxonomia=taxonomia,
         csat_columns_map=csat_columns_map,
-        fallback_client=fallback_client,
+        motores=motores,
     )
 
     from collections import defaultdict

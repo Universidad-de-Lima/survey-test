@@ -1,7 +1,7 @@
 """
 TESTS — Validación de respuestas IA (lib/ia_validacion.py)
 
-Tests unitarios para la validación y corrección de respuestas de DeepSeek.
+Tests unitarios para la validación y corrección de respuestas de los motores IA.
 Cubre: validar_unidad, corregir_unidad, validar_respuesta_ia, redacción PII.
 """
 
@@ -206,7 +206,7 @@ class TestValidarRespuestaIA(unittest.TestCase):
         self.assertEqual(len(saneada["unidades"]), 1)
 
     def test_sentimiento_capitalizado_se_normaliza(self):
-        """DeepSeek suele devolver Positivo/Negativo/Neutro con mayúscula inicial."""
+        """Los motores suelen devolver Positivo/Negativo/Neutro con mayúscula inicial."""
         respuesta = {
             "unidades": [
                 {
@@ -370,7 +370,7 @@ class TestValidarRespuestaIA(unittest.TestCase):
         self.assertIn("Dimensión desconocida", err)
         self.assertIsNone(saneada)
 
-    def test_unidades_representativas_deepseek_capitalizadas(self):
+    def test_unidades_representativas_capitalizadas(self):
         """Casos reales analizables no deben fallar por capitalización del sentimiento."""
         respuesta = {
             "unidades": [

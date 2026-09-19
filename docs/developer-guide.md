@@ -52,7 +52,7 @@ Antes de realizar cambios, familiarízate con los siguientes documentos según t
 3. Verifica visualmente en GitHub Pages.
 
 ### 2. Agregar un Aspecto Semántico para NPS
-1. La taxonomía y reglas viven en [zoho-survey/scripts/lib/prompts_cualitativo.py](zoho-survey/scripts/lib/prompts_cualitativo.py) (prompt system para DeepSeek).
+1. La taxonomía y reglas viven en [zoho-survey/scripts/lib/prompts_cualitativo.py](zoho-survey/scripts/lib/prompts_cualitativo.py) (prompt system para los motores IA).
 2. Si el aspecto corresponde a una nueva categoría, agregala en [zoho-survey/scripts/lib/config.py](zoho-survey/scripts/lib/config.py) en `CATEGORIA_DIMENSION_PREGRADO` (o `CATEGORIA_DIMENSION_GRADUADO` según el nivel).
 3. Haz `commit` y `push`; GitHub Actions regenera los JSONs con el nuevo prompt.
 4. Verifica en el log del run (o en la pestaña Actions) que no hay errores de schema: el paso `Validate generated JSON contracts` es el gate.
@@ -80,33 +80,36 @@ Para detalles de adición y ejecución de pruebas unitarias, consulta [tests/REA
 
 ## Configuración del Motor Cualitativo
 
-Desde v3.2.0 el motor principal de análisis cualitativo es **DeepSeek IA**.
-El motor legacy (spaCy + sentence-transformers) fue **eliminado**; `DEEPSEEK_API_KEY` es obligatoria.
-Además, existe un **fallback a NVIDIA** (`NVIDIA_API_KEY`) que se activa automáticamente si DeepSeek falla o no está configurado.
+Desde v3.9.0 el análisis cualitativo usa una **cadena de motores** que se intentan en orden
+(Google → NVIDIA → OpenCode): si un motor falla o devuelve una respuesta inválida, se pasa al
+siguiente. El motor legacy (spaCy + sentence-transformers) fue **eliminado** en v3.2.0 y el
+servicio DeepSeek se **retiró** en v3.9.0.
 
 | Variable | Valores | Efecto |
 |---|---|---|
-| `DEEPSEEK_API_KEY` | API key string | **Obligatoria** para el motor principal (DeepSeek). |
-| `NVIDIA_API_KEY` | API key string | Opcional. Activa el fallback a modelos NVIDIA si DeepSeek falla. |
-| `IA_CUALITATIVO_MODEL` | string (default `deepseek-chat`) | Modelo DeepSeek a utilizar. |
-| `IA_CUALITATIVO_FALLBACK_MODEL` | string (default `nemotron-3-ultra-550b-a55b`) | Modelo NVIDIA fallback. |
+| `IA_CUALITATIVO_CADENA` | `servicio:modelo,servicio:modelo` | **Orden y modelos** de la cadena. Se define como *variable* (no secreto): Settings → Secrets and variables → Actions → pestaña **Variables**. Vacío = cadena por defecto. |
+| `GOOGLE_API_KEY` | API key string | Clave de Google Gemini. Sin ella, sus motores se omiten de la cadena. |
+| `NVIDIA_API_KEY` | API key string | Clave de NVIDIA NIM (4 modelos en la cadena por defecto). |
+| `OPENCODE_API_KEY` | API key string | Clave de OpenCode. |
+| `IA_CUALITATIVO_OPENCODE_URL` | URL | Dirección de OpenCode: plan **Go** (por defecto) o plan Zen. |
 | `IA_CUALITATIVO_WORKERS` | entero (default 15) | Workers concurrentes para IA. |
 | `IA_CUALITATIVO_MAX_RPM` | entero (default 60) | Rate limit de API. |
 | `IA_CUALITATIVO_TIMEOUT` | entero (default 60s) | Timeout por llamada. |
-| `IA_CUALITATIVO_MAX_FALLOS_API_PCT` | entero (default 20) | Umbral fail-closed: si un porcentaje mayor de comentarios falla por API (DeepSeek y NVIDIA), el ETL aborta y no publica `sentimiento.json` para ese periodo. `0` = estricto; `100` = desactivado. |
+| `IA_CUALITATIVO_MAX_FALLOS_API_PCT` | entero (default 20) | Umbral fail-closed: si un porcentaje mayor de comentarios falla por API (cualquier motor de la cadena), el ETL aborta y no publica `sentimiento.json` para ese periodo. `0` = estricto; `100` = desactivado. |
 
-**Motor IA (DeepSeek + fallback NVIDIA):**
+**Cadena de motores IA:**
 - Una sola llamada API ejecuta 5 tareas: segmentación → sentimiento con reglas NPS → intensidad → clasificación taxonómica → cross-reference CSAT.
-- Deduplicación por ID: `build_json.py` usa `sentimiento.json` como fuente de verdad; solo envía a DeepSeek los comentarios nuevos (sin caché persistente).
-- Rate limit: 60 RPM y 15 workers con DeepSeek; con NVIDIA como motor activo, 15 RPM y 3 workers (free tier). Timeout: 60s por llamada.
+- Deduplicación por ID: `build_json.py` usa `sentimiento.json` como fuente de verdad; solo envía a los motores los comentarios nuevos (sin caché persistente).
+- Límite de ritmo: 60 RPM por motor (NVIDIA: 15, por su plan gratuito) y 15 workers; si el primer motor es NVIDIA, el pool baja a 3. Timeout: 60s por llamada.
 - Fail-closed de calidad: si más del 20% de los comentarios fracasa por API, el build falla y no se publica `sentimiento.json` (en vez de publicar indicadores calculados sobre una muestra irrelevante).
-- Costo estimado: ~$0.50 por build completo (solo comentarios nuevos).
+- Costo: cada servicio factura sus propios tokens; el resumen del run registra los tokens y las llamadas de toda la cadena.
 
 ### Ejecutar el motor IA
 
 El motor IA se ejecuta automáticamente en el workflow `Build and Deploy Survey` (GitHub Actions)
-siempre que `DEEPSEEK_API_KEY` (u `NVIDIA_API_KEY` como fallback) esté configurada en GitHub Secrets.
-El gate `Verify DEEPSEEK_API_KEY` verifica la clave antes de instalar dependencias.
+siempre que al menos **una** clave de la cadena esté configurada en GitHub Secrets.
+El gate **Verify claves de los motores IA** comprueba cuáles están presentes antes de instalar
+dependencias y avisa de las ausentes (sus motores se omiten de la cadena).
 
 ---
 

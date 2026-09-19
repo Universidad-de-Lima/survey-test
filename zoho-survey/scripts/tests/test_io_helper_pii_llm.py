@@ -1,10 +1,10 @@
 """Tests de ofuscación PII pre-LLM (Fase 3.5).
 
 Verifica que ofuscar_pii_para_llm() protege PII antes de enviar
-comentarios a DeepSeek, y que la respuesta del LLM no reintroduce PII
+comentarios a un motor IA, y que la respuesta del LLM no reintroduce PII
 en los JSON públicos.
 
-No depende de DEEPSEEK_API_KEY ni de la red.
+No depende de ninguna clave de motor ni de la red.
 """
 
 import os
@@ -21,7 +21,7 @@ from lib.io_helper import ofuscar_pii_para_llm
 
 
 class TestOfuscarPiiParaLlm(unittest.TestCase):
-    """Tests de ofuscación PII antes de llamar a DeepSeek."""
+    """Tests de ofuscación PII antes de llamar a un motor IA."""
 
     def test_email_no_llega_a_llm(self):
         """El correo RAW no debe aparecer en el texto para el LLM."""
@@ -90,10 +90,10 @@ class TestOfuscarPiiParaLlm(unittest.TestCase):
         self.assertNotIn("[EMAIL_1]", mapping)
 
     def test_respuesta_ia_placeholder_no_restaura(self):
-        """Si DeepSeek devuelve un placeholder, no se debe restaurar PII."""
+        """Si el motor devuelve un placeholder, no se debe restaurar PII."""
         comentario_original = "Mi correo es privado@ulima.edu.pe"
         ofuscado, mapping = ofuscar_pii_para_llm(comentario_original)
-        # Simular respuesta de DeepSeek que contiene el placeholder
+        # Simular respuesta del motor que contiene el placeholder
         respuesta_ia = {
             "unidades": [
                 {
