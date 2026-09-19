@@ -19,10 +19,14 @@
   const META_NPS = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_NPS) ?? 50;
   const META_NPS_MEDIO = 20; // no hay en constants, mantener como visual
 
+  // Subtítulo de cada tarjeta: el periodo publicado o, si todavía no hay
+  // datos, el mismo texto que las fases sin dashboard.
+  const SIN_DATOS = 'Página en construcción';
+
   function satRole(phase) {
-    if (phase.id === '1.0') return _data.getDefaultPeriodo() || '';
-    if (phase.id === '1.2') return _data.getGraduatePeriodo() || '';
-    return 'Página en construcción';
+    if (phase.id === '1.0') return _data.getDefaultPeriodo() || SIN_DATOS;
+    if (phase.id === '1.2') return _data.getGraduatePeriodo() || SIN_DATOS;
+    return SIN_DATOS;
   }
 
   function renderDashboard() {
