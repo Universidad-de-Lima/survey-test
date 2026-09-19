@@ -392,7 +392,7 @@
       return;
     }
     const r = D.resumen;
-    const nivel = window.state.activePhaseId === '1.2' ? 'students/graduate' : 'students/undergraduate';
+    const nivel = _data.nivelDeFase(window.state.activePhaseId);
     const metaCardHtml = await _dashboard.renderMetaCard(window.state.activeFile, nivel);
     window.__surveyFilter = window.__surveyFilter || {
       top3: { fac: '', car: '', ciclos: [] },

@@ -24,9 +24,7 @@
   const SIN_DATOS = 'Página en construcción';
 
   function satRole(phase) {
-    if (phase.id === '1.0') return _data.getDefaultPeriodo() || SIN_DATOS;
-    if (phase.id === '1.2') return _data.getGraduatePeriodo() || SIN_DATOS;
-    return SIN_DATOS;
+    return _data.getPeriodoDeFase(phase.id) || SIN_DATOS;
   }
 
   function renderDashboard() {
@@ -34,7 +32,7 @@
     var PORTAL_PHASES = window.PORTAL_PHASES;
     var svg = window.svg;
 
-    const dashData = _data.getSurveyDataCache()[_data.getDefaultNivel() + '/' + _data.getDefaultPeriodo()] || _data.getSurveyData();
+    const dashData = _data.getSurveyDataCache()[_data.nivelDeFase('1.0') + '/' + _data.getPeriodoDeFase('1.0')] || _data.getSurveyData();
 
     const html =
       '<div class="main-inner">' +

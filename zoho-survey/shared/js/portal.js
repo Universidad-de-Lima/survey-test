@@ -63,8 +63,11 @@ function getOverview() {
   const d = window.SurveyPortalData || {};
   const total = PORTAL_PHASES.length;
   let completedPhases = 0;
-  if (d.getPeriodosList && d.getPeriodosList().length > 0) completedPhases++;       // 1.0
-  if (d.getGraduatePeriodosList && d.getGraduatePeriodosList().length > 0) completedPhases++; // 1.2
+  if (d.tieneDatosDeFase) {
+    PORTAL_PHASES.forEach(function (p) {
+      if (d.tieneDatosDeFase(p.id)) completedPhases++;
+    });
+  }
   return { completedCount: completedPhases, totalCount: total };
 }
 
@@ -305,6 +308,9 @@ function renderMarkdown(md) {
 // ---------- Constantes de artefactos ----------
 const UNDER_CONSTRUCTION = ['1.1', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8'];
 
+// Ítems que ya tienen vista de dashboard sobre los datos del periodo.
+const FASES_CON_DASHBOARD = ['1.0', '1.2'];
+
 // ---------- Artifact fetching ----------
 async function fetchArtifact(filename) {
   if (state.cache.has(filename)) return state.cache.get(filename);
@@ -384,14 +390,15 @@ function renderSidebar(container) {
 function renderArtifactViewer(phaseId) {
   const phase = PORTAL_PHASES.find(p => p.id === phaseId);
   if (!phase) { renderPending('Item desconocido: ' + phaseId); return; }
-  const files = (phase.id === '1.0' && window.SurveyPortalData.getPeriodosList().length > 0) ? window.SurveyPortalData.getPeriodosList() :
-      (phase.id === '1.2' && window.SurveyPortalData.getGraduatePeriodosList().length > 0) ? window.SurveyPortalData.getGraduatePeriodosList() :
-      (phase.artifact || '').split('|').filter(function (f) { return f !== ''; });
+  // Pestañas = periodos publicados del grupo de ESTE ítem (mismo criterio para todos).
+  const files = window.SurveyPortalData.getPeriodosDeFase(phase.id);
   if (!state.activeFile || files.indexOf(state.activeFile) === -1) {
     state.activeFile = files[0];
   }
 
-  const fileTabsHtml = files.length > 1 ?
+  // Decisión del usuario: con un solo periodo también se muestra la pestaña,
+  // porque es la forma de saber a qué periodo corresponden los datos.
+  const fileTabsHtml = files.length > 0 ?
     '<div class="file-tabs">' +
       files.map(f =>
         '<button class="file-tab' + (state.activeFile === f ? ' active' : '') + '"  data-file="' + f + '">' + f + '</button>'
@@ -455,9 +462,9 @@ async function loadActiveFile(phase) {
   }
 
   // Estudiantes Pregrado (1.0) / Graduados (1.2): dashboard completo del portal
-  if (phase.id === '1.0' || phase.id === '1.2') {
+  if (FASES_CON_DASHBOARD.indexOf(phase.id) !== -1) {
     body.innerHTML = '<div class="state-box"><div class="spinner"></div><p style="font-size:13px;">Cargando dashboard…</p></div>';
-    await window.SurveyPortalData.initSurveyData(phase.id === '1.2' ? 'students/graduate' : window.SurveyPortalData.getDefaultNivel(), filename);
+    await window.SurveyPortalData.initSurveyData(window.SurveyPortalData.nivelDeFase(phase.id), filename);
     if (!window.SurveyPortalData.getSurveyData()) {
       // El periodo figura en periodos.json pero sus datos no se pudieron leer
       // (carpeta/JSON ausentes). Sin este aviso la pantalla se quedaba en
@@ -551,10 +558,15 @@ function openPhase(id) {
 function switchFile(filename) {
   state.activeFile = filename;
   const phase = PORTAL_PHASES.find(p => p.id === state.activePhaseId) || {};
-  const nivel = (phase.id === '1.2') ? 'students/graduate' : window.SurveyPortalData.getDefaultNivel();
-  window.SurveyPortalData.initSurveyData(nivel, filename).then(() => {
-    renderArtifactViewer(state.activePhaseId);
-  });
+  const nivel = window.SurveyPortalData.nivelDeFase(phase.id);
+  // Solo los ítems con vista de dashboard cargan los datos del periodo elegido.
+  if (nivel && FASES_CON_DASHBOARD.indexOf(phase.id) !== -1) {
+    window.SurveyPortalData.initSurveyData(nivel, filename).then(() => {
+      renderArtifactViewer(state.activePhaseId);
+    });
+    return;
+  }
+  renderArtifactViewer(state.activePhaseId);
 }
 
 function showDashboard() {
