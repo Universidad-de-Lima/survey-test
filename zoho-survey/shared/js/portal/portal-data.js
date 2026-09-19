@@ -303,7 +303,7 @@
   async function initSurveyData(nivel, periodo) {
     if (periodo == null) {
       periodo = nivel;
-      nivel = DEFAULT_NIVEL;
+      nivel = nivelDeFase('1.0');
     }
     SURVEY_DATA = await loadSurveyData(nivel, periodo);
     if (!SURVEY_DATA) {
@@ -492,9 +492,7 @@
   };
 
   window.SurveyPortalData = {
-    loadPeriodos: loadPeriodos,
     loadSurveyData: loadSurveyData,
-    loadGraduatePeriodos: loadGraduatePeriodos,
     loadGraduateData: loadGraduateData,
     normalizeData: normalizeData,
     initSurveyData: initSurveyData,
