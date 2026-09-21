@@ -104,7 +104,7 @@ Para mayor detalle de responsabilidades:
 
 ### Flujo cualitativo (v3.9.0) — Cadena de motores IA
 
-Desde v3.9.0 el ETL usa una **cadena ordenada de motores IA** (Google -> NVIDIA -> OpenCode),
+Desde v3.9.0 el ETL usa una **cadena ordenada de motores IA** (OpenCode -> Google -> NVIDIA),
 configurable con `IA_CUALITATIVO_CADENA`: si un motor falla o no valida su respuesta, se pasa al
 siguiente. Basta con que UNA clave de la cadena este configurada. El motor legacy
 (spaCy + sentence-transformers) fue eliminado en v3.2.0.
