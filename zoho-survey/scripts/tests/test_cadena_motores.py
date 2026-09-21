@@ -121,8 +121,10 @@ class TestConstruirMotores(unittest.TestCase):
         with entorno({c: "clave-falsa" for c in CLAVES}):
             motores = construir_motores()
         self.assertEqual(len(motores), 6)
-        self.assertEqual(motores[0].servicio, "google")
-        self.assertEqual(motores[-1].servicio, "opencode")
+        # deepseek-v4.1-flash (OpenCode) primero; Google y NVIDIA como respaldo.
+        self.assertEqual(motores[0].servicio, "opencode")
+        self.assertEqual(motores[1].servicio, "google")
+        self.assertEqual([m.servicio for m in motores[2:]], ["nvidia"] * 4)
 
 
 class TestFormatoDePeticion(unittest.TestCase):
