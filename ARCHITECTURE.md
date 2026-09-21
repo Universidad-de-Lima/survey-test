@@ -42,8 +42,8 @@ graph TD
 
 ```text
 survey-test/
-├── .github/workflows/       # Workflows de CI/CD (build_zoho_survey.yml, tests.yml).
-├── data/                    # CSVs de dev (solo local). .gitignore — NO se commitean. La ingesta web entra vía Release temporal, no acá.
+├── .github/workflows/       # Workflows de CI/CD (build_zoho_survey.yml, tests.yml, zoho_inbox.yml).
+├── data/                    # CSVs de trabajo (ignorados) + bandeja de entrada del webhook de Zoho en data/zoho_pendientes/ (esa sí se versiona).
 ├── docs/                    # Documentacion y guias del proyecto.
 ├── tests/                   # Mini-framework de pruebas unitarias en navegador.
 ├── zoho-survey/             # Aplicacion estatica principal.
@@ -77,7 +77,7 @@ Para mayor detalle de responsabilidades:
 | `zoho-survey/template/` | Template base HTML para la generacion automatica de periodos. |
 | `zoho-survey/students/` | Dashboards y datos JSON generados de estudiantes. |
 | `tests/` | Infraestructura y tests unitarios de navegador. |
-| `.github/workflows/` | Automatizacion de build, validacion y deploy en GitHub Pages. |
+| `.github/workflows/` | Automatizacion de build, validacion y deploy en GitHub Pages, mas la bandeja de entrada `zoho_inbox.yml` que recibe las respuestas empujadas por Zoho Survey. |
 
 ## Pipeline De Datos
 
@@ -90,6 +90,7 @@ Para mayor detalle de responsabilidades:
 | `lib/config.py` | 485 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
 | `lib/metrics.py` | 98 | Funciones puras de calculo de NPS (`calc_nps`), CSAT (`calc_csat`) y Promedio Ponderado. | Activo. |
 | `lib/io_helper.py` | 227 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
+| `lib/zoho_respuesta.py` | 155 | Normaliza la respuesta que empuja el webhook de Zoho Survey: identificador de respuesta, encuesta (categoría + periodo), enmascarado de datos personales **antes** de guardar y descarte de duplicados. | Activo (Fase 1 de ingesta por webhook). |
 | `lib/ia_cualitativo.py` | 558 | Orquestador del analisis cualitativo por **cadena de motores** (OpenCode -> Google -> NVIDIA), retirado el motor unico DeepSeek en v3.9.0 (motor legacy eliminado en v3.2.0). Deduplicacion por ID de comentario (sin cache). Umbral fail-closed: aborta si mas del 20% de los comentarios falla por API (`IA_CUALITATIVO_MAX_FALLOS_API_PCT`). | Activo (requiere al menos una clave de motores IA). |
 | `lib/prompts_cualitativo.py` | 779 | Prompts exactos para los motores IA (system + user). Fuente de verdad de los prompts usados en el ETL. | Activo (Fase IA). |
 | `lib/insights_generator.py` | 262 | Generador de insights deterministas (sin LLM). Produce `insights_ia.global` y `insights_ia.por_categoria_padre` a partir de datos ya procesados. | Activo. |

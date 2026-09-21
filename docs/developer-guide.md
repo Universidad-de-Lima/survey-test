@@ -106,6 +106,23 @@ servicio DeepSeek se **retiró** en v3.9.0.
 
 ### Ejecutar el motor IA
 
+## Ingesta automática desde Zoho Survey (Fase 1)
+
+Zoho Survey puede **empujar** cada respuesta al repositorio (Builder → Hub → Triggers → Webhook).
+El flujo `zoho_inbox.yml` recibe ese envío como `repository_dispatch` de tipo `zoho_response`, y
+`zoho-survey/scripts/zoho_inbox.py` deja la respuesta en `data/zoho_pendientes/<encuesta>.jsonl`,
+**enmascarada antes de guardar** (el repositorio es público) y sin duplicados.
+
+**No ejecuta el ETL**: el análisis se hace después, agrupado, para no lanzar una corrida de IA por
+cada respuesta.
+
+Para probarlo sin depender de Zoho: GitHub → Actions → **Zoho Inbox** → *Run workflow*, pegando la
+respuesta en JSON. Debe incluir un campo con el identificador de respuesta y otro con la encuesta
+(por ejemplo `ESTUDIANTIL 2026-1`); si falta alguno, el flujo **falla con un mensaje explícito** que
+indica qué agregar.
+
+Falta el envío real desde Zoho (configuración del webhook) y decidir la cadencia de procesamiento.
+
 El motor IA se ejecuta automáticamente en el workflow `Build and Deploy Survey` (GitHub Actions)
 siempre que al menos **una** clave de la cadena esté configurada en GitHub Secrets.
 El gate **Verify claves de los motores IA** comprueba cuáles están presentes antes de instalar

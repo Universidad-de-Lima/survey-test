@@ -100,6 +100,8 @@ cd zoho-survey/scripts && python -m unittest discover tests/ -v
 
 Ver `zoho-survey/scripts/tests/` para detalle de cobertura Python (tests `test_*.py`).
 
+- **Bandeja de entrada de Zoho** (`zoho-survey/scripts/tests/test_zoho_respuesta.py`, 10 tests): normalización de la respuesta, fallo explícito si falta el identificador de respuesta o la encuesta, enmascarado de datos personales antes de guardar y descarte de duplicados.
+
 ## Notas
 
 - **Tests eliminados en Fase 1**: `test-tooltip.js`, `test-multiselect.js`, `test-progress-bar.js`, `test-radar-chart.js`, `test-custom-select.js` fueron eliminados porque nunca se cargaban en ningún runner y tenían un bug latente (`assert.true` no existe en el framework, solo `assert.isTrue`).

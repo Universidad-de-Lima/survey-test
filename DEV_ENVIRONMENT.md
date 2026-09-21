@@ -15,8 +15,9 @@ Ningún paso requiere Python, Node ni dependencias instaladas en el equipo: solo
 | Pruebas | GitHub Actions | `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, validación de contratos JSON, Ruff y ESLint (informativos) |
 | ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (cadena de motores IA: OpenCode → Google → NVIDIA) → validación de JSON |
 | Despliegue | GitHub Actions | `build_zoho_survey.yml` | Artifact → GitHub Pages → health check → commit del bot si hay JSON nuevos |
+| Ingesta Zoho | GitHub Actions | `zoho_inbox.yml` | Recibe la respuesta empujada por el webhook de Zoho Survey, la enmascara y la guarda en `data/zoho_pendientes/`. No ejecuta el ETL |
 
-Ambos workflows se disparan con **cualquier push a `main`** (sin filtros de `paths`), para que ningún cambio quede sin verificar.
+Los workflows de pruebas y de build se disparan con **cualquier push a `main`** (sin filtros de `paths`), para que ningún cambio quede sin verificar. El de ingesta (`zoho_inbox.yml`) no depende de un push: lo dispara el webhook de Zoho (o se ejecuta a mano desde Actions con un JSON de prueba).
 
 ## Cómo se envían los datos (sin entorno local)
 
