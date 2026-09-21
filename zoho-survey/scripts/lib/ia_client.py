@@ -12,7 +12,7 @@ Servicios soportados:
 El orden y los modelos se cambian SIN tocar código con la variable de entorno
 IA_CUALITATIVO_CADENA, en formato "servicio:modelo" separado por comas:
 
-    google:gemini-3.8-flash,nvidia:moonshotai/kimi-k3,opencode:deepseek-v4.1-flash
+    opencode:deepseek-v4.1-flash,google:gemini-3.8-flash,nvidia:moonshotai/kimi-k3
 
 Si la variable no está definida se usa CADENA_DEFECTO. Los motores cuya clave
 no esté configurada se omiten con un aviso, de modo que se puede arrancar con
@@ -47,14 +47,16 @@ DEFAULT_WORKERS = int(os.environ.get("IA_CUALITATIVO_WORKERS", "15"))
 # provocar tormentas de 429/timeout cuando todos los comentarios caen ahí.
 NVIDIA_MAX_RPM = 15
 
-# Cadena por defecto: Google → NVIDIA (4 modelos, en ese orden) → OpenCode.
+# Cadena por defecto: OpenCode (deepseek-v4.1-flash) → Google → NVIDIA (4
+# modelos, en ese orden). El motor mas actual va primero; los demas quedan como
+# respaldo si falla o devuelve una respuesta invalida.
 CADENA_DEFECTO = ",".join([
+    "opencode:deepseek-v4.1-flash",
     "google:gemini-3.8-flash",
     "nvidia:moonshotai/kimi-k3",
     "nvidia:deepseek-ai/deepseek-v4-pro-0813",
     "nvidia:nvidia/nemotron-3-ultra-550b-a55b",
     "nvidia:meta/muse-glimmer-30b",
-    "opencode:deepseek-v4.1-flash",
 ])
 
 # Cada servicio: cómo se le habla, con qué clave y con qué límite de ritmo.
