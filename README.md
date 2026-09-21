@@ -5,7 +5,7 @@
 
 Sistema estático de visualización de encuestas de satisfacción para la Universidad de Lima. Convierte CSV exportados desde Zoho Survey en dashboards interactivos, sin backend ni base de datos, desplegables en GitHub Pages.
 
-Arquitectura: Portal v5.0 (`index.html` + `portal.js` + módulos `portal/*`) para navegación multi-fase; dashboards individuales por periodo (`template/index.html` + `dashboard.js` + componentes) renderizan JSONs estáticos generados por ETL Python (`build_json.py`) con cadena de motores IA (Google, NVIDIA, OpenCode).
+Arquitectura: Portal v5.0 (`index.html` + `portal.js` + módulos `portal/*`) para navegación multi-fase; dashboards individuales por periodo (`template/index.html` + `dashboard.js` + componentes) renderizan JSONs estáticos generados por ETL Python (`build_json.py`) con cadena de motores IA (OpenCode, Google, NVIDIA).
 
 ## Quick Start
 

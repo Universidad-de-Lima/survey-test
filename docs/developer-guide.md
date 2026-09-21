@@ -81,7 +81,7 @@ Para detalles de adición y ejecución de pruebas unitarias, consulta [tests/REA
 ## Configuración del Motor Cualitativo
 
 Desde v3.9.0 el análisis cualitativo usa una **cadena de motores** que se intentan en orden
-(Google → NVIDIA → OpenCode): si un motor falla o devuelve una respuesta inválida, se pasa al
+(OpenCode → Google → NVIDIA): si un motor falla o devuelve una respuesta inválida, se pasa al
 siguiente. El motor legacy (spaCy + sentence-transformers) fue **eliminado** en v3.2.0 y el
 servicio DeepSeek se **retiró** en v3.9.0.
 

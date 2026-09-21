@@ -13,7 +13,7 @@ Ningún paso requiere Python, Node ni dependencias instaladas en el equipo: solo
 | Fase | Dónde corre | Workflow | Qué ejecuta |
 |---|---|---|---|
 | Pruebas | GitHub Actions | `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, validación de contratos JSON, Ruff y ESLint (informativos) |
-| ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (cadena de motores IA: Google → NVIDIA → OpenCode) → validación de JSON |
+| ETL + IA | GitHub Actions | `build_zoho_survey.yml` | Selección de CSV → gate `Detectar CSVs` → sanitización PII → `build_json.py` (cadena de motores IA: OpenCode → Google → NVIDIA) → validación de JSON |
 | Despliegue | GitHub Actions | `build_zoho_survey.yml` | Artifact → GitHub Pages → health check → commit del bot si hay JSON nuevos |
 
 Ambos workflows se disparan con **cualquier push a `main`** (sin filtros de `paths`), para que ningún cambio quede sin verificar.
