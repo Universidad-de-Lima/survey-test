@@ -81,10 +81,17 @@ class TestLecturaDeCadena(unittest.TestCase):
             self.assertEqual(leer_cadena(), CADENA_DEFECTO)
 
     def test_la_cadena_por_defecto_tiene_el_orden_acordado(self):
+        # deepseek-v4.1-flash (OpenCode) es el motor mas actual: va PRIMERO y el
+        # resto queda como respaldo. El orden es configurable con la variable
+        # IA_CUALITATIVO_CADENA, pero el valor por defecto fija este contrato.
+        self.assertEqual(
+            parsear_cadena(CADENA_DEFECTO)[0],
+            ("opencode", "deepseek-v4.1-flash"),
+        )
         servicios = [servicio for servicio, _ in parsear_cadena(CADENA_DEFECTO)]
         self.assertEqual(
             servicios,
-            ["google", "nvidia", "nvidia", "nvidia", "nvidia", "opencode"],
+            ["opencode", "google", "nvidia", "nvidia", "nvidia", "nvidia"],
         )
         modelos_nvidia = [m for s, m in parsear_cadena(CADENA_DEFECTO) if s == "nvidia"]
         self.assertEqual(modelos_nvidia, [
