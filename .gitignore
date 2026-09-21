@@ -57,7 +57,8 @@ zoho-survey/nonfacultystaff/**/exports/
 # tag + workflow_dispatch; Actions los descarga a data/, los sanitiza, ejecuta el
 # ETL y los borra antes del commit del bot. La sanitización en CI es defensa en
 # profundidad, no control primario.
-data/
+data/*
+!data/zoho_pendientes/   # bandeja de entrada del webhook de Zoho (si se versiona)
 
 # Environment files (secrets never committed). No hay .env.example: las
 # variables se documentan en docs/developer-guide.md y viven en GitHub Secrets,
