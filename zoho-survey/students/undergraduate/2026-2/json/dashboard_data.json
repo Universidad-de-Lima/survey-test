@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "resumen": {
-    "encuestas": 4,
+    "encuestas": 3,
     "carreras": 3,
     "facultades": 3,
     "fecha_inicio": "2026-09-22",
@@ -36,11 +36,11 @@
     "top_dimensiones": [
       {
         "name": "Cursos del programa y contenidos",
-        "score": 75.0
+        "score": 66.67
       },
       {
         "name": "Calidad de la enseñanza en la carrera",
-        "score": 75.0
+        "score": 66.67
       }
     ],
     "top_facultades": [
