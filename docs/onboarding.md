@@ -72,7 +72,7 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 ### 1. "El dashboard no muestra el nuevo periodo"
 
 **Causa probable**: El CSV no tiene el nombre correcto o no se adjuntó al Release que se procesó.
-**Solución**: El archivo debe contener el patrón `ENCUESTA` y el periodo (`2026-1`, `2026`). Ej: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.csv`. Subirlo con el botón **"Subir datos"** del portal en GitHub Pages.
+**Solución**: El archivo debe contener el patrón `ENCUESTA` y el periodo (`2026-1`, `2026`). Ej: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.csv`. El CSV debe ser el que se adjunta al Release que se procesa.
 
 ### 2. "El build falló en GitHub Actions"
 
