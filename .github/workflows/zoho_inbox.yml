@@ -4,8 +4,13 @@ name: Zoho Inbox
 #
 # Dos formas de alimentarla:
 #   1. Automática: Zoho Survey empuja cada respuesta con un Webhook
-#      (Builder -> Hub -> Triggers -> Webhook). Ese envío llega como el evento
-#      repository_dispatch de tipo "zoho_response".
+#      (Builder -> Hub -> Triggers -> Webhook) llamando a la API de incidencias
+#      de GitHub: crea una incidencia cuyo cuerpo es la respuesta en JSON y cuyo
+#      título es el nombre de la encuesta. Este flujo reacciona a esa incidencia.
+#      No se puede usar repository_dispatch: su cuerpo exige "event_type" y
+#      "client_payload" como claves hermanas de primer nivel, y el webhook de
+#      Zoho Survey no puede armar esa forma (envía los campos dentro de un único
+#      contenedor con un nombre elegido por el usuario).
 #   2. Manual (para pruebas): pestaña Actions -> "Zoho Inbox" -> "Run workflow",
 #      pegando la respuesta en JSON. No requiere ningún token.
 #
@@ -15,8 +20,8 @@ name: Zoho Inbox
 # análisis de IA por cada respuesta recibida.
 
 on:
-  repository_dispatch:
-    types: [zoho_response]
+  issues:
+    types: [opened]
 
   workflow_dispatch:
     inputs:
@@ -36,6 +41,9 @@ concurrency:
 
 jobs:
   recibir:
+    # Solo las incidencias que crea el webhook (su cuerpo es la respuesta en
+    # JSON). Así una incidencia escrita por una persona no rompe las pruebas.
+    if: github.event_name != 'issues' || startsWith(github.event.issue.body, '{')
     runs-on: ubuntu-latest
     steps:
       - name: Descargar el repositorio
@@ -43,18 +51,21 @@ jobs:
 
       - name: Preparar la respuesta recibida
         env:
-          # El cuerpo llega en client_payload (webhook) o en el campo del
-          # formulario (prueba manual). Se pasa por variable de entorno para
-          # no romper el entrecomillado del shell.
-          PAYLOAD_WEBHOOK: ${{ toJson(github.event.client_payload) }}
-          PAYLOAD_MANUAL: ${{ inputs.payload_json }}
+          # De la incidencia: el cuerpo es la respuesta en JSON y el título, el
+          # nombre de la encuesta. En la prueba manual, el JSON del formulario.
+          # Se pasan por variable de entorno para no romper el entrecomillado.
           ORIGEN: ${{ github.event_name }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          PAYLOAD_MANUAL: ${{ inputs.payload_json }}
         run: |
           mkdir -p /tmp/zoho
-          if [ "$ORIGEN" = "repository_dispatch" ]; then
-            printf '%s' "$PAYLOAD_WEBHOOK" > /tmp/zoho/payload.json
+          if [ "$ORIGEN" = "issues" ]; then
+            printf '%s' "$ISSUE_BODY" > /tmp/zoho/payload.json
+            printf '%s' "$ISSUE_TITLE" > /tmp/zoho/encuesta.txt
           else
             printf '%s' "$PAYLOAD_MANUAL" > /tmp/zoho/payload.json
+            : > /tmp/zoho/encuesta.txt
           fi
           echo "Respuesta recibida (primeros 200 caracteres):"
           head -c 200 /tmp/zoho/payload.json
@@ -64,7 +75,9 @@ jobs:
         # Falla explícitamente si la respuesta no es JSON válido o si le falta
         # el identificador de respuesta o el nombre de la encuesta: es el aviso
         # de que hay que corregir la configuración del webhook en Zoho.
-        run: python3 zoho-survey/scripts/zoho_inbox.py /tmp/zoho/payload.json
+        run: |
+          ENCUESTA="$(cat /tmp/zoho/encuesta.txt)"
+          python3 zoho-survey/scripts/zoho_inbox.py /tmp/zoho/payload.json "$ENCUESTA"
 
       - name: Guardar el pendiente (solo si cambió)
         run: |

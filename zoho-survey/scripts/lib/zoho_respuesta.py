@@ -31,8 +31,9 @@ from lib.io_helper import enmascarar_pii
 
 # Nombres aceptados para el identificador de respuesta y para la encuesta. Zoho
 # los nombra como el usuario los escriba al configurar el webhook: se aceptan
-# varias formas razonables.
-CLAVES_ID = ("ID de respuesta", "id_respuesta", "Response ID", "response_id")
+# varias formas razonables. La clave "ID" es la que envia el webhook real (llega
+# como cuerpo de la incidencia que crea en GitHub).
+CLAVES_ID = ("ID", "ID de respuesta", "id_respuesta", "Response ID", "response_id")
 CLAVES_ENCUESTA = ("Encuesta", "encuesta", "Survey", "survey")
 
 
@@ -62,12 +63,18 @@ def slug_encuesta(nombre: str) -> str:
     return base or "sin-nombre"
 
 
-def normalizar_respuesta(payload: Any, momento: Optional[str] = None) -> Dict[str, Any]:
+def normalizar_respuesta(
+    payload: Any,
+    momento: Optional[str] = None,
+    encuesta_por_defecto: Optional[str] = None,
+) -> Dict[str, Any]:
     """Convierte la respuesta recibida de Zoho en el registro interno.
 
     Args:
         payload: objeto JSON con pares nombre/valor (cuerpo del webhook).
         momento: marca de tiempo ISO-8601; si no se indica, se usa la actual.
+        encuesta_por_defecto: nombre de la encuesta cuando el cuerpo no lo trae
+            (el webhook lo envia en el titulo de la incidencia).
 
     Returns:
         dict con id_respuesta, encuesta, recibido_en y respuestas (enmascaradas).
@@ -90,6 +97,8 @@ def normalizar_respuesta(payload: Any, momento: Optional[str] = None) -> Dict[st
         )
 
     encuesta = _buscar(payload, CLAVES_ENCUESTA)
+    if encuesta is None and encuesta_por_defecto and str(encuesta_por_defecto).strip():
+        encuesta = str(encuesta_por_defecto).strip()
     if encuesta is None:
         raise ValueError(
             "falta la encuesta (categoria + periodo, p. ej. 'ESTUDIANTIL 2026-1'): "
