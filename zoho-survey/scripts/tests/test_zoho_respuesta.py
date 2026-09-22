@@ -24,6 +24,21 @@ from lib.zoho_respuesta import (
 
 MOMENTO = "2026-09-19T10:20:00"
 
+# Respuesta real de la encuesta "ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO -
+# 2026-2", tal como llega cuando Zoho la empuja: el identificador viene en la
+# clave "ID" y el nombre de la encuesta NO viaja en el cuerpo (se toma del
+# título de la incidencia que crea el webhook).
+PAYLOAD_INCIDENCIA = {
+    "ID": "AxC5U14h",
+    "Inicio": "Sep 22, 2026 07:54:09",
+    "Fin": "Sep 22, 2026 07:55:25",
+    "Estado": "COMPLETED",
+    "Carrera": "Administración",
+    "Ciclo": "1° Ciclo",
+    "NPS": "10",
+    "Cualitativo": "Prueba",
+}
+
 PAYLOAD = {
     "ID de respuesta": "123430000012345",
     "Encuesta": "ESTUDIANTIL 2026-1",
@@ -104,6 +119,50 @@ class TestArchivoDePendientes(unittest.TestCase):
 
     def test_slug_de_encuesta(self):
         self.assertEqual(slug_encuesta("ESTUDIANTIL 2026-1"), "estudiantil-2026-1")
+
+
+class TestRespuestaDeIncidencia(unittest.TestCase):
+    """La respuesta llega como cuerpo de la incidencia que crea el webhook.
+
+    Zoho llama a la API de incidencias de GitHub: el identificador viaja en la
+    clave "ID" y el nombre de la encuesta NO viaja en el cuerpo, sino en el
+    titulo de la incidencia (por eso se admite un nombre por defecto).
+    """
+
+    def test_acepta_el_identificador_en_la_clave_ID(self):
+        r = normalizar_respuesta(
+            PAYLOAD_INCIDENCIA,
+            encuesta_por_defecto="ESTUDIANTIL 2026-2",
+            momento=MOMENTO,
+        )
+        self.assertEqual(r["id_respuesta"], "AxC5U14h")
+        self.assertEqual(r["encuesta"], "ESTUDIANTIL 2026-2")
+
+    def test_la_encuesta_del_cuerpo_tiene_prioridad_sobre_la_por_defecto(self):
+        payload = dict(PAYLOAD_INCIDENCIA, Encuesta="POSGRADO 2026-1")
+        r = normalizar_respuesta(
+            payload, encuesta_por_defecto="ESTUDIANTIL 2026-2", momento=MOMENTO
+        )
+        self.assertEqual(r["encuesta"], "POSGRADO 2026-1")
+
+    def test_una_por_defecto_vacia_se_ignora(self):
+        payload = dict(PAYLOAD_INCIDENCIA, Encuesta="ESTUDIANTIL 2026-2")
+        r = normalizar_respuesta(payload, encuesta_por_defecto="   ", momento=MOMENTO)
+        self.assertEqual(r["encuesta"], "ESTUDIANTIL 2026-2")
+
+    def test_sin_encuesta_ni_por_defecto_falla(self):
+        with self.assertRaises(ValueError) as ctx:
+            normalizar_respuesta(PAYLOAD_INCIDENCIA, momento=MOMENTO)
+        self.assertIn("encuesta", str(ctx.exception).lower())
+
+    def test_el_identificador_no_se_guarda_entre_las_respuestas(self):
+        r = normalizar_respuesta(
+            PAYLOAD_INCIDENCIA,
+            encuesta_por_defecto="ESTUDIANTIL 2026-2",
+            momento=MOMENTO,
+        )
+        self.assertNotIn("ID", r["respuestas"])
+        self.assertIn("NPS", r["respuestas"])
 
 
 if __name__ == "__main__":
