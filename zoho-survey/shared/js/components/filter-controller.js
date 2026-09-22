@@ -58,9 +58,18 @@ window.SurveyFilterController = (() => {
     });
   }
 
+  // Limpieza defensiva de cualquier texto que se inyecte como HTML (etiquetas
+  // internas hoy, valores de datos manana). Usa el sanitizador compartido si
+  // esta cargado; si no, devuelve el texto tal cual.
+  function escH(valor) {
+    var s = window.SurveySanitizer;
+    var texto = valor == null ? '' : String(valor);
+    return s && s.escapeHTML ? s.escapeHTML(texto) : texto;
+  }
+
   function populateSelect(sel, placeholder, items, texts) {
     const current = _dh.getSelectedValues(sel);
-    sel.innerHTML = `<option value="">${placeholder}</option>`;
+    sel.innerHTML = `<option value="">${escH(placeholder)}</option>`;
     items.forEach((item, i) => {
       const opt = document.createElement('option');
       opt.value = item;
@@ -87,7 +96,7 @@ window.SurveyFilterController = (() => {
   function populateFacultadSelect(selFac, filtros) {
     const items = ordenarFacultades(filtros.facultades, filtros.has_ciclo);
     const placeholder = filtros.has_ciclo ? FACULTAD_PLACEHOLDER_PROG : FACULTAD_PLACEHOLDER;
-    selFac.innerHTML = `<option value="">${placeholder}</option>`;
+    selFac.innerHTML = `<option value="">${escH(placeholder)}</option>`;
     items.forEach((f) => {
       const opt = document.createElement('option');
       opt.value = opt.textContent = f;
