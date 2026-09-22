@@ -24,6 +24,8 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 3. Cuando se decide procesar, se adjunta el CSV a un Release (DRAFT) y se lanza
    el workflow "Build and Deploy Survey" con el input release_tag
          ↓
+El detalle completo de cada paso está en `docs/INGESTA_Y_DESCARGA.md`.
+
 4. GitHub Actions ejecuta el pipeline automáticamente:
    - Descarga el CSV del Release (solo en el runner)
    - Sanitiza PII (sanitize_csv_pii.py)

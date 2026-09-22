@@ -51,3 +51,7 @@ Este repositorio sigue una estructura de documentación modularizada con respons
 * **Health Check:** [zoho-survey/health.html](zoho-survey/health.html) verifica la integridad de todos los dashboards y JSONs por periodo.
 * **Changelog:** [docs/CHANGELOG.md](docs/CHANGELOG.md) contiene el historial de cambios del proyecto.
 * **Onboarding:** [docs/onboarding.md](docs/onboarding.md) es la guía de inicio para nuevos desarrolladores y analistas.
+* **Entrada y salida de datos:** [docs/INGESTA_Y_DESCARGA.md](docs/INGESTA_Y_DESCARGA.md) es la fuente única del flujo (webhook, bandeja, ETL y descargas).
+* **Seguridad:** [SECURITY.md](SECURITY.md) resume el tratamiento de datos personales y credenciales.
+* **Entorno y ejecución:** [DEV_ENVIRONMENT.md](DEV_ENVIRONMENT.md) describe cómo corre todo en GitHub Actions y qué secretos hacen falta.
+* **Módulos del frontend:** [zoho-survey/shared/README.md](zoho-survey/shared/README.md) documenta los módulos JS, el orden de carga y su deuda técnica.

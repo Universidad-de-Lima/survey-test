@@ -417,7 +417,7 @@ Siempre: ID de respuesta + Net Promoter Score (de un total de 10). Más la colum
 | EMPLEADORES + PREGRADO | ¿Qué carrera es la que procede el profesional de la Universidad de Lima contratado por su organización? |
 | EMPLEADORES + POSGRADO | ¿Cuál posgrado es el que procede el profesional de la Universidad de Lima contratado por su organización? |
 
-> La Universidad de Lima NO es universal (CSAT). El ETL la detecta por encuesta; el validador no la exige. Los 10 CSVs de PDF/ son la referencia canónica.
+> `La Universidad de Lima` NO es universal (CSAT): el ETL la detecta por encuesta. Los CSVs de referencia no se versionan en el repositorio (contienen datos personales); el contrato vive en este documento y en `zoho-survey/scripts/lib/config.py`.
 
 > Nota EMPLEADORES (futura actualización): ENCUESTA DE SATISFACCIÓN EMPLEADORES tiene tipos PREGRADO y POSGRADO. Se está evaluando si el CSV es único para ambos niveles (misma fuente Zoho). Hasta definirse, el validador acepta ambos nombres y el ETL los trata como employers.
 

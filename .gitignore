@@ -74,4 +74,5 @@ Mejoras/
 *.bak
 *.orig
 node_modules/
+.hermes/
 testsprite_tests/tmp/config.json

@@ -20,7 +20,7 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
 ### ETL Python (`zoho-survey/scripts/`)
 
 - **`build_json.py`** (~953 lineas): orquestador del pipeline CSV → JSON.
-- **`lib/`** contiene **12 modulos activos** (motor legacy eliminado en v3.2.0, `ia_cache.py` eliminado en Fase 0):
+- **`lib/`** contiene **13 modulos activos** (motor legacy eliminado en v3.2.0, `ia_cache.py` eliminado en Fase 0):
   - `config.py` — mapeos de columnas y catalogos de negocio.
   - `metrics.py` — `calc_nps`, `calc_csat` (funciones puras).
   - `io_helper.py` — I/O seguro, hash para idempotencia, `enmascarar_pii` (redaccion PII).
@@ -37,7 +37,7 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
 
 ### Frontend JS (`zoho-survey/shared/js/`)
 
-- **13 modulos IIFE** en `shared/js/` (22 archivos JS; 19 simbolos `window.Survey*`).
+- **19 archivos JS** en `shared/js/` (modulos IIFE + capa `portal/`), con **18 simbolos `window.Survey*`**.
 - **`dashboard.js`**: orquestador principal del dashboard por periodo.
 - **Orden de carga critico**: ver `shared/README.md`. `dom-helpers.js` debe cargarse antes que `custom-select.js`.
 - Las funciones globales son `window.SurveyTooltip.show/hide` (NO `window.showTooltip/hideTooltip`).

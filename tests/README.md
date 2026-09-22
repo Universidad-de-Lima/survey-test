@@ -67,8 +67,8 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | --- | --- | --- |
 | `test-config.js` | 9 | `SurveyConfig` (SURVEY_CONFIG) |
 | `test-formatters.js` | 26 | `SurveyFormatters` |
-| `test-metrics.js` | 11 | `SurveyMetrics` |
-| `test-sanitizer.js` | 22 | `SurveySanitizer` |
+| `test-metrics.js` | 10 | `SurveyMetrics` |
+| `test-sanitizer.js` | 20 | `SurveySanitizer` |
 | `test-sentiment-view.js` | 9 | `SurveySentimentView` API surface |
 | `test-filter-controller.js` | 16 | `SurveyFilterController` |
 | `test-insights-ia.js` | 4 | Insights IA |

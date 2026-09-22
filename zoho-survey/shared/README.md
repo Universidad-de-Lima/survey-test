@@ -106,7 +106,7 @@ Variables CSS en `tokens.css` (`:root`):
 
 ## Order of Script Loading (Critical)
 
-El orden de carga es crítico y verificado por `scripts/tests/test_html_contract.py`.
+El orden de carga es crítico y verificado por `zoho-survey/scripts/tests/test_html_contract.py`.
 
 ### Template (`template/index.html` y `students/*/*/index.html`) — 13 scripts
 
@@ -169,7 +169,7 @@ Constantes en `config/constants.js` (`window.SURVEY_CONFIG`):
 
 ## Technical Debt
 
-- **Módulos JS sin tests unitarios directos**: `portal.js`, `portal/*` (5), `custom-select.js`, `multiselect.js`, `filter-controller.js`, `radar-chart.js`, `sentiment-view.js`, `dashboard.js` (9 de 19 módulos). Suite JS: 94 tests TestFramework + 33 jsdom = 127 tests (fuente: `tests/README.md`).
+- **Módulos JS sin tests unitarios directos**: `components/custom-select.js`, `components/multiselect.js`, `components/progress-bar.js`, `components/radar-chart.js`, `portal/portal-dashboard.js`, `portal/portal-filters.js`, `portal/portal-radar.js`, `portal/portal-survey.js` (8 de 19 archivos; con pruebas: 11). Suite JS: 108 tests TestFramework + 33 jsdom = 141 tests (fuente: `tests/README.md`).
 - **No hay sistema de módulos ES**: usa IIFE + closures. El orden de carga es crítico.
 - **Custom select dropdowns**: implementación manual (~200 líneas entre `custom-select.js` y `multiselect.js`). Posible fuente de bugs cross-browser.
 - **`tooltip.move(e)`**: implementado en `tooltip.js` (boundary detection); usado en `sentiment-view.js` para listeners `mousemove`.
@@ -177,7 +177,7 @@ Constantes en `config/constants.js` (`window.SURVEY_CONFIG`):
 ## Improvement Opportunities
 
 - Migrar a ES modules (`<script type="module">`) para eliminar dependencia de orden de carga.
-- Implementar boundary detection y `move()` en `tooltip.js`.
+- (Hecho) boundary detection y `move()` en `tooltip.js`.
 - Agregar tests con jsdom para `dashboard.js`, `filter-controller`, `radar-chart`, `sentiment-view`, módulos portal.
 - Implementar carga lazy de JSON por sección.
 - Unificar lógica duplicada entre `portal/*` y `components/*` + `dashboard.js`.

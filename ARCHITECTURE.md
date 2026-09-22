@@ -51,7 +51,7 @@ survey-test/
 │   │   └── js/              # Modulos JS IIFE expuestos en window.Survey* + portal/.
 │   ├── template/            # Plantilla HTML para dashboards de periodo.
 │   ├── scripts/             # ETL en Python, validacion de contratos y schemas.
-│   │   ├── lib/             # 12 modulos activos del ETL (motor legacy eliminado en v3.2.0).
+│   │   ├── lib/             # 13 modulos activos del ETL (motor legacy eliminado en v3.2.0).
 │   │   ├── schemas/         # JSON Schemas Draft-07 (8 schemas formales).
 │   │   ├── config/          # Configuracion estatica (contexto_universidad.json).
 │   │   └── tests/           # Tests Python (10 modulos).
@@ -67,7 +67,7 @@ Para mayor detalle de responsabilidades:
 | --- | --- |
 | `data/` | CSVs fuente exportados desde Zoho Survey (sanitizados en CI). |
 | `zoho-survey/scripts/` | Scripts ETL, validacion de contratos y schemas de datos. |
-| `zoho-survey/scripts/lib/` | Biblioteca de utilidades modularizadas del ETL (12 modulos activos). |
+| `zoho-survey/scripts/lib/` | Biblioteca de utilidades modularizadas del ETL (13 modulos activos). |
 | `zoho-survey/scripts/schemas/` | JSON Schemas Draft-07 (fuente formal de tipos). |
 | `zoho-survey/shared/js/` | Modulos compartidos del portal y dashboard (IIFE). |
 | `zoho-survey/shared/css/` | Capas CSS modulares e imports del dashboard. |
@@ -215,7 +215,7 @@ Los modulos usan IIFE y exponen APIs globales `window.Survey*`. No usan ES Modul
 
 ### Orden de carga de scripts
 
-El orden de carga es critico y debe respetarse. Verificado por `scripts/tests/test_html_contract.py`.
+El orden de carga es critico y debe respetarse. Verificado por `zoho-survey/scripts/tests/test_html_contract.py`.
 
 **Template** (`template/index.html`, 13 scripts):
 
