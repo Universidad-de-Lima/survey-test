@@ -1,0 +1,77 @@
+{
+  "version": "2.0",
+  "resumen": {
+    "encuestas": 1,
+    "carreras": 1,
+    "facultades": 1,
+    "fecha_inicio": "2026-09-22",
+    "fecha_fin": "2026-09-22",
+    "dias": 1,
+    "dias_recoleccion": 1,
+    "año": 2026,
+    "periodo": "2026",
+    "nps": {
+      "score": -100.0,
+      "promotores": 0,
+      "pasivos": 0,
+      "detractores": 1,
+      "total": 1
+    },
+    "csat": {
+      "score": 0.0,
+      "t3b": 0,
+      "total": 1,
+      "t2b": 0,
+      "t2b_pct": 0.0,
+      "ponderado": 20.0
+    },
+    "empleabilidad": {
+      "score": 0.0,
+      "empleados": 0,
+      "total": 1
+    }
+  },
+  "hallazgos": {
+    "csat_pct": 0,
+    "nps_score": -100,
+    "nps_tipo": "Pésimo",
+    "nps_etapas": {},
+    "tendencia": "se mantiene",
+    "delta": 0,
+    "top_dimensiones": [
+      {
+        "name": "Transmisión de conocimientos",
+        "score": 0.0
+      },
+      {
+        "name": "Transmisión de experiencias",
+        "score": 0.0
+      }
+    ],
+    "top_facultades": [
+      {
+        "name": "Otra",
+        "score": 0.0
+      }
+    ]
+  },
+  "nps": {
+    "promotores": 0,
+    "pasivos": 0,
+    "detractores": 1,
+    "score": -100.0
+  },
+  "csat": {
+    "Totalmente satisfecho": 0,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 1,
+    "No utilizo": 0,
+    "No conozco": 0
+  },
+  "_export": {
+    "nombre_encuesta": "encuesta_de_satisfacción_graduados_pregrado_2026",
+    "fecha_generacion": "2026-09-22"
+  }
+}
