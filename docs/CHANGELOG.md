@@ -2,6 +2,20 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-22 — La bandeja se convierte sola en el CSV que procesa el ETL
+
+- **Nuevo**: `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde `data/zoho_pendientes/*.jsonl`
+  (una fila por respuesta, cabeceras del ETL en su orden, nombre derivado del título de la encuesta) y lo deja
+  en `data/`, donde el gate `Detectar CSVs a procesar` lo recoge.
+- Corre **solo** cuando el disparo viene del portal (`repository_dispatch`): un push normal no ejecuta el ETL.
+- Usa solo la biblioteca estándar (más las constantes de `lib.config`), así que corre antes de instalar
+  dependencias, en el mismo punto que el gate.
+- Escribe **sin BOM** a propósito: `read_csv_robust` lee con UTF-8 simple y el BOM rompería la primera columna.
+- No borra la bandeja: es el acumulado del periodo. Falla con aviso explícito si no puede deducir el nivel
+  o si una bandeja no trae respuestas con identificador.
+- Pruebas nuevas en `zoho-survey/scripts/tests/test_zoho_a_csv.py`, incluida la comparación de la detección
+  de nivel contra `build_json._detectar_nivel`.
+
 ## 2026-09-22 — El botón de refrescar del portal pide procesar los datos
 
 - **Nuevo**: el botón `⟲` del portal envía `POST` a `/api/procesar-encuesta`, una función en Vercel

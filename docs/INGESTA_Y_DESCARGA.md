@@ -24,7 +24,9 @@
 3. La incidencia se **cierra** al registrarse; si el cuerpo no es JSON válido, el flujo falla y queda **abierta** como aviso.
 4. Aquí **no** corre el ETL: las respuestas se acumulan.
 
-> **Pendiente (fase siguiente):** convertir automáticamente la bandeja al CSV que consume el ETL. Hoy ese CSV se prepara a mano.
+> **Listo:** `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde la bandeja cuando el portal pide el proceso
+> (`repository_dispatch`): una fila por respuesta, cabeceras del ETL y nombre derivado del título de la encuesta.
+> La bandeja **no** se borra: es el acumulado del periodo, y borrarla dejaría el dashboard sin las respuestas anteriores.
 
 ### Paso 2 — Procesar (a mano o desde el portal, cuando se decide)
 

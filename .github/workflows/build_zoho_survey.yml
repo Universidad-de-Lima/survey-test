@@ -73,6 +73,17 @@ jobs:
           gh release download "${RELEASE_TAG}" --pattern '*.csv' --dir data/ --clobber
           ls -la data/*.csv
 
+      - name: Convertir la bandeja de respuestas en CSV (boton del portal)
+        # Lo pide el boton de refrescar del portal (repository_dispatch). Arma un CSV
+        # por encuesta con las cabeceras que espera el ETL y lo deja en data/, donde el
+        # gate de abajo lo recoge. Sin bandeja no escribe nada: el flujo solo despliega.
+        # Corre con el python3 del runner y no usa dependencias: no necesita el setup
+        # de Python que viene mas abajo.
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          python3 zoho-survey/scripts/zoho_a_csv.py
+          ls -la data/*.csv 2>/dev/null || echo "Sin CSVs: no hay respuestas acumuladas."
+
       - name: Detectar CSVs a procesar
         # Gate del ETL: sin CSV en data/ no se sanitiza, no se llama a la API IA
         # ni se exigen las claves de los motores. Un push de HTML/CSS/JS solo despliega

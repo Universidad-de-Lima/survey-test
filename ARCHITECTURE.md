@@ -262,7 +262,7 @@ Tres caminos, sin credenciales en el navegador:
 
 1. **Webhook de Zoho Survey** (acumular): cada respuesta crea una incidencia; `zoho_inbox.yml` la normaliza, la **enmascara** y la guarda en `data/zoho_pendientes/<encuesta>.jsonl`. No corre el ETL. La incidencia se cierra al registrarse.
 2. **Release + `workflow_dispatch`** (procesar): el CSV se adjunta a un Release y se lanza *Build and Deploy Survey* con `release_tag`. El ETL corre en Actions.
-3. **Botón de refrescar del portal** (pedir el proceso): el botón llama a `POST /api/procesar-encuesta` en Vercel, que guarda la llave y dispara `repository_dispatch: procesar_datos` sobre *Build and Deploy Survey*. El ETL sigue condicionado al gate de CSVs, así que un disparo sin CSV solo redespliega el sitio.
+3. **Botón de refrescar del portal** (pedir el proceso): el botón llama a `POST /api/procesar-encuesta` en Vercel, que guarda la llave y dispara `repository_dispatch: procesar_datos` sobre *Build and Deploy Survey*, que convierte la bandeja en el CSV y ejecuta el ETL. El ETL sigue condicionado al gate de CSVs, así que un disparo sin CSV solo redespliega el sitio.
 
 El portal (`zoho-survey/index.html`) es **solo lectura**: no pide credenciales. Su botón de refrescar hace dos cosas: pide el proceso (camino 3) y vuelve a leer los datos publicados. La llave de GitHub vive en Vercel, nunca en el navegador.
 
@@ -285,7 +285,9 @@ Pasos del procesamiento:
 4. `build_json.py` procesa (ver "Procesamiento ETL"), se validan los contratos JSON y se despliega a Pages.
 5. Los CSV se borran antes del commit del bot (fail-closed: si alguno queda en staging, el commit aborta). El Release **no** se elimina.
 
-> **Pendiente (fase siguiente):** convertir automáticamente las respuestas de `data/zoho_pendientes/` al CSV que consume el ETL. Hoy ese CSV se prepara a mano.
+> **Conversión:** cuando el disparo viene del portal, `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde
+> `data/zoho_pendientes/` (una fila por respuesta, cabeceras del ETL, nombre derivado del título) y el gate de CSVs lo recoge.
+> La bandeja no se borra: es el acumulado del periodo.
 
 ### Especificaciones del Release de entrada
 
