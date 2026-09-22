@@ -1,0 +1,38 @@
+[
+  {
+    "carrera": "Arquitectura",
+    "facultad": "Facultad de Arquitectura",
+    "Totalmente satisfecho": 0,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 1,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 0.0
+  },
+  {
+    "carrera": "Derecho",
+    "facultad": "Facultad de Derecho",
+    "Totalmente satisfecho": 1,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Psicología",
+    "facultad": "Facultad de Psicología",
+    "Totalmente satisfecho": 1,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0,
+    "score": 100.0
+  }
+]

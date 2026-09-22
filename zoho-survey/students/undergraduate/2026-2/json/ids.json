@@ -1,0 +1,20 @@
+[
+  {
+    "facultad": "Facultad de Arquitectura",
+    "carrera": "Arquitectura",
+    "ciclo": "NA",
+    "total": 1
+  },
+  {
+    "facultad": "Facultad de Derecho",
+    "carrera": "Derecho",
+    "ciclo": "NA",
+    "total": 2
+  },
+  {
+    "facultad": "Facultad de Psicología",
+    "carrera": "Psicología",
+    "ciclo": "NA",
+    "total": 1
+  }
+]
