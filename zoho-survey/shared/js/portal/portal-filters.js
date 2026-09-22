@@ -132,7 +132,7 @@
       '<label class="filter-label" for="srv-ciclo-' + grupo + '">Ciclo:</label>' +
       '<select class="filter-select" id="srv-ciclo-' + grupo + '" multiple data-multiselect="true">' + cicloOptionsHtml() + '</select></div>';
 
-    html += '<button class="filter-reset" type="button" onclick="__resetFilter(\'' + grupo + '\')">Limpiar</button>';
+    html += '<button class="filter-reset" type="button" data-grupo="' + esc(grupo) + '">Limpiar</button>';
 
     html += '</div>';
 
@@ -241,10 +241,21 @@
     return _dh.formatMultiselectLabel(labels, placeholder, itemName);
   }
 
-  // Exposición pública (necesaria para handlers inline generados en
-  // buildFiltroHtml: onclick="__resetFilter(...)").
+  // Exposición pública (compatibilidad: otros módulos y pruebas usan estas
+  // funciones directamente; ya no se generan manejadores en linea).
   window.__applyFilter = __applyFilter;
   window.__resetFilter = __resetFilter;
+
+  // Delegacion de eventos: un unico listener atiende los botones "Limpiar" de
+  // todos los grupos. Los botones llevan data-grupo y se crean con innerHTML,
+  // asi que la delegacion es la unica forma de enlazarlos sin onclick en linea
+  // (regla del proyecto: nada de manejadores en linea).
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target && ev.target.closest ? ev.target.closest('.filter-reset[data-grupo]') : null;
+    if (!btn) return;
+    ev.preventDefault();
+    __resetFilter(btn.getAttribute('data-grupo'));
+  });
 
   window.SurveyPortalFilters = {
     buildFiltroHtml: buildFiltroHtml,
