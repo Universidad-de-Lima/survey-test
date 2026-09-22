@@ -21,10 +21,10 @@ Los workflows de pruebas y de build se disparan con **cualquier push a `main`** 
 
 ## Cómo se envían los datos (sin entorno local)
 
-1. **Portal "Subir datos"** (recomendado): `zoho-survey/index.html` → Release DRAFT temporal → `repository_dispatch[csv_upload]`.
-2. **Release con tag + `workflow_dispatch`** (alternativa sin navegador): subir el CSV como asset de un Release (preferiblemente **DRAFT**) y lanzar *Build and Deploy Survey* con el input `release_tag`.
+1. **Webhook de Zoho Survey** (camino normal): cada respuesta crea una incidencia y `zoho_inbox.yml` la guarda en `data/zoho_pendientes/`. Ahí no corre el ETL: solo se acumula la respuesta.
+2. **Release con tag + `workflow_dispatch`** (para procesar): subir el CSV como asset de un Release (preferiblemente **DRAFT**) y lanzar *Build and Deploy Survey* con el input `release_tag`.
 
-En ambos caminos el CSV se descarga **solo en el runner**, se sanitiza, se procesa y se **borra antes del commit del bot** (el commit aborta si detecta un CSV en staging).
+Ese CSV se descarga **solo en el runner**, se sanitiza, se procesa y se **borra antes del commit del bot** (el commit aborta si detecta un CSV en staging).
 
 Sin CSV en `data/`, el workflow **no** ejecuta el ETL ni exige claves de los motores IA: solo valida contratos y despliega el sitio.
 

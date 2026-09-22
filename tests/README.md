@@ -26,7 +26,6 @@ tests/
     ├── test-sentiment-view.js  # SurveySentimentView API surface (9 tests)
     ├── test-filter-controller.js  # SurveyFilterController (16 tests)
     ├── test-insights-ia.js     # Insights IA (4 tests)
-    ├── test-upload-validator.js # Validación ingesta CSV (38 tests, TestFramework)
     ├── test-portal-data.js     # Capa de datos del portal: periodos reales, mapeo ítem→carpeta y fases con datos (14 tests, TestFramework)
     └── test-dom.js             # Tests con jsdom (33 tests, dialecto propio)
 ```
@@ -73,7 +72,6 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | `test-sentiment-view.js` | 9 | `SurveySentimentView` API surface |
 | `test-filter-controller.js` | 16 | `SurveyFilterController` |
 | `test-insights-ia.js` | 4 | Insights IA |
-| `test-upload-validator.js` | 35 | Validación de nombre/headers/tamaño de CSVs de ingesta (`portal-upload.js`) |
 
 ### Tests con jsdom
 
@@ -81,7 +79,7 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | --- | --- | --- |
 | `test-dom.js` | 33 | `SurveyFormatters`, `SurveySanitizer`, `SurveyDomHelpers`, `SurveyTooltip` (con DOM real) |
 
-### Total: 146 tests TestFramework (94 base + 38 de `test-upload-validator.js` + 14 de `test-portal-data.js`) + 33 tests jsdom = 179 tests
+### Total: 108 tests TestFramework (94 base + 14 de `test-portal-data.js`) + 33 tests jsdom = 141 tests
 
 > **Historial:** un snapshot previo de auditoría reportaba `test-sanitizer.js` vacío y
 > `test-sentiment-view.js` ausente; ambos fueron verificados y restaurados/implementados
@@ -107,4 +105,3 @@ Ver `zoho-survey/scripts/tests/` para detalle de cobertura Python (tests `test_*
 - **Tests eliminados en Fase 1**: `test-tooltip.js`, `test-multiselect.js`, `test-progress-bar.js`, `test-radar-chart.js`, `test-custom-select.js` fueron eliminados porque nunca se cargaban en ningún runner y tenían un bug latente (`assert.true` no existe en el framework, solo `assert.isTrue`).
 - **Tests E2E**: Playwright fue eliminado en Fase 2 porque nunca se integró al CI. Si se quiere E2E real, planificar en una fase futura con cobertura más amplia.
 - **Linting**: Ruff (Python) y ESLint (JS) se ejecutan en CI de forma informativa desde Fase 2. Se harán estrictos en Fase 3 tras auto-fixear las violaciones existentes.
-- **Validación de ingesta**: cliente (`tests/unit/test-upload-validator.js`, 28 tests) y server-side (`zoho-survey/scripts/tests/test_validate_upload_csv.py`, 17 tests).

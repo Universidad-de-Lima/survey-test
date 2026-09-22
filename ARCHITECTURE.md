@@ -27,14 +27,11 @@ graph TD
     end
     ETL --> |cadena en IA_CUALITATIVO_CADENA; al menos una clave| IA
 
-    subgraph Ingesta Web [Subir datos (Fase 3.8.2)]
-        BROWSER[Browser GitHub Pages] -->|PAT owner (memoria)| GH[api.github.com]
-        GH -->|1. Release DRAFT| REL[(Release temporal)]
-        GH -->|2. PUT assets CSV| REL
-        GH -->|3. repository_dispatch csv_upload| ACT[GitHub Actions]
-        ACT -->|download| TEMP[data/temp/{upload_id}/]
-        TEMP --> ETL
-        ACT -->|DELETE release + rm temp| OK2[CSV procesado + borrado]
+    subgraph Ingesta [Webhook de Zoho Survey]
+        ZOHO[Zoho Survey] -->|webhook: crea una incidencia| ISS[(Incidencia)]
+        ISS --> INB[zoho_inbox.yml]
+        INB -->|enmascara y acumula| PEN[(data/zoho_pendientes/<encuesta>.jsonl)]
+        PEN -.->|a mano: Release + workflow_dispatch| ETL
     end
 ```
 
@@ -51,9 +48,9 @@ survey-test/
 │   ├── health.html          # Pagina de health check de contratos JSON por periodo.
 │   ├── shared/              # Recursos compartidos (CSS, JS, imagenes).
 │   │   ├── css/             # Capas CSS (tokens, reset, layout, components, sections, loader) + portal/.
-│   │   └── js/              # Modulos JS IIFE expuestos en window.Survey* + portal/ + upload (portal-upload.js, portal-upload-ui.js).
+│   │   └── js/              # Modulos JS IIFE expuestos en window.Survey* + portal/.
 │   ├── template/            # Plantilla HTML para dashboards de periodo.
-│   ├── scripts/             # ETL en Python, validacion de contratos, schemas y validacion de uploads (validate_upload_csv.py).
+│   ├── scripts/             # ETL en Python, validacion de contratos y schemas.
 │   │   ├── lib/             # 12 modulos activos del ETL (motor legacy eliminado en v3.2.0).
 │   │   ├── schemas/         # JSON Schemas Draft-07 (8 schemas formales).
 │   │   ├── config/          # Configuracion estatica (contexto_universidad.json).
@@ -259,80 +256,50 @@ El orden de carga es critico y debe respetarse. Verificado por `scripts/tests/te
 - `sanitizeHTML()` permite solo una lista reducida de etiquetas necesarias para tooltips y textos enriquecidos: `br, strong, em, i, span, table, tr, td, th` (9 tags, sin atributos).
 - No introducir dependencias runtime para sanitizacion sin justificar el costo operacional.
 
-## Ingesta De Encuestas (Subir datos)
+## Ingesta De Encuestas
 
-El portal (`zoho-survey/index.html`) incluye el botón **"Subir datos"**, que permite al propietario del repo enviar uno o varios CSV de encuesta directamente desde el navegador. La arquitectura (*Arquitectura A*, Fase 3.8.2) prioriza: **cero servicios externos**, **cero exposición de tokens públicos**, **cero CSV en el historial Git**, y **eliminación automática** tras procesar.
+Dos caminos, sin credenciales en el navegador:
+
+1. **Webhook de Zoho Survey** (acumular): cada respuesta crea una incidencia; `zoho_inbox.yml` la normaliza, la **enmascara** y la guarda en `data/zoho_pendientes/<encuesta>.jsonl`. No corre el ETL. La incidencia se cierra al registrarse.
+2. **Release + `workflow_dispatch`** (procesar): el CSV se adjunta a un Release y se lanza *Build and Deploy Survey* con `release_tag`. El ETL corre en Actions.
+
+El portal (`zoho-survey/index.html`) es **solo lectura**: no pide credenciales y su botón de refrescar vuelve a leer los datos publicados.
 
 ### Flujo
 
 ```mermaid
 graph TD
-    BROWSER[Browser — GitHub Pages] -->|PAT owner (memoria)| API[api.github.com]
-    API -->|1. Release DRAFT (tag=upload_id)| REL[Release temporal]
-    API -->|2. PUT assets CSV| REL
-    API -->|3. repository_dispatch csv_upload| ACT[GitHub Actions]
-    ACT -->|download| TMP[data/temp/{upload_id}/]
-    TMP --> VAL(validate_upload_csv.py]
-    VAL --> SAN[sanitize_csv_pii.py]
+    REL[Release con tag (DRAFT)] -->|workflow_dispatch release_tag| ACT[GitHub Actions]
+    ACT -->|download| DATA[data/]
+    DATA --> SAN[sanitize_csv_pii.py]
     SAN --> ETL[build_json.py]
     ETL --> DEPLOY[deploy Pages]
-    DEPLOY -->|DELETE release + rm temp| OK[Done]
+    DEPLOY -->|borra los CSV| OK[Done]
 ```
 
-Pasos:
-1. El owner abre el portal, introduce su PAT (**solo en memoria**) y selecciona CSVs. El validador cliente (`shared/js/portal-upload.js`) valida nombre/headers/tamaño, calcula SHA-256 y expone `window.SurveyUpload`.
-2. `createRelease` crea un **Release temporal DRAFT** con `tag_name = upload_id` (UUID v4).
-3. `uploadAsset` sube cada CSV como asset (**máx 10 archivos**, **5 MB c/u**, **50 MB total**).
-4. `dispatchWorkflow` dispara `repository_dispatch` (`event_type=csv_upload`) con `client_payload={upload_id, release_id, files[]}`.
-5. GitHub Actions (`build_zoho_survey.yml`, on `repository_dispatch[csv_upload]`) descarga los assets a `data/temp/{upload_id}/`, valida **server-side** (`validate_upload_csv.py`), los **sane** (`sanitize_csv_pii.py`), procesa (`build_json.py`), valida JSON, despliega a Pages y **elimina** el Release + los temporalos.
+Pasos del procesamiento:
+1. El owner adjunta el CSV al Release y lanza el workflow con `release_tag`.
+2. `gh release download` baja el CSV a `data/` (solo en el runner; nunca al historial).
+3. `sanitize_csv_pii.py --all` redacta IP/UA/URL in-place.
+4. `build_json.py` procesa (ver "Procesamiento ETL"), se validan los contratos JSON y se despliega a Pages.
+5. Los CSV se borran antes del commit del bot (fail-closed: si alguno queda en staging, el commit aborta). El Release **no** se elimina.
 
-### Especificaciones de la carpeta temporal (Release)
+> **Pendiente (fase siguiente):** convertir automáticamente las respuestas de `data/zoho_pendientes/` al CSV que consume el ETL. Hoy ese CSV se prepara a mano.
+
+### Especificaciones del Release de entrada
 
 | Característica | Valor |
 | --- | --- |
-| Tipo | GitHub Release (no GitHub Artifact; el API público no admite subida de artifacts) |
-| Tag / ID | `upload_id` = UUID v4 generado en el navegador |
-| Visibilidad durante el proceso | **DRAFT** (oculto). `GITHUB_TOKEN` del mismo repo accede a drafts sin problema |
-| Límite por archivo | 5 MB (cliente) / 2 GB (asset GitHub) |
-| Límite total por upload | 50 MB (cliente) |
-| Cantidad de archivos | 1–10 |
+| Tipo | GitHub Release con el CSV adjunto (no hay carpeta temporal) |
+| Visibilidad | **DRAFT** mientras se procesa (repo público) |
+| Descarga | `gh release download <tag> --pattern '*.csv' --dir data/`, solo en el runner |
 | Codificación aceptada | UTF-8; fallback Latin-1 (`read_csv_robust`) |
-| Aislamiento | cada `upload_id` → su propio Release + `data/temp/{upload_id}/` + su propio run |
-| Eliminación | `DELETE /repos/{owner}/{repo}/releases/{id}` al finalizar con éxito (+ borrado del runner efímero) |
-| Retención en fallo | el Release DRAFT persiste para recovery manual; el reintento usa **nuevo** upload_id (el tag UUID colisiona si se reusa) |
-| Ventana de exposición | cero si se mantiene DRAFT; si se publica (`draft:false`), el asset es descargable públicamente hasta el cleanup (riesgo en repos públicos) |
-| Ventana de PII | solo durante download→sanitize→ETL→delete; IP/UA/URL redimidos antes del ETL |
+| Eliminación | el Release **no** se elimina: es del owner |
+| Ventana de PII | solo durante download→sanitize→ETL; IP/UA/URL redimidos antes del ETL y los CSV borrados antes del commit |
 
-### Reglas de nombres CSV (Fase 3.8.3) — CANON
+### Reglas de nombres CSV — CANON
 
-Fuente de verdad para el validador (`portal-upload.js` + `validate_upload_csv.py`). Las secciones previas sobre periodicidad estricta e `La Universidad de Lima` obligatoria están **OBSOLETAS**; esta sección prevalece.
-
-**Formato:** `ENCUESTA DE SATISFACCIÓN {CATEGORÍA} [- NIVEL] [- PERIODO].csv`
-
-- **CATEGORÍA**: `ESTUDIANTIL | GRADUADOS | POSGRADO | DOCENTES | EGRESADOS | NO DOCENTES | EMPLEADORES`
-- **NIVEL**: `PREGRADO | POSGRADO` (opcional en `NO DOCENTES`, que no lo lleva)
-- **PERIODO**: **opcional**. `20XX` (anual) o `20XX-1`/`20XX-2` (semestral). Varios CSV reales lo omiten (ej. `NO DOCENTE 2026.csv`)
-- **Separadores**: espacio simple o guion son equivalentes
-- **Singular/plural**: `DOCENTE`/`DOCENTES` y `NO DOCENTE`/`NO DOCENTES` son equivalentes
-
-**Headers obligatorias por encuesta EXACTA** (no por nivel genérico). Siempre: `ID de respuesta` + `Net Promoter Score (de un total de 10)`. Más la columna propia de carrera/programa/dependencia:
-
-| Encuesta (CATEGORÍA + NIVEL) | Columna de carrera/programa/dependencia |
-| --- | --- |
-| `ESTUDIANTIL` + `PREGRADO` | `¿Qué carrera profesional estudias?` |
-| `ESTUDIANTIL` + `POSGRADO` | `¿Qué programa de posgrado estudias?` |
-| `GRADUADOS` + `PREGRADO` | `¿Qué carrera profesional estudiaste?` |
-| `EGRESADOS` + `PREGRADO` | `¿Qué carrera profesional estudiaste?` |
-| `EGRESADOS` + `POSGRADO` | `¿Qué programa de posgrado estudiaste?` |
-| `DOCENTES` + `PREGRADO` | `¿Qué carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?` |
-| `DOCENTES` + `POSGRADO` | `¿Qué programa de posgrado dictas en la Universidad de Lima?` |
-| `NO DOCENTES` | `¿A qué dependencia perteneces?` |
-| `EMPLEADORES` + `PREGRADO` | `¿Qué carrera es la que procede el profesional de la Universidad de Lima contratado por su organización?` |
-| `EMPLEADORES` + `POSGRADO` | `¿Cuál posgrado es el que procede el profesional de la Universidad de Lima contratado por su organización?`
-
-> **`La Universidad de Lima` NO es universal** (CSAT). El ETL la detecta por encuesta; el validador no la exige. Los **10 CSVs de `PDF/` son la referencia canónica**.
-
-> **Nota EMPLEADORES (futura actualización):** `ENCUESTA DE SATISFACCIÓN EMPLEADORES` tiene tipos `PREGRADO` y `POSGRADO`. Se está evaluando si el CSV es único para ambos niveles (misma fuente Zoho). Hasta definirse, el validador acepta ambos nombres y el ETL los trata como `employers`.
+Las reglas de nombre y las headers obligatorias viven en **`CONTRACTS.md`** (sección "Reglas de nombres CSV"). Consecuencia técnica: `build_json.py` deriva el **nivel** y el **periodo** del nombre del archivo, así que un nombre fuera de esas reglas no se procesa.
 
 ### Procesamiento ETL (Fase 2) - 7 categorias
 
@@ -340,20 +307,19 @@ build_json.py procesa las 7 categorias. resolver_config_etl (lib/config.py) resu
 
 
 
-> **Nota de hardening (Fase 3.8.3):** el flujo actual llama a `publishRelease` (`draft:false`) tras subir los assets. Para repos **públicos**, mantener el Release como DRAFT siempre y remover `publishRelease` — `GITHUB_TOKEN` accede a drafts del mismo repo.
-
 ### Auth
 
-- **PAT del owner** (runtime; scopes mínimos `contents:write` + `actions:write`). NUNCA en localStorage/sessionStorage/logs; **nunca** pasa por GitHub Actions (que usa `GITHUB_TOKEN`).
-- El navegador habla directo a `api.github.com` (CORS `*` soportado) → no hay backend ni Cloudflare de por medio.
+- **Sin credenciales en el navegador**: el portal solo lee los JSON publicados en Pages (no hay PAT en el cliente).
+- **Zoho → GitHub**: el webhook usa un PAT (Personal Access Token - Token de Acceso Personal) fine-grained con permiso *Issues: write*, guardado en la cabecera del webhook dentro de Zoho (nunca en el repositorio).
+- **GitHub Actions**: usa el `GITHUB_TOKEN` del propio flujo.
 
 ### PII (puntos 2-6 de la auditoría Fase 3.7)
 
 | # | Dónde puede aparecer | Estado en Arquitectura A |
 | --- | --- | --- |
 | 1 | Comentario NPS hacia los motores IA | 🔴 Ofuscado con `ofuscar_pii_para_llm` (Fase 3.5) antes del LLM |
-| 2 | PII temporal (Release + runner) | 🟡 Draft + `data/temp/{upload_id}/` efímero; redimido en ETL |
-| 3 | PII en Git | 🟢 Cero — `data/` gitignored; commit gated `!= repository_dispatch` |
+| 2 | PII en la bandeja de entrada | 🟢 Cero — la respuesta se **enmascara antes** de escribirla en `data/zoho_pendientes/` |
+| 3 | PII en Git | 🟢 Cero — `data/` está ignorado; los CSV se borran antes del commit del bot |
 | 4 | PII publicada en Pages | 🟢 Cero — solo JSON/HTML sanitizados |
 | 5 | PII en logs de Actions | 🟢 Cero — los steps registran nombre de archivo, no contenido |
 | 6 | PII en artifacts | 🟢 Cero — artifact publicado excluye `exports/` e `intermediate/` |
@@ -362,15 +328,14 @@ Los CSV de prueba con IP están cubiertos por `sanitize_csv_pii.py` (redime `Dir
 
 ### Concurrencia
 
-- `concurrency.group: csv-upload-{upload_id}`, `cancel-in-progress: false` → uploads simultáneos **no** se cancelan.
-- Cada upload: su propio Release (tag UUID) + su propio `data/temp/{upload_id}/` + su propio run.
-- **Riesgo vigente:** el step `cp *.csv → data/` y `build_json.py` (que procesa todo `data/*.csv`) son globales; dos uploads paralelos pueden cruzarse. Fase futura: serializar (group único) o procesar solo `data/temp/{upload_id}/`.
+- `concurrency.group: deploy-${{ github.ref }}`, `cancel-in-progress: false` → una sola corrida de build/ETL por rama (dos corridas no se pisan al commitear los JSON).
+- La ingesta (`zoho_inbox.yml`) tiene su propio grupo: varias respuestas seguidas se apilan sin pisarse.
 
 ### Errores y reintentos
 
-- Upload/Actions falla → el Release DRAFT persiste; reintento con **nuevo** `upload_id`.
-- Un motor falla o no valida su respuesta → se pasa al siguiente de la cadena; cada motor reintenta con backoff (`ia_client.py`).
-- Validate/JSON/Deploy falla → job falla; cleanup no corre (gated `success()`); recovery manual.
+- Un motor falla o no valida su respuesta → se pasa al siguiente de la cadena; cada motor reintenta con backoff (`ia_client.js`/`ia_client.py`).
+- Validate/JSON/Deploy falla → el job falla y el commit del bot no corre; recovery manual.
+- Ingesta: si el cuerpo de la incidencia no es JSON válido, el flujo falla y la incidencia queda **abierta** como aviso.
 
 
 ## Deuda Tecnica Vigente

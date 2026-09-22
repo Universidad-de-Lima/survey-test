@@ -18,9 +18,9 @@ Columnas criticas para encuestas estudiantiles:
 
 El mapeo real de columnas debe verificarse en `zoho-survey/scripts/build_json.py` y `zoho-survey/scripts/lib/config.py` (`COLUMN_RENAME_PREGRADO`, `COLUMN_RENAME_GRADUADO`).
 
-## Contrato De Ingesta (Subir datos — Fase 3.8.2)
+## Contrato De Ingesta
 
-El owner sube CSVs con el botón "Subir datos" del portal. Nombre, estructura y tamaño se validan ANTES del ETL. Las reglas reales viven en `shared/js/portal-upload.js` (cliente) y `zoho-survey/scripts/validate_upload_csv.py` (server-side); este es el resumen humano.
+Las respuestas entran por el **webhook de Zoho Survey**: se acumulan enmascaradas en `data/zoho_pendientes/<encuesta>.jsonl` y el ETL se ejecuta a mano sobre el CSV que se adjunta a un Release (*Build and Deploy Survey* con el input `release_tag`). El nombre del archivo define el nivel y el periodo; las reglas reales están en `zoho-survey/scripts/build_json.py` (`_detectar_nivel`) y `lib/config.py`. Este es el resumen humano.
 
 ### Formato de nombre
 
@@ -390,7 +390,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## Reglas de nombres CSV (Fase 3.8.3) — CANON
 
-Fuente de verdad para el validador (portal-upload.js + validate_upload_csv.py). Las secciones previas de Fase 3.8.2 sobre periodicidad estricta e La Universidad de Lima obligatoria están OBSOLETAS; esta sección prevalece.
+Las secciones previas de Fase 3.8.2 sobre periodicidad estricta e `La Universidad de Lima` obligatoria están **OBSOLETAS**; esta sección prevalece. Quien aplica estas reglas es el ETL: `build_json.py` deriva el nivel y el periodo del nombre del archivo.
 
 **Formato:** ENCUESTA DE SATISFACCIÓN {CATEGORÍA} [- NIVEL] [- PERIODO].csv
 

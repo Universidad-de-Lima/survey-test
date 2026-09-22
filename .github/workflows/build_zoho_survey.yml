@@ -24,14 +24,10 @@ on:
         required: false
         type: string
 
-  repository_dispatch:
-    types: [csv_upload]
-
 concurrency:
-  # Uploads via repository_dispatch: grupo AISLADO por upload_id (sin cancelacion
-  # cruzada entre uploads distintos). Push/workflow_dispatch: grupo legado por ref.
-  group: ${{ github.event_name == 'repository_dispatch' && format('csv-upload-{0}', github.event.client_payload.upload_id) || format('deploy-legacy-{0}', github.ref) }}
-  # cancel-in-progress: false -> uploads simultaneos NUNCA se cancelan entre si.
+  # Una sola corrida por rama: un push y una corrida manual del ETL no deben
+  # pisarse al commitear los JSON generados.
+  group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -58,43 +54,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Descargar CSV desde Release temporal (csv_upload)
-        # Solo para uploads via repository_dispatch. Descarga los assets
-        # del Release temporal a data/temp/{upload_id}/. NUNCA copia al tree.
-        if: github.event_name == 'repository_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_ID: ${{ github.event.client_payload.release_id }}
-          UPLOAD_ID: ${{ github.event.client_payload.upload_id }}
-        run: |
-          mkdir -p "data/temp/${UPLOAD_ID}"
-          echo "Descargando assets del release ${RELEASE_ID}..."
-          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" \
-            --jq '.[] | "(.id)\t(.name)"' | while IFS=$'\t' read ASSET_ID ASSET_NAME; do
-            echo "  -> ${ASSET_NAME}"
-            gh api -H "Accept: application/octet-stream" \
-              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
-              > "data/temp/${UPLOAD_ID}/${ASSET_NAME}"
-          done
-          echo "CSVs descargados:"
-          ls -la "data/temp/${UPLOAD_ID}"
-
-      - name: Copiar uploads a data/ para ETL
-        # build_json.py descubre data/*.csv con "ENCUESTA" en el nombre.
-        # No modifica build_json.py: se copian a data/ (temporal).
-        if: github.event_name == 'repository_dispatch'
-        run: |
-          if ls data/temp/"${{ github.event.client_payload.upload_id }}"/*.csv 1>/dev/null 2>&1; then
-            cp data/temp/"${{ github.event.client_payload.upload_id }}"/*.csv data/
-            echo "CSVs copiados a data/ para procesamiento ETL"
-          fi
-
       - name: Descargar CSV desde Release por tag (workflow_dispatch)
-        # Via alternativa al portal para ejecutar el ETL 100% en GitHub:
-        # el owner sube el CSV como asset de un Release y lanza este workflow
-        # indicando el tag. Los CSV se descargan directamente a data/ (temporal).
-        # El Release NO se elimina aqui: es del owner (solo el flujo del portal,
-        # repository_dispatch, borra su propio Release DRAFT temporal).
+        # Unica via para ejecutar el ETL 100% en GitHub: el owner sube el CSV
+        # como asset de un Release y lanza este workflow indicando el tag. Los
+        # CSV se descargan directamente a data/ (temporal). El Release NO se
+        # elimina aqui: es del owner.
         if: github.event_name == 'workflow_dispatch' && inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
@@ -158,13 +122,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Validar CSVs subidos (server-side)
-        # RE-validacion defensiva del navegador. Nunca confiar en metadata JS.
-        # Tras instalar dependencias (importa build_json/lib.io_helper -> pandas).
-        if: github.event_name == 'repository_dispatch'
-        run: |
-          python zoho-survey/scripts/validate_upload_csv.py "data/temp/${{ github.event.client_payload.upload_id }}"
 
       - name: Sanitize CSV PII (IP, User Agent, URL)
         # Redacta columnas PII en todos los CSVs de data/ antes del procesamiento ETL.
@@ -263,28 +220,11 @@ jobs:
           fi
           ls -la data/ 2>/dev/null || true
 
-      - name: Limpiar temporales y Release (csv_upload)
-        # SOLO si TODO el procesamiento fue exitoso. Si falla, el Release
-        # queda para recovery/reintento. El navegador NO elimina (puede que
-        # Actions no haya descargado aun). Actions lo elimina aqui tras exito.
-        if: github.event_name == 'repository_dispatch' && success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_ID: ${{ github.event.client_payload.release_id }}
-          UPLOAD_ID: ${{ github.event.client_payload.upload_id }}
-        run: |
-          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" && echo "Release temporal eliminado."
-          rm -rf "data/temp/${UPLOAD_ID}"
-          echo "Temporales ${UPLOAD_ID} eliminados (solo estos, no otros uploads)."
-
       - name: Commit generated JSON
-        # Para uploads via repository_dispatch NO se hace commit/push automatico:
-        # el owner empuja manualmente (regla Fase 3.8.2). El deploy a Pages ya
-        # ocurrio via artifact. El bot NO hace git push en este path.
         # success() es explicito: en Actions, declarar "if:" SUSTITUYE la
         # condicion implicita, asi que sin success() este paso correria incluso
         # tras un fallo previo y podria stagear restos de data/.
-        if: success() && github.event_name != 'repository_dispatch'
+        if: success()
         # Commit robusto: integra cambios remotos con rebase antes de push.
         # [skip ci] evita que el commit del bot dispare un nuevo run del workflow
         # (defensa en profundidad, aunque GITHUB_TOKEN ya no auto-dispara).

@@ -45,10 +45,10 @@ Módulo del dominio de encuestas estudiantiles. Implementa el pipeline desde los
 
 Todo ocurre en GitHub Actions; no hay ejecución local.
 
-1. El CSV se envía por el portal ("Subir datos") o se adjunta a un Release y se lanza `workflow_dispatch` con `release_tag`.
-2. Actions lo descarga a `data/` (solo en el runner) y valida nombre y headers (`validate_upload_csv.py`).
+1. Cada respuesta llega por el webhook de Zoho Survey (`zoho_inbox.yml` la guarda en `../../data/zoho_pendientes/`). Para procesarla, el CSV se adjunta a un Release y se lanza `workflow_dispatch` con `release_tag`.
+2. Actions lo descarga a `data/` (solo en el runner).
 3. Sanitiza PII (`sanitize_csv_pii.py`) y ejecuta `build_json.py`, que detecta el nivel por palabras clave del nombre (GRADUADOS, PREGRADO, POSGRADO, …) y el periodo por regex `(20\d{2}(?:-[12])?)`.
-4. Transforma el CSV en 21 pasos (mapeo de columnas, agregación, NPS/CSAT, IA cualitativa con DeepSeek, insights).
+4. Transforma el CSV en 21 pasos (mapeo de columnas, agregación, NPS/CSAT, IA cualitativa con la cadena de motores, insights).
 5. Escribe los JSON del periodo en `{level}/{period}/json/`, copia `../template/index.html` si falta y actualiza `{level}/periodos.json`.
 
 ## Dependencies

@@ -37,12 +37,14 @@ See `docs/developer-guide.md` (§ "Configuración del Motor Cualitativo") for re
 ## Flujo de Ingesta y Descarga — Documentación completa
 
 Ver `docs/INGESTA_Y_DESCARGA.md` para el flujo completo de:
-- **Subida de CSVs** (Release DRAFT temporal → Actions → sanitización → ETL → deploy → borrado)
+- **Recepción de respuestas** (webhook → incidencia → enmascarado → `data/zoho_pendientes/`)
+- **Subida de CSVs para procesar** (Release → `workflow_dispatch` → sanitización → ETL → deploy → borrado)
 - **Generación de ZIPs** (csv_exporter.py → exports/ → borrado en CI)
 
-## Notas sobre la ingesta web ("Subir datos")
+## Notas sobre la ingesta
 
 - **Única PII sensible en la ingesta:** dirección IP (`Dirección IP`). `Agente Usuario` y `URL de la encuesta a la que accede el encuestado` también se redimen.
-- **Release temporal siempre DRAFT:** el frontend ya no publica el Release; se mantiene como borrador y GitHub Actions lo elimina tras procesar exitosamente. En caso de error, el frontend intenta borrar el Release DRAFT.
-- **PAT del owner:** se mantiene solo en memoria del navegador; nunca llega a GitHub Actions.
-- **Reintento:** si falla, el Release DRAFT persiste para recovery manual; reintentar con un nuevo `upload_id` (tag UUID) evita colisiones de tags.
+- **Enmascarado antes de guardar:** la respuesta del webhook se enmascara en `zoho_respuesta.py` **antes** de escribirla en `data/zoho_pendientes/` (el repositorio es público).
+- **PAT del webhook:** vive en la cabecera del webhook dentro de Zoho (permiso *Issues: write*); nunca entra al repositorio ni al navegador.
+- **Release de entrada:** se mantiene como DRAFT mientras se procesa y **no** se elimina (es del owner). Si el proceso falla, se relanza con el mismo tag.
+- **Fallos de ingesta:** si el cuerpo de la incidencia no es JSON válido, el flujo falla y la incidencia queda **abierta** como aviso.

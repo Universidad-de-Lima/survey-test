@@ -5,6 +5,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 ## [Unreleased]
 
 ### Changed
+- **Portal sin credenciales**: el portal es 100 % lectura (solo JSON publicados en GitHub Pages) y su botón de refrescar relee los datos. El ETL se lanza a mano (*Build and Deploy Survey* con el input `release_tag`); no hay camino de subida desde el navegador.
 - **Ingesta desde Zoho Survey**: el webhook pasa a llamar a la API de incidencias de GitHub en lugar de `repository_dispatch`, que Zoho Survey no puede usar (ese cuerpo exige `event_type` y `client_payload` como claves hermanas de primer nivel, y el webhook de Zoho arma los campos dentro de un único contenedor con nombre elegido por el usuario). `zoho_inbox.yml` reacciona a la incidencia: el cuerpo es la respuesta en JSON y el título, el nombre de la encuesta. El módulo acepta además la clave `ID` que envía el webhook real y un nombre de encuesta por defecto cuando el cuerpo no lo trae. Al registrar la respuesta, la incidencia se **cierra automáticamente** (el flujo declara `issues: write`), para no acumular pendientes en la pestaña de incidencias; si el registro falla, la incidencia queda abierta como aviso.
 - **Motor cualitativo**: el esquema "DeepSeek + respaldo NVIDIA" se reemplaza por una **cadena de motores** (OpenCode → Google → NVIDIA) que se intentan en orden; orden y modelos configurables sin tocar código con `IA_CUALITATIVO_CADENA`. Por defecto el **primer motor es `opencode:deepseek-v4.1-flash`** (el más actual, decisión del usuario); Google y los cuatro modelos de NVIDIA quedan como respaldo. El servicio DeepSeek se retira del proyecto (clave `DEEPSEEK_API_KEY` en desuso). Claves de la cadena: `GOOGLE_API_KEY`, `NVIDIA_API_KEY`, `OPENCODE_API_KEY` (basta una).
 - `dataset_cualitativo.schema.json`: el campo `motor` admite `google`, `nvidia`, `opencode`, `filtro` (descartado por el pre-filtro de ruido) y `desconocido` (comentario reutilizado).
@@ -12,6 +13,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - Documentación sincronizada con la cadena de motores (`ARCHITECTURE.md`, `CONTRACTS.md`, `DEV_ENVIRONMENT.md`, `SECURITY.md`, `docs/*`, `AGENTS.md`).
 
 ### Removed
+- Botón **"Subir datos"** y todo su rastro: `shared/js/portal-upload.js`, `shared/js/portal-upload-ui.js`, el modal de `zoho-survey/index.html`, sus estilos en `portal-components.css`, `zoho-survey/scripts/validate_upload_csv.py` y sus 55 tests (38 JS en `test-upload-validator.js` + 17 Python en `test_validate_upload_csv.py`).
 - `zoho-survey/scripts/validar_ia_vs_manual.py` (herramienta manual sin entrada en CI) y su dependencia `openpyxl`.
 - `python-dotenv` y `load_dotenv()`: el ETL no lee archivos `.env` (nada corre en local).
 

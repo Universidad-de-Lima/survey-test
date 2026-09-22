@@ -59,8 +59,8 @@ Antes de realizar cambios, familiarízate con los siguientes documentos según t
 
 ### 3. Agregar un Nuevo Periodo de Encuesta (Ingesta de Datos)
 1. Verifica el nombre del CSV contra las reglas canónicas (ver `CONTRACTS.md`); la sanitización de PII la hace el workflow, no el equipo.
-2. Sube el CSV mediante el botón **"Subir datos"** del portal en GitHub Pages.
-3. GitHub Actions valida, procesa y genera los JSONs del nuevo periodo.
+2. Adjunta el CSV a un Release (DRAFT) y lanza *Build and Deploy Survey* con el input `release_tag`.
+3. GitHub Actions descarga, sanitiza, procesa y genera los JSONs del nuevo periodo.
 4. Verifica en GitHub Pages que el nuevo periodo aparece en el portal y carga correctamente.
 
 ### 4. Probar y Crear Utilidades JavaScript

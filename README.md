@@ -31,15 +31,13 @@ git push origin main
 
 Punto de entrada técnico del ciclo: `docs/developer-guide.md`.
 
-## Subir datos (Ingesta de encuestas)
+## Ingesta de encuestas
 
-- El portal `zoho-survey/index.html` incluye el botón **"Subir datos"**: el propietario sube CSV(s) desde el navegador y GitHub los procesa solo.
+- **Webhook de Zoho Survey**: cada respuesta crea una incidencia y `zoho_inbox.yml` la guarda **enmascarada** en `data/zoho_pendientes/`. Ver `ARCHITECTURE.md` § "Ingesta De Encuestas".
+- **Sin credenciales en el navegador**: el portal solo lee los JSON publicados en GitHub Pages. El único PAT (Personal Access Token - Token de Acceso Personal) vive en la cabecera del webhook dentro de Zoho.
 - **Sin servicios externos**: GitHub Pages + API + GitHub Actions (no hay Cloudflare, Supabase ni backend).
-- **Sin tokens expuestos**: el PAT del owner vive solo en memoria del navegador y se usa contra `api.github.com`; Actions usa `GITHUB_TOKEN`.
-- **Sin CSV en el historial**: el CSV viaja a un Release temporal que se borra; `data/` está en `.gitignore` y el commit está desactivado para uploads.
-- Los CSVs se limpian (IP/UA/URL) antes del ETL y los comentarios NPS se ofuscan antes de enviarlos a los motores IA.
-
-> Ingesta implementada en Fase 3.8.2. Ver `ARCHITECTURE.md` § "Ingesta De Encuestas" y `docs/INGESTA_Y_DESCARGA.md`.
+- **Sin CSV en el historial**: el CSV entra por un Release y se borra antes del commit del bot; `data/` está en `.gitignore`.
+- Los CSVs se limpian (IP/Agente Usuario/URL) antes del ETL y los comentarios NPS se ofuscan antes de enviarlos a los motores IA.
 ## Documentación del Proyecto
 
 Este repositorio sigue una estructura de documentación modularizada con responsabilidades únicas para evitar duplicación de contenido:

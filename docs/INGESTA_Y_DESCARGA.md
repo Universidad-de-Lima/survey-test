@@ -6,64 +6,42 @@
 
 | Flujo | ¿Dónde corre? | ¿Toque en Git? | ¿Se guarda ZIP? | |
 |---|---|---|---|---|
-| **Subir CSV** | GitHub Actions | Nada: CSVs + Release temporales se borran | No aplica | |
+| **Recibir respuesta** | GitHub Actions (`zoho_inbox.yml`) | Sí: una línea por respuesta en `data/zoho_pendientes/<encuesta>.jsonl` (enmascarada) | No aplica | |
+| **Procesar CSV** | GitHub (a mano) + GitHub Actions | Nada: los CSV se borran antes del commit del bot | No aplica | |
 | **Generar JSONs** | GitHub Actions (ETL `build_json.py`) | Sí (solo JSONs `dashboard_data.json`, `periodos.json`, etc.) | No (generados on-demand) | |
 | **Descargar ZIP** | **GitHub Actions (on-demand)** | Nada: ZIP generado en artifact efímero, entregado, borrado | No (temporal) | |
 
 ---
 
-## 1. Flujo de SUBIDA de CSV — "Subir datos"
+## 1. Flujo de ENTRADA de datos
 
-**Objetivo:** ingresar CSVs de Zoho Survey sin que **nada** persista en Git ni en GitHub.
+**Objetivo:** que las respuestas de Zoho Survey lleguen solas y **sin credenciales en el navegador**.
 
-### Paso 1 — Frontend (navegador del usuario)
+### Paso 1 — Webhook de Zoho Survey (acumular)
 
-1. El usuario abre el portal y click en **"Subir datos"** (`zoho-survey/index.html`, id `#uploadBtn`).
-2. Se abre el modal (`portal-upload-ui.js`) con:
-   - Campo **PAT** (Personal Access Token del owner).
-   - Dropzone para arrastrar CSV(s).
-3. **Validación cliente** (`portal-upload.js`):
-   - Nombre debe iniciar con `ENCUESTA DE SATISFACCION` (tolerancia a espacios/guiones).
-   - Extensión `.csv`
-   - Periodo extraído con regex `20XX` o `20XX-1`
-   - Categoría detectada: `ESTUDIANTIL`, `GRADUADOS`, `POSGRADO`, `DOCENTES`, `EGRESADOS`, `NO DOCENTES`, `EMPLEADORES`.
-   - Headers requeridos validados: `ID de respuesta`, `Net Promoter Score`, + columna carrera/programa dependiendo de categoría.
-   - Límites: 1–10 CSVs, 5 MB c/u, 50 MB total.
-   - SHA-256 cliente-side.
-4. **PAT vive solo en memoria** (`uploadState.token` en closure). Nunca persistido ni impreso.
+1. Cada respuesta enviada crea una **incidencia** en el repositorio (`https://api.github.com/repos/{owner}/{repo}/issues`), con el nombre de la encuesta en el título y la respuesta en JSON en el cuerpo.
+2. `zoho_inbox.yml` la normaliza (`zoho_respuesta.py`), la **enmascara** y agrega una línea a `data/zoho_pendientes/<encuesta>.jsonl` (sin duplicados por identificador de respuesta).
+3. La incidencia se **cierra** al registrarse; si el cuerpo no es JSON válido, el flujo falla y queda **abierta** como aviso.
+4. Aquí **no** corre el ETL: las respuestas se acumulan.
 
-### Paso 2 — GitHub (Release temporal)
+> **Pendiente (fase siguiente):** convertir automáticamente la bandeja al CSV que consume el ETL. Hoy ese CSV se prepara a mano.
 
-Después de validar, `runUpload()` (`portal-upload-ui.js:131`):
+### Paso 2 — Procesar (a mano, cuando se decide)
 
-5. `createRelease()` → crea un Release **DRAFT** con tag `csv-upload-{UUID}`.
-6. `uploadAsset()` → sube cada CSV como asset del Release.
-7. `publishRelease()` → convierte draft→published.
-8. `dispatchWorkflow()` → dispara `repository_dispatch` tipo `csv_upload` con payload `{upload_id, release_id, files:[...]}`.
+1. Se adjunta el CSV al **Release** correspondiente (preferiblemente DRAFT) y se lanza *Build and Deploy Survey* con el input `release_tag`.
+2. `gh release download` lo baja a `data/` **solo en el runner** (nunca al historial).
+3. **Verify claves de los motores IA** → gate temprano (falla si no hay ninguna).
+4. **Sanitize PII** → `sanitize_csv_pii.py --all` redacta IP/UA/URL **in-place**.
+5. **Run build_json.py** con las claves de los motores → ETL completo (ver sección 2).
+6. **Validate JSON contracts** → `validate_generated_json.py` (schemas + invariantes `isNew`).
+7. **Deploy a GitHub Pages** → artifact `./zoho-survey` + health check (curl `health.html` y `periodos.json`).
+8. **Eliminar CSVs de `data/`** → `find data -iname "*.csv" -delete` antes del commit del bot (fail-closed: si queda un CSV en staging, el commit aborta).
+9. **Commit del bot** → JSONs nuevos/modificados con `[skip ci]`. El Release **no** se elimina: es del owner.
 
-### Paso 3 — GitHub Actions (`build_zoho_survey.yml`)
-
-El workflow se dispara con concurrencia aislada por `upload_id`:
-
-9. **Download CSVs** → `data/temp/{upload_id}/` desde Release assets (NUNCA al tree).
-10. **Copy a `data/`** → CSVs copiados `data/` para que ETL los descubra (`ENCUESTA DE SATISFACCION.*.csv`).
-11. **Verify claves de los motores IA** → gate temprano (falla si no hay ninguna).
-12. **Server-side validate** → `validate_upload_csv.py` re-valida nombre/headers/tamaño/duplicados.
-13. **Sanitize PII** → `sanitize_csv_pii.py --all` redacta IP/UA/URL **in-place** (defensa en profundidad).
-14. **Run build_json.py** con las claves de los motores → ETL completo (ver sección 2).
-15. **Validate JSON contracts** → `validate_generated_json.py` (schemas + invariantes `isNew`).
-16. **Eliminar temporalidades** → `find .../exports -exec rm`, `find .../intermediate -exec rm` (153-156).
-17. **Deploy a GitHub Pages** → artifact `./zoho-survey`.
-18. **Health check** → curl `health.html` + `periodos.json` (200).
-19. **Eliminar CSVs de `data/`** → `find data -iname "*.csv" -delete` (187-196).
-20. **Eliminar Release** → `gh api -X DELETE /releases/{release_id}` **solo si todo OK** (198-210).
-21. **Commit del bot** → solo si **no** fue repository_dispatch (upload_id path NO commitea; el owner empuja manualmente). Commitea JSONs nuevos/modificados con `[skip ci]`.
-
-### Resultado del upload
+### Resultado
 
 - El CSV original **nunca entra al Git history**.
-- El Release temporal **se borra tras éxito** (o queda DRAFT si falla, para recovery manual).
-- Quedan en `main` solo los JSONs generados + `periodos.json` actualizado (`isNew: true`).
+- Quedan en `main` solo los JSONs generados + `periodos.json` actualizado (`isNew: true`), más la bandeja enmascarada.
 
 ---
 
@@ -129,18 +107,15 @@ fetch(zipUrl, { method: 'HEAD' }).then(resp => {
 
 ## 4. Archivos clave para este flujo
 
-### Subida
+### Entrada de datos
 
 | Archivo | Rol | |
 |---|---|---|
-| `zoho-survey/shared/js/portal-upload-ui.js` | Modal, PAT en closure, states, `runUpload()` | |
-| `zoho-survey/shared/js/portal-upload.js` | Validación cliente, helpers GitHub API, `dispatchWorkflow` | |
-| `zoho-survey/index.html` | Botón `#uploadBtn`, modal markup | |
-| `.github/workflows/build_zoho_survey.yml` | Steps 5-21 del flujo | |
-| `zoho-survey/scripts/validate_upload_csv.py` | Validación server-side | |
-| `zoho-survey/scripts/sanitize_csv_pii.py` | Redacción IP/UA/URL | |
-| `tests/unit/test-upload-validator.js` | 28 tests validación frontend | |
-| `zoho-survey/scripts/tests/test_validate_upload_csv.py` | 17 tests server-side | |
+| `.github/workflows/zoho_inbox.yml` | Recibe la incidencia del webhook y guarda la respuesta | |
+| `zoho-survey/scripts/zoho_inbox.py` + `lib/zoho_respuesta.py` | Normaliza, enmascara y deduplica la respuesta | |
+| `data/zoho_pendientes/<encuesta>.jsonl` | Bandeja de entrada (versionada, enmascarada) | |
+| `.github/workflows/build_zoho_survey.yml` | Descarga del Release, sanitización, ETL, deploy y commit | |
+| `zoho-survey/scripts/sanitize_csv_pii.py` | Redacción de IP/Agente Usuario/URL | |
 
 ### Descarga
 
@@ -158,7 +133,9 @@ Hacer que el flujo de descarga siga el mismo patrón que el upload: **temp en Gi
 
 ### Propuesta
 
-1. Al click "Descargar", frontend dispara un `repository_dispatch` tipo `zip_download` con `{periodo, nivel}` via `fetch` a `api.github.com/repos/{owner}/{repo}/dispatches` usando PAT (misma técnica upload).
+> **Descartado:** la técnica de "misma técnica que la subida" (PAT en el navegador) ya no existe: el portal no usa credenciales. Cualquier disparo desde la página exigiría un intermediario; hoy la descarga se resuelve con el ZIP publicado en `exports/` cuando esté disponible.
+
+1. Al click "Descargar", el dashboard enlaza directamente al ZIP publicado (`./exports/data_*.zip`).
 2. GitHub Actions (`workflow_dispatch` o `repository_dispatch[zip_download]`) corre en `data/` generado (o regenera on-demand desde JSONs) el script `csv_exporter.py` → produce ZIP en artifact efímero.
 3. Sube ZIP a un objeto temporal (Release DRAFT o `actions/upload-artifact` descargable) con TTL breve.
 4. Notifica URL de descarga (vía Issues o API).
@@ -176,5 +153,5 @@ Hacer que el flujo de descarga siga el mismo patrón que el upload: **temp en Gi
 
 - **CSV originales**: nunca en Git (sanitizados + borrados CI).
 - **ZIPs**: actualmente NO se publican en Pages (borrados CI). Bajo el plan de arreglo, tampoco se persistirían.
-- **PAT del owner**: solo memoria del navegador (frontend); `GITHUB_TOKEN` en Actions.
+- **PAT**: solo en la cabecera del webhook dentro de Zoho (permiso *Issues: write*); `GITHUB_TOKEN` en Actions. El navegador no maneja credenciales.
 - **PII**: IP/UA/URL redimidos `sanitize_csv_pii.py`; comentarios ofuscados antes de enviarlos a los motores IA.

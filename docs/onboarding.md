@@ -17,25 +17,25 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 ```
 1. Exportar CSV desde Zoho Survey
          ↓
-2. (OBLIGATORIO) Sanitizar PII localmente:
-   python zoho-survey/scripts/sanitize_csv_pii.py <ruta_csv>
-   Redacta columnas Dirección IP, Agente Usuario, URL de la encuesta.
+2. Las respuestas llegan solas: el webhook de Zoho Survey crea una incidencia y
+   zoho_inbox.yml guarda la respuesta enmascarada en data/zoho_pendientes/.
    Los CSVs no se commitean nunca; data/ está en .gitignore.
          ↓
-3. Subir CSV(s) desde el portal en GitHub Pages con el botón "Subir datos"
-   (el frontend crea un Release DRAFT temporal y dispara GitHub Actions)
+3. Cuando se decide procesar, se adjunta el CSV a un Release (DRAFT) y se lanza
+   el workflow "Build and Deploy Survey" con el input release_tag
          ↓
 4. GitHub Actions ejecuta el pipeline automáticamente:
-   - Descarga los assets del Release temporal
-   - Valida y sanitiza los CSVs
+   - Descarga el CSV del Release (solo en el runner)
+   - Sanitiza PII (sanitize_csv_pii.py)
    - Ejecuta build_json.py (ETL + IA)
    - Valida JSONs generados
-   - Elimina el Release temporal
+   - Borra los CSV antes del commit del bot
    - Despliega a GitHub Pages
          ↓
 5. El dashboard se actualiza en GitHub Pages (~3-5 min)
          ↓
 6. Verificar en: https://universidad-de-lima.github.io/survey-test/zoho-survey/
+   (el botón de refrescar del portal relee los datos publicados)
 ```
 
 ---
@@ -45,7 +45,7 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 | Si necesitas... | Ve a... |
 |---|---|
 | Ver los dashboards | `zoho-survey/` en GitHub Pages |
-| Agregar un nuevo periodo | Portal **Subir datos** (`zoho-survey/index.html` en GitHub Pages) o un Release + `workflow_dispatch` |
+| Agregar un nuevo periodo | Release (DRAFT) con el CSV + *Build and Deploy Survey* con el input `release_tag` (el portal es solo lectura) |
 | Cambiar metas (NPS, CSAT) | `zoho-survey/shared/js/config/constants.js` |
 | Cambiar cómo se clasifican los comentarios | `zoho-survey/scripts/lib/prompts_cualitativo.py` (taxonomía del análisis IA) |
 | Ver si todo está bien | `zoho-survey/health.html` en GitHub Pages (verifica integridad de dashboards/JSONs) |
@@ -71,7 +71,7 @@ Sistema de dashboards estáticos para visualizar encuestas de satisfacción de l
 
 ### 1. "El dashboard no muestra el nuevo periodo"
 
-**Causa probable**: El CSV no tiene el nombre correcto o no se subió desde el portal.
+**Causa probable**: El CSV no tiene el nombre correcto o no se adjuntó al Release que se procesó.
 **Solución**: El archivo debe contener el patrón `ENCUESTA` y el periodo (`2026-1`, `2026`). Ej: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.csv`. Subirlo con el botón **"Subir datos"** del portal en GitHub Pages.
 
 ### 2. "El build falló en GitHub Actions"
@@ -118,7 +118,7 @@ Cada push dispara:
 | `tests.yml` | `unittest` (Python), tests JS en Node, tests DOM con jsdom, sintaxis de todos los módulos, contratos JSON, Ruff y ESLint (informativos) |
 | `build_zoho_survey.yml` | Gate `Detectar CSVs` (el ETL solo corre si hay CSV en `data/`), validación de contratos y deploy a GitHub Pages |
 
-Los datos de entrada del ETL se envían por el portal **"Subir datos"** o por un **Release con tag + `workflow_dispatch`** (ver `docs/INGESTA_Y_DESCARGA.md`).
+Las respuestas entran por el webhook de Zoho Survey y el ETL se lanza a mano desde un **Release con tag + `workflow_dispatch`** (ver `docs/INGESTA_Y_DESCARGA.md`). El portal es solo lectura.
 
 ---
 
