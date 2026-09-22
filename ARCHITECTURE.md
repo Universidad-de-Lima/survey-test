@@ -287,7 +287,8 @@ Pasos del procesamiento:
 
 > **Conversión:** cuando el disparo viene del portal, `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde
 > `data/zoho_pendientes/` (una fila por respuesta, cabeceras del ETL, nombre derivado del título) y el gate de CSVs lo recoge.
-> La bandeja no se borra: es el acumulado del periodo.
+> La bandeja no se borra: es el acumulado del periodo. Solo pasan al CSV las respuestas con `Estado` = `COMPLETED`
+> (las parciales quedan en la bandeja y no entran al proceso).
 
 ### Especificaciones del Release de entrada
 

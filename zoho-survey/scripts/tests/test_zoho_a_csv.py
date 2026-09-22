@@ -18,6 +18,7 @@ from pathlib import Path
 
 from zoho_a_csv import (
     CLAVE_ID,
+    es_respuesta_completa,
     cabeceras_de,
     convertir,
     convertir_encuesta,
@@ -132,6 +133,37 @@ class ConversionTest(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 convertir_encuesta(carpeta / "bandeja.jsonl", carpeta)
+
+    def test_no_pasa_las_respuestas_parciales(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            carpeta = Path(tmp)
+            parcial = dict(RESPUESTA, id_respuesta="KhC5gYRO")
+            parcial["respuestas"] = dict(RESPUESTA["respuestas"], Estado="PARTIAL")
+            escribir_bandeja(carpeta, [RESPUESTA, parcial])
+
+            salida = convertir_encuesta(carpeta / "bandeja.jsonl", carpeta)
+
+            texto = salida.read_text(encoding="utf-8")
+            self.assertNotIn("KhC5gYRO", texto, "una parcial no puede entrar al CSV")
+            self.assertIn("KmC5fTWV", texto)
+
+    def test_deja_pasar_lo_que_no_trae_estado(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            carpeta = Path(tmp)
+            sin_estado = dict(RESPUESTA, id_respuesta="SinEstado1")
+            sin_estado["respuestas"] = {
+                k: v for k, v in RESPUESTA["respuestas"].items() if k != "Estado"
+            }
+            escribir_bandeja(carpeta, [sin_estado])
+
+            salida = convertir_encuesta(carpeta / "bandeja.jsonl", carpeta)
+
+            self.assertIn("SinEstado1", salida.read_text(encoding="utf-8"))
+
+    def test_solo_las_completas_se_consideran_validas(self):
+        self.assertTrue(es_respuesta_completa(RESPUESTA))
+        self.assertFalse(es_respuesta_completa({"respuestas": {"Estado": "PARTIAL"}}))
+        self.assertTrue(es_respuesta_completa({"respuestas": {}}))
 
     def test_convierte_todas_las_bandejas(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -17,7 +17,7 @@ Reglas:
     viaja aparte (id_respuesta) y aqui se repone en 'ID de respuesta'.
   - El nombre del archivo se deriva del titulo de la encuesta, porque el ETL saca
     de ahi el nivel y el periodo (CONTRACTS.md, "Reglas de nombres CSV").
-  - Se escribe SIN BOM: read_csv_robust lee con UTF-8 simple y el BOM romperia la
+  - Se escribe SIN BOM por limpieza: el ETL ya limpia el BOM de la primera columna la
     primera columna.
   - NO borra la bandeja: es el acumulado del periodo. Borrarla dejaria el
     dashboard sin las respuestas anteriores (ver docs/INGESTA_Y_DESCARGA.md).
@@ -41,6 +41,13 @@ from lib.config import COLUMN_RENAME_GRADUADO, COLUMN_RENAME_PREGRADO  # noqa: E
 CARPETA_PENDIENTES = Path("data") / "zoho_pendientes"
 CARPETA_DESTINO = Path("data")
 CLAVE_ID = "ID de respuesta"
+CLAVE_ESTADO = "Estado"
+
+# Solo pasan al CSV las respuestas completas. Las parciales (Estado = PARTIAL)
+# quedan en la bandeja, pero no entran al proceso: no aportan a NPS ni CSAT y
+# descuadrarian los conteos. Una respuesta SIN el campo Estado se deja pasar:
+# no se puede saber su estado y no conviene descartar datos en silencio.
+ESTADO_COMPLETO = "COMPLETED"
 
 # Cabeceras por nivel, en el orden que espera build_json.py. Solo se admiten los
 # niveles que hoy pueden llegar por webhook: el resto falla con aviso explicito
@@ -110,6 +117,13 @@ def leer_respuestas(ruta: Path) -> List[Dict[str, Any]]:
     return registros
 
 
+def es_respuesta_completa(registro: Dict[str, Any]) -> bool:
+    """True si la respuesta llego completa (o si no trae el estado, que no se sabe)."""
+    respuestas = registro.get("respuestas") or {}
+    estado = str(respuestas.get(CLAVE_ESTADO) or "").strip().upper()
+    return not estado or estado == ESTADO_COMPLETO
+
+
 def _valor(valor: Any) -> Any:
     """Deja el valor listo para el CSV, sin romper el archivo."""
     if valor is None:
@@ -125,10 +139,14 @@ def escribir_csv(encuesta: str, registros: List[Dict[str, Any]], destino: Path =
 
     vistos = set()
     filas: List[Dict[str, Any]] = []
+    omitidas = 0
     for registro in registros:
         identificador = str(registro.get("id_respuesta") or "").strip()
         # Sin identificador no hay forma de evitar duplicados: no entra al CSV.
         if not identificador or identificador in vistos:
+            continue
+        if not es_respuesta_completa(registro):
+            omitidas += 1
             continue
         vistos.add(identificador)
         respuestas = registro.get("respuestas") or {}
@@ -139,7 +157,12 @@ def escribir_csv(encuesta: str, registros: List[Dict[str, Any]], destino: Path =
             }
         )
     if not filas:
-        raise ValueError(f"la encuesta '{encuesta}' no tiene respuestas con identificador")
+        raise ValueError(
+            f"la encuesta '{encuesta}' no tiene respuestas completas con identificador"
+        )
+
+    if omitidas:
+        print(f"omitidas {omitidas} respuestas sin completar (Estado distinto de {ESTADO_COMPLETO}): {encuesta}")
 
     salida = Path(destino) / nombre_csv(encuesta)
     with open(salida, "w", encoding="utf-8", newline="") as archivo:

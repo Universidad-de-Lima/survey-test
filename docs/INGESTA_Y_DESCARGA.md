@@ -27,10 +27,11 @@
 > **Listo:** `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde la bandeja cuando el portal pide el proceso
 > (`repository_dispatch`): una fila por respuesta, cabeceras del ETL y nombre derivado del título de la encuesta.
 > La bandeja **no** se borra: es el acumulado del periodo, y borrarla dejaría el dashboard sin las respuestas anteriores.
+> Solo pasan al CSV las respuestas con `Estado` = `COMPLETED`; las parciales quedan en la bandeja pero no entran al proceso.
 
 ### Paso 2 — Procesar (a mano o desde el portal, cuando se decide)
 
-> El botón de refrescar del portal hace `POST` a `/api/procesar-encuesta` (función en Vercel del proyecto `survey-tracker`), que dispara este mismo flujo con `repository_dispatch: procesar_datos`. Llega **sin** `release_tag`, así que no descarga CSV: sirve para redesplegar y, cuando exista el paso pendiente, para convertir la bandeja. La llave de GitHub vive en Vercel; el navegador no la ve.
+> El botón de refrescar del portal hace `POST` a `/api/procesar-encuesta` (función en Vercel del proyecto `survey-tracker`), que dispara este mismo flujo con `repository_dispatch: procesar_datos`. Llega **sin** `release_tag`, así que no descarga CSV: el flujo convierte la bandeja en el CSV y lo procesa. La llave de GitHub vive en Vercel; el navegador no la ve.
 
 1. Se adjunta el CSV al **Release** correspondiente (preferiblemente DRAFT) y se lanza *Build and Deploy Survey* con el input `release_tag`.
 2. `gh release download` lo baja a `data/` **solo en el runner** (nunca al historial).

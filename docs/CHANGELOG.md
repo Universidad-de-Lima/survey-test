@@ -2,6 +2,11 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-22 — Corrección: las bandejas de una misma encuesta se juntan en un solo CSV
+
+- Si existieran dos bandejas de la misma encuesta, la segunda pisaba a la primera y se perdían respuestas.
+  Ahora se agrupan por encuesta y se deduplica por `id_respuesta`.
+
 ## 2026-09-22 — La bandeja se convierte sola en el CSV que procesa el ETL
 
 - **Nuevo**: `zoho-survey/scripts/zoho_a_csv.py` arma el CSV desde `data/zoho_pendientes/*.jsonl`
@@ -10,7 +15,9 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - Corre **solo** cuando el disparo viene del portal (`repository_dispatch`): un push normal no ejecuta el ETL.
 - Usa solo la biblioteca estándar (más las constantes de `lib.config`), así que corre antes de instalar
   dependencias, en el mismo punto que el gate.
-- Escribe **sin BOM** a propósito: `read_csv_robust` lee con UTF-8 simple y el BOM rompería la primera columna.
+- Escribe **sin BOM** por limpieza (el ETL ya lo quita al leer, pero no hay razón para arrastrarlo).
+- **No pasan las respuestas parciales**: solo entran al CSV las de `Estado` = `COMPLETED`. Las `PARTIAL` quedan
+  en la bandeja y el flujo informa cuántas omitió. Una respuesta sin el campo `Estado` se deja pasar.
 - No borra la bandeja: es el acumulado del periodo. Falla con aviso explícito si no puede deducir el nivel
   o si una bandeja no trae respuestas con identificador.
 - Pruebas nuevas en `zoho-survey/scripts/tests/test_zoho_a_csv.py`, incluida la comparación de la detección
