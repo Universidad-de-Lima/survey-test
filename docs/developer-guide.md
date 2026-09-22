@@ -118,7 +118,8 @@ la **API de incidencias**: crea una incidencia cuyo **cuerpo** es la respuesta e
 El flujo `zoho_inbox.yml` reacciona a esa incidencia (`issues[opened]`, ignorando las incidencias
 cuyo cuerpo no empiece por `{`) y `zoho-survey/scripts/zoho_inbox.py` deja la respuesta en
 `data/zoho_pendientes/<encuesta>.jsonl`, **enmascarada antes de guardar** (el repositorio es
-público) y sin duplicados.
+público) y sin duplicados. Al registrarla, la incidencia se **cierra automáticamente** (si el
+registro fallara, quedaría abierta como aviso).
 
 **No ejecuta el ETL**: el análisis se hace después, agrupado, para no lanzar una corrida de IA por
 cada respuesta.

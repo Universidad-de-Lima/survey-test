@@ -11,6 +11,8 @@ name: Zoho Inbox
 #      "client_payload" como claves hermanas de primer nivel, y el webhook de
 #      Zoho Survey no puede armar esa forma (envía los campos dentro de un único
 #      contenedor con un nombre elegido por el usuario).
+#      Al registrar la respuesta, la incidencia se cierra sola, para no acumular
+#      pendientes en la pestaña de incidencias.
 #   2. Manual (para pruebas): pestaña Actions -> "Zoho Inbox" -> "Run workflow",
 #      pegando la respuesta en JSON. No requiere ningún token.
 #
@@ -32,6 +34,8 @@ on:
 
 permissions:
   contents: write
+  # Necesario para cerrar la incidencia una vez registrada la respuesta.
+  issues: write
 
 concurrency:
   # Una respuesta a la vez: evita que dos envíos simultáneos se pisen al
@@ -92,3 +96,20 @@ jobs:
           git push
           echo "Pendientes guardados:"
           git show --stat --oneline HEAD | head -5
+
+      - name: Cerrar la incidencia registrada
+        # Solo para las incidencias (no en la prueba manual). Si el registro
+        # fallara, el paso anterior detendría el flujo y la incidencia quedaría
+        # abierta: es la señal de que hay que corregir la configuración.
+        if: github.event_name == 'issues'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMERO: ${{ github.event.issue.number }}
+        run: |
+          curl -sS -o /dev/null -X PATCH \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${NUMERO}" \
+            -d '{"state":"closed","state_reason":"completed"}'
+          echo "Incidencia #${NUMERO} cerrada."
