@@ -119,16 +119,8 @@ def _valor(valor: Any) -> Any:
     return json.dumps(valor, ensure_ascii=False)
 
 
-def convertir_encuesta(ruta: Path, destino: Path = CARPETA_DESTINO) -> Path:
-    """Arma el CSV de una bandeja. Devuelve la ruta escrita."""
-    ruta = Path(ruta)
-    registros = leer_respuestas(ruta)
-    if not registros:
-        raise ValueError(f"la bandeja {ruta.name} esta vacia")
-
-    encuesta = str(registros[0].get("encuesta") or "").strip()
-    if not encuesta:
-        raise ValueError(f"la bandeja {ruta.name} no trae el nombre de la encuesta")
+def escribir_csv(encuesta: str, registros: List[Dict[str, Any]], destino: Path = CARPETA_DESTINO) -> Path:
+    """Escribe el CSV de una encuesta a partir de sus respuestas. Devuelve la ruta."""
     cabeceras = cabeceras_de(encuesta)
 
     vistos = set()
@@ -147,7 +139,7 @@ def convertir_encuesta(ruta: Path, destino: Path = CARPETA_DESTINO) -> Path:
             }
         )
     if not filas:
-        raise ValueError(f"la bandeja {ruta.name} no tiene respuestas con identificador")
+        raise ValueError(f"la encuesta '{encuesta}' no tiene respuestas con identificador")
 
     salida = Path(destino) / nombre_csv(encuesta)
     with open(salida, "w", encoding="utf-8", newline="") as archivo:
@@ -157,14 +149,37 @@ def convertir_encuesta(ruta: Path, destino: Path = CARPETA_DESTINO) -> Path:
     return salida
 
 
+def convertir_encuesta(ruta: Path, destino: Path = CARPETA_DESTINO) -> Path:
+    """Arma el CSV de una sola bandeja. Devuelve la ruta escrita."""
+    ruta = Path(ruta)
+    registros = leer_respuestas(ruta)
+    if not registros:
+        raise ValueError(f"la bandeja {ruta.name} esta vacia")
+    encuesta = str(registros[0].get("encuesta") or "").strip()
+    if not encuesta:
+        raise ValueError(f"la bandeja {ruta.name} no trae el nombre de la encuesta")
+    return escribir_csv(encuesta, registros, destino)
+
+
 def convertir(
     carpeta_pendientes: Path = CARPETA_PENDIENTES, destino: Path = CARPETA_DESTINO
 ) -> List[Path]:
-    """Convierte todas las bandejas que existan. Devuelve los CSV escritos."""
-    escritos: List[Path] = []
+    """Convierte todas las bandejas. Devuelve los CSV escritos.
+
+    Las bandejas de una misma encuesta se juntan en un solo CSV: si no, la ultima
+    pisaria a las anteriores y se perderian respuestas.
+    """
+    por_encuesta: Dict[str, List[Dict[str, Any]]] = {}
     for ruta in sorted(Path(carpeta_pendientes).glob("*.jsonl")):
-        escritos.append(convertir_encuesta(ruta, destino))
-    return escritos
+        registros = leer_respuestas(ruta)
+        if not registros:
+            continue
+        encuesta = str(registros[0].get("encuesta") or "").strip()
+        if not encuesta:
+            raise ValueError(f"la bandeja {ruta.name} no trae el nombre de la encuesta")
+        por_encuesta.setdefault(encuesta, []).extend(registros)
+
+    return [escribir_csv(encuesta, registros, destino) for encuesta, registros in por_encuesta.items()]
 
 
 def main(argv) -> int:

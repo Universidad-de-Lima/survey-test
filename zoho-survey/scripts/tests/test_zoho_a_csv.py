@@ -145,6 +145,8 @@ class ConversionTest(unittest.TestCase):
             escritos = convertir(carpeta, carpeta)
 
             self.assertEqual(len(escritos), 1, "las dos bandejas son de la misma encuesta")
+            filas = escritos[0].read_text(encoding="utf-8").strip().splitlines()
+            self.assertEqual(len(filas), 3, "cabecera + las dos respuestas, sin pisarse")
 
     def test_sin_bandejas_no_escribe_nada(self):
         with tempfile.TemporaryDirectory() as tmp:
