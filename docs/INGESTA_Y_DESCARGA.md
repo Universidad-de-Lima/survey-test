@@ -7,7 +7,7 @@
 | Flujo | ¿Dónde corre? | ¿Toque en Git? | ¿Se guarda ZIP? | |
 |---|---|---|---|---|
 | **Recibir respuesta** | GitHub Actions (`zoho_inbox.yml`) | Sí: una línea por respuesta en `data/zoho_pendientes/<encuesta>.jsonl` (enmascarada) | No aplica | |
-| **Procesar CSV** | GitHub (a mano) + GitHub Actions | Nada: los CSV se borran antes del commit del bot | No aplica | |
+| **Procesar CSV** | GitHub (a mano o desde el botón del portal) + GitHub Actions | Nada: los CSV se borran antes del commit del bot | No aplica | |
 | **Generar JSONs** | GitHub Actions (ETL `build_json.py`) | Sí (solo JSONs `dashboard_data.json`, `periodos.json`, etc.) | No (generados on-demand) | |
 | **Descargar ZIP** | **GitHub Actions (on-demand)** | Nada: ZIP generado en artifact efímero, entregado, borrado | No (temporal) | |
 
@@ -26,7 +26,9 @@
 
 > **Pendiente (fase siguiente):** convertir automáticamente la bandeja al CSV que consume el ETL. Hoy ese CSV se prepara a mano.
 
-### Paso 2 — Procesar (a mano, cuando se decide)
+### Paso 2 — Procesar (a mano o desde el portal, cuando se decide)
+
+> El botón de refrescar del portal hace `POST` a `/api/procesar-encuesta` (función en Vercel del proyecto `survey-tracker`), que dispara este mismo flujo con `repository_dispatch: procesar_datos`. Llega **sin** `release_tag`, así que no descarga CSV: sirve para redesplegar y, cuando exista el paso pendiente, para convertir la bandeja. La llave de GitHub vive en Vercel; el navegador no la ve.
 
 1. Se adjunta el CSV al **Release** correspondiente (preferiblemente DRAFT) y se lanza *Build and Deploy Survey* con el input `release_tag`.
 2. `gh release download` lo baja a `data/` **solo en el runner** (nunca al historial).
@@ -133,7 +135,7 @@ Hacer que el flujo de descarga siga el mismo patrón que el upload: **temp en Gi
 
 ### Propuesta
 
-> **Descartado:** la técnica de "misma técnica que la subida" (PAT en el navegador) ya no existe: el portal no usa credenciales. Cualquier disparo desde la página exigiría un intermediario; hoy la descarga se resuelve con el ZIP publicado en `exports/` cuando esté disponible.
+> **Descartado:** la técnica de "misma técnica que la subida" (PAT en el navegador) ya no existe: el portal no usa credenciales. Cualquier disparo desde la página exigiría un intermediario: ese intermediario ya existe para el proceso (`/api/procesar-encuesta` en Vercel) y es el que se reutilizaría aquí si algún día se automatiza la descarga; hoy la descarga se resuelve con el ZIP publicado en `exports/` cuando esté disponible.
 
 1. Al click "Descargar", el dashboard enlaza directamente al ZIP publicado (`./exports/data_*.zip`).
 2. GitHub Actions (`workflow_dispatch` o `repository_dispatch[zip_download]`) corre en `data/` generado (o regenera on-demand desde JSONs) el script `csv_exporter.py` → produce ZIP en artifact efímero.
@@ -154,4 +156,5 @@ Hacer que el flujo de descarga siga el mismo patrón que el upload: **temp en Gi
 - **CSV originales**: nunca en Git (sanitizados + borrados CI).
 - **ZIPs**: actualmente NO se publican en Pages (borrados CI). Bajo el plan de arreglo, tampoco se persistirían.
 - **PAT**: solo en la cabecera del webhook dentro de Zoho (permiso *Issues: write*); `GITHUB_TOKEN` en Actions. El navegador no maneja credenciales.
+- **PAT del portal**: el disparo desde el botón de refrescar usa `GITHUB_DISPATCH_TOKEN` en Vercel (permiso *Contents: Read and write* sobre este repositorio). El navegador tampoco lo maneja.
 - **PII**: IP/UA/URL redimidos `sanitize_csv_pii.py`; comentarios ofuscados antes de enviarlos a los motores IA.

@@ -2,6 +2,17 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-22 — El botón de refrescar del portal pide procesar los datos
+
+- **Nuevo**: el botón `⟲` del portal envía `POST` a `/api/procesar-encuesta`, una función en Vercel
+  (proyecto `survey-tracker`) que dispara `repository_dispatch: procesar_datos` sobre *Build and Deploy Survey*.
+  La llave de GitHub vive en la variable de entorno `GITHUB_DISPATCH_TOKEN` de Vercel: el navegador nunca la recibe,
+  así que no hay nada que pegar en la página.
+- El disparo llega **sin** `release_tag`: no descarga CSV. Sirve para redesplegar y, cuando exista la conversión
+  de la bandeja al CSV, para procesar lo acumulado.
+- El flujo gana el disparador `repository_dispatch: [procesar_datos]`; `push` y `workflow_dispatch` siguen igual.
+- La función aplica un corte de 10 minutos entre disparos y restringe CORS al origen del portal (`*` en el resto de endpoints).
+
 ## [Unreleased]
 
 ### Changed

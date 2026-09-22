@@ -258,12 +258,13 @@ El orden de carga es critico y debe respetarse. Verificado por `zoho-survey/scri
 
 ## Ingesta De Encuestas
 
-Dos caminos, sin credenciales en el navegador:
+Tres caminos, sin credenciales en el navegador:
 
 1. **Webhook de Zoho Survey** (acumular): cada respuesta crea una incidencia; `zoho_inbox.yml` la normaliza, la **enmascara** y la guarda en `data/zoho_pendientes/<encuesta>.jsonl`. No corre el ETL. La incidencia se cierra al registrarse.
 2. **Release + `workflow_dispatch`** (procesar): el CSV se adjunta a un Release y se lanza *Build and Deploy Survey* con `release_tag`. El ETL corre en Actions.
+3. **Botón de refrescar del portal** (pedir el proceso): el botón llama a `POST /api/procesar-encuesta` en Vercel, que guarda la llave y dispara `repository_dispatch: procesar_datos` sobre *Build and Deploy Survey*. El ETL sigue condicionado al gate de CSVs, así que un disparo sin CSV solo redespliega el sitio.
 
-El portal (`zoho-survey/index.html`) es **solo lectura**: no pide credenciales y su botón de refrescar vuelve a leer los datos publicados.
+El portal (`zoho-survey/index.html`) es **solo lectura**: no pide credenciales. Su botón de refrescar hace dos cosas: pide el proceso (camino 3) y vuelve a leer los datos publicados. La llave de GitHub vive en Vercel, nunca en el navegador.
 
 ### Flujo
 
@@ -312,6 +313,7 @@ build_json.py procesa las 7 categorias. resolver_config_etl (lib/config.py) resu
 - **Sin credenciales en el navegador**: el portal solo lee los JSON publicados en Pages (no hay PAT en el cliente).
 - **Zoho → GitHub**: el webhook usa un PAT (Personal Access Token - Token de Acceso Personal) fine-grained con permiso *Issues: write*, guardado en la cabecera del webhook dentro de Zoho (nunca en el repositorio).
 - **GitHub Actions**: usa el `GITHUB_TOKEN` del propio flujo.
+- **Portal → GitHub**: el disparo pasa por `POST /api/procesar-encuesta`, en el proyecto Vercel de `survey-tracker`. La llave es un PAT (Personal Access Token - Token de Acceso Personal) fine-grained con permiso *Contents: Read and write* sobre este repositorio, guardada como variable de entorno `GITHUB_DISPATCH_TOKEN`; el navegador no la recibe nunca.
 
 ### PII (puntos 2-6 de la auditoría Fase 3.7)
 

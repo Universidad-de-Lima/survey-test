@@ -1,6 +1,11 @@
 name: Build and Deploy Survey
 
 on:
+  # Lo dispara el boton de refrescar del portal (via la funcion en Vercel, que es la
+  # unica que guarda la llave de GitHub). Solo pide el proceso: el ETL sigue
+  # condicionado al gate de CSVs, asi que sin CSV solo se redespliega el sitio.
+  repository_dispatch:
+    types: [procesar_datos]
   push:
     # Solo la rama principal despliega: el entorno github-pages rechaza el deploy
     # desde ramas de PR (environment protection rules), lo que generaba runs en

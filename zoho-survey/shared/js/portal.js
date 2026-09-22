@@ -581,10 +581,51 @@ function closeMobileNav() {
   $('mobileOverlay').style.display = 'none';
 }
 
+// ---------- Proceso de datos (funcion en Vercel) ----------
+// El boton de refrescar hace dos cosas: pide a GitHub que procese las respuestas
+// acumuladas y vuelve a leer lo publicado. La llave de GitHub vive en Vercel, no
+// aqui: la pagina no guarda ni pide credenciales.
+const PROCESAR_URL = 'https://qr-smoky-theta.vercel.app/api/procesar-encuesta';
+
+function mostrarAviso(texto) {
+  let aviso = document.getElementById('portalAviso');
+  if (!aviso) {
+    aviso = document.createElement('div');
+    aviso.id = 'portalAviso';
+    aviso.setAttribute('role', 'status');
+    aviso.style.cssText =
+      'position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:1200;' +
+      'max-width:90vw;padding:10px 16px;border-radius:10px;text-align:center;' +
+      'font-size:0.85rem;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
+      'background:var(--surface,#fff);color:var(--text-primary,#111);' +
+      'border:1px solid var(--border,#ddd);';
+    document.body.appendChild(aviso);
+  }
+  aviso.textContent = texto; // textContent: nunca se inyecta HTML
+  aviso.style.display = 'block';
+  clearTimeout(aviso.dataset.timer || 0);
+  aviso.dataset.timer = setTimeout(() => {
+    aviso.style.display = 'none';
+  }, 7000);
+}
+
+async function pedirProcesamiento() {
+  try {
+    const respuesta = await fetch(PROCESAR_URL, { method: 'POST' });
+    const datos = await respuesta.json().catch(() => null);
+    mostrarAviso(
+      (datos && datos.message) || (respuesta.ok ? 'Solicitud enviada.' : 'No se pudo solicitar el proceso.'),
+    );
+  } catch {
+    mostrarAviso('Sin conexion con el servicio de procesamiento.');
+  }
+}
+
 function refresh() {
   state.refreshing = true;
   const icon = $('refreshIcon');
   icon.style.animation = 'spin 0.5s ease-in-out';
+  pedirProcesamiento();
   state.cache.clear();
   setTimeout(() => {
     icon.style.animation = '';
