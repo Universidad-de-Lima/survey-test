@@ -172,6 +172,22 @@ def claves_faltantes(cadena: Optional[str] = None) -> List[str]:
 # CLIENTE DE UN MOTOR
 # ============================================================
 
+# ============================================================
+# IDENTIFICACIÓN ANTE OPENCODE GO
+# ============================================================
+# OpenCode Go descarta con 403 (Cloudflare, código 1010) las peticiones cuyo
+# agente empieza por "Python-urllib", que es el que urllib envía cuando no se
+# declara ninguno. Su documentación pide además que cada cliente se identifique
+# con un agente propio y envíe un identificador de sesión estable por
+# conversación. Aquí la conversación es la corrida completa del ETL.
+OPENCODE_AGENTE = "survey-test-etl/1.0"
+OPENCODE_SESION = f"survey-test-{os.getpid()}-{int(time.time())}"
+CABECERAS_OPENCODE = {
+    "User-Agent": OPENCODE_AGENTE,
+    "x-opencode-session": OPENCODE_SESION,
+}
+
+
 class MotorIA:
     """Cliente de un motor concreto (un servicio + un modelo)."""
 
@@ -251,11 +267,14 @@ class MotorIA:
                 "x-goog-api-key": self.api_key,
                 "Content-Type": "application/json",
             }
-        return {
+        cabeceras = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        if self.servicio == "opencode":
+            cabeceras.update(CABECERAS_OPENCODE)
+        return cabeceras
 
     def _sumar_uso(self, entrada: int, salida: int) -> None:
         with self._usage_lock:

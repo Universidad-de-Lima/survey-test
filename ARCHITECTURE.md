@@ -87,14 +87,14 @@ Para mayor detalle de responsabilidades:
 | `lib/config.py` | 485 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
 | `lib/metrics.py` | 98 | Funciones puras de calculo de NPS (`calc_nps`), CSAT (`calc_csat`) y Promedio Ponderado. | Activo. |
 | `lib/io_helper.py` | 227 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
-| `lib/zoho_respuesta.py` | 155 | Normaliza la respuesta que empuja el webhook de Zoho Survey: identificador de respuesta, encuesta (categoría + periodo), enmascarado de datos personales **antes** de guardar y descarte de duplicados. | Activo (Fase 1 de ingesta por webhook). |
+| `lib/zoho_respuesta.py` | 164 | Normaliza la respuesta que empuja el webhook de Zoho Survey: identificador de respuesta, encuesta (categoría + periodo), enmascarado de datos personales **antes** de guardar y descarte de duplicados. | Activo (Fase 1 de ingesta por webhook). |
 | `lib/ia_cualitativo.py` | 558 | Orquestador del analisis cualitativo por **cadena de motores** (OpenCode -> Google -> NVIDIA), retirado el motor unico DeepSeek en v3.9.0 (motor legacy eliminado en v3.2.0). Deduplicacion por ID de comentario (sin cache). Umbral fail-closed: aborta si mas del 20% de los comentarios falla por API (`IA_CUALITATIVO_MAX_FALLOS_API_PCT`). | Activo (requiere al menos una clave de motores IA). |
 | `lib/prompts_cualitativo.py` | 779 | Prompts exactos para los motores IA (system + user). Fuente de verdad de los prompts usados en el ETL. | Activo (Fase IA). |
 | `lib/insights_generator.py` | 262 | Generador de insights deterministas (sin LLM). Produce `insights_ia.global` y `insights_ia.por_categoria_padre` a partir de datos ya procesados. | Activo. |
 | `lib/csv_exporter.py` | 169 | Exportacion de CSVs y ZIPs con proteccion formula injection y redaccion PII. ZIPs se guardan en `exports/` (no desplegados en Pages). | Activo. |
 | `lib/dashboard_builder.py` | 57 | Ensamblado de `dashboard_data.json` desde metricas pre-calculadas. | Activo. |
 | `lib/periodos_updater.py` | 58 | Actualizacion de `periodos.json` por nivel, marcando `isNew: true` en el mas reciente. | Activo. |
-| `lib/ia_client.py` | 423 | Cliente de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos, backoff exponencial y limite de ritmo por motor. Orden y modelos configurables con `IA_CUALITATIVO_CADENA` (por defecto: `opencode:deepseek-v4.1-flash` -> Google -> NVIDIA). | Activo. |
+| `lib/ia_client.py` | 442 | Cliente de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos, backoff exponencial y limite de ritmo por motor. Orden y modelos configurables con `IA_CUALITATIVO_CADENA` (por defecto: `opencode:deepseek-v4.1-flash` -> Google -> NVIDIA). | Activo. |
 | `lib/ia_filtro_ruido.py` | 147 | Pre-filtro de comentarios ruidosos (15 criterios regex) antes de llamar a los motores IA. | Activo. |
 | `lib/ia_validacion.py` | 263 | Validacion y correccion de respuestas de los motores IA. Redaccion PII post-LLM. | Activo. |
 

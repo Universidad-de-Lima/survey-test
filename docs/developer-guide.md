@@ -103,6 +103,7 @@ servicio DeepSeek se **retiró** en v3.9.0.
 - Límite de ritmo: 60 RPM por motor (NVIDIA: 15, por su plan gratuito) y 15 workers; si el primer motor es NVIDIA, el pool baja a 3. Timeout: 60s por llamada.
 - Fail-closed de calidad: si más del 20% de los comentarios fracasa por API, el build falla y no se publica `sentimiento.json` (en vez de publicar indicadores calculados sobre una muestra irrelevante).
 - Costo: cada servicio factura sus propios tokens; el resumen del run registra los tokens y las llamadas de toda la cadena.
+- Identificación ante OpenCode: OpenCode Go descarta con 403 (Cloudflare 1010) a los clientes que no se identifican; su documentación pide un agente propio y un identificador de sesión. `lib/ia_client.py` envía `User-Agent: survey-test-etl/1.0` y `x-opencode-session` (uno por corrida) **solo** en las llamadas a OpenCode.
 
 ### Ejecutar el motor IA
 

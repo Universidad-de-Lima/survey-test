@@ -16,6 +16,7 @@ from unittest import mock
 
 from lib.ia_client import (
     CADENA_DEFECTO,
+    OPENCODE_AGENTE,
     SERVICIOS,
     MotorIA,
     claves_faltantes,
@@ -165,6 +166,32 @@ class TestFormatoDePeticion(unittest.TestCase):
                          os.environ.get(
                              "IA_CUALITATIVO_OPENCODE_URL",
                              "https://opencode.ai/zen/go/v1/chat/completions"))
+
+
+class TestIdentificacionOpenCode(unittest.TestCase):
+    """OpenCode Go bloquea (403, Cloudflare 1010) a los clientes que no se
+    identifican: urllib envía "Python-urllib/3.x" si no se declara agente."""
+
+    def test_opencode_declara_agente_propio_y_sesion(self):
+        motor = MotorIA(servicio="opencode", modelo="deepseek-v4.1-flash",
+                        api_key="k")
+        cabeceras = motor._cabeceras()
+        self.assertEqual(cabeceras["User-Agent"], OPENCODE_AGENTE)
+        self.assertFalse(
+            cabeceras["User-Agent"].lower().startswith("python-urllib"))
+        self.assertTrue(cabeceras["x-opencode-session"])
+
+    def test_la_sesion_es_estable_dentro_de_la_corrida(self):
+        a = MotorIA(servicio="opencode", modelo="m1", api_key="k")._cabeceras()
+        b = MotorIA(servicio="opencode", modelo="m2", api_key="k")._cabeceras()
+        self.assertEqual(a["x-opencode-session"], b["x-opencode-session"])
+
+    def test_google_y_nvidia_no_llevan_las_cabeceras_de_opencode(self):
+        for servicio in ("google", "nvidia"):
+            cabeceras = MotorIA(servicio=servicio, modelo="m",
+                                api_key="k")._cabeceras()
+            self.assertNotIn("User-Agent", cabeceras)
+            self.assertNotIn("x-opencode-session", cabeceras)
 
 
 class TestExtraccionDeJSON(unittest.TestCase):
