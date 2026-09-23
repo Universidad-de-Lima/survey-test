@@ -1,0 +1,38 @@
+{
+  "version": "2.0",
+  "has_ciclo": false,
+  "facultades": [
+    "Otra"
+  ],
+  "carreras": [
+    "Administración",
+    "Arquitectura",
+    "Comunicación",
+    "Contabilidad y Finanzas",
+    "Derecho",
+    "Economía",
+    "Ingeniería Ambiental",
+    "Ingeniería Civil",
+    "Ingeniería Industrial",
+    "Ingeniería de Sistemas",
+    "Negocios Internacionales",
+    "Psicología"
+  ],
+  "ciclos": [],
+  "facultad_carrera": {
+    "Otra": [
+      "Administración",
+      "Arquitectura",
+      "Comunicación",
+      "Contabilidad y Finanzas",
+      "Derecho",
+      "Economía",
+      "Ingeniería Ambiental",
+      "Ingeniería Civil",
+      "Ingeniería Industrial",
+      "Ingeniería de Sistemas",
+      "Negocios Internacionales",
+      "Psicología"
+    ]
+  }
+}
