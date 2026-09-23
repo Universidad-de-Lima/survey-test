@@ -1,0 +1,100 @@
+[
+  {
+    "carrera": "Administración",
+    "promotores": 273,
+    "pasivos": 88,
+    "detractores": 12,
+    "score": 69.97
+  },
+  {
+    "carrera": "Arquitectura",
+    "promotores": 283,
+    "pasivos": 79,
+    "detractores": 8,
+    "score": 74.32
+  },
+  {
+    "carrera": "Comunicación",
+    "promotores": 272,
+    "pasivos": 78,
+    "detractores": 16,
+    "score": 69.95
+  },
+  {
+    "carrera": "Contabilidad y Finanzas",
+    "promotores": 181,
+    "pasivos": 35,
+    "detractores": 6,
+    "score": 78.83
+  },
+  {
+    "carrera": "Derecho",
+    "promotores": 369,
+    "pasivos": 93,
+    "detractores": 17,
+    "score": 73.49
+  },
+  {
+    "carrera": "Economía",
+    "promotores": 166,
+    "pasivos": 49,
+    "detractores": 17,
+    "score": 64.22
+  },
+  {
+    "carrera": "Ingeniería Ambiental",
+    "promotores": 12,
+    "pasivos": 4,
+    "detractores": 1,
+    "score": 64.71
+  },
+  {
+    "carrera": "Ingeniería Civil",
+    "promotores": 237,
+    "pasivos": 70,
+    "detractores": 5,
+    "score": 74.36
+  },
+  {
+    "carrera": "Ingeniería Industrial",
+    "promotores": 366,
+    "pasivos": 67,
+    "detractores": 11,
+    "score": 79.95
+  },
+  {
+    "carrera": "Ingeniería Mecatrónica",
+    "promotores": 29,
+    "pasivos": 13,
+    "detractores": 2,
+    "score": 61.36
+  },
+  {
+    "carrera": "Ingeniería de Sistemas",
+    "promotores": 243,
+    "pasivos": 83,
+    "detractores": 12,
+    "score": 68.34
+  },
+  {
+    "carrera": "Marketing",
+    "promotores": 247,
+    "pasivos": 47,
+    "detractores": 10,
+    "score": 77.96
+  },
+  {
+    "carrera": "Negocios Internacionales",
+    "promotores": 245,
+    "pasivos": 52,
+    "detractores": 10,
+    "score": 76.55
+  },
+  {
+    "carrera": "Psicología",
+    "promotores": 308,
+    "pasivos": 97,
+    "detractores": 26,
+    "score": 65.43
+  }
+]
