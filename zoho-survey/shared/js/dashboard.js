@@ -1186,6 +1186,9 @@ const SurveyDashboard = (() => {
       document.querySelectorAll('.filter-ciclo-actions').forEach((el) => {
         el.style.display = 'none';
       });
+      // Y la columna "Ciclo" del explorador de comentarios
+      const tablaExplorador = document.getElementById('tabla-explorador-comentarios');
+      if (tablaExplorador) tablaExplorador.classList.add('sin-ciclo');
     }
 
     if (!tieneDatosCualitativos) {

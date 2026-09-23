@@ -103,6 +103,15 @@ class TestConfigConstants(unittest.TestCase):
         self.assertNotIn('Valoración General', cats_pre, "Valoración General (legacy) en pregrado")
         self.assertNotIn('Valoración General', cats_grad, "Valoración General (legacy) en graduado")
 
+    def test_la_columna_de_ciclo_se_renombra_a_ciclo(self):
+        """El ETL busca la columna de ciclo por su nombre interno tras renombrar.
+
+        Si el renombrado deja de apuntar a "Ciclo", build_json.py da la columna por
+        ausente y sobrescribe el ciclo real con "NA".
+        """
+        pregunta = config._NIVEL_CICLO["undergraduate"]
+        self.assertEqual(config.COLUMN_RENAME_PREGRADO.get(pregunta), "Ciclo")
+
 
 if __name__ == '__main__':
     unittest.main()

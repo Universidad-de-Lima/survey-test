@@ -708,6 +708,13 @@
   background: var(--gray-50);
 }
 
+/* Explorador de comentarios: la columna "Ciclo" se oculta cuando la encuesta no
+   pregunta el ciclo (la clase la pone dashboard.js a partir de filtros.json). */
+.survey-table.sin-ciclo th:nth-child(2),
+.survey-table.sin-ciclo td:nth-child(2) {
+  display: none;
+}
+
 /* ── Distribution & Visibility Bars ── */
 .distribution-bar {
   width: 100%;

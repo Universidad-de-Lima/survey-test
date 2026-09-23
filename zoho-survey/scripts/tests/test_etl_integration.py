@@ -126,6 +126,20 @@ class TestETLIntegrationPIIRedaction(unittest.TestCase):
         redacted = enmascarar_pii(comentario)
         self.assertEqual(redacted, comentario)
 
+    def test_enmascarar_pii_no_se_indexa(self):
+        """enmascarar_pii devuelve el texto completo, no una lista.
+
+        Indexarlo (enmascarar_pii(x)[0]) publicaba solo la primera letra del
+        comentario en sentimiento.json.
+        """
+        import re
+        from pathlib import Path
+        fuente = (Path(__file__).resolve().parent.parent / "build_json.py").read_text(encoding="utf-8")
+        self.assertNotRegex(
+            fuente, r"enmascarar_pii\([^)]*\)\s*\[",
+            "build_json.py no debe indexar el retorno de enmascarar_pii",
+        )
+
 
 class TestETLIntegrationInsights(unittest.TestCase):
     """Tests de generación de insights deterministas."""

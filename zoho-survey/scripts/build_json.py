@@ -256,7 +256,12 @@ def main() -> None:
             df["Carrera"] = "General"
 
         # Manejo de Ciclo
-        tiene_ciclo: bool = bool(etl_cfg["ciclo"]) and etl_cfg["ciclo"] in df.columns
+        # Ojo: la columna ya fue renombrada arriba al nombre interno, así que hay
+        # que aceptar ambos nombres; con solo el de Zoho se daba por ausente y se
+        # sobrescribía el ciclo real con "NA".
+        tiene_ciclo: bool = bool(etl_cfg["ciclo"]) and (
+            etl_cfg["ciclo"] in df.columns or "Ciclo" in df.columns
+        )
         if not tiene_ciclo:
             df["Ciclo"] = "NA"
 
@@ -652,7 +657,7 @@ def main() -> None:
                                 "sentimiento": _com.get("sentimiento", "neutro"),
                                 "intensidad": _com.get("intensidad", 3),
                                 "confianza_sentimiento": 1.0,
-                                "comentario_original": enmascarar_pii(_com.get("comentario_original", ""))[0],
+                                "comentario_original": enmascarar_pii(_com.get("comentario_original", "")),
                                 "es_valido": _com.get("es_valido", True),
                                 "motivo_invalidez": _com.get("motivo_invalidez", ""),
                                 "motor": "desconocido",
@@ -775,7 +780,7 @@ def main() -> None:
                     "fragmento_mostrar": item["texto"],
                     "es_valido": True,
                     "motivo_invalidez": None,
-                    "comentario_original": enmascarar_pii(item.get("comentario_original", ""))[0],
+                    "comentario_original": enmascarar_pii(item.get("comentario_original", "")),
                     "comentario_id_original": item["id_encuesta"],
                     "fragmento_secuencia": frag_sec,
                     "es_fragmento": True,
