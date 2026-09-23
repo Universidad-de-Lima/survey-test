@@ -1,0 +1,16 @@
+{
+  "version": "2.0",
+  "has_ciclo": false,
+  "facultades": [
+    "Otra"
+  ],
+  "carreras": [
+    "Administración"
+  ],
+  "ciclos": [],
+  "facultad_carrera": {
+    "Otra": [
+      "Administración"
+    ]
+  }
+}
