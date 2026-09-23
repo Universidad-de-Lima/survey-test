@@ -29,7 +29,13 @@ _RE_SOLO_PUNTUACION = re.compile(r'^[\s.,;:!¡¿?\-_()\[\]{}"\'/\\@#$%^&*+=\d]+$
 _RE_LETRA_REPETIDA = re.compile(r'^(.)\1{2,}$', re.IGNORECASE)
 _RE_SOLO_NUMERO = re.compile(r'^\d+$')
 _RE_PUNTUACION_REPETIDA = re.compile(r'^[.,;:!?\-_()]{3,}$')
-_RE_RUIDO_TECLADO = re.compile(r'^(?:[asdfghjklñzxcvbnmqwertyuiop]+|[asdfghjklñzxcvbnmqwertyuiop]{3,})$', re.IGNORECASE)
+_RE_RUIDO_TECLADO = re.compile(
+    # Teclazo = palabra suelta SIN ninguna vocal ("sdfgh", "qwrtyp"). Antes bastaba
+    # con que la palabra usara letras del teclado, lo que descartaba palabras
+    # reales de una sola palabra (por ejemplo "lejania" o "caro").
+    r'^(?![^aeiouáéíóúü]*[aeiouáéíóúü])[a-zñ]{3,}$',
+    re.IGNORECASE
+)
 _RE_REPITE_CALIFICACION = re.compile(
     r'^(?:mi\s*)?(?:nota|puntaj[ée]|calificaci[oó]n|punto)\s*(?:es\s*de?\s*)?\d+.*$',
     re.IGNORECASE
@@ -42,18 +48,20 @@ _RE_CHAR_REPETIDO_INTERNO = re.compile(r'(.)\1{4,}')
 # ============================================================
 
 _RUIDO_SIN_CONTEXTO = {
-    "hola", "hola", "trash", "nada", "jaja", "jajaja", "ok", "okey",
+    "hola", "trash", "nada", "jaja", "jajaja", "ok", "okey",
     "no", "si", "xd", "xD", "XD", "jsjs", "jsjsjs", "mmm", "mhh",
     "no se", "no sé", "porque si", "porque no", "quien sabe",
-    "sin comentarios", "ninguno", "nada que decir", "todo bien",
-    "todo mal", "tal vez", "a veces", "no aplica", "n/a",
-    "no mucho", "básicamente", "normal", "regular",
+    "sin comentarios", "ninguno", "nada que decir",
+    "tal vez", "a veces", "no aplica", "n/a",
+    "básicamente",
     "no tengo", "no se que decir", "no me acuerdo",
-    "no sabría decir", "no opino", "no aplica",
+    "no sabría decir", "no opino",
     "no sabría", "no sabria", "npi", "no tengo idea",
     "no tengo opinion", "no sé qué poner",
 }
 
+# Valoraciones cortas que SÍ aportan y por eso no se descartan. "todo bien" y
+# "todo mal" se descartaban como ruido explícito aunque expresan una opinión.
 _FRASES_CORTAS_VALIDAS = {
     "bien", "muy bien", "satisfecho", "muy satisfecho",
     "me gusta", "me gustó", "excelente", "bueno", "buena",
@@ -62,6 +70,7 @@ _FRASES_CORTAS_VALIDAS = {
     "deficiente", "horrible", "terrible", "increíble",
     "me encanta", "me encantó", "estoy conforme",
     "conforme", "inconforme", "no me gusta", "no me gustó",
+    "todo bien", "todo mal", "normal", "no mucho",
 }
 
 

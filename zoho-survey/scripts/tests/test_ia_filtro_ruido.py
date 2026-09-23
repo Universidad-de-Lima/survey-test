@@ -103,6 +103,32 @@ class TestFrasesValidas(unittest.TestCase):
         self.assertFalse(es_ruido)
 
 
+class TestFalsosPositivos(unittest.TestCase):
+    """Comentarios cortos que SI aportan y antes se descartaban por error."""
+
+    def test_valoraciones_cortas_no_son_ruido(self):
+        for frase in ["todo bien", "todo mal", "normal", "no mucho",
+                      "bien", "regular", "bueno"]:
+            es_ruido, motivo = es_ruido_pre_filtro(frase)
+            self.assertFalse(es_ruido, f"'{frase}' no deberia ser ruido (motivo: {motivo})")
+
+    def test_palabras_sueltas_con_vocales_no_son_ruido(self):
+        for palabra in ["lejania", "caro", "injusto", "desorden", "exigente"]:
+            es_ruido, motivo = es_ruido_pre_filtro(palabra)
+            self.assertFalse(es_ruido, f"'{palabra}' no deberia ser ruido (motivo: {motivo})")
+
+    def test_teclazos_siguen_siendo_ruido(self):
+        for teclazo in ["sdfgh", "qwrtyp", "asdfghjkl", "hydrruhf ytghi utghi", "nn"]:
+            es_ruido, motivo = es_ruido_pre_filtro(teclazo)
+            self.assertTrue(es_ruido, f"'{teclazo}' deberia ser ruido")
+
+    def test_frases_sin_aporte_siguen_siendo_ruido(self):
+        for frase in ["nada", "ok", "no se", "sin comentarios", "tal vez",
+                      "a veces", "básicamente"]:
+            es_ruido, motivo = es_ruido_pre_filtro(frase)
+            self.assertTrue(es_ruido, f"'{frase}' deberia seguir siendo ruido")
+
+
 class TestGenerarUnidadRuido(unittest.TestCase):
     """Tests de generación de unidades placeholder para ruido."""
 
