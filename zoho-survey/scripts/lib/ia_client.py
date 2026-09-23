@@ -180,8 +180,8 @@ def claves_faltantes(cadena: Optional[str] = None) -> List[str]:
 # declara ninguno. Su documentación pide además que cada cliente se identifique
 # con un agente propio y envíe un identificador de sesión estable por
 # conversación. Aquí la conversación es la corrida completa del ETL.
-OPENCODE_AGENTE = "survey-test-etl/1.0"
-OPENCODE_SESION = f"survey-test-{os.getpid()}-{int(time.time())}"
+OPENCODE_AGENTE = "survey-storytelling-etl/1.0"
+OPENCODE_SESION = f"survey-storytelling-{os.getpid()}-{int(time.time())}"
 CABECERAS_OPENCODE = {
     "User-Agent": OPENCODE_AGENTE,
     "x-opencode-session": OPENCODE_SESION,
