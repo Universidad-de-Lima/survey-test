@@ -157,6 +157,14 @@ class TestFormatoDePeticion(unittest.TestCase):
         google = MotorIA(servicio="google", modelo="m", api_key="k")
         self.assertLess(nvidia.max_rpm, google.max_rpm)
 
+    def test_google_usa_un_limite_de_ritmo_bajo(self):
+        """El plan gratuito de Google tolera ~15 pedidos por minuto: el motor
+        se limita a 10 para no recibir rechazos por ritmo (429)."""
+        google = MotorIA(servicio="google", modelo="m", api_key="k")
+        opencode = MotorIA(servicio="opencode", modelo="m", api_key="k")
+        self.assertEqual(google.max_rpm, 10)
+        self.assertLess(google.max_rpm, opencode.max_rpm)
+
     def test_servicio_no_soportado(self):
         with self.assertRaises(ValueError):
             MotorIA(servicio="inventado", modelo="m", api_key="k")

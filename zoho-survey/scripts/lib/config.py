@@ -341,7 +341,7 @@ EMPLEABILIDAD_CATEGORIAS: List[str] = [
 # Variables de entorno del motor IA:
 # - GOOGLE_API_KEY / NVIDIA_API_KEY / OPENCODE_API_KEY: al menos una.
 # - IA_CUALITATIVO_WORKERS: workers concurrentes (default: 15).
-# - IA_CUALITATIVO_MAX_RPM: rate limit global (default: 60).
+# - IA_CUALITATIVO_MAX_RPM: rate limit por motor (default: 60; Google: 10, NVIDIA: 8).
 # - IA_CUALITATIVO_TIMEOUT: timeout por llamada (default: 60s).
 
 # ============================================================

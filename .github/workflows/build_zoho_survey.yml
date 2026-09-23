@@ -157,7 +157,7 @@ jobs:
         #   CADENA        orden y modelos ("servicio:modelo,servicio:modelo").
         #                 Vacio = cadena por defecto de lib/ia_client.py.
         #   WORKERS=15    → 15 llamadas concurrentes
-        #   MAX_RPM=60    → limite de ritmo por motor (NVIDIA: 15)
+        #   MAX_RPM=60    → limite de ritmo por motor (Google: 10, NVIDIA: 8)
         #   TIMEOUT=60    → timeout por llamada individual (segundos)
         if: steps.csv.outputs.hay_csv == 'true'
         env:

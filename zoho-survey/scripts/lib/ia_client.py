@@ -43,9 +43,13 @@ DEFAULT_TIMEOUT = int(os.environ.get("IA_CUALITATIVO_TIMEOUT", "60"))
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_WORKERS = int(os.environ.get("IA_CUALITATIVO_WORKERS", "15"))
 
-# NVIDIA en su plan gratuito tolera ~30 req/min; se limita a 15 para no
+# Google en su plan gratuito tolera ~15 req/min; se limita a 10 para no
+# provocar rechazos por ritmo (429) cuando varios comentarios caen ahí.
+GOOGLE_MAX_RPM = 10
+
+# NVIDIA en su plan gratuito tolera ~30 req/min; se limita a 8 para no
 # provocar tormentas de 429/timeout cuando todos los comentarios caen ahí.
-NVIDIA_MAX_RPM = 15
+NVIDIA_MAX_RPM = 8
 
 # Cadena por defecto: OpenCode (deepseek-v4.1-flash) → Google → NVIDIA (4
 # modelos, en ese orden). El motor mas actual va primero; los demas quedan como
@@ -66,7 +70,7 @@ SERVICIOS: Dict[str, Dict[str, Any]] = {
         "url": ("https://generativelanguage.googleapis.com/v1beta/"
                 "models/{modelo}:generateContent"),
         "clave_env": "GOOGLE_API_KEY",
-        "max_rpm": DEFAULT_MAX_RPM,
+        "max_rpm": GOOGLE_MAX_RPM,
     },
     "nvidia": {
         "formato": "openai",

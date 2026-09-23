@@ -26,6 +26,7 @@ Variables de entorno (las claves, una por servicio):
     "servicio:modelo" separado por comas. Sin esta variable se usa la cadena por
     defecto de lib/ia_client.py.
   - IA_CUALITATIVO_MAX_RPM (opcional, default 60): llamadas por minuto y motor.
+  Google usa 10 (su plan gratuito tolera ~15) y NVIDIA 8, en lib/ia_client.py.
   - IA_CUALITATIVO_TIMEOUT (opcional, default 60): segundos por llamada.
   - IA_CUALITATIVO_MAX_FALLOS_API_PCT (opcional, default 20): umbral fail-closed.
     Si más de ese porcentaje de comentarios falla por API, el ETL aborta y no se
