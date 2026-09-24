@@ -32,7 +32,7 @@ Sin CSV en `data/`, el workflow **no** ejecuta el ETL ni exige claves de los mot
 | Secreto / variable | Dónde se configura | Para qué |
 |---|---|---|
 | `GOOGLE_API_KEY` | Settings → Secrets and variables → Actions | Google Gemini. Ya **no** está en la cadena por defecto; sirve si se vuelve a agregar con `IA_CUALITATIVO_CADENA` |
-| `NVIDIA_API_KEY` | Ídem (opcional) | Motores de respaldo (NVIDIA NIM: kimi-k3, nemotron, muse-glimmer) |
+| `NVIDIA_API_KEY` | Ídem (opcional) | Motores de respaldo (7 modelos de NVIDIA NIM: kimi-k3, muse-glimmer, glm-5.3, nemotron-3.5-lightning, deepseek-v4.1-flash, glm-5.3-flash, laguna-xs-2.1) |
 | `OPENCODE_API_KEY` | Ídem (opcional) | Primer motor de la cadena (OpenCode) |
 | `IA_CUALITATIVO_CADENA` (variable, no secreto) | Ídem → pestaña **Variables** | Orden y modelos de la cadena, sin tocar código |
 

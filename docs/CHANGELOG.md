@@ -7,8 +7,11 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - Google (`gemini-3.8-flash`) sale de la cadena por defecto: en las corridas respondía 503
   (Service Unavailable) y obligaba a saltar al motor siguiente.
 - `nvidia:deepseek-ai/deepseek-v4-pro-0813` sale porque NVIDIA lo retiró el 14 de setiembre (responde 410 Gone).
-  La cadena por defecto queda: `opencode:deepseek-v4.1-flash` -> `nvidia:moonshotai/kimi-k3` ->
-  `nvidia:nvidia/nemotron-3-ultra-550b-a55b` -> `nvidia:meta/muse-glimmer-30b`.
+  La cadena por defecto queda: `opencode:deepseek-v4.1-flash` -> NVIDIA con 7 modelos
+  (`moonshotai/kimi-k3`, `meta/muse-glimmer-30b`, `z-ai/glm-5.3`, `nvidia/nemotron-3.5-lightning-30b-a3b`,
+  `deepseek-ai/deepseek-v4.1-flash`, `z-ai/glm-5.3-flash`, `poolside/laguna-xs-2.1`), todos verificados
+  como activos contra `https://integrate.api.nvidia.com/v1/models` el 2026-09-24.` `nvidia/nemotron-3-ultra-550b-a55b`
+  sale de la cadena: sigue activo pero ya no figuraba entre los modelos vigentes.
 - La extracción del JSON deja de usar un patrón codicioso (`{.*}`) y toma el primer objeto **balanceado**,
   así que tolera prosa alrededor, varios objetos y llaves dentro de cadenas de texto.
 - `max_tokens` sube de 10 000 a 16 000: los modelos de razonamiento agotaban el presupuesto pensando y

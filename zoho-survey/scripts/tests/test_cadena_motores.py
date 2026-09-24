@@ -91,12 +91,17 @@ class TestLecturaDeCadena(unittest.TestCase):
             ("opencode", "deepseek-v4.1-flash"),
         )
         servicios = [servicio for servicio, _ in parsear_cadena(CADENA_DEFECTO)]
-        self.assertEqual(servicios, ["opencode", "nvidia", "nvidia", "nvidia"])
+        self.assertEqual(servicios, ["opencode"] + ["nvidia"] * 7)
         modelos_nvidia = [m for s, m in parsear_cadena(CADENA_DEFECTO) if s == "nvidia"]
+        # Todos verificados como activos contra /v1/models de NVIDIA.
         self.assertEqual(modelos_nvidia, [
             "moonshotai/kimi-k3",
-            "nvidia/nemotron-3-ultra-550b-a55b",
             "meta/muse-glimmer-30b",
+            "z-ai/glm-5.3",
+            "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "deepseek-ai/deepseek-v4.1-flash",
+            "z-ai/glm-5.3-flash",
+            "poolside/laguna-xs-2.1",
         ])
 
     def test_la_cadena_por_defecto_no_lleva_motores_descartados(self):
@@ -153,12 +158,12 @@ class TestConstruirMotores(unittest.TestCase):
     def test_con_las_tres_claves_la_cadena_esta_completa(self):
         with entorno({c: "clave-falsa" for c in CLAVES}):
             motores = construir_motores()
-        # Cuatro motores: OpenCode y los tres modelos vigentes de NVIDIA. Google
+        # Ocho motores: OpenCode y los siete modelos vigentes de NVIDIA. Google
         # ya no esta en la cadena por defecto aunque su clave este configurada.
-        self.assertEqual(len(motores), 4)
+        self.assertEqual(len(motores), 8)
         # deepseek-v4.1-flash (OpenCode) primero; NVIDIA como respaldo.
         self.assertEqual(motores[0].servicio, "opencode")
-        self.assertEqual([m.servicio for m in motores[1:]], ["nvidia"] * 3)
+        self.assertEqual([m.servicio for m in motores[1:]], ["nvidia"] * 7)
 
 
 class TestFormatoDePeticion(unittest.TestCase):

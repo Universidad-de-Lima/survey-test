@@ -51,7 +51,7 @@ GOOGLE_MAX_RPM = 10
 # provocar tormentas de 429/timeout cuando todos los comentarios caen ahí.
 NVIDIA_MAX_RPM = 8
 
-# Cadena por defecto: OpenCode (deepseek-v4.1-flash) → NVIDIA (3 modelos, en
+# Cadena por defecto: OpenCode (deepseek-v4.1-flash) → NVIDIA (7 modelos, en
 # ese orden). El motor mas actual va primero; los demas quedan como respaldo si
 # falla o devuelve una respuesta invalida.
 #
@@ -59,11 +59,19 @@ NVIDIA_MAX_RPM = 8
 # nvidia:deepseek-ai/deepseek-v4-pro-0813 porque NVIDIA lo retiro el
 # 2026-09-14 (responde 410). Ambos servicios siguen disponibles por si se
 # quieren volver a agregar con IA_CUALITATIVO_CADENA.
+#
+# Los modelos de NVIDIA se verificaron contra https://integrate.api.nvidia.com/v1/models
+# el 2026-09-24 (82 modelos publicados). Primero van los que ya venian funcionando
+# y despues los demas activos, del mas general al mas especializado.
 CADENA_DEFECTO = ",".join([
     "opencode:deepseek-v4.1-flash",
     "nvidia:moonshotai/kimi-k3",
-    "nvidia:nvidia/nemotron-3-ultra-550b-a55b",
     "nvidia:meta/muse-glimmer-30b",
+    "nvidia:z-ai/glm-5.3",
+    "nvidia:nvidia/nemotron-3.5-lightning-30b-a3b",
+    "nvidia:deepseek-ai/deepseek-v4.1-flash",
+    "nvidia:z-ai/glm-5.3-flash",
+    "nvidia:poolside/laguna-xs-2.1",
 ])
 
 # Cada servicio: cómo se le habla, con qué clave y con qué límite de ritmo.
