@@ -84,7 +84,7 @@ Para mayor detalle de responsabilidades:
 
 | Modulo | Lineas | Responsabilidad | Estado |
 | --- | --- | --- | --- |
-| `lib/config.py` | 485 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
+| `lib/config.py` | 491 | Mapeos de columnas, catalogos de negocio y constantes del motor IA. | Activo. |
 | `lib/metrics.py` | 98 | Funciones puras de calculo de NPS (`calc_nps`), CSAT (`calc_csat`) y Promedio Ponderado. | Activo. |
 | `lib/io_helper.py` | 227 | I/O seguro con encodings alternativos, formateo de fechas, hash para idempotencia, y redaccion PII (`enmascarar_pii`). | Activo. |
 | `lib/zoho_respuesta.py` | 164 | Normaliza la respuesta que empuja el webhook de Zoho Survey: identificador de respuesta, encuesta (categoría + periodo), enmascarado de datos personales **antes** de guardar y descarte de duplicados. | Activo (Fase 1 de ingesta por webhook). |

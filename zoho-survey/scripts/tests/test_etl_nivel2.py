@@ -61,6 +61,18 @@ class TestResolverConfig(unittest.TestCase):
         self.assertEqual(cfg["carrera"], "¿Qué programa de posgrado dictas en la Universidad de Lima?")
         self.assertEqual(cfg["csat"], "La Universidad de Lima")
 
+    def test_facultad_mapea_solo_donde_la_respuesta_es_una_carrera(self):
+        """Carrera -> Facultad: pregrado, graduados, egresados pregrado, docentes
+        pregrado y empleadores. Posgrado (programas) y no docente (dependencias)
+        no se pueden traducir, asi que no entran al mapa."""
+        carreras = "¿Qué carrera profesional estudias?"
+        for nivel in ("undergraduate", "graduate", "alumni-ug", "faculty-ug", "employers"):
+            with self.subTest(nivel=nivel):
+                self.assertTrue(resolver_config_etl(nivel, [carreras])["facultad_map"])
+        for nivel in ("postgraduate", "alumni-pg", "faculty-pg", "nonfaculty"):
+            with self.subTest(nivel=nivel):
+                self.assertFalse(resolver_config_etl(nivel, [carreras])["facultad_map"])
+
     def test_estudiantil_pregrado_unchanged(self):
         cfg = resolver_config_etl("undergraduate", COLS_ESTUDIANTIL_PREGRADO)
         self.assertEqual(cfg["carrera"], "¿Qué carrera profesional estudias?")

@@ -66,9 +66,9 @@ Ejemplos válidos: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.cs
 ### Headers críticos (por nivel)
 
 Obligatorias siempre: `ID de respuesta`, `Net Promoter Score (de un total de 10)`, `La Universidad de Lima`.
-Más una de carrera:
-- `graduate` → `¿Qué carrera profesional estudiaste?`
-- resto → `¿Qué carrera profesional estudias?`
+Más la columna de carrera propia de cada nivel (ver *Columna de identidad por nivel*).
+Las cabeceras completas de cada encuesta están en `zoho-survey/scripts/zoho_a_csv.py`
+(`CABECERAS_POR_NIVEL`); si Zoho agrega o quita preguntas, se actualizan ahí.
 
 > **Discrepancia documentada (no automatizar):** el validador exige la columna de carrera también para **empleadores**, idéntico a `build_json.py`, aunque la especificación original de empleadores podría no incluirla. Mantiene coherrencia con el ETL; revisar con el owner si se debe aflojar para `employers`.
 

@@ -16,7 +16,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from lib.config import resolver_config_etl
 from zoho_a_csv import (
+    CABECERAS_POR_NIVEL,
     CLAVE_ID,
     es_respuesta_completa,
     cabeceras_de,
@@ -95,6 +97,38 @@ class CabecerasTest(unittest.TestCase):
         for nombre in nombres:
             with self.subTest(nombre=nombre):
                 self.assertEqual(detectar_nivel(nombre), _detectar_nivel(nombre))
+
+
+# Una encuesta por nivel del catalogo, con el nombre que usa el ETL.
+ENCUESTA_POR_NIVEL = {
+    "undergraduate": "ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1",
+    "postgraduate": "ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - POSGRADO - 2026",
+    "graduate": "ENCUESTA DE SATISFACCIÓN GRADUADOS - PREGRADO - 2026",
+    "alumni-ug": "ENCUESTA DE SATISFACCIÓN EGRESADOS - PREGRADO - 2026",
+    "alumni-pg": "ENCUESTA DE SATISFACCIÓN EGRESADOS - POSGRADO - 2026",
+    "faculty-ug": "ENCUESTA DE SATISFACCIÓN DOCENTE - PREGRADO - 2026",
+    "faculty-pg": "ENCUESTA DE SATISFACCIÓN DOCENTE - POSGRADO - 2026",
+    "nonfaculty": "ENCUESTA DE SATISFACCIÓN NO DOCENTE - 2026",
+    "employers": "ENCUESTA DE SATISFACCIÓN EMPLEADORES - POSGRADO - 2026",
+}
+
+
+class NivelesTest(unittest.TestCase):
+    """El catalogo debe cubrir las nueve encuestas y traer lo que el ETL exige."""
+
+    def test_las_nueve_encuestas_tienen_cabeceras(self):
+        self.assertEqual(set(CABECERAS_POR_NIVEL), set(ENCUESTA_POR_NIVEL))
+
+    def test_cada_nivel_trae_las_columnas_que_el_etl_exige(self):
+        for nivel, encuesta in ENCUESTA_POR_NIVEL.items():
+            with self.subTest(nivel=nivel):
+                self.assertEqual(detectar_nivel(encuesta), nivel)
+                cabeceras = cabeceras_de(encuesta)
+                cfg = resolver_config_etl(nivel, cabeceras)
+                for requerida in cfg["requeridas"]:
+                    self.assertIn(requerida, cabeceras)
+                self.assertIsNotNone(cfg["carrera"])
+                self.assertTrue(any(c.startswith("Explica con tus palabras") for c in cabeceras))
 
 
 class ConversionTest(unittest.TestCase):

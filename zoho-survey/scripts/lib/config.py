@@ -383,7 +383,13 @@ _NIVEL_CSAT: Dict[str, str] = {
 _NIVEL_CICLO: Dict[str, str] = {
     "undergraduate": "\u00bfQu\u00e9 ciclo es el que cursas?; considera el ciclo donde m\u00e1s cursos llevas",
 }
-_NIVEL_FAC_MAP: Set[str] = {"undergraduate", "alumni-ug"}
+# Niveles cuya columna de identidad son carreras de pregrado de la Universidad
+# de Lima, por lo que se pueden traducir a facultad con CARRERA_FACULTAD.
+# Quedan fuera posgrado (programas), no docente (dependencias) y empleadores
+# cuando la respuesta es un posgrado.
+_NIVEL_FAC_MAP: Set[str] = {
+    "undergraduate", "alumni-ug", "graduate", "faculty-ug", "employers",
+}
 
 # Clasificacion de dimensiones por palabra clave (categoria padre).
 # El schema de dimensiones.json NO exige enum; cualquier etiqueta sirve.
