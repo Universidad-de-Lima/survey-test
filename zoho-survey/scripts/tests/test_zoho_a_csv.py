@@ -42,7 +42,7 @@ RESPUESTA = {
     "encuesta": ENCUESTA,
     "recibido_en": "2026-09-22T19:02:25+00:00",
     "respuestas": {
-        "Estado": "COMPLETED",
+        "Estado de respuesta": "COMPLETED",
         "Start time": "Sep 22, 2026 10:06:20",
         "Hora de finalización": "Sep 22, 2026 10:08:02",
         "¿Qué carrera profesional estudias?": "Derecho",
@@ -172,7 +172,7 @@ class ConversionTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             carpeta = Path(tmp)
             parcial = dict(RESPUESTA, id_respuesta="KhC5gYRO")
-            parcial["respuestas"] = dict(RESPUESTA["respuestas"], Estado="PARTIAL")
+            parcial["respuestas"] = dict(RESPUESTA["respuestas"], **{"Estado de respuesta": "PARTIAL"})
             escribir_bandeja(carpeta, [RESPUESTA, parcial])
 
             salida = convertir_encuesta(carpeta / "bandeja.jsonl", carpeta)
@@ -186,7 +186,7 @@ class ConversionTest(unittest.TestCase):
             carpeta = Path(tmp)
             sin_estado = dict(RESPUESTA, id_respuesta="SinEstado1")
             sin_estado["respuestas"] = {
-                k: v for k, v in RESPUESTA["respuestas"].items() if k != "Estado"
+                k: v for k, v in RESPUESTA["respuestas"].items() if k != "Estado de respuesta"
             }
             escribir_bandeja(carpeta, [sin_estado])
 
@@ -196,7 +196,7 @@ class ConversionTest(unittest.TestCase):
 
     def test_solo_las_completas_se_consideran_validas(self):
         self.assertTrue(es_respuesta_completa(RESPUESTA))
-        self.assertFalse(es_respuesta_completa({"respuestas": {"Estado": "PARTIAL"}}))
+        self.assertFalse(es_respuesta_completa({"respuestas": {"Estado de respuesta": "PARTIAL"}}))
         self.assertTrue(es_respuesta_completa({"respuestas": {}}))
 
     def test_convierte_todas_las_bandejas(self):

@@ -41,9 +41,10 @@ from lib.config import COLUMN_RENAME_GRADUADO, COLUMN_RENAME_PREGRADO  # noqa: E
 CARPETA_PENDIENTES = Path("data") / "zoho_pendientes"
 CARPETA_DESTINO = Path("data")
 CLAVE_ID = "ID de respuesta"
-CLAVE_ESTADO = "Estado"
+CLAVE_ESTADO = "Estado de respuesta"
 
-# Solo pasan al CSV las respuestas completas. Las parciales (Estado = PARTIAL)
+# Solo pasan al CSV las respuestas completas. Las parciales (Estado de respuesta
+# = PARTIAL)
 # quedan en la bandeja, pero no entran al proceso: no aportan a NPS ni CSAT y
 # descuadrarian los conteos. Una respuesta SIN el campo Estado se deja pasar:
 # no se puede saber su estado y no conviene descartar datos en silencio.

@@ -32,7 +32,7 @@ PAYLOAD_INCIDENCIA = {
     "ID": "AxC5U14h",
     "Inicio": "Sep 22, 2026 07:54:09",
     "Fin": "Sep 22, 2026 07:55:25",
-    "Estado": "COMPLETED",
+    "Estado de respuesta": "COMPLETED",
     "Carrera": "Administración",
     "Ciclo": "1° Ciclo",
     "NPS": "10",
