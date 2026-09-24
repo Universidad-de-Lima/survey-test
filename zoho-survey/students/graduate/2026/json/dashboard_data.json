@@ -1,0 +1,81 @@
+{
+  "version": "2.0",
+  "resumen": {
+    "encuestas": 599,
+    "carreras": 12,
+    "facultades": 7,
+    "fecha_inicio": "2026-04-16",
+    "fecha_fin": "2026-09-24",
+    "dias": 161,
+    "dias_recoleccion": 20,
+    "año": 2026,
+    "periodo": "2026",
+    "nps": {
+      "score": 85.31,
+      "promotores": 523,
+      "pasivos": 64,
+      "detractores": 12,
+      "total": 599
+    },
+    "csat": {
+      "score": 98.83,
+      "t3b": 592,
+      "total": 599,
+      "t2b": 491,
+      "t2b_pct": 81.97,
+      "ponderado": 87.41235392320534
+    },
+    "empleabilidad": {
+      "score": 87.15,
+      "empleados": 522,
+      "total": 599
+    }
+  },
+  "hallazgos": {
+    "csat_pct": 98,
+    "nps_score": 85,
+    "nps_tipo": "Excelente",
+    "nps_etapas": {},
+    "tendencia": "se mantiene",
+    "delta": 0,
+    "top_dimensiones": [
+      {
+        "name": "Condiciones ambientales en laboratorios",
+        "score": 99.43
+      },
+      {
+        "name": "Metodologías",
+        "score": 99.33
+      }
+    ],
+    "top_facultades": [
+      {
+        "name": "Facultad de Arquitectura",
+        "score": 100.0
+      },
+      {
+        "name": "Facultad de Derecho",
+        "score": 100.0
+      }
+    ]
+  },
+  "nps": {
+    "promotores": 523,
+    "pasivos": 64,
+    "detractores": 12,
+    "score": 85.31
+  },
+  "csat": {
+    "Totalmente satisfecho": 338,
+    "Muy satisfecho": 153,
+    "Satisfecho": 101,
+    "Insatisfecho": 6,
+    "Totalmente insatisfecho": 1,
+    "No utilizo": 0,
+    "No conozco": 0
+  },
+  "_export": {
+    "nombre_encuesta": "encuesta_de_satisfacción_graduados_pregrado_2026",
+    "fecha_generacion": "2026-09-24"
+  }
+}

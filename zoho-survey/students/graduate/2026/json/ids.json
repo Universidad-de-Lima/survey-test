@@ -1,0 +1,74 @@
+[
+  {
+    "facultad": "Facultad de Arquitectura",
+    "carrera": "Arquitectura",
+    "ciclo": "NA",
+    "total": 22
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Administración",
+    "ciclo": "NA",
+    "total": 83
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Contabilidad y Finanzas",
+    "ciclo": "NA",
+    "total": 12
+  },
+  {
+    "facultad": "Facultad de Ciencias Empresariales",
+    "carrera": "Negocios Internacionales",
+    "ciclo": "NA",
+    "total": 39
+  },
+  {
+    "facultad": "Facultad de Comunicación",
+    "carrera": "Comunicación",
+    "ciclo": "NA",
+    "total": 139
+  },
+  {
+    "facultad": "Facultad de Derecho",
+    "carrera": "Derecho",
+    "ciclo": "NA",
+    "total": 45
+  },
+  {
+    "facultad": "Facultad de Economía",
+    "carrera": "Economía",
+    "ciclo": "NA",
+    "total": 14
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Ambiental",
+    "ciclo": "NA",
+    "total": 1
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Civil",
+    "ciclo": "NA",
+    "total": 22
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería Industrial",
+    "ciclo": "NA",
+    "total": 145
+  },
+  {
+    "facultad": "Facultad de Ingeniería",
+    "carrera": "Ingeniería de Sistemas",
+    "ciclo": "NA",
+    "total": 29
+  },
+  {
+    "facultad": "Facultad de Psicología",
+    "carrera": "Psicología",
+    "ciclo": "NA",
+    "total": 48
+  }
+]
