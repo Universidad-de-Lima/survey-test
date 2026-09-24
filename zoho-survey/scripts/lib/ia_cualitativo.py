@@ -152,7 +152,7 @@ def analizar_comentario(comentario: str,
             raw = motor.chat_completion(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
-                max_tokens=10000,
+                max_tokens=16000,
             )
         except RuntimeError as e:
             logger.error(f"{motor.etiqueta} fallo para {id_encuesta}: {e}")

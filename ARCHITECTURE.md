@@ -94,7 +94,7 @@ Para mayor detalle de responsabilidades:
 | `lib/csv_exporter.py` | 169 | Exportacion de CSVs y ZIPs con proteccion formula injection y redaccion PII. ZIPs se guardan en `exports/` (no desplegados en Pages). | Activo. |
 | `lib/dashboard_builder.py` | 57 | Ensamblado de `dashboard_data.json` desde metricas pre-calculadas. | Activo. |
 | `lib/periodos_updater.py` | 58 | Actualizacion de `periodos.json` por nivel, marcando `isNew: true` en el mas reciente. | Activo. |
-| `lib/ia_client.py` | 446 | Cliente de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos, backoff exponencial y limite de ritmo por motor. Orden y modelos configurables con `IA_CUALITATIVO_CADENA` (por defecto: `opencode:deepseek-v4.1-flash` -> Google -> NVIDIA). | Activo. |
+| `lib/ia_client.py` | 485 | Cliente de la cadena de motores (OpenCode, NVIDIA NIM y Google Gemini; urllib stdlib) con reintentos, backoff exponencial y limite de ritmo por motor. Orden y modelos configurables con `IA_CUALITATIVO_CADENA` (por defecto: `opencode:deepseek-v4.1-flash` -> 3 modelos de NVIDIA). | Activo. |
 | `lib/ia_filtro_ruido.py` | 156 | Pre-filtro de comentarios ruidosos (15 criterios regex) antes de llamar a los motores IA. | Activo. |
 | `lib/ia_validacion.py` | 263 | Validacion y correccion de respuestas de los motores IA. Redaccion PII post-LLM. | Activo. |
 
@@ -102,7 +102,7 @@ Para mayor detalle de responsabilidades:
 
 ### Flujo cualitativo (v3.9.0) — Cadena de motores IA
 
-Desde v3.9.0 el ETL usa una **cadena ordenada de motores IA** (OpenCode -> Google -> NVIDIA),
+Desde v3.9.0 el ETL usa una **cadena ordenada de motores IA** (OpenCode -> NVIDIA),
 configurable con `IA_CUALITATIVO_CADENA`: si un motor falla o no valida su respuesta, se pasa al
 siguiente. Basta con que UNA clave de la cadena este configurada. El motor legacy
 (spaCy + sentence-transformers) fue eliminado en v3.2.0.

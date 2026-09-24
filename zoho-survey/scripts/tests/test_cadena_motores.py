@@ -17,6 +17,7 @@ from unittest import mock
 from lib.ia_client import (
     CADENA_DEFECTO,
     OPENCODE_AGENTE,
+    _primer_objeto_json,
     SERVICIOS,
     MotorIA,
     claves_faltantes,
@@ -90,17 +91,48 @@ class TestLecturaDeCadena(unittest.TestCase):
             ("opencode", "deepseek-v4.1-flash"),
         )
         servicios = [servicio for servicio, _ in parsear_cadena(CADENA_DEFECTO)]
-        self.assertEqual(
-            servicios,
-            ["opencode", "google", "nvidia", "nvidia", "nvidia", "nvidia"],
-        )
+        self.assertEqual(servicios, ["opencode", "nvidia", "nvidia", "nvidia"])
         modelos_nvidia = [m for s, m in parsear_cadena(CADENA_DEFECTO) if s == "nvidia"]
         self.assertEqual(modelos_nvidia, [
             "moonshotai/kimi-k3",
-            "deepseek-ai/deepseek-v4-pro-0813",
             "nvidia/nemotron-3-ultra-550b-a55b",
             "meta/muse-glimmer-30b",
         ])
+
+    def test_la_cadena_por_defecto_no_lleva_motores_descartados(self):
+        # Google salio por sus 503 constantes y el modelo de NVIDIA quedo
+        # retirado el 2026-09-14 (410 Gone); ninguno debe volver por descuido.
+        cadena = CADENA_DEFECTO
+        self.assertNotIn("google", cadena)
+        self.assertNotIn("deepseek-v4-pro-0813", cadena)
+
+
+class TestExtraccionJson(unittest.TestCase):
+    """El JSON puede venir con prosa alrededor o escondido en el razonamiento."""
+
+    def test_toma_el_primer_objeto_balanceado_con_prosa_alrededor(self):
+        texto = 'Claro, aqui esta: {"sentimiento": "positivo", "detalle": {"a": 1}} y listo.'
+        self.assertEqual(
+            _primer_objeto_json(texto),
+            {"sentimiento": "positivo", "detalle": {"a": 1}},
+        )
+
+    def test_no_confunde_las_llaves_dentro_de_una_cadena(self):
+        texto = '{"nota": "dijo {hola}", "n": 1}'
+        self.assertEqual(_primer_objeto_json(texto), {"nota": "dijo {hola}", "n": 1})
+
+    def test_devuelve_none_si_el_json_quedo_a_medias(self):
+        self.assertIsNone(_primer_objeto_json('{"sentimiento": "posi'))
+
+    def test_lee_el_json_del_razonamiento_cuando_el_contenido_viene_vacio(self):
+        # Caso real: el modelo agota el presupuesto pensando y deja el JSON en
+        # reasoning_content en vez de en content.
+        motor = MotorIA(servicio="opencode", modelo="m", api_key="k")
+        razonamiento = 'Let me analyze the comment.\n\n{"sentimiento": "positivo"}\n\nListo.'
+        self.assertEqual(
+            motor._json_de_texto("", razonamiento, "raw"),
+            {"sentimiento": "positivo"},
+        )
 
 
 class TestConstruirMotores(unittest.TestCase):
@@ -121,11 +153,12 @@ class TestConstruirMotores(unittest.TestCase):
     def test_con_las_tres_claves_la_cadena_esta_completa(self):
         with entorno({c: "clave-falsa" for c in CLAVES}):
             motores = construir_motores()
-        self.assertEqual(len(motores), 6)
-        # deepseek-v4.1-flash (OpenCode) primero; Google y NVIDIA como respaldo.
+        # Cuatro motores: OpenCode y los tres modelos vigentes de NVIDIA. Google
+        # ya no esta en la cadena por defecto aunque su clave este configurada.
+        self.assertEqual(len(motores), 4)
+        # deepseek-v4.1-flash (OpenCode) primero; NVIDIA como respaldo.
         self.assertEqual(motores[0].servicio, "opencode")
-        self.assertEqual(motores[1].servicio, "google")
-        self.assertEqual([m.servicio for m in motores[2:]], ["nvidia"] * 4)
+        self.assertEqual([m.servicio for m in motores[1:]], ["nvidia"] * 3)
 
 
 class TestFormatoDePeticion(unittest.TestCase):

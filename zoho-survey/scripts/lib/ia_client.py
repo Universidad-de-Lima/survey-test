@@ -51,14 +51,17 @@ GOOGLE_MAX_RPM = 10
 # provocar tormentas de 429/timeout cuando todos los comentarios caen ahí.
 NVIDIA_MAX_RPM = 8
 
-# Cadena por defecto: OpenCode (deepseek-v4.1-flash) → Google → NVIDIA (4
-# modelos, en ese orden). El motor mas actual va primero; los demas quedan como
-# respaldo si falla o devuelve una respuesta invalida.
+# Cadena por defecto: OpenCode (deepseek-v4.1-flash) → NVIDIA (3 modelos, en
+# ese orden). El motor mas actual va primero; los demas quedan como respaldo si
+# falla o devuelve una respuesta invalida.
+#
+# Google (gemini-3.8-flash) salio de la cadena por sus 503 constantes y
+# nvidia:deepseek-ai/deepseek-v4-pro-0813 porque NVIDIA lo retiro el
+# 2026-09-14 (responde 410). Ambos servicios siguen disponibles por si se
+# quieren volver a agregar con IA_CUALITATIVO_CADENA.
 CADENA_DEFECTO = ",".join([
     "opencode:deepseek-v4.1-flash",
-    "google:gemini-3.8-flash",
     "nvidia:moonshotai/kimi-k3",
-    "nvidia:deepseek-ai/deepseek-v4-pro-0813",
     "nvidia:nvidia/nemotron-3-ultra-550b-a55b",
     "nvidia:meta/muse-glimmer-30b",
 ])
@@ -192,6 +195,44 @@ CABECERAS_OPENCODE = {
 }
 
 
+def _primer_objeto_json(texto: str) -> Optional[Dict[str, Any]]:
+    """Devuelve el primer objeto JSON completo que aparezca en el texto.
+
+    Recorre el texto contando llaves (y respetando las cadenas de texto) para
+    quedarse con el objeto balanceado. El patron anterior tomaba desde la
+    primera llave hasta la ultima, asi que fallaba cuando el modelo escribia
+    prosa o mas de un objeto alrededor del JSON.
+    """
+    profundidad = 0
+    inicio = -1
+    en_cadena = False
+    escape = False
+    for posicion, caracter in enumerate(texto):
+        if en_cadena:
+            if escape:
+                escape = False
+            elif caracter == "\\":
+                escape = True
+            elif caracter == '"':
+                en_cadena = False
+            continue
+        if caracter == '"':
+            en_cadena = True
+        elif caracter == "{":
+            if profundidad == 0:
+                inicio = posicion
+            profundidad += 1
+        elif caracter == "}":
+            if profundidad:
+                profundidad -= 1
+                if profundidad == 0 and inicio >= 0:
+                    try:
+                        return json.loads(texto[inicio:posicion + 1])
+                    except json.JSONDecodeError:
+                        inicio = -1
+    return None
+
+
 class MotorIA:
     """Cliente de un motor concreto (un servicio + un modelo)."""
 
@@ -298,34 +339,32 @@ class MotorIA:
                     "Respuesta con contenido vacío; se intenta extraer el JSON "
                     "del razonamiento interno."
                 )
-                coincidencia = re.search(r'(\{.*\})', razonamiento, re.DOTALL)
-                if coincidencia:
-                    try:
-                        return json.loads(coincidencia.group(1))
-                    except json.JSONDecodeError:
-                        pass
-            logger.error(f"Contenido vacío de {self.etiqueta}. Raw: {raw[:300]!r}")
+                objeto = _primer_objeto_json(razonamiento)
+                if objeto is not None:
+                    return objeto
+                logger.warning(
+                    "El razonamiento de %s no trae un JSON completo: el modelo "
+                    "agoto el limite de tokens pensando (finish_reason=length) "
+                    "o lo dejo a medias.",
+                    self.etiqueta,
+                )
+            else:
+                logger.error(f"Contenido vacío de {self.etiqueta}. Raw: {raw[:300]!r}")
             raise json.JSONDecodeError("Contenido vacío", "", 0)
         try:
             return json.loads(texto)
         except json.JSONDecodeError:
-            coincidencia = re.search(r'(\{.*\})', texto, re.DOTALL)
-            if coincidencia:
-                try:
-                    return json.loads(coincidencia.group(1))
-                except json.JSONDecodeError:
-                    pass
+            objeto = _primer_objeto_json(texto)
+            if objeto is not None:
+                return objeto
             if (razonamiento or "").strip():
                 logger.warning(
                     "JSON inválido en el contenido; se intenta extraerlo del "
                     "razonamiento interno."
                 )
-                coincidencia = re.search(r'(\{.*\})', razonamiento, re.DOTALL)
-                if coincidencia:
-                    try:
-                        return json.loads(coincidencia.group(1))
-                    except json.JSONDecodeError:
-                        pass
+                objeto = _primer_objeto_json(razonamiento)
+                if objeto is not None:
+                    return objeto
             logger.error(f"JSON inválido de {self.etiqueta}. Content: {texto[:500]!r}")
             raise
 
@@ -356,7 +395,7 @@ class MotorIA:
         return self._json_de_texto(texto, razonamiento, raw)
 
     def chat_completion(self, system_prompt: str, user_prompt: str,
-                        max_tokens: int = 10000) -> Dict[str, Any]:
+                        max_tokens: int = 16000) -> Dict[str, Any]:
         """Llama al motor y devuelve la respuesta parseada como dict.
 
         Raises:

@@ -81,15 +81,15 @@ Para detalles de adición y ejecución de pruebas unitarias, consulta [tests/REA
 ## Configuración del Motor Cualitativo
 
 Desde v3.9.0 el análisis cualitativo usa una **cadena de motores** que se intentan en orden
-(OpenCode → Google → NVIDIA): si un motor falla o devuelve una respuesta inválida, se pasa al
+(OpenCode → NVIDIA): si un motor falla o devuelve una respuesta inválida, se pasa al
 siguiente. El motor legacy (spaCy + sentence-transformers) fue **eliminado** en v3.2.0 y el
 servicio DeepSeek se **retiró** en v3.9.0.
 
 | Variable | Valores | Efecto |
 |---|---|---|
 | `IA_CUALITATIVO_CADENA` | `servicio:modelo,servicio:modelo` | **Orden y modelos** de la cadena. Se define como *variable* (no secreto): Settings → Secrets and variables → Actions → pestaña **Variables**. Vacío = cadena por defecto. |
-| `GOOGLE_API_KEY` | API key string | Clave de Google Gemini. Sin ella, sus motores se omiten de la cadena. |
-| `NVIDIA_API_KEY` | API key string | Clave de NVIDIA NIM (4 modelos en la cadena por defecto). |
+| `GOOGLE_API_KEY` | API key string | Clave de Google Gemini. No se usa en la cadena por defecto (salió por sus 503); sin ella, sus motores se omiten de la cadena. |
+| `NVIDIA_API_KEY` | API key string | Clave de NVIDIA NIM (3 modelos en la cadena por defecto). |
 | `OPENCODE_API_KEY` | API key string | Clave de OpenCode. |
 | `IA_CUALITATIVO_OPENCODE_URL` | URL | Dirección de OpenCode: plan **Go** (por defecto) o plan Zen. |
 | `IA_CUALITATIVO_WORKERS` | entero (default 15) | Workers concurrentes para IA. |

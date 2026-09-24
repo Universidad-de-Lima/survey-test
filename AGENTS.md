@@ -27,7 +27,7 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
   - `csv_exporter.py` — exportacion de CSVs/ZIPs con proteccion formula injection y redaccion PII.
   - `dashboard_builder.py` — ensamblado de `dashboard_data.json`.
   - `periodos_updater.py` — actualizacion de `periodos.json`.
-  - `ia_cualitativo.py` — orquestador del analisis cualitativo por **cadena de motores** (Google → NVIDIA → OpenCode), orden y modelos configurables con `IA_CUALITATIVO_CADENA`.
+  - `ia_cualitativo.py` — orquestador del analisis cualitativo por **cadena de motores** (OpenCode → NVIDIA), orden y modelos configurables con `IA_CUALITATIVO_CADENA`.
   - `prompts_cualitativo.py` — prompts Bardin/Braun&Clarke para los motores IA.
   - `ia_client.py` — cliente HTTP de la cadena de motores (Google Gemini, NVIDIA NIM, OpenCode; urllib stdlib) con reintentos.
   - `ia_filtro_ruido.py` — pre-filtro de comentarios ruidosos (15 criterios regex).

@@ -2,6 +2,19 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-24 — La cadena de motores se queda con OpenCode y NVIDIA
+
+- Google (`gemini-3.8-flash`) sale de la cadena por defecto: en las corridas respondía 503
+  (Service Unavailable) y obligaba a saltar al motor siguiente.
+- `nvidia:deepseek-ai/deepseek-v4-pro-0813` sale porque NVIDIA lo retiró el 14 de setiembre (responde 410 Gone).
+  La cadena por defecto queda: `opencode:deepseek-v4.1-flash` -> `nvidia:moonshotai/kimi-k3` ->
+  `nvidia:nvidia/nemotron-3-ultra-550b-a55b` -> `nvidia:meta/muse-glimmer-30b`.
+- La extracción del JSON deja de usar un patrón codicioso (`{.*}`) y toma el primer objeto **balanceado**,
+  así que tolera prosa alrededor, varios objetos y llaves dentro de cadenas de texto.
+- `max_tokens` sube de 10 000 a 16 000: los modelos de razonamiento agotaban el presupuesto pensando y
+  devolvían el contenido vacío (`finish_reason=length`), obligando a pasar al motor siguiente.
+- Ambos servicios siguen disponibles: se pueden volver a agregar con `IA_CUALITATIVO_CADENA`.
+
 ## 2026-09-22 — Corrección: las bandejas de una misma encuesta se juntan en un solo CSV
 
 - Si existieran dos bandejas de la misma encuesta, la segunda pisaba a la primera y se perdían respuestas.
