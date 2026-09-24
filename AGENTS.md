@@ -171,7 +171,7 @@ Si se modifica la estructura de cualquier JSON generado:
 
 ## Advertencias Importantes Para Agentes IA
 
-1. **No confiar en documentación de motor legacy**: el motor spaCy/keyword matching fue eliminado en v3.2.0. La versión actual usa una **cadena de motores IA** (`lib/ia_cualitativo.py`): Google (Gemini) → NVIDIA (4 modelos) → OpenCode, con el orden y los modelos configurables con `IA_CUALITATIVO_CADENA`. No existe `scripts/README.md` (eliminado por obsoleto).
+1. **No confiar en documentación de motor legacy**: el motor spaCy/keyword matching fue eliminado en v3.2.0. La versión actual usa una **cadena de motores IA** (`lib/ia_cualitativo.py`): OpenCode (`deepseek-v4.1-flash`) → NVIDIA (7 modelos), con el orden y los modelos configurables con `IA_CUALITATIVO_CADENA`. Google (Gemini) salió de la cadena por defecto el 2026-09-24 (503 constantes) y `deepseek-ai/deepseek-v4-pro-0813` porque NVIDIA lo retiró (410). No existe `scripts/README.md` (eliminado por obsoleto).
 2. **Motor legacy eliminado** (v3.2.0): los modulos `nlp.py`, `segmentacion_nps.py`, `aspect_extraction.py`, `sentiment_engine.py` fueron eliminados. `enmascarar_pii` se reubico a `io_helper.py`. Desde v3.9.0 basta con UNA clave de la cadena (`GOOGLE_API_KEY`, `NVIDIA_API_KEY` u `OPENCODE_API_KEY`); el servicio DeepSeek quedo retirado.
 3. **`lib/config.py` constantes legacy**: ~~`TOPICOS` y `STOPWORDS` no se usan en modulos activos.~~ **ELIMINADO**.
 4. **Sin spaCy desde v3.2.0**: el motor legacy (spaCy + sentence-transformers) fue eliminado. `requirements.txt` ya no incluye `spacy`, `sentence-transformers`, ni `scikit-learn`.
