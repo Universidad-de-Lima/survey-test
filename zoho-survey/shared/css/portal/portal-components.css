@@ -863,8 +863,7 @@
   color: var(--muted-foreground, #6b7280);
   border-bottom: 1px solid var(--border, #e6e8eb);
   padding-bottom: 5px;
-  max-width: 900px;
-  margin: 18px auto 12px;
+  margin: 18px 0 12px;
 }
 
 /* Bloque centrado: el título, la descripción y la leyenda acompañan al grid. */
@@ -872,7 +871,7 @@
 .ring-card .repo-card-desc { text-align: center; }
 .ring-leyenda { justify-content: center; }
 
-/* Filas flexibles: las tarjetas se estiran para repartirse el ancho del bloque
+/* Filas flexibles: las tarjetas se reparten todo el ancho de la pantalla
    (2 anchas, 3 medianas, 4 más angostas), como en la maqueta. Con grid el
    navegador calculaba columnas de más y las dejaba angostas y apiñadas. */
 .ring-grid {
@@ -880,8 +879,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px 16px;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .ring {
