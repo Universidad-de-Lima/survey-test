@@ -594,12 +594,12 @@ function mostrarAviso(texto) {
     aviso.id = 'portalAviso';
     aviso.setAttribute('role', 'status');
     // Centrado en la pantalla (antes salia pegado al borde inferior).
+    // Colores del Manual de Marca: naranja institucional con letras blancas.
     aviso.style.cssText =
       'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1200;' +
       'max-width:min(90vw,32rem);padding:10px 16px;border-radius:10px;text-align:center;' +
-      'font-size:0.85rem;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
-      'background:var(--surface,#fff);color:var(--text-primary,#111);' +
-      'border:1px solid var(--border,#ddd);';
+      'font-size:0.85rem;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
+      'background:var(--brand,#FF5117);color:#fff;border:none;';
     document.body.appendChild(aviso);
   }
   aviso.textContent = texto; // textContent: nunca se inyecta HTML
