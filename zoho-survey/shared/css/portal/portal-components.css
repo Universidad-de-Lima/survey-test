@@ -868,12 +868,12 @@
 
 .ring-grid {
   display: grid;
-  /* auto-fill (no auto-fit) y ancho acotado: los anillos se quedan juntos, con
-     un tamaño parecido al de la maqueta, en vez de repartirse por toda la
-     pantalla dejando huecos enormes. */
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px 12px;
-  max-width: 880px;
+  /* auto-fit: las tarjetas se reparten a lo ancho de la fila, como en la maqueta
+     (2 anchas, 3 medianas, 4 más angostas). El ancho máximo evita que en una
+     pantalla muy grande queden separadas de más. */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 14px;
+  max-width: 980px;
 }
 
 .ring { text-align: center; }
