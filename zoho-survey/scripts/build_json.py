@@ -70,6 +70,56 @@ SUPPORTED_EXTENSIONS: List[str] = [".csv"]
 # NO cambian comportamiento: mismo CSV → mismo JSON.
 # ============================================================
 
+def _dataset_desde_sentimiento(sent_previo: dict) -> "List[Dict[str, object]]":
+    """Reconstruye el dataset cualitativo a partir del sentimiento.json previo.
+
+    Se guarda UNA FILA POR FRAGMENTO, no una por comentario: un mismo comentario
+    puede aportar varias frases analizadas (hasta 7) y quedarse solo con la
+    primera degradaba los dashboards en cada corrida incremental (menos
+    fragmentos, menos topicos y un reparto de sentimiento distinto).
+    `id_encuesta` sigue siendo el ID del comentario porque es la llave con la que
+    se decide si ya fue procesado.
+    """
+    vistos: Set[str] = set()
+    dataset: List[Dict[str, object]] = []
+    for _com in sent_previo.get("comentarios", []):
+        _rid = _com.get("comentario_id_original", "")
+        _llave = _com.get("id", "") or _rid
+        if not _llave or _llave in vistos:
+            continue
+        vistos.add(_llave)
+        _nps_val = _com.get("nps_score", 0)
+        dataset.append({
+            "id_encuesta": _rid,
+            "id_fragmento": _com.get("id", ""),
+            "facultad": _com.get("facultad", ""),
+            "carrera": _com.get("carrera", ""),
+            "ciclo": _com.get("ciclo", ""),
+            "nps_score": _nps_val,
+            "segmento_nps": (
+                "Promotor" if _nps_val >= 9
+                else "Pasivo" if _nps_val >= 7
+                else "Detractor"
+            ),
+            "satisfaccion_global": "",
+            "texto": _com.get("fragmento_original",
+                               _com.get("fragmento_mostrar", "")),
+            "aspecto_detectado": "",
+            "aspecto_normalizado": _com.get("aspecto_normalizado",
+                                             _com.get("categoria", "")),
+            "categoria_padre": _com.get("categoria_padre", ""),
+            "sub_aspectos": [],
+            "sentimiento": _com.get("sentimiento", "neutro"),
+            "intensidad": _com.get("intensidad", 3),
+            "confianza_sentimiento": 1.0,
+            "comentario_original": enmascarar_pii(_com.get("comentario_original", "")),
+            "es_valido": _com.get("es_valido", True),
+            "motivo_invalidez": _com.get("motivo_invalidez", ""),
+            "motor": "desconocido",
+        })
+    return dataset
+
+
 def _detectar_nivel(filename: str) -> str:
     """Detecta el nivel de encuesta desde el nombre del archivo.
     
@@ -629,42 +679,15 @@ def main() -> None:
                     _sent_previo = json.load(
                         open(_sentimiento_path, "r", encoding="utf-8-sig")
                     )
-                    for _com in _sent_previo.get("comentarios", []):
-                        _rid = _com.get("comentario_id_original", "")
-                        if _rid and _rid not in _ids_procesados:
-                            _ids_procesados.add(_rid)
-                            _nps_val = _com.get("nps_score", 0)
-                            _dataset_existente.append({
-                                "id_encuesta": _rid,
-                                "id_fragmento": _com.get("id", ""),
-                                "facultad": _com.get("facultad", ""),
-                                "carrera": _com.get("carrera", ""),
-                                "ciclo": _com.get("ciclo", ""),
-                                "nps_score": _nps_val,
-                                "segmento_nps": (
-                                    "Promotor" if _nps_val >= 9
-                                    else "Pasivo" if _nps_val >= 7
-                                    else "Detractor"
-                                ),
-                                "satisfaccion_global": "",
-                                "texto": _com.get("fragmento_original",
-                                                   _com.get("fragmento_mostrar", "")),
-                                "aspecto_detectado": "",
-                                "aspecto_normalizado": _com.get("aspecto_normalizado",
-                                                                 _com.get("categoria", "")),
-                                "categoria_padre": _com.get("categoria_padre", ""),
-                                "sub_aspectos": [],
-                                "sentimiento": _com.get("sentimiento", "neutro"),
-                                "intensidad": _com.get("intensidad", 3),
-                                "confianza_sentimiento": 1.0,
-                                "comentario_original": enmascarar_pii(_com.get("comentario_original", "")),
-                                "es_valido": _com.get("es_valido", True),
-                                "motivo_invalidez": _com.get("motivo_invalidez", ""),
-                                "motor": "desconocido",
-                            })
+                    _dataset_existente = _dataset_desde_sentimiento(_sent_previo)
+                    _ids_procesados = {
+                        _c.get("comentario_id_original", "")
+                        for _c in _sent_previo.get("comentarios", [])
+                    } - {""}
                     logging.info(
-                        f"JSON existente cargado: {len(_ids_procesados)} "
-                        f"comentarios ya procesados en {_sentimiento_path.name}"
+                        f"JSON existente cargado: {len(_ids_procesados)} comentarios "
+                        f"({len(_dataset_existente)} fragmentos) ya procesados en "
+                        f"{_sentimiento_path.name}"
                     )
                 except (json.JSONDecodeError, OSError) as _e:
                     logging.warning(

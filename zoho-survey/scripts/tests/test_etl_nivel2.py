@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 from lib.config import resolver_config_etl, clasificar_categoria_dimension
-from build_json import _detectar_nivel, _detectar_dimensiones
+from build_json import _detectar_nivel, _detectar_dimensiones, _dataset_desde_sentimiento
 
 
 # Headers representativos extraidos de los contratos de datos.
@@ -117,6 +117,63 @@ class TestDetectarDimensiones(unittest.TestCase):
         dims = _detectar_dimensiones(df)
         self.assertNotIn("Liderazgo", dims)
         self.assertNotIn("Honestidad", dims)
+
+
+class TestReutilizacionSentimiento(unittest.TestCase):
+    """El sentimiento.json previo se reusa sin perder fragmentos.
+
+    Regresion: al reutilizar solo se guardaba la PRIMERA fila de cada comentario,
+    asi que cada corrida incremental dejaba menos fragmentos y menos topicos en
+    los dashboards (2026-1 paso de 1847 a 856 filas; Graduados de 426 a 221).
+    """
+
+    def _comentario(self, cid, frag_id, sentimiento="positivo"):
+        return {
+            "id": frag_id,
+            "comentario_id_original": cid,
+            "carrera": "Arquitectura",
+            "facultad": "Facultad de Arquitectura",
+            "ciclo": "7° Ciclo",
+            "nps_score": 8,
+            "sentimiento": sentimiento,
+            "intensidad": 2,
+            "fragmento_original": "texto del fragmento",
+            "comentario_original": "texto completo del comentario",
+            "es_valido": True,
+        }
+
+    def test_conserva_todos_los_fragmentos_de_un_comentario(self):
+        previo = {"comentarios": [
+            self._comentario("res-1", "res-1_1"),
+            self._comentario("res-1", "res-1_2"),
+            self._comentario("res-1", "res-1_3"),
+            self._comentario("res-2", "res-2_1"),
+        ]}
+        dataset = _dataset_desde_sentimiento(previo)
+        self.assertEqual(len(dataset), 4)
+        self.assertEqual([f["id_fragmento"] for f in dataset],
+                         ["res-1_1", "res-1_2", "res-1_3", "res-2_1"])
+        self.assertEqual({f["id_encuesta"] for f in dataset}, {"res-1", "res-2"})
+
+    def test_no_duplica_fragmentos_repetidos(self):
+        previo = {"comentarios": [
+            self._comentario("res-1", "res-1_1"),
+            self._comentario("res-1", "res-1_1"),
+        ]}
+        self.assertEqual(len(_dataset_desde_sentimiento(previo)), 1)
+
+    def test_tolera_sentimiento_sin_comentarios(self):
+        self.assertEqual(_dataset_desde_sentimiento({}), [])
+        self.assertEqual(_dataset_desde_sentimiento({"comentarios": []}), [])
+
+    def test_conserva_el_resto_de_los_campos(self):
+        dataset = _dataset_desde_sentimiento({"comentarios": [self._comentario("res-9", "res-9_1")]})
+        fila = dataset[0]
+        self.assertEqual(fila["segmento_nps"], "Pasivo")
+        self.assertEqual(fila["carrera"], "Arquitectura")
+        self.assertEqual(fila["facultad"], "Facultad de Arquitectura")
+        self.assertEqual(fila["ciclo"], "7° Ciclo")
+        self.assertTrue(fila["es_valido"])
 
 
 class TestDetectarNivelReal(unittest.TestCase):

@@ -593,9 +593,10 @@ function mostrarAviso(texto) {
     aviso = document.createElement('div');
     aviso.id = 'portalAviso';
     aviso.setAttribute('role', 'status');
+    // Centrado en la pantalla (antes salia pegado al borde inferior).
     aviso.style.cssText =
-      'position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:1200;' +
-      'max-width:90vw;padding:10px 16px;border-radius:10px;text-align:center;' +
+      'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1200;' +
+      'max-width:min(90vw,32rem);padding:10px 16px;border-radius:10px;text-align:center;' +
       'font-size:0.85rem;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
       'background:var(--surface,#fff);color:var(--text-primary,#111);' +
       'border:1px solid var(--border,#ddd);';
@@ -621,18 +622,42 @@ async function pedirProcesamiento() {
   }
 }
 
+// Cada clic cuesta una peticion al servicio (que a su vez consulta a GitHub): con
+// varios clics seguidos solo se gasta cuota sin adelantar nada. Se ignora el clic
+// mientras hay una peticion en curso y durante unos segundos despues.
+const ESPERA_ENTRE_CLICS_MS = 15000;
+let peticionEnCurso = false;
+let ultimaPeticion = 0;
+
 function refresh() {
+  const boton = $('refreshBtn');
+  if (peticionEnCurso) {
+    mostrarAviso('La solicitud anterior sigue en curso. Espera un momento.');
+    return;
+  }
+  if (Date.now() - ultimaPeticion < ESPERA_ENTRE_CLICS_MS) {
+    mostrarAviso('Acabas de pedir la actualizacion. Prueba en unos segundos.');
+    return;
+  }
+  ultimaPeticion = Date.now();
+  peticionEnCurso = true;
+  if (boton) boton.disabled = true;
+
   state.refreshing = true;
   const icon = $('refreshIcon');
   icon.style.animation = 'spin 0.5s ease-in-out';
-  pedirProcesamiento();
   state.cache.clear();
-  setTimeout(() => {
-    icon.style.animation = '';
-    state.refreshing = false;
-    if (state.view === 'dashboard') window.SurveyPortalDashboard.renderDashboard();
-    else renderArtifactViewer(state.activePhaseId);
-  }, 500);
+
+  pedirProcesamiento().finally(() => {
+    peticionEnCurso = false;
+    if (boton) boton.disabled = false;
+    setTimeout(() => {
+      icon.style.animation = '';
+      state.refreshing = false;
+      if (state.view === 'dashboard') window.SurveyPortalDashboard.renderDashboard();
+      else renderArtifactViewer(state.activePhaseId);
+    }, 500);
+  });
 }
 
 // Funciones de navegación expuestas globalmente (los file-tabs usan addEventListener, no onclick inline)
