@@ -872,18 +872,25 @@
 .ring-card .repo-card-desc { text-align: center; }
 .ring-leyenda { justify-content: center; }
 
+/* Filas flexibles: las tarjetas se estiran para repartirse el ancho del bloque
+   (2 anchas, 3 medianas, 4 más angostas), como en la maqueta. Con grid el
+   navegador calculaba columnas de más y las dejaba angostas y apiñadas. */
 .ring-grid {
-  display: grid;
-  /* auto-fit: las tarjetas se reparten a lo ancho de la fila, como en la maqueta
-     (2 anchas, 3 medianas, 4 más angostas). El ancho máximo y los márgenes
-     automáticos mantienen el bloque centrado y adaptable al tamaño de pantalla. */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 18px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px 16px;
   max-width: 900px;
   margin: 0 auto;
 }
 
-.ring { text-align: center; }
+.ring {
+  /* crece para repartirse el ancho de la fila; en pantallas angostas baja de
+     fila solo (dos por fila en un celular). */
+  flex: 1 1 170px;
+  min-width: 0;
+  text-align: center;
+}
 
 /* Los anillos sin datos ya no se atenúan con opacidad: se distinguen por el
    anillo vacío, pero sus textos tienen que poder leerse. */
