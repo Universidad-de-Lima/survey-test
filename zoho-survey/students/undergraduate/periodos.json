@@ -1,8 +1,10 @@
 [
   {
-    "id": "proximamente",
-    "label": "Próximamente",
-    "url": "underconstruction.html",
+    "id": "2026-1",
     "isNew": true
+  },
+  {
+    "id": "2025-2",
+    "isNew": false
   }
 ]
