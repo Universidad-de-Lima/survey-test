@@ -866,29 +866,17 @@
   margin: 18px 0 12px;
 }
 
-/* Bloque centrado: el título, la descripción y la leyenda acompañan al grid. */
-.ring-card .repo-card-title,
-.ring-card .repo-card-desc { text-align: center; }
-.ring-leyenda { justify-content: center; }
-
-/* Filas flexibles: las tarjetas se reparten todo el ancho de la pantalla
-   (2 anchas, 3 medianas, 4 más angostas), como en la maqueta. Con grid el
-   navegador calculaba columnas de más y las dejaba angostas y apiñadas. */
 .ring-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px 16px;
+  display: grid;
+  /* auto-fit: las tarjetas se reparten a lo ancho de la fila, como en la maqueta
+     (2 anchas, 3 medianas, 4 más angostas). El ancho máximo evita que en una
+     pantalla muy grande queden separadas de más. */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 14px;
+  max-width: 980px;
 }
 
-.ring {
-  /* Ancho fijo y centrado: la tarjeta no se estira para llenar la fila, así el
-     anillo queda con aire alrededor (como en la maqueta). En pantallas angostas
-     baja de fila solo, hasta dos por fila en un celular. */
-  flex: 0 1 210px;
-  min-width: 0;
-  text-align: center;
-}
+.ring { text-align: center; }
 
 /* Los anillos sin datos ya no se atenúan con opacidad: se distinguen por el
    anillo vacío, pero sus textos tienen que poder leerse. */
