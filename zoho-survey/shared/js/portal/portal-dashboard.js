@@ -61,7 +61,7 @@
     const hayDatos = !!(medicion && medicion.nps != null);
     if (!hayDatos) {
       return '<div class="ring pendiente">' +
-        '<div class="ring-aro" style="background:conic-gradient(var(--ring-track) 0 100%)">' +
+        '<div class="ring-aro vacio">' +
           '<div class="ring-centro"><b class="sin-dato">—</b><i>NPS</i></div>' +
         '</div>' +
         '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
