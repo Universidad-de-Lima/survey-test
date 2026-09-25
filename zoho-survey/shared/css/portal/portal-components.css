@@ -882,9 +882,10 @@
 }
 
 .ring {
-  /* crece para repartirse el ancho de la fila; en pantallas angostas baja de
-     fila solo (dos por fila en un celular). */
-  flex: 1 1 170px;
+  /* Ancho fijo y centrado: la tarjeta no se estira para llenar la fila, así el
+     anillo queda con aire alrededor (como en la maqueta). En pantallas angostas
+     baja de fila solo, hasta dos por fila en un celular. */
+  flex: 0 1 210px;
   min-width: 0;
   text-align: center;
 }
