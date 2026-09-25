@@ -27,7 +27,115 @@
     return _data.getPeriodoDeFase(phase.id) || SIN_DATOS;
   }
 
-  function renderDashboard() {
+  // ── Anillos: la última medición de cada encuesta ──
+  // Un anillo por encuesta con su periodo más reciente. El anillo se llena
+  // sobre la escala real del NPS (-100 a +100: medio anillo es cero) y el
+  // color sigue las metas del proyecto.
+  const GRUPOS_ANILLOS = ['Estudiantes', 'Graduados y egresados', 'Colaboradores y empleadores'];
+
+  function colorDeNps(valor) {
+    if (valor == null) return 'var(--muted)';
+    if (valor >= META_NPS) return 'var(--emerald)';
+    return valor >= META_NPS_MEDIO ? 'var(--amber)' : 'var(--rose)';
+  }
+
+  // Posición en el anillo: -100 → 0 %, 0 → 50 %, +100 → 100 %.
+  function llenadoDeNps(valor) {
+    if (valor == null) return '0.00';
+    const pct = (Number(valor) + 100) / 2;
+    return Math.max(0, Math.min(100, pct)).toFixed(2);
+  }
+
+  function tendenciaDe(medicion) {
+    if (!medicion || medicion.nps == null) return '<span class="ring-tend pendiente">sin datos</span>';
+    if (medicion.delta == null) return '<span class="ring-tend pendiente">primera medición</span>';
+    const sube = medicion.delta > 0;
+    const clase = sube ? 'sube' : 'baja';
+    const signo = sube ? '▲ +' : '▼ ';
+    return '<span class="ring-tend ' + clase + '">' + signo + fmtNum(medicion.delta, 2) +
+      ' vs ' + _core.esc(medicion.anterior || '') + '</span>';
+  }
+
+  function anilloDeEncuesta(phase, medicion) {
+    const esc2 = _core.esc;
+    const hayDatos = !!(medicion && medicion.nps != null);
+    if (!hayDatos) {
+      return '<div class="ring pendiente">' +
+        '<div class="ring-aro" style="background:conic-gradient(var(--ring-track) 0 100%)">' +
+          '<div class="ring-centro"><b class="sin-dato">—</b><i>NPS</i></div>' +
+        '</div>' +
+        '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
+        '<span class="ring-per">próximamente</span>' +
+        '<span class="ring-satisf"><span class="ring-barra"><i style="width:0%"></i></span>' +
+          '<span class="sin-dato">—</span></span>' +
+        tendenciaDe(medicion) +
+      '</div>';
+    }
+
+    const color = colorDeNps(medicion.nps);
+    const signo = medicion.nps > 0 ? '+' : '';
+    const csatPct = medicion.csat == null ? '0.00' : medicion.csat.toFixed(2);
+    const csatTexto = medicion.csat == null ? '—' : fmtNum(medicion.csat, 2) + ' %';
+    const colorCsat = medicion.csat == null ? 'var(--muted)'
+      : (medicion.csat >= META_CSAT ? 'var(--emerald)'
+        : medicion.csat >= META_PONDERADO ? 'var(--amber)' : 'var(--rose)');
+    const detalle = esc2(medicion.periodo || '') +
+      (medicion.respuestas != null ? ' · ' + fmtNum(medicion.respuestas, 0) + ' respuestas' : '');
+
+    return '<div class="ring">' +
+      '<div class="ring-aro" style="background:conic-gradient(' + color + ' 0 ' + llenadoDeNps(medicion.nps) +
+        '%, var(--ring-track) 0)">' +
+        '<div class="ring-centro"><b style="color:' + color + '">' + signo + fmtNum(medicion.nps, 2) + '</b><i>NPS</i></div>' +
+      '</div>' +
+      '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
+      '<span class="ring-per">' + detalle + '</span>' +
+      '<span class="ring-satisf"><span class="ring-barra"><i style="width:' + csatPct + '%; background:' + colorCsat +
+        '"></i></span><span style="color:' + colorCsat + '">' + csatTexto + '</span></span>' +
+      tendenciaDe(medicion) +
+    '</div>';
+  }
+
+  function renderAnillos(mediciones, fases) {
+    const porFase = {};
+    (mediciones || []).forEach(function (m) { porFase[m.faseId] = m; });
+
+    const secciones = GRUPOS_ANILLOS.map(function (grupo) {
+      const delGrupo = (fases || []).filter(function (p) { return !p.optional && p.grupo === grupo; });
+      if (!delGrupo.length) return '';
+      return '<div class="ring-grupo">' + _core.esc(grupo) + '</div>' +
+        '<div class="ring-grid">' + delGrupo.map(function (p) {
+          return anilloDeEncuesta(p, porFase[p.id]);
+        }).join('') + '</div>';
+    }).join('');
+
+    return '<section class="section">' +
+      '<div class="repo-card">' +
+        '<div class="repo-card-inner" style="flex-direction:column; align-items:stretch;">' +
+          '<h2 class="repo-card-title">' + window.svg('gauge', 16) + 'Última encuesta de cada grupo</h2>' +
+          '<p class="repo-card-desc">Cada anillo muestra la medición más reciente de una encuesta: el número del centro es su ' +
+            '<strong>índice de promotores netos</strong>, el anillo se llena sobre la escala −100 a +100 (medio anillo es cero) ' +
+            'y abajo va el <strong>nivel de satisfacción</strong>.</p>' +
+          '<div class="ring-leyenda">' +
+            '<span><i style="background:var(--emerald)"></i>NPS de ' + META_NPS + ' o más</span>' +
+            '<span><i style="background:var(--amber)"></i>entre ' + META_NPS_MEDIO + ' y ' + META_NPS + '</span>' +
+            '<span><i style="background:var(--rose)"></i>debajo de ' + META_NPS_MEDIO + '</span>' +
+            '<span><i style="background:var(--ring-track)"></i>todavía sin datos</span>' +
+          '</div>' +
+          secciones +
+        '</div>' +
+      '</div>' +
+    '</section>';
+  }
+
+  let _renderToken = 0;
+
+  async function renderDashboard() {
+    // Las mediciones llegan por red; si mientras cargaba se pidió otro render,
+    // este se descarta para no pisar el más reciente.
+    const token = ++_renderToken;
+    const mediciones = await _data.loadMedicionesDeEncuestas();
+    if (token !== _renderToken) return;
+
     var REPO_TARGET = window.REPO_TARGET;
     var PORTAL_PHASES = window.PORTAL_PHASES;
     var svg = window.svg;
@@ -36,6 +144,7 @@
 
     const html =
       '<div class="main-inner">' +
+        renderAnillos(mediciones, PORTAL_PHASES) +
         '<section class="section">' +
           '<div class="repo-card">' +
             '<div class="repo-card-inner">' +

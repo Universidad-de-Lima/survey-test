@@ -2,6 +2,40 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-25 — El Dashboard abre con la última encuesta de cada grupo
+
+- La vista **Dashboard** empieza con una fila de **anillos**: uno por encuesta (los nueve niveles
+  del catálogo), mostrando solo su medición más reciente. Estudiante Pregrado aparece una sola vez,
+  con 2026-1; el 2025-2 solo se usa para la flecha de tendencia.
+- El anillo se llena sobre la escala real del índice de promotores netos (−100 a +100: medio anillo
+  es cero) y el color sigue las metas, en lugar de dibujarlo como un porcentaje de 0 a 100.
+- Las encuestas que todavía no tienen datos ocupan su lugar en gris ("próximamente"). Las nueve van
+  agrupadas en Estudiantes · Graduados y egresados · Colaboradores y empleadores.
+- Datos: `portal-data.js` suma `medicionDeFase()` y `loadMedicionesDeEncuestas()`, que piden solo el
+  `dashboard_data.json` de cada periodo (no el juego completo de JSON). Con pruebas.
+
+## 2026-09-25 — Los mensajes del portal usan el naranja institucional
+
+- Los avisos salen centrados en la pantalla (antes pegados al borde inferior), con el naranja de la
+  marca (`--brand`, `#FF5117`) y letras blancas, según el Manual de Marca Ulima.
+- El botón de refrescar ignora clics repetidos: uno mientras hay una solicitud en curso y quince
+  segundos de espera después, para no pedir corridas de más.
+- El pie de la página dice "ítems" en lugar de "fases", y los botones avisan "Actualizar" y "Dashboard".
+
+## 2026-09-25 — El análisis reutilizado ya no pierde fragmentos
+
+- Al reusar el `sentimiento.json` previo se guardaba una sola fila por comentario, así que cada
+  corrida incremental dejaba menos fragmentos y menos tópicos (2026-1 cayó de 1847 a 856 filas).
+- La reconstrucción del dataset se extrae a `_dataset_desde_sentimiento()`, que conserva una fila por
+  fragmento, y se restauraron los dashboards de 2026-1 (1852 filas) y Graduados (434).
+
+## 2026-09-25 — El proceso no arranca si no hay respuestas nuevas
+
+- El servicio que dispara la corrida (función de Vercel) compara la fecha del último cambio en las
+  bandejas de `data/zoho_pendientes/` con la de los datos generados en `zoho-survey/students/`:
+  si no llegó nada nuevo responde "Sin cambios" y no gasta una corrida del ETL (de 2 a 25 minutos).
+- Si el historial de commits no se puede leer, dispara igual que antes.
+
 ## 2026-09-24 — La cadena de motores se queda con OpenCode y NVIDIA
 
 - Google (`gemini-3.8-flash`) sale de la cadena por defecto: en las corridas respondía 503

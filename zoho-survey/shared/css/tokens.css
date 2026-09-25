@@ -124,6 +124,9 @@
     --violet: #8B5CF6;
     --violet-50: #f5f3ff;
 
+    /* Pista neutra de los anillos (última medición de cada encuesta) */
+    --ring-track: #eef0f2;
+
     /* ── Sombras ── */
     --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08);
     --shadow-dropdown: 0 8px 20px rgba(15, 23, 42, 0.08);

@@ -102,6 +102,91 @@
     return PERIODO_NUEVO_POR_FASE[phaseId] || null;
   }
 
+  // ── Última medición de cada encuesta (anillos del dashboard) ──
+  // Solo se pide el dashboard_data.json de cada periodo: es el resumen mínimo
+  // que necesitan los anillos de la portada, sin cargar el juego completo de
+  // JSON de todas las encuestas.
+  let RESUMEN_CACHE = {};
+
+  // Helper puro: arma la fila de una encuesta con los mapas ya cargados.
+  // `opciones` permite inyectar periodos, marcador de periodo nuevo y caché,
+  // así se prueba sin red.
+  function medicionDeFase(phaseId, opciones) {
+    const opc = opciones || {};
+    const periodos = (opc.periodos || PERIODOS_POR_FASE)[phaseId] || [];
+    const nuevos = opc.nuevos || PERIODO_NUEVO_POR_FASE;
+    const cache = opc.cache || {};
+    const nivel = nivelDeFase(phaseId);
+    const periodo = nuevos[phaseId] || periodos[0] || null;
+
+    const fila = {
+      faseId: phaseId, nivel: nivel, periodo: periodo,
+      anterior: null, csat: null, nps: null, respuestas: null,
+      npsAnterior: null, delta: null
+    };
+    if (!nivel || !periodo) return fila;
+
+    const pos = periodos.indexOf(periodo);
+    fila.anterior = pos !== -1 ? (periodos[pos + 1] || null) : (periodos[1] || null);
+
+    const resumenDe = function (clave) {
+      const entrada = cache[clave];
+      return (entrada && entrada.resumen) || null;
+    };
+
+    const actual = resumenDe(nivel + '/' + periodo);
+    if (actual) {
+      fila.csat = actual.csat && actual.csat.score != null ? actual.csat.score : null;
+      fila.nps = actual.nps && actual.nps.score != null ? actual.nps.score : null;
+      fila.respuestas = actual.encuestas != null ? actual.encuestas : null;
+    }
+    if (fila.anterior) {
+      const previo = resumenDe(nivel + '/' + fila.anterior);
+      if (previo) {
+        fila.npsAnterior = previo.nps && previo.nps.score != null ? previo.nps.score : null;
+      }
+    }
+    if (fila.nps != null && fila.npsAnterior != null) {
+      fila.delta = Math.round((fila.nps - fila.npsAnterior) * 100) / 100;
+    }
+    return fila;
+  }
+
+  // Mezcla el resumen liviano con los datos completos ya cargados (gana el completo).
+  function cacheDeMediciones() {
+    const mezcla = {};
+    Object.keys(RESUMEN_CACHE).forEach(function (k) { mezcla[k] = RESUMEN_CACHE[k]; });
+    Object.keys(SURVEY_DATA_CACHE).forEach(function (k) { mezcla[k] = SURVEY_DATA_CACHE[k]; });
+    return mezcla;
+  }
+
+  async function loadResumenPeriodo(nivel, periodo) {
+    const clave = nivel + '/' + periodo;
+    if (RESUMEN_CACHE[clave] || SURVEY_DATA_CACHE[clave]) return;
+    try {
+      const res = await fetch('./' + nivel + '/' + periodo + '/json/dashboard_data.json', { cache: 'no-store' });
+      const datos = await res.json();
+      RESUMEN_CACHE[clave] = { resumen: (datos && datos.resumen) || null };
+    } catch (e) {
+      RESUMEN_CACHE[clave] = { resumen: null };
+    }
+  }
+
+  /** Última medición de las nueve encuestas, con su comparación anterior. */
+  async function loadMedicionesDeEncuestas() {
+    const tareas = [];
+    Object.keys(NIVELES_FASE).forEach(function (phaseId) {
+      const fila = medicionDeFase(phaseId);
+      if (fila.periodo) tareas.push(loadResumenPeriodo(fila.nivel, fila.periodo));
+      if (fila.anterior) tareas.push(loadResumenPeriodo(fila.nivel, fila.anterior));
+    });
+    await Promise.all(tareas);
+    const cache = cacheDeMediciones();
+    return Object.keys(NIVELES_FASE).map(function (phaseId) {
+      return medicionDeFase(phaseId, { cache: cache });
+    });
+  }
+
   // ── Carga del periodos.json de TODOS los niveles, de una vez ──
   async function loadPeriodosDeNiveles() {
     PERIODOS_POR_FASE = {};
@@ -520,7 +605,10 @@
     getPeriodosDeFase: function (phaseId) { return periodosDeFase(phaseId); },
     getPeriodoDeFase: getPeriodoDeFase,
     tieneDatosDeFase: tieneDatosDeFase,
-    nivelDeFase: nivelDeFase
+    nivelDeFase: nivelDeFase,
+    // ── Última medición de cada encuesta (anillos del dashboard) ──
+    medicionDeFase: medicionDeFase,
+    loadMedicionesDeEncuestas: loadMedicionesDeEncuestas
 
   };
 })();

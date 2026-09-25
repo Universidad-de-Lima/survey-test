@@ -103,4 +103,52 @@
       assert.deepEqual(data.getPeriodosDeFase('1.0'), []);
     });
   });
+  describe('portal-data — medicionDeFase (anillos del dashboard)', () => {
+    const PERIODOS = { '1.0': ['2026-1', '2025-2'], '1.1': [] };
+    const NUEVOS = { '1.0': '2026-1', '1.1': null };
+    const CACHE = {
+      'students/undergraduate/2026-1': { resumen: { encuestas: 4239, csat: { score: 97.85 }, nps: { score: 72.61 } } },
+      'students/undergraduate/2025-2': { resumen: { encuestas: 3998, csat: { score: 96.97 }, nps: { score: 61.31 } } }
+    };
+    const OPCIONES = { periodos: PERIODOS, nuevos: NUEVOS, cache: CACHE };
+
+    it('toma la última medición y la compara con la anterior', () => {
+      const fila = data.medicionDeFase('1.0', OPCIONES);
+      assert.equal(fila.periodo, '2026-1');
+      assert.equal(fila.anterior, '2025-2');
+      assert.equal(fila.nps, 72.61);
+      assert.equal(fila.csat, 97.85);
+      assert.equal(fila.respuestas, 4239);
+      assert.equal(fila.npsAnterior, 61.31);
+      assert.equal(fila.delta, 11.3);
+    });
+
+    it('sin medición anterior no hay comparación', () => {
+      const fila = data.medicionDeFase('1.0', { periodos: { '1.0': ['2026-1'] }, nuevos: { '1.0': '2026-1' }, cache: CACHE });
+      assert.equal(fila.periodo, '2026-1');
+      assert.equal(fila.anterior, null);
+      assert.equal(fila.delta, null);
+      assert.equal(fila.nps, 72.61);
+    });
+
+    it('un ítem sin periodos reales queda sin datos', () => {
+      const fila = data.medicionDeFase('1.1', OPCIONES);
+      assert.equal(fila.periodo, null);
+      assert.equal(fila.nps, null);
+      assert.equal(fila.delta, null);
+    });
+
+    it('conserva un NPS negativo, sin recortarlo', () => {
+      const cache = { 'students/undergraduate/2026-1': { resumen: { csat: { score: 88 }, nps: { score: -12.5 } } } };
+      const fila = data.medicionDeFase('1.0', { periodos: { '1.0': ['2026-1'] }, nuevos: { '1.0': '2026-1' }, cache: cache });
+      assert.equal(fila.nps, -12.5);
+    });
+
+    it('si la caché está vacía no inventa cifras', () => {
+      const fila = data.medicionDeFase('1.0', { periodos: { '1.0': ['2026-1'] }, nuevos: { '1.0': '2026-1' }, cache: {} });
+      assert.equal(fila.nps, null);
+      assert.equal(fila.csat, null);
+      assert.equal(fila.respuestas, null);
+    });
+  });
 })();
