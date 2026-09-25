@@ -863,17 +863,24 @@
   color: var(--muted-foreground, #6b7280);
   border-bottom: 1px solid var(--border, #e6e8eb);
   padding-bottom: 5px;
-  margin: 18px 0 12px;
+  max-width: 900px;
+  margin: 18px auto 12px;
 }
+
+/* Bloque centrado: el título, la descripción y la leyenda acompañan al grid. */
+.ring-card .repo-card-title,
+.ring-card .repo-card-desc { text-align: center; }
+.ring-leyenda { justify-content: center; }
 
 .ring-grid {
   display: grid;
   /* auto-fit: las tarjetas se reparten a lo ancho de la fila, como en la maqueta
-     (2 anchas, 3 medianas, 4 más angostas). El ancho máximo evita que en una
-     pantalla muy grande queden separadas de más. */
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+     (2 anchas, 3 medianas, 4 más angostas). El ancho máximo y los márgenes
+     automáticos mantienen el bloque centrado y adaptable al tamaño de pantalla. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 18px 14px;
-  max-width: 980px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .ring { text-align: center; }

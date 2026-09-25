@@ -109,7 +109,7 @@
     }).join('');
 
     return '<section class="section">' +
-      '<div class="repo-card">' +
+      '<div class="repo-card ring-card">' +
         '<div class="repo-card-inner" style="flex-direction:column; align-items:stretch;">' +
           '<h2 class="repo-card-title">' + window.svg('gauge', 16) + 'Última encuesta de cada grupo</h2>' +
           '<p class="repo-card-desc">Cada anillo muestra la medición más reciente de una encuesta: el número del centro es su ' +
