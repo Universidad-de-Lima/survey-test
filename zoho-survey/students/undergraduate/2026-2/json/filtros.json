@@ -1,0 +1,18 @@
+{
+  "version": "2.0",
+  "has_ciclo": true,
+  "facultades": [
+    "Facultad de Ciencias Empresariales"
+  ],
+  "carreras": [
+    "Administración"
+  ],
+  "ciclos": [
+    "1° Ciclo"
+  ],
+  "facultad_carrera": {
+    "Facultad de Ciencias Empresariales": [
+      "Administración"
+    ]
+  }
+}
