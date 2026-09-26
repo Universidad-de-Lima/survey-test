@@ -782,7 +782,7 @@ window.SurveySentimentView = (() => {
       overlay.setAttribute('aria-labelledby', 'export-modal-title');
       overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
       const modal = document.createElement('div');
-      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Roboto,sans-serif;';
+      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Roboto,Lusitania,sans-serif;';
       const title = document.createElement('h3');
       title.id = 'export-modal-title';
       title.textContent = 'Exportación no disponible';
@@ -793,7 +793,7 @@ window.SurveySentimentView = (() => {
       const closeBtn = document.createElement('button');
       closeBtn.textContent = 'Cerrar';
       closeBtn.setAttribute('type', 'button');
-      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size:14px;cursor:pointer;font-family:Roboto,sans-serif;';
+      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size:14px;cursor:pointer;font-family:Roboto,Lusitania,sans-serif;';
       closeBtn.addEventListener('click', () => overlay.remove());
       overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
       modal.appendChild(title);

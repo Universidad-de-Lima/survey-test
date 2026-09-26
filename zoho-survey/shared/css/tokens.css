@@ -37,8 +37,8 @@
   --danger-text: #991B1B;
 
   /* ── Tipografía ── */
-  --font-family-primary: 'Roboto', sans-serif;
-  --font-family-display: 'Roboto', sans-serif;
+  --font-family-primary: 'Roboto', 'Lusitania', sans-serif;
+  --font-family-display: 'Roboto', 'Lusitania', sans-serif;
   --font-light: 300;
   --font-regular: 400;
   --font-medium: 500;

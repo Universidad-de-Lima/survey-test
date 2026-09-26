@@ -24,6 +24,16 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* ── Controles de formulario ── */
+/* No heredan la tipografía por defecto (el navegador les pone Arial); sin esto
+   los desplegables de filtro y los campos salen con otra letra. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 /* ── Accesibilidad ── */
 .skip-link {
   position: absolute;
