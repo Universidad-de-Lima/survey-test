@@ -19,9 +19,6 @@
   white-space: nowrap;
 }
 
-/* ── Custom scrollbars para tablas en móvil ── */
-/* (styles moved to .table-scroll in components.css) */
-
 /* ============================================================
    MEDIA QUERIES
    ============================================================ */
@@ -33,29 +30,7 @@
     padding: var(--space-sm) var(--space-md);
     overflow: visible;
   }
-  .filter-group {
-    gap: var(--space-xs);
-  }
-  .filter-label {
-  line-height: 15px;
-    font-size: var(--text-xs);
-    letter-spacing: 0;
-  }
-  .filter-select,
-  .filter-custom-toggle,
-  .filter-multiselect-toggle {
-  line-height: 17px;
-    font-size: var(--text-sm);
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-  .filter-reset {
-  line-height: 15px;
-    font-size: var(--text-xs);
-    padding: 5px 10px;
-    min-width: 72px;
-  }
-}
+        }
 
 /* ── ≤768px: Tablet ── */
 @media (max-width: 768px) {
@@ -84,16 +59,7 @@
   .main-content { padding: var(--space-lg) var(--space-md); }
   .section { margin-bottom: var(--space-3xl); }
   .section-title { font-size: var(--text-xl); line-height: 21px; }
-  .radar-svg text {
-    font-size: var(--text-md);
-    font-weight: var(--font-medium) !important;
-  }
-  .filter-container {
-    flex-wrap: wrap;
-    gap: var(--space-md);
-    padding: var(--space-sm) var(--space-md);
-  }
-  .filter-group {
+      .filter-group {
     flex: 1 1 calc(50% - 6px);
     min-width: 140px;
   }
@@ -107,24 +73,13 @@
   .filter-reset {
     margin-left: auto;
   }
-  .filter-select,
-  .filter-custom-toggle,
-  .filter-multiselect-toggle {
-  line-height: 15px;
-    font-size: var(--text-xs);
-    padding: 4px 24px 4px 8px;
-  }
-  .filter-reset {
+    .filter-reset {
     flex: 0 0 auto;
     min-width: 64px;
     padding: 4px 8px;
     text-align: center;
   }
-  .grid-2 {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-  .bar-label {
+    .bar-label {
   line-height: 15px; width: 140px; font-size: var(--text-xs); }
   .bar-container {
     margin-right: 40px;
@@ -143,12 +98,9 @@
   .bar-value::before, .bar-value-outside::before {
     display: none !important;
   }
-  .card { padding: var(--space-lg); }
-  .card-title { font-size: var(--text-md); line-height: 18px; }
-  .insight-box { padding: var(--space-md) var(--space-lg); }
+      .insight-box { padding: var(--space-md) var(--space-lg); }
   .footer-logo-img { width: 180px; }
-  .splash img { max-width: 200px; }
-  .subsection-title { font-size: var(--text-lg); line-height: 20px; }
+    .subsection-title { font-size: var(--text-lg); line-height: 20px; }
   .table-scroll {
     max-height: 380px;
     overflow-y: auto;
@@ -171,17 +123,7 @@
   .filter-group {
     flex: 1 1 100%;
   }
-  .radar-svg text {
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold) !important;
-  }
-  .bar-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    margin-bottom: var(--space-md);
-  }
-  .bar-label {
+      .bar-label {
   line-height: 15px;
     width: 100%;
     text-align: left;
@@ -212,8 +154,7 @@
   .legend {
   line-height: 15px; font-size: var(--text-xs); }
   .footer-logo-img { width: 140px; }
-  .splash img { max-width: 160px; }
-  .table-scroll {
+    .table-scroll {
     max-height: 300px;
   }
   :root {

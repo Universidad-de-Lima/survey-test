@@ -136,12 +136,6 @@
 }
 
 /* ── Grid ── */
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-xl);
-}
-
 /* ── Footer ── */
 .footer {
   line-height: 17px;
