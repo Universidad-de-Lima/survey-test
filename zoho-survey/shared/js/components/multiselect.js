@@ -44,7 +44,6 @@ window.SurveyMultiselect = (() => {
 
     const wrapper = document.createElement('div');
     wrapper.className = 'filter-multiselect';
-    wrapper.style.position = 'relative';
 
     const getSelectedLabels = () => {
       const opts = Array.from(selCic.options).filter(opt => opt.selected);
@@ -143,13 +142,7 @@ window.SurveyMultiselect = (() => {
     };
 
     // Ocultar el select original (accesible para screen readers, invisible visualmente)
-    selCic.style.position = 'absolute';
-    selCic.style.opacity = '0';
-    selCic.style.pointerEvents = 'none';
-    selCic.style.width = '1px';
-    selCic.style.height = '1px';
-    selCic.style.margin = '0';
-    selCic.style.border = 'none';
+    selCic.classList.add('filter-select-hidden');
     selCic.setAttribute('aria-hidden', 'true');
     selCic.tabIndex = -1;
 

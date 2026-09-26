@@ -48,7 +48,6 @@ window.SurveyCustomSelect = (() => {
 
     const wrapper = document.createElement('div');
     wrapper.className = 'filter-custom-select';
-    wrapper.style.position = 'relative';
 
     sel.classList.add('filter-select-hidden');
     sel.parentNode.insertBefore(wrapper, sel);

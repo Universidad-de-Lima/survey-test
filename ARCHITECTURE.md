@@ -292,6 +292,7 @@ Sobre el **sitio publicado**, no sobre el disco: se abre cada pagina con el nave
 
 - Todo estilo vive en CSS. Los modulos de JavaScript solo arman elementos y ejecutan logica; no escriben reglas de estilo.
 - La unica excepcion es el DATO de una fila: la medida de una barra, su color o el color de una tarjeta viajan como variable CSS en linea (`--w`, `--c`, `--delay`, `--kpi-color`, `--cat-h`, `--cat-pct`). No son estilos: son valores que salen de los datos.
+- Tampoco son estilos las dos cosas que solo se pueden saber al ejecutar: la posicion de los globos de ayuda (sigue al mouse) y el mostrar u ocultar que cambia la navegacion. Eso el JavaScript lo sigue poniendo, y es correcto que lo haga.
 - Los nombres de clase de `generated.css` siguen el nombre del elemento que construye cada modulo (`bar-item`, `cat-col`, `ring-*`, `ciclo-*`, `celda-*`, `insignia-*`), mas un bloque corto de utilidades de espaciado (`.espacio-arriba-*`, `.fila-*`) y de ancho de columna (`.col-*`).
 - Como se verifica: se toma una "foto" del aspecto de cada elemento visible (familia, tamanos, colores, margenes y medidas) de la version anterior y de la nueva, sobre las cinco paginas, y se comparan elemento por elemento. Se espera 97% o mas de elementos identicos y una diferencia de alto de pagina menor al 0,5%.
 
