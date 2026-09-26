@@ -340,7 +340,7 @@
     const fmtD = (d) => esc(fmt.formatDimensionName ? fmt.formatDimensionName(d) : d);
     let txt = '';
     if (hayFiltro) {
-      txt += '<strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(contexto) + '</strong><br>';
+      txt += '<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px;">' + esc(contexto) + '</strong><br>';
       if (criticos.length) {
         txt += (criticos.length === 1 ? 'El servicio con <strong>menor visibilidad</strong> es' : 'Los servicios con <strong>menor visibilidad</strong> son') + ' ';
         txt += criticos

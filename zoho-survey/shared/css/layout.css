@@ -47,7 +47,7 @@
   border-radius: var(--radius-md);
   transition: color 0.2s ease, background-color 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .nav-links a:hover {
@@ -108,7 +108,7 @@
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--gray-900);
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   font-family: var(--font-family-display);
 }
 
@@ -118,7 +118,7 @@
   color: var(--gray-700);
   margin: 28px 0 12px 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);

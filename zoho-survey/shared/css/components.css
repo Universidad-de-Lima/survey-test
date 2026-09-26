@@ -39,7 +39,7 @@
   margin-top: var(--space-sm);
   font-weight: var(--font-medium);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 /* Reducir label de KPI dentro del grid para que "Índice de Promotores Netos" quede en 1 línea */
@@ -127,8 +127,8 @@
 
 .csat-label {
   white-space: nowrap;
-  font-size: 0.72rem;
-  letter-spacing: -0.01em;
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
 /* ── Etiquetas externas sobre barras ── */
@@ -226,7 +226,7 @@
   margin-bottom: var(--space-xs);
   font-size: var(--text-md);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .insight-box.alert   .insight-title,
@@ -313,7 +313,7 @@
   font-weight: var(--font-bold);
   color: var(--ulima-gray);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   flex-shrink: 0;
 }
 
@@ -540,7 +540,7 @@
   color: var(--gray-700);
   margin-bottom: var(--space-lg);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 /* ── Bar Charts ── */

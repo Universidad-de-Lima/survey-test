@@ -102,8 +102,6 @@ body {
   color: var(--foreground);
   font-size: 14px;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 .mono { font-family: 'Roboto', 'Lusitania'; }
 a { color: inherit; text-decoration: none; }
@@ -168,8 +166,8 @@ svg { display: block; }
 .brand-title-row { display: flex; align-items: center; gap: 8px; }
 .brand-title {
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-weight: 900;
+  letter-spacing: 0;
   color: var(--foreground);
 }
 .brand-badge {
@@ -258,7 +256,7 @@ svg { display: block; }
   padding: 4px 8px 8px;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 1px;
   color: var(--muted-foreground);
 }
 .sidebar-list {
@@ -453,7 +451,7 @@ svg { display: block; }
   display: flex; align-items: center; gap: 8px;
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.05em;
+  letter-spacing: 1px;
   color: var(--muted-foreground);
 }
 .artifact-phase-tag {
@@ -469,7 +467,7 @@ svg { display: block; }
   display: flex; align-items: center; gap: 10px;
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 .artifact-title svg { color: var(--primary); }
 
@@ -637,7 +635,7 @@ svg { display: block; }
   margin: 8px 0 20px;
   font-size: 30px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -1px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
 }
@@ -645,7 +643,7 @@ svg { display: block; }
   margin: 36px 0 16px;
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -668,7 +666,7 @@ svg { display: block; }
   margin: 20px 0 8px;
   font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
   color: rgba(26,26,26,0.9);
 }
 .portal-md p { margin: 12px 0; }
@@ -702,7 +700,7 @@ svg { display: block; }
   background: var(--muted);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 0.85em;
+  font-size: 13px;
   border: 1px solid rgba(232,232,232,0.6);
   color: rgba(26,26,26,0.9);
 }
@@ -742,7 +740,7 @@ svg { display: block; }
   margin: 20px 0;
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: 14px;
   display: block;
   overflow-x: auto;
   border: 1px solid var(--border);
@@ -769,7 +767,7 @@ mark.ed {
   background: rgba(16,185,129,0.15);
   color: #047857;
   font-family: 'Roboto', 'Lusitania';
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;
@@ -778,7 +776,7 @@ mark.ei {
   background: rgba(14,165,233,0.15);
   color: #0369A1;
   font-family: 'Roboto', 'Lusitania';
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;
@@ -787,7 +785,7 @@ mark.inf {
   background: rgba(139,92,246,0.15);
   color: #6D28D9;
   font-family: 'Roboto', 'Lusitania';
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;
@@ -796,7 +794,7 @@ mark.hip {
   background: rgba(245,158,11,0.15);
   color: #B45309;
   font-family: 'Roboto', 'Lusitania';
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;
@@ -805,7 +803,7 @@ mark.inc {
   background: rgba(244,63,94,0.15);
   color: #BE123C;
   font-family: 'Roboto', 'Lusitania';
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;

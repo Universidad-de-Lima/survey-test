@@ -105,7 +105,7 @@
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">${cleanContexto}</strong><br>`;
+      txt += `<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
       if (fortalezas.length) {
         txt += `${fortalezas.length === 1 ? 'La dimensión mejor evaluada es' : 'Las dimensiones mejor evaluadas son'} `;
         txt += fortalezas

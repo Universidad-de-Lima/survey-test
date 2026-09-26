@@ -14,7 +14,7 @@
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--gray-900);
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   font-family: var(--font-family-display);
   margin: 0 0 12px;
 }
@@ -24,7 +24,7 @@
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin: 28px 0 12px 0;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -63,7 +63,7 @@
   height: 4px;
 }
 .survey-kpi-body { min-width: 0; flex: 1; }
-.survey-kpi-value { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+.survey-kpi-value { font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 1.1; margin: 0; }
 .survey-kpi-icon {
   width: 24px; height: 24px;
   flex-shrink: 0;
@@ -81,7 +81,7 @@
   .survey-kpi-value { font-size: 32px; }
   .survey-kpi-icon { width: 32px; height: 32px; }
 }
-.survey-kpi-label { font-size: 9px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0.03em; margin-top: 6px; white-space: nowrap; }
+.survey-kpi-label { font-size: 9px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }
 .survey-kpi-meta { font-size: 11px; color: var(--muted-foreground); margin-top: 4px; line-height: 1.4; }
 
 /* ---------- Top 3 por categoría (réplica index.html) ---------- */
@@ -98,7 +98,7 @@
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin-bottom: var(--space-lg);
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   padding-left: 12px;
   margin-top: 4px;
 }
@@ -281,8 +281,8 @@
 
 .csat-label {
   white-space: nowrap;
-  font-size: 0.72rem;
-  letter-spacing: -0.01em;
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
 .csat-labels-above {
@@ -366,7 +366,7 @@
   }
   .filter-label {
     font-size: 10px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0;
   }
   .filter-select,
   .filter-custom-toggle,
@@ -525,7 +525,7 @@
   margin-bottom: var(--space-xs);
   font-size: var(--text-md);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 .insight-box.warning .insight-text {
   color: var(--gray-600);

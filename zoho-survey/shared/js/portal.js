@@ -598,7 +598,7 @@ function mostrarAviso(texto) {
     aviso.style.cssText =
       'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1200;' +
       'max-width:min(90vw,32rem);padding:10px 16px;border-radius:10px;text-align:center;' +
-      'font-size:0.85rem;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
+      'font-size:14px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
       'background:var(--brand,#FF5117);color:#fff;border:none;';
     document.body.appendChild(aviso);
   }

@@ -2,6 +2,19 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Texto nítido: sin suavizado artificial y medidas enteras
+
+- Se quita el suavizado global (`-webkit-font-smoothing: antialiased` y su equivalente de Firefox) de
+  las dos hojas base: en Windows apagaba el dibujado nítido del sistema y hacía ver la letra más
+  delgada y emborronada.
+- Todos los tamaños y espaciados entre letras pasan a valores enteros en píxeles. Los que no caían en
+  un píxel exacto (0,72rem = 11,52px; 0,8em; 0,85em; 13,5px; y espaciados de 0,5px / 0,05em) hacían
+  que unas letras encajaran y otras no: unas salían nítidas y otras más gruesas dentro de la misma
+  palabra. Regla: si el valor real queda por debajo de medio píxel se lleva a 0; si no, al entero más
+  cercano.
+- El título de la barra lateral usa grosor 900 (pedía 800, que no se carga, y el navegador lo
+  engrosaba a mano).
+
 ## 2026-09-26 — Tipografía única: Roboto con Lusitania de respaldo
 
 - Todo el proyecto declara una sola familia: `'Roboto', 'Lusitania'`. Se quitó la cadena anterior
