@@ -871,7 +871,7 @@
   /* auto-fit: las tarjetas se reparten a lo ancho de la fila, como en la maqueta
      (2 anchas, 3 medianas, 4 más angostas). El ancho máximo evita que en una
      pantalla muy grande queden separadas de más. */
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
   gap: 18px 14px;
   max-width: 980px;
 }
@@ -961,4 +961,23 @@
 .ring-tend.baja { color: var(--rose); }
 .ring-tend.pendiente { color: var(--muted-foreground, #6b7280); font-weight: 400; }
 .sin-dato { color: var(--muted-foreground, #6b7280); }
+
+/* Los textos de la tarjeta se parten en dos líneas antes que cortarse. */
+.ring-nom, .ring-per, .ring-tend, .ring-centro b { overflow-wrap: anywhere; }
+
+/* Adaptación por ancho de pantalla: el bloque no tenía ninguna regla, así que al
+   achicar la ventana las tarjetas quedaban entrecortadas. */
+@media (max-width: 900px) {
+  /* Como máximo dos tarjetas por fila, repartidas a lo ancho. */
+  .ring-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  /* Una tarjeta por fila, con el anillo y los textos del mismo tamaño. */
+  .ring-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  /* Teléfonos: se achica lo accesorio para que el anillo siga mandando. */
+  .ring-grupo { letter-spacing: 0.04em; }
+  .ring-per, .ring-tend { font-size: var(--text-2xs, 11px); }
+}
 
