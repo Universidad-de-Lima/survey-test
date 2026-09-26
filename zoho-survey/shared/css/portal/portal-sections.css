@@ -74,11 +74,11 @@
 .survey-kpi-icon svg { width: 66%; height: 66%; }
 
 @media (min-width: 768px) {
-  .survey-kpi-value { font-size: 28px; }
+  .survey-kpi-value { font-size: 28px; line-height: 31px; }
   .survey-kpi-icon { width: 28px; height: 28px; }
 }
 @media (min-width: 1024px) {
-  .survey-kpi-value { font-size: 32px; }
+  .survey-kpi-value { font-size: 32px; line-height: 35px; }
   .survey-kpi-icon { width: 32px; height: 32px; }
 }
 .survey-kpi-label { font-size: 9px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }

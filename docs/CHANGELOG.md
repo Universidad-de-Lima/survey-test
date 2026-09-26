@@ -7,6 +7,8 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - Trece alturas de línea que daban fracciones de píxel (1,1 × 15px = 16,5; 1,7 × 13px = 22,1;
   1,35 × 12px = 16,2, etc.) pasan a su píxel más cercano, para que la línea completa caiga en la
   cuadrícula y no solo las palabras.
+- El número grande de los indicadores crece por ancho de pantalla (24 / 28 / 32 px), así que cada
+  tamaño tiene su propia altura entera (26 / 31 / 35 px) en lugar de un solo valor fijo.
 - Se dejan a propósito dos multiplicadores sin convertir (`body` en `reset.css` y `.portal-md`),
   porque contienen textos de varios tamaños: al pasar a píxeles, un texto más grande que la línea
   quedaría apretado. Los elementos internos que sí tienen tamaño propio ya llevan píxeles.
