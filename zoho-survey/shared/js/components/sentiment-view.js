@@ -201,14 +201,14 @@ window.SurveySentimentView = (() => {
           kpiGrid.innerHTML = [
             createKpiCard('Total encuestados', totalRespuestas, 'var(--amber)', 'users'),
                         createKpiCard('Promotores', promotores, 'var(--emerald)', 'trending-up'),
-                        createKpiCard('Pasivos', pasivos, '#666666', 'circle-dot'),
-                        createKpiCard('Detractores', detractores, '#FF5117', 'alert-triangle'),
-                        createKpiCard('Con texto abierto', textAbierto, '#1A73E8', 'file-text'),
+                        createKpiCard('Pasivos', pasivos, 'var(--kpi-neutro)', 'circle-dot'),
+                        createKpiCard('Detractores', detractores, 'var(--ulima-orange)', 'alert-triangle'),
+                        createKpiCard('Con texto abierto', textAbierto, 'var(--kpi-azul)', 'file-text'),
                         createKpiCard('Intensidad prom.', _fmt.formatDecimal(intensidadProm, 2), 'var(--amber)', 'gauge'),
             createKpiCard('Positivas', pos, 'var(--emerald)', 'check-circle'),
-            createKpiCard('Neutras', neu, '#666666', 'circle'),
-            createKpiCard('Negativas', neg, '#FF5117', 'alert-circle'),
-            createKpiCard('Ideas analizadas', ideas, '#1A73E8', 'clipboard-list')
+            createKpiCard('Neutras', neu, 'var(--kpi-neutro)', 'circle'),
+            createKpiCard('Negativas', neg, 'var(--ulima-orange)', 'alert-circle'),
+            createKpiCard('Ideas analizadas', ideas, 'var(--kpi-azul)', 'clipboard-list')
           ].join('');
         } else {
           kpiGrid.className = 'kpi-cards-bloque';

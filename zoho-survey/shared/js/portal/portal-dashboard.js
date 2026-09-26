@@ -85,12 +85,12 @@
     return '<div class="ring">' +
       '<div class="ring-aro" style="--aro:conic-gradient(' + color + ' 0 ' + llenadoDeNps(medicion.nps) +
         '%, var(--ring-track) 0)">' +
-        '<div class="ring-centro"><b style="color:' + color + '">' + signo + fmtNum(medicion.nps, 2) + '</b><i>NPS</i></div>' +
+        '<div class="ring-centro"><b class="ring-nps" style="--c:' + color + '">' + signo + fmtNum(medicion.nps, 2) + '</b><i>NPS</i></div>' +
       '</div>' +
       '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
       '<span class="ring-per">' + detalle + '</span>' +
       '<span class="ring-satisf"><span class="ring-barra"><i style="--w:' + csatPct + '%; --c:' + colorCsat +
-        '"></i></span><span style="color:' + colorCsat + '">' + csatTexto + '</span></span>' +
+        '"></i></span><span class="ring-satisf-texto" style="--c:' + colorCsat + '">' + csatTexto + '</span></span>' +
       tendenciaDe(medicion) +
     '</div>';
   }
@@ -285,7 +285,7 @@
       sizeItem +
       fechaItem +
       '<a href="' + zipUrl + '" download="' + zipName + '" class="btn-download sin-subrayado">' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>Descargar' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" class="icono-svg"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>Descargar' +
       '</a>' +
     '</div>';
   }

@@ -281,3 +281,45 @@
 .fila-separada  { display: flex; align-items: center; gap: 12px; }
 .logo-cabecera  { height: 65px; width: auto; }
 .icono-chico    { width: 14px; height: 14px; }
+
+
+/* --- Dibujos (SVG) que arman los modulos ---
+   Colores, grosores y tamanos de los graficos viven aqui. Lo que es DATO (el
+   color de una serie, el largo de una barra) sigue viajando en el elemento. */
+.radar-sin-datos      { font-size: var(--text-xl); fill: var(--gray-400); }
+.radar-anillo         { fill: none; stroke: var(--gray-200); stroke-width: 1; }
+.radar-eje            { stroke: var(--gray-200); stroke-width: 1; }
+.radar-guia           { fill: none; stroke: var(--gray-400); stroke-width: 0.5; }
+.radar-linea-etiqueta { stroke: var(--gray-400); stroke-width: 1; }
+.radar-rotulo         { font-size: var(--text-xs); font-weight: var(--font-medium); fill: var(--gray-500); }
+.radar-area           { fill: rgba(55, 65, 81, 0.18); stroke: var(--gray-700); stroke-width: 2; }
+.seg-csat-0 { fill: var(--gray-400); }
+.seg-csat-1 { fill: var(--gray-300); }
+.seg-csat-2 { fill: var(--gray-200); }
+.seg-csat-3 { fill: var(--gray-100); }
+.seg-csat-4 { fill: var(--white); }
+.seg-nombre           { font-size: var(--text-xs); font-weight: var(--font-semibold); fill: var(--gray-900); }
+.seg-valor            { font-size: var(--text-xs); font-weight: var(--font-bold); fill: var(--gray-900); }
+.etiqueta-corta       { font-size: var(--text-xs); font-weight: var(--font-medium); fill: var(--white); }
+.etiqueta-conteo      { font-size: var(--text-xs); font-weight: var(--font-semibold); fill: var(--white); }
+.icono-svg            { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icono-punto          { fill: currentColor; stroke: none; }
+.girando              { animation: spin 0.5s ease-in-out; }
+
+/* El globo del radar (ventana emergente sobre el dibujo) */
+.globo-col         { display: flex; flex-direction: column; align-items: center; }
+.globo-titulo      { text-align: center; color: var(--white); font-size: var(--text-md); font-weight: var(--font-medium); }
+.globo-lateral     { display: flex; flex-direction: column; gap: 6px; min-width: 200px; border-left: 1px solid rgba(255, 255, 255, 0.2); padding: 0 8px; }
+.globo-barras      { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.globo-fila        { display: flex; align-items: center; gap: 8px; }
+.globo-rotulo      { color: var(--white); font-size: var(--text-xs); font-weight: var(--font-semibold); width: 60px; text-align: right; flex-shrink: 0; }
+.globo-pista       { flex: 1; height: 18px; background: rgba(255, 255, 255, 0.12); border-radius: 4px; overflow: visible; position: relative; }
+.globo-relleno     { height: 100%; width: var(--w); background: var(--white); border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; transition: width 0.3s; min-width: 0; }
+.globo-valor       { color: var(--gray-900); font-size: var(--text-xs); font-weight: var(--font-bold); line-height: 1; }
+.globo-valor-fuera { position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 4px; color: var(--white); font-size: var(--text-xs); font-weight: var(--font-bold); white-space: nowrap; }
+
+.zip-icono        { color: var(--primary); }
+.ring-centro .ring-nps { color: var(--c); }
+.ring-satisf .ring-satisf-texto { color: var(--c); }
+.resumen-contexto { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 1px; }
+.globo-fila-horizontal { display: flex; gap: 12px; white-space: nowrap; }

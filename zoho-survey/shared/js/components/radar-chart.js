@@ -177,7 +177,7 @@ window.SurveyRadarChart = (() => {
       .filter((d) => !selectedCats || selectedCats.length === 0 || selectedCats.includes(d.categoria));
 
     if (!allDims.length) {
-      svg.innerHTML = '<text x="300" y="250" text-anchor="middle" font-size="14" fill="#9CA3AF">Sin datos</text>';
+      svg.innerHTML = '<text class="radar-sin-datos" x="300" y="250" text-anchor="middle">Sin datos</text>';
       updateInsightFortaleza([], fac, car, cic);
       return;
     }
@@ -192,7 +192,7 @@ window.SurveyRadarChart = (() => {
 
     // Círculos concéntricos de escala (25%, 50%, 75%, 100%)
     [0.25, 0.5, 0.75, 1].forEach((f) =>
-      parts.push(`<circle cx="${cx}" cy="${cy}" r="${maxR * f}" fill="none" stroke="#E5E7EB" stroke-width="1"/>`),
+      parts.push(`<circle cx="${cx}" cy="${cy}" r="${maxR * f}" class="radar-anillo"/>`),
     );
 
     // 1. Calcular posiciones iniciales y dibujar ejes radiales
@@ -200,7 +200,7 @@ window.SurveyRadarChart = (() => {
       const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
       const x2 = cx + maxR * Math.cos(angle);
       const y2 = cy + maxR * Math.sin(angle);
-      parts.push(`<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E5E7EB" stroke-width="1"/>`);
+      parts.push(`<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" class="radar-eje"/>`);
 
       const lx = cx + R_label * Math.cos(angle);
       const ly = cy + R_label * Math.sin(angle);
@@ -279,13 +279,13 @@ window.SurveyRadarChart = (() => {
       const rEnd = (l.pct / 100) * maxR;
       const pxEnd = cx + rEnd * Math.cos(l.angle);
       const pyEnd = cy + rEnd * Math.sin(l.angle);
-      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" stroke="#9CA3AF" stroke-width="1" class="radar-clicable"
+      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" class="radar-linea-etiqueta radar-clicable"
                   data-dim="${_fmt.formatDimensionNameForAttr(l.dim)}"
                   data-pct="${_fmt.formatDecimal(l.pct, 2)}"
                   data-t2b="${_fmt.formatDecimal(l.top2box, 2)}"
                   data-pond="${_fmt.formatDecimal(l.ponderado, 2)}"/>`);
 
-      parts.push(`<text x="${l.x}" y="${l.y}" font-size="10" font-weight="500" fill="#6B7280" class="radar-clicable"
+      parts.push(`<text x="${l.x}" y="${l.y}" class="radar-rotulo radar-clicable"
                   text-anchor="${l.anchor}" dominant-baseline="middle"
                   data-dim="${_fmt.formatDimensionNameForAttr(l.dim)}"
                   data-pct="${_fmt.formatDecimal(l.pct, 2)}"
@@ -310,7 +310,7 @@ window.SurveyRadarChart = (() => {
       .join(' ');
 
     // Agregar polígono con animación SVG SMIL
-    parts.push(`<polygon points="${outer}" fill="rgba(55,65,81,0.18)" stroke="#374151" stroke-width="2">
+    parts.push(`<polygon points="${outer}" class="radar-area">
       <animate attributeName="points" from="${outer}" to="${data}" dur="0.8s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
     </polygon>`);
 
@@ -358,8 +358,7 @@ window.SurveyRadarChart = (() => {
           if (d) {
             const satKeys = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
             const satShort = ['Tot.Sat.', 'Muy.Sat.', 'Satisfe.', 'Insatis.', 'Tot.Ins.'];
-            const segmentColors = ['#9CA3AF', '#D1D5DB', '#E5E7EB', '#F3F4F6', '#ffffff'];
-            const total = satKeys.reduce((s, k) => s + (d.counts[k] || 0), 0);
+                        const total = satKeys.reduce((s, k) => s + (d.counts[k] || 0), 0);
             let maxIdx = 0, maxVal = 0;
             const values = satKeys.map((k, i) => {
               const v = d.counts[k] || 0;
@@ -384,7 +383,7 @@ window.SurveyRadarChart = (() => {
               const y2 = cy + dy + r * Math.sin(angle + a);
               const large = a > Math.PI ? 1 : 0;
               const path = `M${cx + dx} ${cy + dy} L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-              svgParts.push(`<path d="${path}" fill="${segmentColors[i]}"/>`);
+              svgParts.push(`<path d="${path}" class="seg-csat-${i}"/>`);
               const pctText = _fmt.formatDecimal(pct * 100, 1);
               const isSmall = pct < 0.12;
               if (isSmall) {
@@ -399,8 +398,8 @@ window.SurveyRadarChart = (() => {
                 const labelR = r * 0.62;
                 const lx = cx + dx + labelR * Math.cos(midAngle);
                 const ly = cy + dy + labelR * Math.sin(midAngle);
-                svgParts.push(`<text x="${lx}" y="${ly - 5}" text-anchor="middle" fill="#111827" font-size="10" font-weight="600">${satShort[i]}</text>`);
-                svgParts.push(`<text x="${lx}" y="${ly + 8}" text-anchor="middle" fill="#111827" font-size="10" font-weight="700">${_fmt.formatInteger(val)}</text>`);
+                svgParts.push(`<text x="${lx}" y="${ly - 5}" class="seg-nombre" text-anchor="middle">${satShort[i]}</text>`);
+                svgParts.push(`<text x="${lx}" y="${ly + 8}" class="seg-valor" text-anchor="middle">${_fmt.formatInteger(val)}</text>`);
               }
               angle += a;
             });
@@ -444,9 +443,9 @@ window.SurveyRadarChart = (() => {
               const xOff = l._side === 'right' ? 3 : -3;
               const midX = (l.edgeX + l.ox) / 2;
               const midY = (l.edgeY + l.oy) / 2 - 4;
-              svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" fill="none" stroke="#9CA3AF" stroke-width="0.5"/>`);
-              svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="500">${l.shortName}</text>`);
-              svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="600">${l.countText}</text>`);
+              svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" class="radar-guia"/>`);
+              svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" class="etiqueta-corta" text-anchor="${anchor}">${l.shortName}</text>`);
+              svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" class="etiqueta-conteo" text-anchor="${anchor}">${l.countText}</text>`);
             });
             html += '<div class="ciclo-col">';
             html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;

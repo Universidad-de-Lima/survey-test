@@ -555,8 +555,7 @@ const SurveyDashboard = (() => {
     let html = '';
 // ——— Left column: exploded pie chart SVG ———
         const satShort = ['Tot.Sat.', 'Muy.Sat.', 'Satisfe.', 'Insatis.', 'Tot.Ins.'];
-        const segmentColors = ['#9CA3AF', '#D1D5DB', '#E5E7EB', '#F3F4F6', '#ffffff']; // gray-400, gray-300, gray-200, gray-100, white
-        // Find largest segment
+                // Find largest segment
         let maxIdx = 0, maxVal = 0;
         const values = satKeys.map((k, i) => {
           const v = counts[k] || 0;
@@ -581,7 +580,7 @@ const SurveyDashboard = (() => {
           const y2 = cy + dy + r * Math.sin(angle + a);
           const large = a > Math.PI ? 1 : 0;
           const path = `M${cx + dx} ${cy + dy} L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-          svgParts.push(`<path d="${path}" fill="${segmentColors[i]}"/>`);
+          svgParts.push(`<path d="${path}" class="seg-csat-${i}"/>`);
           const pctText = _fmt.formatDecimal(pct * 100, 1);
           const isSmall = pct < 0.12;
           if (isSmall) {
@@ -596,8 +595,8 @@ const SurveyDashboard = (() => {
             const labelR = r * 0.62;
             const lx = cx + dx + labelR * Math.cos(midAngle);
             const ly = cy + dy + labelR * Math.sin(midAngle);
-            svgParts.push(`<text x="${lx}" y="${ly - 5}" text-anchor="middle" fill="#111827" font-size="10" font-weight="600">${satShort[i]}</text>`);
-            svgParts.push(`<text x="${lx}" y="${ly + 8}" text-anchor="middle" fill="#111827" font-size="10" font-weight="700">${_fmt.formatInteger(val)}</text>`);
+            svgParts.push(`<text x="${lx}" y="${ly - 5}" class="seg-nombre" text-anchor="middle">${satShort[i]}</text>`);
+            svgParts.push(`<text x="${lx}" y="${ly + 8}" class="seg-valor" text-anchor="middle">${_fmt.formatInteger(val)}</text>`);
           }
           angle += a;
         });
@@ -647,9 +646,9 @@ const SurveyDashboard = (() => {
           const xOff = l._side === 'right' ? 3 : -3;
           const midX = (l.edgeX + l.ox) / 2;
           const midY = (l.edgeY + l.oy) / 2 - 4;
-          svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" fill="none" stroke="#9CA3AF" stroke-width="0.5"/>`);
-          svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="500">${l.shortName}</text>`);
-          svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="600">${l.countText}</text>`);
+          svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" class="radar-guia"/>`);
+          svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" class="etiqueta-corta" text-anchor="${anchor}">${l.shortName}</text>`);
+          svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" class="etiqueta-conteo" text-anchor="${anchor}">${l.countText}</text>`);
         });
         html += '<div class="ciclo-col">';
           html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;

@@ -105,7 +105,7 @@
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
+      txt += `<strong class="resumen-contexto">${cleanContexto}</strong><br>`;
       if (fortalezas.length) {
         txt += `${fortalezas.length === 1 ? 'La dimensión mejor evaluada es' : 'Las dimensiones mejor evaluadas son'} `;
         txt += fortalezas
@@ -195,7 +195,7 @@
       .filter((d) => !selectedCats || selectedCats.length === 0 || selectedCats.includes(d.categoria));
 
     if (!allDims.length) {
-      svg.innerHTML = '<text x="300" y="250" text-anchor="middle" font-size="14" fill="#9CA3AF">Sin datos</text>';
+      svg.innerHTML = '<text class="radar-sin-datos" x="300" y="250" text-anchor="middle">Sin datos</text>';
       updateInsightFortaleza([], fac, car, cic);
       return;
     }
@@ -209,14 +209,14 @@
     const parts = [];
 
     [0.25, 0.5, 0.75, 1].forEach((f) =>
-      parts.push(`<circle cx="${cx}" cy="${cy}" r="${maxR * f}" fill="none" stroke="#E5E7EB" stroke-width="1"/>`),
+      parts.push(`<circle cx="${cx}" cy="${cy}" r="${maxR * f}" class="radar-anillo"/>`),
     );
 
     const labels = allDims.map((d, i) => {
       const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
       const x2 = cx + maxR * Math.cos(angle);
       const y2 = cy + maxR * Math.sin(angle);
-      parts.push(`<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E5E7EB" stroke-width="1"/>`);
+      parts.push(`<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" class="radar-eje"/>`);
 
       const lx = cx + R_label * Math.cos(angle);
       const ly = cy + R_label * Math.sin(angle);
@@ -287,13 +287,13 @@
       const rEnd = (l.pct / 100) * maxR;
       const pxEnd = cx + rEnd * Math.cos(l.angle);
       const pyEnd = cy + rEnd * Math.sin(l.angle);
-      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" stroke="#9CA3AF" stroke-width="1" style="cursor:pointer;"
+      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" class="radar-linea-etiqueta radar-clicable"
                   data-dim="${formatDimensionNameForAttr(l.dim)}"
                   data-pct="${fmtDecimal(l.pct, 2)}"
                   data-t2b="${fmtDecimal(l.top2box, 2)}"
                   data-pond="${fmtDecimal(l.ponderado, 2)}"/>`);
 
-      parts.push(`<text x="${l.x}" y="${l.y}" font-size="10" font-weight="500" fill="#6B7280" style="cursor:pointer;"
+      parts.push(`<text x="${l.x}" y="${l.y}" class="radar-rotulo radar-clicable"
                   text-anchor="${l.anchor}" dominant-baseline="middle"
                   data-dim="${formatDimensionNameForAttr(l.dim)}"
                   data-pct="${fmtDecimal(l.pct, 2)}"
@@ -316,7 +316,7 @@
       })
       .join(' ');
 
-    parts.push(`<polygon points="${outer}" fill="rgba(55,65,81,0.18)" stroke="#374151" stroke-width="2">
+    parts.push(`<polygon points="${outer}" class="radar-area">
       <animate attributeName="points" from="${outer}" to="${data}" dur="0.8s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
     </polygon>`);
 
@@ -329,7 +329,7 @@
       const py = cy + rFinal * Math.sin(a);
       const color = d.pct >= RADAR_META_CSAT ? 'var(--satisfaction-high,#374151)' : d.pct >= RADAR_META_PONDERADO ? 'var(--satisfaction-medium,#9CA3AF)' : 'var(--satisfaction-low,#FF0000)';
 
-      parts.push(`<circle cx="${ox}" cy="${oy}" r="4" fill="${color}" style="cursor:pointer;opacity:0"
+      parts.push(`<circle cx="${ox}" cy="${oy}" r="4" fill="${color}" class="radar-invisible"
                   data-dim="${formatDimensionNameForAttr(d.dim)}"
                   data-pct="${fmtDecimal(d.pct, 2)}"
                   data-t2b="${fmtDecimal(d.top2box, 2)}"
@@ -353,13 +353,12 @@
       el.setAttribute('aria-label', dim + ' (satisfaccion: ' + pct + '%)');
       el.addEventListener('mousemove', (e) => {
         const d = allDims.find(x => formatDimensionNameForAttr(x.dim) === dim);
-        let html = '<div style="display:flex;gap:12px;white-space:nowrap;">';
+        let html = '<div class="globo-fila-horizontal">';
 
         if (d) {
           const satKeys = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
           const satShort = ['Tot.Sat.', 'Muy.Sat.', 'Satisfe.', 'Insatis.', 'Tot.Ins.'];
-          const segmentColors = ['#9CA3AF', '#D1D5DB', '#E5E7EB', '#F3F4F6', '#ffffff'];
-          const total = satKeys.reduce((s, k) => s + (d.counts[k] || 0), 0);
+                    const total = satKeys.reduce((s, k) => s + (d.counts[k] || 0), 0);
           let maxIdx = 0, maxVal = 0;
           const values = satKeys.map((k, i) => {
             const v = d.counts[k] || 0;
@@ -384,7 +383,7 @@
             const y2 = cy + dy + r * Math.sin(angle + a);
             const large = a > Math.PI ? 1 : 0;
             const path = `M${cx + dx} ${cy + dy} L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-            svgParts.push(`<path d="${path}" fill="${segmentColors[i]}"/>`);
+            svgParts.push(`<path d="${path}" class="seg-csat-${i}"/>`);
             const pctText = fmtDecimal(pct * 100, 1);
             const isSmall = pct < 0.12;
             if (isSmall) {
@@ -399,8 +398,8 @@
               const labelR = r * 0.62;
               const lx = cx + dx + labelR * Math.cos(midAngle);
               const ly = cy + dy + labelR * Math.sin(midAngle);
-              svgParts.push(`<text x="${lx}" y="${ly - 5}" text-anchor="middle" fill="#111827" font-size="10" font-weight="600">${satShort[i]}</text>`);
-              svgParts.push(`<text x="${lx}" y="${ly + 8}" text-anchor="middle" fill="#111827" font-size="10" font-weight="700">${fmtNum(val, 0)}</text>`);
+              svgParts.push(`<text x="${lx}" y="${ly - 5}" class="seg-nombre" text-anchor="middle">${satShort[i]}</text>`);
+              svgParts.push(`<text x="${lx}" y="${ly + 8}" class="seg-valor" text-anchor="middle">${fmtNum(val, 0)}</text>`);
             }
             angle += a;
           });
@@ -444,18 +443,18 @@
             const xOff = l._side === 'right' ? 3 : -3;
             const midX = (l.edgeX + l.ox) / 2;
             const midY = (l.edgeY + l.oy) / 2 - 4;
-            svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" fill="none" stroke="#9CA3AF" stroke-width="0.5"/>`);
-            svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="500">${l.shortName}</text>`);
-            svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="600">${l.countText}</text>`);
+            svgParts.push(`<polyline points="${l.edgeX},${l.edgeY} ${midX},${midY} ${l.ox},${l.oy}" class="radar-guia"/>`);
+            svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" class="etiqueta-corta" text-anchor="${anchor}">${l.shortName}</text>`);
+            svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" class="etiqueta-conteo" text-anchor="${anchor}">${l.countText}</text>`);
           });
-          html += '<div style="display:flex;flex-direction:column;align-items:center;">';
+          html += '<div class="globo-col">';
           html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;
-          html += '<div style="text-align:center;color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);">Escala de Satisfacción</div>';
+          html += '<div class="globo-titulo">Escala de Satisfacción</div>';
         html += '</div>';
         }
 
-        html += '<div style="display:flex;flex-direction:column;gap:6px;min-width:200px;border-left:1px solid rgba(255,255,255,0.2);padding:0 8px;">';
-        html += '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;">';
+        html += '<div class="globo-lateral">';
+        html += '<div class="globo-barras">';
         const barItems = [
           { label: 'T3B', value: pct },
           { label: 'T2B', value: t2b },
@@ -465,22 +464,22 @@
           const cssVal = String(item.value).replace(',', '.');
           const p = parseFloat(cssVal);
           const outside = p < 12;
-          html += '<div style="display:flex;align-items:center;gap:8px;">';
-          html += `<span style="color:#fff;font-size: var(--text-xs);font-weight: var(--font-semibold);width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
-          html += '<div style="flex:1;height:18px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:visible;position:relative;">';
-          html += `<div style="height:100%;width:${cssVal}%;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;transition:width 0.3s;min-width:0;">`;
+          html += '<div class="globo-fila">';
+          html += `<span class="globo-rotulo">${item.label}</span>`;
+          html += '<div class="globo-pista">';
+          html += `<div class="globo-relleno" style="--w:${cssVal}%">`;
           if (!outside) {
-            html += `<span style="color:#111827;font-size: var(--text-xs);font-weight: var(--font-bold);line-height:1;">${item.value}%</span>`;
+            html += `<span class="globo-valor">${item.value}%</span>`;
           }
           html += '</div>';
           if (outside) {
-            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size: var(--text-xs);font-weight: var(--font-bold);white-space:nowrap;">${item.value}%</span>`;
+            html += `<span class="globo-valor-fuera">${item.value}%</span>`;
           }
           html += '</div>';
           html += '</div>';
         });
         html += '</div>';
-        html += '<div style="color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);text-align:center;">Top Box y Ponderado</div>';
+        html += '<div class="globo-titulo">Top Box y Ponderado</div>';
         html += '</div>';
         html += '</div>';
         showRadarTooltip(e, html);

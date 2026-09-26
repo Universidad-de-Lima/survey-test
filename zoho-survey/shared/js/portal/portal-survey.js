@@ -405,12 +405,12 @@
     // KPIs ejecutivos (formato portal - tarjetas con barra superior + icono)
     const kpis = [
       { label: 'Nivel de Satisfacción', value: fmtNum(r.csat.score, 2) + ' %', color: 'var(--emerald)', icon: 'check-circle' },
-      { label: 'Top 2 Box', value: fmtNum(r.csat.t2b_pct, 2) + ' %', color: '#666666', icon: 'trending-up' },
+      { label: 'Top 2 Box', value: fmtNum(r.csat.t2b_pct, 2) + ' %', color: 'var(--kpi-neutro)', icon: 'trending-up' },
       { label: 'Promedio Ponderado', value: fmtNum(r.csat.ponderado, 2) + ' %', color: 'var(--amber)', icon: 'bar-chart' },
-      { label: 'Índice de Promotores Netos', value: fmtNum(r.nps.score, 2), color: '#FF5117', icon: 'users' }
+      { label: 'Índice de Promotores Netos', value: fmtNum(r.nps.score, 2), color: 'var(--ulima-orange)', icon: 'users' }
     ];
     if (r.empleabilidad && r.empleabilidad.score != null) {
-      kpis.push({ label: 'Índice de Empleabilidad', value: fmtNum(r.empleabilidad.score, 2) + ' %', color: '#1A73E8', icon: 'graduation-cap' });
+      kpis.push({ label: 'Índice de Empleabilidad', value: fmtNum(r.empleabilidad.score, 2) + ' %', color: 'var(--kpi-azul)', icon: 'graduation-cap' });
     }
     const kpiHtml = kpis.map(k =>
       '<div class="survey-kpi" style="--kpi-color:' + k.color + ';">' +
@@ -420,7 +420,7 @@
           '<p class="survey-kpi-label">' + k.label + '</p>' +
         '</div>' +
         '<div class="survey-kpi-icon">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS[k.icon] + '</svg>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" class="icono-svg">' + ICONS[k.icon] + '</svg>' +
         '</div>' +
       '</div>'
     ).join('');

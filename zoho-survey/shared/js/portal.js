@@ -84,7 +84,7 @@ const ICONS = {
   gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
   map: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
   recycle: '<path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/>',
-  'circle-dot': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>',
+  'circle-dot': '<circle cx="12" cy="12" r="10"/><circle class="icono-punto" cx="12" cy="12" r="1.5"/>',
   clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
   hash: '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
   'file-type': '<path d="M14.5 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/><path d="M9 9h1"/>',
@@ -113,7 +113,7 @@ const ICONS = {
 function svg(name, size) {
   size = size || 14;
   const path = ICONS[name] || ICONS.circle;
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" class="icono-svg">' + path + '</svg>';
 }
 
 // ---------- State ----------
@@ -503,7 +503,7 @@ async function loadActiveFile(phase) {
   let contentHtml;
   if (isZip) {
     contentHtml = '<div class="zip-box">' +
-      '<div style="color: var(--primary);">' + svg('download', 32) + '</div>' +
+      '<div class="zip-icono">' + svg('download', 32) + '</div>' +
       '<p class="titulo-paquete">Paquete de cambios binario</p>' +
       '<a class="btn-zip" href="./portal-workspace/' + encodeURIComponent(filename) + '" download="' + filename + '">' + svg('download', 14) + 'Descargar ' + filename + '</a>' +
     '</div>';
@@ -641,14 +641,14 @@ function refresh() {
 
   state.refreshing = true;
   const icon = $('refreshIcon');
-  icon.style.animation = 'spin 0.5s ease-in-out';
+  icon.classList.add('girando');
   state.cache.clear();
 
   pedirProcesamiento().finally(() => {
     peticionEnCurso = false;
     if (boton) boton.disabled = false;
     setTimeout(() => {
-      icon.style.animation = '';
+      icon.classList.remove('girando');
       state.refreshing = false;
       if (state.view === 'dashboard') window.SurveyPortalDashboard.renderDashboard();
       else renderArtifactViewer(state.activePhaseId);
