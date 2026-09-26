@@ -161,6 +161,7 @@
 .bar-fill.low { background: var(--ulima-red); }
 .bar-container:hover .bar-fill { opacity: 0.85; }
 .bar-value {
+  line-height: 17px;
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
   color: white;
@@ -198,8 +199,10 @@
   .survey-table-wrap { overflow: visible; }
   .table-scroll { overflow: visible; }
 }
-.survey-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--text-sm); }
+.survey-table {
+  line-height: 17px; width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--text-sm); }
 .survey-table th {
+  line-height: 15px;
   background: var(--gray-700);
   color: white;
   padding: var(--space-sm) var(--space-md);
@@ -226,7 +229,8 @@
 .survey-table tr:hover { background: var(--gray-50); }
 .survey-table .text-center { text-align: center; }
 .survey-dist-bar { display: flex; height: 32px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px; }
-.survey-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: var(--text-sm); color: var(--muted-foreground); }
+.survey-legend {
+  line-height: 17px; display: flex; flex-wrap: wrap; gap: 14px; font-size: var(--text-sm); color: var(--muted-foreground); }
 .survey-legend-item { display: flex; align-items: center; gap: 6px; }
 .survey-legend-dot { width: 10px; height: 10px; border-radius: var(--radius-md); flex-shrink: 0; }
 
@@ -256,6 +260,7 @@
 }
 
 .csat-bar, #nps-bar {
+  line-height: 17px;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
@@ -320,6 +325,7 @@
 }
 
 .legend {
+  line-height: 15px;
   display: flex;
   gap: var(--space-lg);
   font-size: var(--text-xs);
@@ -368,17 +374,20 @@
     gap: var(--space-xs);
   }
   .filter-label {
+  line-height: 15px;
     font-size: var(--text-xs);
     letter-spacing: 0;
   }
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
+  line-height: 17px;
     font-size: var(--text-sm);
     padding-top: 5px;
     padding-bottom: 5px;
   }
   .filter-reset {
+  line-height: 15px;
     font-size: var(--text-xs);
     padding: 5px 10px;
     min-width: 72px;
@@ -406,6 +415,7 @@
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
+  line-height: 15px;
     font-size: var(--text-xs);
     padding: 4px 24px 4px 8px;
   }
@@ -413,7 +423,8 @@
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-  .bar-label { width: 230px; font-size: var(--text-sm); }
+  .bar-label {
+  line-height: 17px; width: 230px; font-size: var(--text-sm); }
   .card { padding: var(--space-lg); }
   .card-title { font-size: var(--text-md); line-height: 18px; }
   .radar-svg text {
@@ -445,6 +456,7 @@
     margin-bottom: var(--space-md);
   }
   .bar-label {
+  line-height: 15px;
     width: 100%;
     text-align: left;
     min-height: auto;
@@ -477,6 +489,7 @@
   overflow: hidden;
 }
 .distribution-segment {
+  line-height: 12px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -500,6 +513,7 @@
   animation: stackedGrow 0.6s ease-out forwards;
 }
 .visibility-segment {
+  line-height: 12px;
   height: 100%;
   display: flex;
   align-items: center;

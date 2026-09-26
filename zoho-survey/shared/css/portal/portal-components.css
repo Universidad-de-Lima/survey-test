@@ -53,6 +53,7 @@
   color: var(--muted-foreground);
 }
 .repo-card-path {
+  line-height: 17px;
   margin: 8px 0 0;
   font-family: var(--font-family-primary);
   font-size: var(--text-sm);
@@ -73,6 +74,7 @@
   border-radius: 8px;
 }
 .progress-label {
+  line-height: 17px;
   font-size: var(--text-sm);
   letter-spacing: 1px;
   color: var(--muted-foreground);
@@ -100,6 +102,7 @@
   transition: width .3s;
 }
 .progress-sub {
+  line-height: 17px;
   margin-top: 6px;
   font-size: var(--text-sm);
   color: var(--muted-foreground);
@@ -192,6 +195,7 @@
   gap: 12px;
 }
 .metric-label {
+  line-height: 17px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   letter-spacing: 1px;
@@ -241,6 +245,7 @@
   padding: 16px;
 }
 .verdict-label {
+  line-height: 17px;
   display: flex; align-items: center; gap: 8px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -248,6 +253,7 @@
   color: var(--muted-foreground);
 }
 .verdict-badge {
+  line-height: 17px;
   display: inline-flex; align-items: center; gap: 4px;
   padding: 2px 10px;
   border-radius: 9999px;
@@ -316,6 +322,7 @@
   justify-content: space-between;
 }
 .flow-card-id {
+  line-height: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -335,6 +342,7 @@
   color: var(--foreground);
 }
 .flow-card-label {
+  line-height: 15px;
   font-size: var(--text-xs);
   color: var(--muted-foreground);
   white-space: nowrap;
@@ -368,6 +376,7 @@
   padding: 12px;
 }
 .var-key {
+  line-height: 15px;
   font-family: var(--font-family-primary);
   font-size: var(--text-xs);
   letter-spacing: 1px;
@@ -461,6 +470,7 @@
 }
 
 .filter-label {
+  line-height: 17px;
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
   color: var(--ulima-gray);
@@ -519,6 +529,7 @@
 }
 
 .filter-reset {
+  line-height: 17px;
   padding: 6px 12px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -686,7 +697,8 @@
   margin-bottom: 14px;
 }
 .survey-filter-group { display: flex; align-items: center; gap: 6px; }
-.survey-filter-label { font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--muted-foreground); white-space: nowrap; }
+.survey-filter-label {
+  line-height: 17px; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--muted-foreground); white-space: nowrap; }
 .survey-filter-select {
   font-family: inherit; font-size: var(--text-md);
   border: 1px solid var(--border); border-radius: 6px;
@@ -694,6 +706,7 @@
   padding: 5px 8px; max-width: 190px;
 }
 .survey-filter-reset {
+  line-height: 17px;
   font-family: inherit; font-size: var(--text-sm); font-weight: var(--font-medium);
   border: 1px solid var(--border); border-radius: 6px;
   background: var(--background); color: var(--foreground);
@@ -711,15 +724,18 @@
 .insight-title { line-height: 18px; font-weight: var(--font-bold); color: var(--gray-700); margin-bottom: var(--space-xs); font-size: var(--text-md); letter-spacing: 1px; }
 .insight-box.info .insight-title { color: var(--gray-900); }
 .insight-box.success .insight-title { color: var(--gray-900); }
-.insight-text { color: var(--gray-600); font-size: var(--text-lg); font-weight: var(--font-regular); }
+.insight-text {
+  line-height: 20px; color: var(--gray-600); font-size: var(--text-lg); font-weight: var(--font-regular); }
 .insight-text strong { font-weight: var(--font-bold); }
 
 /* Vertical bars */
 .survey-bars-vertical { display: flex; align-items: flex-end; gap: 10px; height: 180px; padding-top: 10px; }
 .survey-vbar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; min-width: 0; }
 .survey-vbar-fill { width: 100%; max-width: 44px; border-radius: var(--radius-md); }
-.survey-vbar-label { font-size: var(--text-xs); color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.survey-vbar-value { font-size: var(--text-sm); font-weight: var(--font-semibold); color: var(--foreground); font-variant-numeric: tabular-nums; }
+.survey-vbar-label {
+  line-height: 15px; font-size: var(--text-xs); color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.survey-vbar-value {
+  line-height: 17px; font-size: var(--text-sm); font-weight: var(--font-semibold); color: var(--foreground); font-variant-numeric: tabular-nums; }
 
 /* Insight box / evidence (survey) */
 .survey-insight {
@@ -741,6 +757,7 @@
 }
 .survey-evidence strong { font-style: normal; font-weight: var(--font-semibold); color: var(--foreground); }
 .survey-evidence code {
+  line-height: 17px;
   background: var(--muted);
   border: 1px solid rgba(232,232,232,0.6);
   border-radius: 4px;
@@ -855,6 +872,7 @@
 }
 
 .ring-grupo {
+  line-height: 15px;
   font-size: var(--text-xs);
   font-weight: var(--font-bold);
   text-transform: uppercase;
@@ -912,6 +930,7 @@
   font-variant-numeric: tabular-nums;
 }
 .ring-centro i {
+  line-height: 12px;
   font-style: normal;
   font-size: var(--text-xxs);
   text-transform: uppercase;
@@ -927,6 +946,7 @@
   line-height: 14px;
 }
 .ring-per {
+  line-height: 15px;
   display: block;
   font-size: var(--text-xs);
   color: var(--muted-foreground, #6b7280);
@@ -948,9 +968,11 @@
   overflow: hidden;
 }
 .ring-satisf .ring-barra i { display: block; height: 100%; }
-.ring-satisf span { font-size: var(--text-xs); font-weight: var(--font-bold); }
+.ring-satisf span {
+  line-height: 15px; font-size: var(--text-xs); font-weight: var(--font-bold); }
 
 .ring-tend {
+  line-height: 15px;
   display: block;
   font-size: var(--text-xs);
   font-weight: var(--font-bold);
@@ -977,6 +999,7 @@
 @media (max-width: 480px) {
   /* Teléfonos: se achica lo accesorio para que el anillo siga mandando. */
   .ring-grupo { letter-spacing: 1px; }
-  .ring-per, .ring-tend { font-size: var(--text-sm); }
+  .ring-per, .ring-tend {
+  line-height: 17px; font-size: var(--text-sm); }
 }
 

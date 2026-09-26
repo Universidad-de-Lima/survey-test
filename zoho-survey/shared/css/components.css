@@ -97,6 +97,7 @@
 }
 
 .csat-bar, #nps-bar {
+  line-height: 17px;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-md);
@@ -179,6 +180,7 @@
 
 /* ── Legend ── */
 .legend {
+  line-height: 15px;
   display: flex;
   gap: var(--space-lg);
   font-size: var(--text-xs);
@@ -516,6 +518,7 @@
 
 /* ── Filter Reset Button ── */
 .filter-reset {
+  line-height: 17px;
   padding: 6px 12px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -697,6 +700,7 @@
 }
 
 .survey-table th {
+  line-height: 15px;
   background: var(--gray-700);
   color: white;
   padding: var(--space-sm) var(--space-md);
@@ -740,6 +744,7 @@
 }
 
 .distribution-segment {
+  line-height: 12px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -768,6 +773,7 @@
 }
 
 .visibility-segment {
+  line-height: 12px;
   height: 100%;
   display: flex;
   align-items: center;

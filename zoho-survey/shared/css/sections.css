@@ -58,17 +58,20 @@
     gap: var(--space-xs);
   }
   .filter-label {
+  line-height: 15px;
     font-size: var(--text-xs);
     letter-spacing: 0;
   }
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
+  line-height: 17px;
     font-size: var(--text-sm);
     padding-top: 5px;
     padding-bottom: 5px;
   }
   .filter-reset {
+  line-height: 15px;
     font-size: var(--text-xs);
     padding: 5px 10px;
     min-width: 72px;
@@ -98,7 +101,8 @@
     justify-content: center;
     gap: var(--space-xs);
   }
-  .nav-links a { font-size: var(--text-xs); padding: 4px 8px; }
+  .nav-links a {
+  line-height: 15px; font-size: var(--text-xs); padding: 4px 8px; }
   .main-content { padding: var(--space-lg) var(--space-md); }
   .section { margin-bottom: var(--space-3xl); }
   .section-title { font-size: var(--text-xl); line-height: 21px; }
@@ -128,6 +132,7 @@
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
+  line-height: 15px;
     font-size: var(--text-xs);
     padding: 4px 24px 4px 8px;
   }
@@ -141,11 +146,13 @@
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-  .bar-label { width: 140px; font-size: var(--text-xs); }
+  .bar-label {
+  line-height: 15px; width: 140px; font-size: var(--text-xs); }
   .bar-container {
     margin-right: 40px;
   }
   .bar-value {
+  line-height: 15px;
     position: absolute;
     left: 100%;
     top: 50%;
@@ -179,7 +186,8 @@
 /* ── ≤480px: Mobile ── */
 @media (max-width: 480px) {
   .sticky-header { padding: var(--space-xs) var(--space-sm); }
-  .nav-links a { font-size: var(--text-xxs); padding: 3px 6px; }
+  .nav-links a {
+  line-height: 12px; font-size: var(--text-xxs); padding: 3px 6px; }
   .main-content { padding: var(--space-md) var(--space-sm); }
   .section-title { font-size: var(--text-xl); line-height: 21px; }
   .filter-group {
@@ -196,6 +204,7 @@
     margin-bottom: var(--space-md);
   }
   .bar-label {
+  line-height: 15px;
     width: 100%;
     text-align: left;
     justify-content: flex-start;
@@ -222,7 +231,8 @@
   }
   .csat-bar {
   line-height: 17px; font-size: var(--text-xs); }
-  .legend { font-size: var(--text-xs); }
+  .legend {
+  line-height: 15px; font-size: var(--text-xs); }
   .footer-logo-img { width: 140px; }
   .splash img { max-width: 160px; }
   .table-scroll {
