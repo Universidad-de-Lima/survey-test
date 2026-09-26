@@ -11,15 +11,6 @@
   border-radius: var(--radius-lg);
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-.section-title {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--foreground);
-  margin: 0 0 12px;
-}
-.section-title svg { color: var(--primary); }
-
 /* Repo card */
 .repo-card {
   background: linear-gradient(135deg, var(--card) 0%, rgba(245,245,245,0.3) 100%);
@@ -47,7 +38,8 @@
 }
 .repo-card-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
+  line-height: 36px;
   font-weight: 700;
   letter-spacing: 0;
   display: flex;
@@ -397,7 +389,7 @@
   padding: 16px 20px;
 }
 .survey-card-title {
-  font-size: 13px; font-weight: 600; color: var(--foreground);
+  font-size: 13px; line-height: 20px; font-weight: 700; color: var(--foreground);
   margin: 0 0 12px;
 }
 
@@ -713,7 +705,7 @@
 
 /* Insight box */
 .insight-box { background: var(--gray-50); border-left: 3px solid var(--black); padding: var(--space-lg) var(--space-xl); border-radius: var(--radius-lg); margin: var(--space-xl) 0; }
-.insight-title { font-weight: var(--font-bold); color: var(--gray-700); margin-bottom: var(--space-xs); font-size: var(--text-md); letter-spacing: 1px; }
+.insight-title { line-height: 18px; font-weight: var(--font-bold); color: var(--gray-700); margin-bottom: var(--space-xs); font-size: var(--text-md); letter-spacing: 1px; }
 .insight-box.info .insight-title { color: var(--gray-900); }
 .insight-box.success .insight-title { color: var(--gray-900); }
 .insight-text { color: var(--gray-600); font-size: var(--text-lg); font-weight: var(--font-regular); }
@@ -780,6 +772,7 @@
 }
 .kpi-label {
   font-size: var(--text-sm);
+  line-height: 17px;
   margin-top: var(--space-sm);
   font-weight: var(--font-medium);
   text-transform: uppercase;
@@ -787,6 +780,8 @@
 }
 .kpi-grid .kpi-label {
   font-size: 11px;
+  line-height: 17px;
+  line-height: 17px;
   text-transform: none;
   letter-spacing: 0;
   white-space: nowrap;

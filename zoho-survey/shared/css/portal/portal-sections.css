@@ -10,6 +10,7 @@
 .survey-section { margin-bottom: 24px; }
 .survey-section:last-child { margin-bottom: 0; }
 .survey-section-title {
+  line-height: 27px;
   display: flex; align-items: center; gap: 8px;
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
@@ -21,6 +22,7 @@
 .survey-section-title svg { color: var(--primary); }
 .survey-subsection-title {
   font-size: var(--text-lg);
+  line-height: 20px;
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin: 28px 0 12px 0;
@@ -81,7 +83,7 @@
   .survey-kpi-value { font-size: 32px; line-height: 35px; }
   .survey-kpi-icon { width: 32px; height: 32px; }
 }
-.survey-kpi-label { font-size: 9px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }
+.survey-kpi-label { font-size: 11px; line-height: 17px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }
 .survey-kpi-meta { font-size: 11px; color: var(--muted-foreground); margin-top: 4px; line-height: 15px; }
 
 /* ---------- Top 3 por categoría (réplica index.html) ---------- */
@@ -95,6 +97,7 @@
 }
 .card-title {
   font-size: var(--text-lg);
+  line-height: 20px;
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin-bottom: var(--space-lg);
@@ -412,7 +415,7 @@
   }
   .bar-label { width: 230px; font-size: 11px; }
   .card { padding: var(--space-lg); }
-  .card-title { font-size: 12px; }
+  .card-title { font-size: 12px; line-height: 18px; }
   .radar-svg text {
     font-size: 12px !important;
     font-weight: var(--font-medium) !important;
@@ -520,6 +523,7 @@
   margin: var(--space-xl) 0;
 }
 .insight-box.warning .insight-title {
+  line-height: 18px;
   font-weight: var(--font-bold);
   color: var(--gray-900);
   margin-bottom: var(--space-xs);
@@ -532,4 +536,10 @@
   font-size: var(--text-md);
   font-weight: var(--font-regular);
   line-height: 1.5;
+}
+
+/* Mismo comportamiento que las páginas de detalle: en pantallas angostas el
+   título de sección baja a 14px, para que las dos familias hagan lo mismo. */
+@media (max-width: 768px) {
+  .survey-section-title { font-size: 14px; line-height: 21px; }
 }

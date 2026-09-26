@@ -101,7 +101,7 @@
   .nav-links a { font-size: 9px; padding: 4px 8px; }
   .main-content { padding: var(--space-lg) var(--space-md); }
   .section { margin-bottom: var(--space-3xl); }
-  .section-title { font-size: 15px; }
+  .section-title { font-size: 14px; line-height: 21px; }
   .radar-svg text {
     font-size: 12px !important;
     font-weight: var(--font-medium) !important;
@@ -159,11 +159,11 @@
     display: none !important;
   }
   .card { padding: var(--space-lg); }
-  .card-title { font-size: 12px; }
+  .card-title { font-size: 12px; line-height: 18px; }
   .insight-box { padding: var(--space-md) var(--space-lg); }
   .footer-logo-img { width: 180px; }
   .splash img { max-width: 200px; }
-  .subsection-title { font-size: 13px; }
+  .subsection-title { font-size: 13px; line-height: 20px; }
   .table-scroll {
     max-height: 380px;
     overflow-y: auto;
@@ -181,7 +181,7 @@
   .sticky-header { padding: var(--space-xs) var(--space-sm); }
   .nav-links a { font-size: 8px; padding: 3px 6px; }
   .main-content { padding: var(--space-md) var(--space-sm); }
-  .section-title { font-size: 13px; }
+  .section-title { font-size: 14px; line-height: 21px; }
   .filter-group {
     flex: 1 1 100%;
   }

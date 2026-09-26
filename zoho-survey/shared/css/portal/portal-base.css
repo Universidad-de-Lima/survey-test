@@ -166,6 +166,7 @@ svg { display: block; }
 .brand-title-row { display: flex; align-items: center; gap: 8px; }
 .brand-title {
   font-size: 13px;
+  line-height: 20px;
   font-weight: 900;
   letter-spacing: 0;
   color: var(--foreground);
@@ -253,6 +254,7 @@ svg { display: block; }
   height: 100%;
 }
 .sidebar-title {
+  line-height: 17px;
   padding: 4px 8px 8px;
   font-size: 11px;
   font-weight: 600;
@@ -463,6 +465,7 @@ svg { display: block; }
   font-weight: 700;
 }
 .artifact-title {
+  line-height: 36px;
   margin: 6px 0 0;
   display: flex; align-items: center; gap: 10px;
   font-size: 24px;
@@ -571,7 +574,7 @@ svg { display: block; }
   border-radius: 50%;
   color: rgba(26,26,26,0.6);
 }
-.pending-title { font-size: 16px; font-weight: 600; color: var(--foreground); }
+.pending-title { font-size: 18px; line-height: 27px; font-weight: 700; color: var(--foreground); }
 .pending-desc { margin-top: 4px; max-width: 480px; font-size: 13px; color: var(--muted-foreground); }
 .pending-code {
   font-family: 'Roboto', 'Lusitania';
@@ -635,22 +638,22 @@ svg { display: block; }
 }
 .portal-md h1 {
   margin: 8px 0 20px;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -1px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
-  line-height: 53px;
+  line-height: 42px;
 }
 .portal-md h2 {
   margin: 36px 0 16px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  line-height: 35px;
+  line-height: 32px;
 }
 .portal-md h2::before {
   content: "";
@@ -669,11 +672,11 @@ svg { display: block; }
 }
 .portal-md h4 {
   margin: 20px 0 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
   color: rgba(26,26,26,0.9);
-  line-height: 28px;
+  line-height: 25px;
 }
 .portal-md p { margin: 12px 0; }
 .portal-md ul {

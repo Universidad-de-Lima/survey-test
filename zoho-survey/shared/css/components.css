@@ -36,6 +36,7 @@
 
 .kpi-label {
   font-size: var(--text-sm);
+  line-height: 17px;
   margin-top: var(--space-sm);
   font-weight: var(--font-medium);
   text-transform: uppercase;
@@ -45,6 +46,8 @@
 /* Reducir label de KPI dentro del grid para que "Índice de Promotores Netos" quede en 1 línea */
 .kpi-grid .kpi-label {
   font-size: 11px;
+  line-height: 17px;
+  line-height: 17px;
   text-transform: none;
   letter-spacing: 0;
   white-space: nowrap;
@@ -128,6 +131,7 @@
 .csat-label {
   white-space: nowrap;
   font-size: 12px;
+  line-height: 18px;
   letter-spacing: 0;
 }
 
@@ -221,6 +225,7 @@
 }
 
 .insight-title {
+  line-height: 18px;
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin-bottom: var(--space-xs);
@@ -536,6 +541,7 @@
 
 .card-title {
   font-size: var(--text-lg);
+  line-height: 20px;
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin-bottom: var(--space-lg);

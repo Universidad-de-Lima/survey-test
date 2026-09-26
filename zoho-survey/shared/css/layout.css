@@ -106,6 +106,7 @@
 
 .section-title {
   font-size: var(--text-2xl);
+  line-height: 27px;
   font-weight: var(--font-bold);
   color: var(--gray-900);
   letter-spacing: 1px;
@@ -114,6 +115,7 @@
 
 .subsection-title {
   font-size: var(--text-lg);
+  line-height: 20px;
   font-weight: var(--font-bold);
   color: var(--gray-700);
   margin: 28px 0 12px 0;

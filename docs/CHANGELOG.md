@@ -2,6 +2,22 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Escala única de títulos y subtítulos
+
+- Los títulos y subtítulos usan una sola escala: 24px (bloques grandes, título del visor y h1 del
+  texto largo), 18px (secciones, "próximamente" y h2/h3 del texto largo), 14px (h4 y sección en
+  pantalla angosta), 13px (subtítulo y título de tarjeta), 12px (hallazgo) y 11px (rótulo de
+  indicador). Antes había 9px, 15px, 16px y 20px sueltos, fuera de la escala del proyecto.
+- Todos los títulos llevan su alto de línea en píxeles enteros (antes ocho lo heredaban y quedaban en
+  medias unidades: 19,5 / 13,5 / 16,5px).
+- Se igualan dos diferencias entre el portal y las páginas de detalle: el título de tarjeta del portal
+  pasa de grosor 600 a 700, y el rótulo chico de los indicadores de 9px a 11px (el mismo que en las
+  páginas de detalle).
+- Al angostar la ventana, el título de sección baja a 14px en las dos familias (antes solo en las
+  páginas de detalle, y a un 15px fuera de escala).
+- Se retira la regla `.section-title` de `portal-components.css`: no la usa ninguna página del portal
+  (las de detalle usan la de `layout.css`).
+
 ## 2026-09-26 — Alturas de línea en píxeles enteros
 
 - Trece alturas de línea que daban fracciones de píxel (1,1 × 15px = 16,5; 1,7 × 13px = 22,1;
