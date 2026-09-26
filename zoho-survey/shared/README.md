@@ -16,13 +16,15 @@ Capa de presentación base. Proporciona el sistema de diseño (CSS), la lógica 
 
 | File | Lines | Responsibility |
 | --- | --- | --- |
-| `css/tokens.css` | 118 | Design tokens: 13 colores institucionales, tipografía (Roboto), z-index (8 niveles), espaciados (9), radios (8), sombras (3). |
-| `css/reset.css` | 69 | Reset universal + utilidades base (`.skip-link`, `.sr-only`, `.text-center`, `.mt-4`, `.software-italic`). |
-| `css/layout.css` | 174 | Sticky header, nav links, progress bar, main-content grid, footer. |
-| `css/generated.css` | 274 | Estilos de los elementos que los módulos de JavaScript construyen al vuelo (antes escritos en línea dentro del módulo). Lo cargan el portal y las fichas, y va **al final** (después de las otras hojas) para poder ajustar sus reglas. |
-| `css/components.css` | 864 | KPI cards, distribution bars, filter system, custom select/multiselect, bar charts, radar SVG, tables (sticky header), heatmap, tooltip. |
-| `css/sections.css` | 244 | Selectores específicos de tabla + 3 media queries (1100/768/480px). |
-| `css/portal/` | — | `portal-base.css`, `portal-components.css`, `portal-sections.css`: estilos del portal v5.0. |
+| `css/tokens.css` | 136 | Design tokens: colores institucionales, tipografía (Roboto), z-index, espaciados, radios, sombras. Se carga primero. |
+| `css/reset.css` | 67 | Reset universal + utilidades base (`.skip-link`, `.sr-only`, `.text-center`). Solo las fichas. |
+| `css/common.css` | 549 | Reglas que usan **las dos** familias (filtros, KPI, tablas, indicadores). Se carga después de `tokens.css`. |
+| `css/generated.css` | 325 | Estilos de los elementos que los módulos de JavaScript construyen al vuelo. Lo cargan el portal y las fichas, y va **al final** para poder ajustar sus reglas. |
+| `css/dashboard/layout.css` | 172 | Fichas por período: sticky header, nav links, progress bar, main-content grid, footer. |
+| `css/dashboard/components.css` | 424 | Fichas por período: KPI cards, barras, filtros, select/multiselect, radar SVG, tablas, heatmap, tooltip. |
+| `css/dashboard/sections.css` | 163 | Fichas por período: selectores de tabla + media queries (1100/768/480px). |
+| `css/portal/` | — | `base.css`, `components.css`, `sections.css`: estilos del portal v5.0. Nombres sin prefijo repetido. |
+| `css/DIVERGENCIAS.md` | 59 | Los 48 selectores que el portal y las fichas escriben distinto a propósito, con lo que cambia en cada uno. |
 | `js/portal.js` | 636 | Orquestador del portal v5.0: init, renderSidebar, navegación de fases, carga de periodos. |
 | `js/portal/` | — | 5 módulos de vista del portal: `portal-data.js` (484), `portal-dashboard.js` (184), `portal-filters.js` (261), `portal-radar.js` (538), `portal-survey.js` (1050). |
 | `js/dashboard.js` | 1,270 | Orquestador principal del dashboard SPA individual. 4 secciones, filtros en cascada, rendering SVG, tooltips, KPIs, tablas. |
