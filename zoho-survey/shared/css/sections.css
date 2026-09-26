@@ -3,27 +3,6 @@
    Incluye: splash, tablas específicas, media queries, scrollbars
    ============================================================ */
 
-/* ── Splash screen ── */
-.splash {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-splash);
-  background: var(--splash-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.8s ease;
-}
-
-.splash.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.splash img {
-  max-width: 300px;
-}
-
 /* ── Centrado de encabezados en tablas específicas ── */
 #tabla-preguntas th.text-center,
 #tabla-detalle th.text-center,
@@ -84,8 +63,7 @@
     min-width: 900px;
   }
   #tabla-preguntas,
-  #tabla-visibilidad,
-  #tabla-sentimiento-carrera {
+  #tabla-visibilidad {
     min-width: 750px;
   }
   .sticky-header {

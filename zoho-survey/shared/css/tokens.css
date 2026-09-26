@@ -15,7 +15,6 @@
 
   /* ── Escala de grises ── */
   --gray-900: #111827;
-  --gray-000: #000000;
   --gray-800: #1F2937;
   --gray-700: #374151;
   --gray-600: #4B5563;
@@ -59,19 +58,13 @@
   --focus-outline: 2px solid var(--ulima-orange);
   --focus-outline-offset: 2px;
 
-  /* ── Splash ── */
-  --splash-bg: #F37021;
-
   /* ── Capas z-index ── */
   --z-base: 1;
-  --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-filter-open: 1040;
   --z-filter-panel: 1051;
   --z-tooltip: 1100;
-  --z-overlay: 9998;
   --z-skip-link: 9999;
-  --z-splash: 99999;
 
   /* ── Espaciado Utilitario ── */
   --space-xs: 4px;
@@ -85,13 +78,8 @@
   --space-5xl: 68px;
 
   --brand: var(--ulima-orange);
-  --brand-dark: #cc3e0e;
-  --brand-light: #ff7a4d;
-  --ink: #1a1410;
-  --deep: #F37021;
   --muted: #6b5e55;
   --surface: #faf8f6;
-  --panel-bg: #2a221c;
 
   /* ── Escala Tipográfica ── */
   --text-xxs: 8px;
@@ -102,7 +90,6 @@
   --text-xl: 14px;
   --text-2xl: 18px;
   --text-3xl: 24px;
-  --text-4xl: 36px;
 
   /* ── Radios de Borde ── */
     --radius-xs: 2px;
@@ -142,7 +129,6 @@
     /* ── Sombras ── */
     --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08);
     --shadow-dropdown: 0 8px 20px rgba(15, 23, 42, 0.08);
-    --shadow-dropdown-dark: 0 8px 24px rgba(0, 0, 0, 0.4);
     --shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.2);
 
   /* ── Niveles de satisfacción (Radar y KPIs) ── */

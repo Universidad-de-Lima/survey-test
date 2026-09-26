@@ -103,7 +103,6 @@ body {
   font-size: var(--text-xl);
   line-height: 1.5;
 }
-.mono { font-family: var(--font-family-primary); }
 a { color: inherit; text-decoration: none; }
 /* Los controles de formulario no heredan la tipografía por defecto: el
    navegador les pone la suya. Se obliga a heredarla para que todo el portal
@@ -154,39 +153,6 @@ svg { display: block; }
 }
 .icon-btn:hover { background: var(--muted); color: var(--foreground); }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand-logo {
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-}
-.brand-text { line-height: 15px; }
-.brand-title-row { display: flex; align-items: center; gap: 8px; }
-.brand-title {
-  font-size: var(--text-lg);
-  line-height: 20px;
-  font-weight: var(--font-black);
-  letter-spacing: 0;
-  color: var(--foreground);
-}
-.brand-badge {
-  line-height: 15px;
-  font-family: var(--font-family-primary);
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  background: var(--muted);
-  color: var(--muted-foreground);
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-.brand-sub {
-  line-height: 15px;
-  margin-top: 2px;
-  font-size: var(--text-xs);
-  color: var(--muted-foreground);
-}
 .header-sep {
   width: 1px;
   height: 24px;
@@ -206,15 +172,6 @@ svg { display: block; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.repo-info .depth {
-  line-height: 15px;
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  background: rgba(26,26,26,0.08);
-  color: var(--primary);
-  padding: 2px 6px;
-  border-radius: 3px;
 }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .btn-dashboard {
@@ -405,13 +362,6 @@ svg { display: block; }
   margin: 0 auto;
   padding: 24px 16px;
 }
-.survey-section.full-width {
-  max-width: none;
-  width: 100%;
-  padding-left: 0;
-  padding-right: 0;
-}
-
 /* Footer */
 .footer {
   line-height: 17px;
@@ -877,8 +827,7 @@ mark.inc {
   .sidebar { display: none; }
   .hamburger { display: inline-flex; }
   .header-sep, .repo-info { display: none; }
-  .brand-sub { display: none; }
-  .btn-dashboard span { display: none; }
+    .btn-dashboard span { display: none; }
 }
 
 /* Scrollbars */

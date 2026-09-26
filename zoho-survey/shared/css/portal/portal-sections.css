@@ -354,15 +354,6 @@
   border-radius: var(--radius-xs);
 }
 
-/* Colores de satisfacción */
-.csat-segment.totalmente-satisfecho { background: #10B981; }
-.csat-segment.muy-satisfecho { background: #34D399; }
-.csat-segment.satisfecho { background: #6EE7B7; }
-.csat-segment.insatisfecho { background: #F59E0B; }
-.csat-segment.totalmente-insatisfecho { background: #EF4444; }
-.csat-segment.no-conozco { background: #9CA3AF; }
-.csat-segment.no-utilizo { background: #D1D5DB; }
-
 /* ---------- Responsive (≤1100px: Filtros compactos) ---------- */
 @media (max-width: 1100px) {
   .filter-container {
@@ -525,8 +516,6 @@
 .visibility-segment:hover {
   opacity: 0.8;
 }
-.visibility-segment.no-conozco { background: var(--gray-800); color: var(--gray-50); }
-.visibility-segment.no-utilizo { background: var(--gray-500); color: var(--gray-50); }
 .visibility-segment.conocido   { background: var(--gray-300); color: var(--gray-800); }
 
 .insight-box.warning {

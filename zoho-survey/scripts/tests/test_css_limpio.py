@@ -89,9 +89,12 @@ class TestCssLimpio(unittest.TestCase):
                          'el mismo estilo esta escrito en dos hojas: moverlo a shared/css/common.css')
 
     def test_sin_tokens_muertos(self):
-        definidos = re.findall(r'(--[a-z][\w-]*)\s*:',
-                               (RAIZ / 'shared' / 'css' / 'tokens.css').read_text(encoding='utf-8'))
+        hoja = (RAIZ / 'shared' / 'css' / 'tokens.css').read_text(encoding='utf-8')
+        definidos = re.findall(r'(--[a-z][\w-]*)\s*:', hoja)
+        # tambien cuenta como uso que otro token lo referencie: --x: rgba(var(--y), .15)
+        referidos = set(re.findall(r'var\((--[a-z][\w-]*)\)', hoja))
         texto = self.fuentes + '\n'.join(p.read_text(encoding='utf-8')
                                          for p in HOJAS if p.name != HOJA_TOKENS)
-        libres = [d for d in definidos if d not in texto and d not in PERMITIDOS_TOKENS]
+        libres = [d for d in definidos if d not in texto and d not in referidos
+                  and d not in PERMITIDOS_TOKENS]
         self.assertEqual([], libres, 'tokens definidos y nunca usados')
