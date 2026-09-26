@@ -351,7 +351,7 @@
   flex-wrap: wrap;
   gap: 8px 16px;
   font-size: var(--text-sm);
-  color: var(--muted-foreground, #6b7280);
+  color: var(--muted-foreground, var(--gray-500));
   margin: -4px 0 6px;
 }
 .ring-leyenda span { display: inline-flex; align-items: center; gap: 5px; }
@@ -368,7 +368,7 @@
   font-weight: var(--font-bold);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--muted-foreground, var(--gray-500));
   border-bottom: 1px solid var(--border, #e6e8eb);
   padding-bottom: 5px;
   margin: 18px 0 12px;
@@ -388,8 +388,8 @@
 
 /* Los anillos sin datos ya no se atenúan con opacidad: se distinguen por el
    anillo vacío, pero sus textos tienen que poder leerse. */
-.ring.pendiente .ring-nom { color: var(--muted-foreground, #6b7280); }
-.ring.pendiente .ring-centro b { color: var(--muted-foreground, #6b7280); }
+.ring.pendiente .ring-nom { color: var(--muted-foreground, var(--gray-500)); }
+.ring.pendiente .ring-centro b { color: var(--muted-foreground, var(--gray-500)); }
 .ring.pendiente .ring-per,
 .ring.pendiente .ring-satisf span,
 .ring.pendiente .ring-tend { color: #6f7480; }
@@ -426,7 +426,7 @@
   font-size: var(--text-xxs);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted-foreground, #6b7280);
+  color: var(--muted-foreground, var(--gray-500));
   margin-top: 2px;
 }
 
@@ -440,7 +440,7 @@
   line-height: 15px;
   display: block;
   font-size: var(--text-xs);
-  color: var(--muted-foreground, #6b7280);
+  color: var(--muted-foreground, var(--gray-500));
   margin-top: 1px;
 }
 
@@ -471,8 +471,8 @@
 }
 .ring-tend.sube { color: var(--emerald); }
 .ring-tend.baja { color: var(--rose); }
-.ring-tend.pendiente { color: var(--muted-foreground, #6b7280); font-weight: var(--font-regular); }
-.sin-dato { color: var(--muted-foreground, #6b7280); }
+.ring-tend.pendiente { color: var(--muted-foreground, var(--gray-500)); font-weight: var(--font-regular); }
+.sin-dato { color: var(--muted-foreground, var(--gray-500)); }
 
 /* Los textos de la tarjeta se parten en dos líneas antes que cortarse. */
 .ring-nom, .ring-per, .ring-tend, .ring-centro b { overflow-wrap: anywhere; }

@@ -386,9 +386,9 @@
   position: sticky;
   top: 0;
   z-index: var(--z-tooltip, 9999);
-  background: var(--danger-pastel, #FEE2E2);
-  color: var(--danger-text, #991B1B);
-  border-bottom: 2px solid var(--ulima-red, #FF0000);
+  background: var(--danger-pastel, var(--danger-pastel));
+  color: var(--danger-text, var(--danger-text));
+  border-bottom: 2px solid var(--ulima-red, var(--ulima-red));
   padding: var(--space-md, 12px) var(--space-xl, 24px);
   font-size: var(--text-sm);
   font-weight: var(--font-medium, 500);

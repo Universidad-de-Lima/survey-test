@@ -101,27 +101,19 @@
     /* ── Layout Portal ── */
     --header-h: 56px;
     --sidebar-w: 288px;
-    --footer-h: 44px;
 
     /* ── Colores Accent (portal) ── */
     --emerald: #10B981;
     --emerald-50: #ecfdf5;
-    --emerald-100: #d1fae5;
     --teal: #14B8A6;
     --teal-50: #f0fdfa;
     --amber: #F59E0B;
   --kpi-neutro: #666666;
   --kpi-azul: #1A73E8;
     --amber-50: #fffbeb;
-    --amber-100: #fef3c7;
     --rose: #F43F5E;
     --rose-50: #fff1f2;
-    --rose-100: #ffe4e6;
     --orange: #FF5117;
-    --sky: #0EA5E9;
-    --sky-50: #f0f9ff;
-    --violet: #8B5CF6;
-    --violet-50: #f5f3ff;
 
     /* Pista neutra de los anillos (última medición de cada encuesta) */
     --ring-track: #eef0f2;
