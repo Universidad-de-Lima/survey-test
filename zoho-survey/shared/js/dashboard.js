@@ -271,17 +271,17 @@ const SurveyDashboard = (() => {
     const det = nps.Detractores ?? nps.detractores ?? 0;
     const total = prom + pas + det;
     DOM.npsBar.innerHTML = `<div class="csat-bar-row">`
-      + `<div class="csat-segment" style="width:${pct(prom, total)}%; background:var(--gray-700);"
+      + `<div class="csat-segment nps-prom" style="--w:${pct(prom, total)}%"
            data-label="Promotores (9-10)" data-value="${_fmt.formatInteger(prom)} (${_fmt.formatPctDecimal(prom, total)})"><span class="csat-label">${_fmt.formatPctSimple(prom, total)}</span></div>`
-      + `<div class="csat-segment" style="width:${pct(pas, total)}%; background:var(--gray-400);"
+      + `<div class="csat-segment nps-pas" style="--w:${pct(pas, total)}%"
            data-label="Pasivos (7-8)" data-value="${_fmt.formatInteger(pas)} (${_fmt.formatPctDecimal(pas, total)})"><span class="csat-label">${_fmt.formatPctSimple(pas, total)}</span></div>`
-      + `<div class="csat-segment" style="width:${pct(det, total)}%; background:var(--ulima-orange);"
+      + `<div class="csat-segment nps-det" style="--w:${pct(det, total)}%"
            data-label="Detractores (0-6)" data-value="${_fmt.formatInteger(det)} (${_fmt.formatPctDecimal(det, total)})"><span class="csat-label">${_fmt.formatPctSimple(det, total)}</span></div>`
       + `</div>`;
     DOM.npsLegend.innerHTML = `
-      <div class="legend-item" data-label="Promotores (9-10)"><div class="legend-dot" style="background:var(--gray-700);"></div>Promotores: ${_fmt.formatInteger(prom)}</div>
-      <div class="legend-item" data-label="Pasivos (7-8)"><div class="legend-dot" style="background:var(--gray-400);"></div>Pasivos: ${_fmt.formatInteger(pas)}</div>
-      <div class="legend-item" data-label="Detractores (0-6)"><div class="legend-dot" style="background:var(--ulima-orange);"></div>Detractores: ${_fmt.formatInteger(det)}</div>
+      <div class="legend-item" data-label="Promotores (9-10)"><div class="legend-dot punto-gris700"></div>Promotores: ${_fmt.formatInteger(prom)}</div>
+      <div class="legend-item" data-label="Pasivos (7-8)"><div class="legend-dot punto-gris400"></div>Pasivos: ${_fmt.formatInteger(pas)}</div>
+      <div class="legend-item" data-label="Detractores (0-6)"><div class="legend-dot punto-naranja"></div>Detractores: ${_fmt.formatInteger(det)}</div>
     `;
     // Data attributes para acceso programatico sin parseo regex (CAL-04)
     DOM.npsLegend.setAttribute('data-promotores', prom);
@@ -315,14 +315,14 @@ const SurveyDashboard = (() => {
       + visibleLabels
         .map((item) => {
           const p = pct(csat[item.key], total);
-          return `<div class="csat-segment" style="width:${p}%; background:${item.color};"
+          return `<div class="csat-segment csat-var" style="--w:${p}%; --c:${item.color}"
                 data-label="${item.key}" data-value="${_fmt.formatInteger(csat[item.key])} (${_fmt.formatPctDecimal(csat[item.key], total)})"><span class="csat-label">${_fmt.formatPctSimple(csat[item.key], total)}</span></div>`;
         })
         .join('')
       + `</div>`;
     DOM.csatLegend.innerHTML = visibleLabels
       .map((item) =>
-        `<div class="legend-item" data-label="${item.key}"><div class="legend-dot" style="background:${item.color};"></div>${item.key}: ${_fmt.formatInteger(csat[item.key])}</div>`
+        `<div class="legend-item" data-label="${item.key}"><div class="legend-dot punto-var" style="--c:${item.color}"></div>${item.key}: ${_fmt.formatInteger(csat[item.key])}</div>`
       )
       .join('');
     adjustSegmentLabels('#csat-bar');
@@ -475,7 +475,7 @@ const SurveyDashboard = (() => {
         const temp = document.createElement('div');
         temp.className = 'csat-label-above';
         temp.textContent = txt;
-        temp.style.cssText = 'position:absolute;left:-9999px';
+        temp.className = 'medidor-oculto';
         document.body.appendChild(temp);
         const labelW = temp.scrollWidth || 30;
         document.body.removeChild(temp);
@@ -651,9 +651,9 @@ const SurveyDashboard = (() => {
           svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="500">${l.shortName}</text>`);
           svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="600">${l.countText}</text>`);
         });
-        html += '<div style="display:flex;flex-direction:column;align-items:center;">';
+        html += '<div class="ciclo-col">';
           html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;
-          html += '<div style="text-align:center;color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);">Escala de Satisfacción</div>';
+          html += '<div class="ciclo-rotulo">Escala de Satisfacción</div>';
         html += '</div>';
 
             return html;
@@ -667,7 +667,7 @@ const SurveyDashboard = (() => {
       barItem.innerHTML = `
         <div class="bar-label">${_fmt.formatDimensionName(item.dim)}</div>
         <div class="bar-container">
-          <div class="bar-fill animated ${barClass}" style="width:${item.pct}%; animation-delay:${index * 0.08}s">
+          <div class="bar-fill animated ${barClass}" style="--w:${item.pct}%; --delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPercent(item.pct, 2)}</span>
           </div>
         </div>
@@ -696,14 +696,14 @@ const SurveyDashboard = (() => {
         const t3bVal = total > 0 ? (counts['Totalmente satisfecho'] + counts['Muy satisfecho'] + counts['Satisfecho']) / total * 100 : 0;
         const t2bVal = total > 0 ? (counts['Totalmente satisfecho'] + counts['Muy satisfecho']) / total * 100 : 0;
         const pondVal = total > 0 ? ((5 * counts['Totalmente satisfecho'] + 4 * counts['Muy satisfecho'] + 3 * counts['Satisfecho'] + 2 * counts['Insatisfecho'] + 1 * counts['Totalmente insatisfecho']) / total) / 5 * 100 : 0;
-        let html = '<div style="display:flex;gap:12px;white-space:nowrap;">';
+        let html = '<div class="ciclo-fila">';
 
             // Pie SVG (extraido a buildSatisfactionPieSvg)
     html += buildSatisfactionPieSvg(counts, satKeys, total);
 
 // ——— Right column: horizontal bars for T3B, T2B, Ponderado ———
-        html += '<div style="display:flex;flex-direction:column;gap:6px;min-width:200px;border-left:1px solid rgba(255,255,255,0.2);padding:0 8px;">';
-        html += '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;">';
+        html += '<div class="ciclo-grupo">';
+        html += '<div class="ciclo-grupo-centrado">';
         const barItems = [
           { label: 'T3B', value: t3bVal },
           { label: 'T2B', value: t2bVal },
@@ -713,22 +713,22 @@ const SurveyDashboard = (() => {
           const cssVal = item.value.toFixed(2);
           const p = item.value;
           const outside = p < 12;
-          html += '<div style="display:flex;align-items:center;gap:8px;">';
-          html += `<span style="color:#fff;font-size: var(--text-xs);font-weight: var(--font-semibold);width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
-          html += '<div style="flex:1;height:18px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:visible;position:relative;">';
-          html += `<div style="height:100%;width:${cssVal}%;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;transition:width 0.3s;min-width:0;">`;
+          html += '<div class="ciclo-linea">';
+          html += `<span class="ciclo-nombre">${item.label}</span>`;
+          html += '<div class="ciclo-pista">';
+          html += `<div class="ciclo-relleno" style="--w:${cssVal}%">`;
           if (!outside) {
-            html += `<span style="color:#111827;font-size: var(--text-xs);font-weight: var(--font-bold);line-height:1;">${_fmt.formatDecimal(p, 2)} %</span>`;
+            html += `<span class="ciclo-pct">${_fmt.formatDecimal(p, 2)} %</span>`;
           }
           html += '</div>';
           if (outside) {
-            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size: var(--text-xs);font-weight: var(--font-bold);white-space:nowrap;">${_fmt.formatDecimal(p, 2)} %</span>`;
+            html += `<span class="ciclo-pct-fuera">${_fmt.formatDecimal(p, 2)} %</span>`;
           }
           html += '</div>';
           html += '</div>';
         });
         html += '</div>'; // close bars centering container
-        html += '<div style="color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);text-align:center;">Top Box y Ponderado</div>';
+        html += '<div class="ciclo-pie">Top Box y Ponderado</div>';
         html += '</div>'; // close right column
         html += '</div>'; // close flex container
         // raw=true justificado: html se construye con valores numericos (formatInteger/formatPctSimple)
@@ -891,22 +891,22 @@ const SurveyDashboard = (() => {
         <td>${_fmt.formatDimensionName(item.dimension)}</td>
         <td class="text-center">${_fmt.formatInteger(item.encuestas)}</td>
         <td class="text-center"><span class="heatmap-cell ${heatClass}">${_fmt.formatPercent(parseFloat(item.top3box), 2)}</span></td>
-        <td class="text-center" style="font-weight:var(--font-bold)">${_fmt.formatScore(parseFloat(item.top2box), 2)}</td>
-        <td class="text-center" style="font-weight:var(--font-bold)">${_fmt.formatScore(parseFloat(item.ponderado), 2)}</td>
+        <td class="text-center celda-negrita">${_fmt.formatScore(parseFloat(item.top2box), 2)}</td>
+        <td class="text-center celda-negrita">${_fmt.formatScore(parseFloat(item.ponderado), 2)}</td>
         <td class="text-center">${_san.escapeHTML(catCorta)}</td>
         <td>
           <div class="distribution-bar animated">
-            <div class="distribution-segment" style="width:${item.pctTotSat}%;background:var(--gray-800);" data-label="Totalmente satisfecho" data-value="${_fmt.formatInteger(item.totSat)} (${_fmt.formatPctDecimal(item.totSat, item.total)})"></div>
-            <div class="distribution-segment" style="width:${item.pctMuySat}%;background:var(--gray-500);" data-label="Muy satisfecho" data-value="${_fmt.formatInteger(item.muySat)} (${_fmt.formatPctDecimal(item.muySat, item.total)})"></div>
-            <div class="distribution-segment" style="width:${item.pctSat}%;background:var(--gray-300);color:var(--gray-700);" data-label="Satisfecho" data-value="${_fmt.formatInteger(item.sat)} (${_fmt.formatPctDecimal(item.sat, item.total)})"></div>
-            <div class="distribution-segment" style="width:${item.pctInsat}%;background:var(--ulima-orange);" data-label="Insatisfecho" data-value="${_fmt.formatInteger(item.insat)} (${_fmt.formatPctDecimal(item.insat, item.total)})"></div>
-            <div class="distribution-segment" style="width:${item.pctTotInsat}%;background:var(--ulima-red);" data-label="Totalmente insatisfecho" data-value="${_fmt.formatInteger(item.totInsat)} (${_fmt.formatPctDecimal(item.totInsat, item.total)})"></div>
+            <div class="distribution-segment csat-totsat" style="--w:${item.pctTotSat}%" data-label="Totalmente satisfecho" data-value="${_fmt.formatInteger(item.totSat)} (${_fmt.formatPctDecimal(item.totSat, item.total)})"></div>
+            <div class="distribution-segment csat-muysat" style="--w:${item.pctMuySat}%" data-label="Muy satisfecho" data-value="${_fmt.formatInteger(item.muySat)} (${_fmt.formatPctDecimal(item.muySat, item.total)})"></div>
+            <div class="distribution-segment csat-sat" style="--w:${item.pctSat}%" data-label="Satisfecho" data-value="${_fmt.formatInteger(item.sat)} (${_fmt.formatPctDecimal(item.sat, item.total)})"></div>
+            <div class="distribution-segment csat-insat" style="--w:${item.pctInsat}%" data-label="Insatisfecho" data-value="${_fmt.formatInteger(item.insat)} (${_fmt.formatPctDecimal(item.insat, item.total)})"></div>
+            <div class="distribution-segment csat-totinsat" style="--w:${item.pctTotInsat}%" data-label="Totalmente insatisfecho" data-value="${_fmt.formatInteger(item.totInsat)} (${_fmt.formatPctDecimal(item.totInsat, item.total)})"></div>
           </div>
         </td>
       `;
       tr.querySelectorAll('.distribution-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
-          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
+          if (_ttp) _ttp.show(e, `<table class="tooltip-table"><tr><th class="tooltip-izq tooltip-fila-fuerte">Escala de Satisfacción</th><th class="tooltip-num tooltip-fila-fuerte">Respuestas</th></tr><tr><td class="tooltip-fila">${seg.dataset.label}</td><td class="tooltip-num tooltip-fila">${seg.dataset.value}</td></tr></table>`, true);
         });
         seg.addEventListener('mouseleave', () => _ttp?.hide());
       });
@@ -996,20 +996,20 @@ const SurveyDashboard = (() => {
       const tr = document.createElement('tr');
       const vsCsatTxt =
         item.vsPromCsat >= 0
-          ? `<span style="color:var(--success-text);font-weight: var(--font-semibold);">+${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`
-          : `<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`;
+          ? `<span class="valor-sube">+${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`
+          : `<span class="valor-baja">${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`;
 
       const vsNpsTxt =
         item.vsPromNps >= 0
-          ? `<span style="color:var(--success-text);font-weight: var(--font-semibold);">+${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`
-          : `<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`;
+          ? `<span class="valor-sube">+${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`
+          : `<span class="valor-baja">${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`;
 
       tr.innerHTML = `
         <td>${_san.escapeHTML(item.carrera)}</td>
         <td class="text-center">${_fmt.formatInteger(item.encuestas)}</td>
-        <td class="text-center" style="font-weight: var(--font-bold);">${_fmt.formatPercent(item.csat, 2)}</td>
+        <td class="text-center celda-negrita">${_fmt.formatPercent(item.csat, 2)}</td>
         <td class="text-center">${vsCsatTxt}</td>
-        <td class="text-center" style="font-weight: var(--font-bold);">${_fmt.formatDecimal(item.nps, 2)}</td>
+        <td class="text-center celda-negrita">${_fmt.formatDecimal(item.nps, 2)}</td>
         <td class="text-center">${vsNpsTxt}</td>
       `;
       fragment.appendChild(tr);
@@ -1061,15 +1061,15 @@ const SurveyDashboard = (() => {
         <td class="text-center">${_fmt.formatInteger(item.noUtilizo)} (${_fmt.formatDecimal(item.pctNoUtilizo, 2)} %)</td>
         <td>
           <div class="visibility-bar animated">
-            <div class="visibility-segment no-conozco" style="width:${item.pctNoConozco}%;" data-label="No conozco" data-value="${_fmt.formatInteger(item.noConozco)} (${_fmt.formatPctDecimal(item.noConozco, item.total)})"></div>
-            <div class="visibility-segment no-utilizo" style="width:${item.pctNoUtilizo}%;" data-label="No utilizo" data-value="${_fmt.formatInteger(item.noUtilizo)} (${_fmt.formatPctDecimal(item.noUtilizo, item.total)})"></div>
-            <div class="visibility-segment conocido"   style="width:${item.pctConoce}%;"    data-label="Conozco/Utilizo" data-value="${_fmt.formatInteger(item.conoce)} (${_fmt.formatPctDecimal(item.conoce, item.total)})"></div>
+            <div class="visibility-segment no-conozco" style="--w:${item.pctNoConozco}%" data-label="No conozco" data-value="${_fmt.formatInteger(item.noConozco)} (${_fmt.formatPctDecimal(item.noConozco, item.total)})"></div>
+            <div class="visibility-segment no-utilizo" style="--w:${item.pctNoUtilizo}%" data-label="No utilizo" data-value="${_fmt.formatInteger(item.noUtilizo)} (${_fmt.formatPctDecimal(item.noUtilizo, item.total)})"></div>
+            <div class="visibility-segment conocido"   style="--w:${item.pctConoce}%"    data-label="Conozco/Utilizo" data-value="${_fmt.formatInteger(item.conoce)} (${_fmt.formatPctDecimal(item.conoce, item.total)})"></div>
           </div>
         </td>
       `;
       tr.querySelectorAll('.visibility-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
-          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
+          if (_ttp) _ttp.show(e, `<table class="tooltip-table"><tr><th class="tooltip-izq tooltip-fila-fuerte">Opción</th><th class="tooltip-num tooltip-fila-fuerte">Respuestas</th></tr><tr><td class="tooltip-fila">${seg.dataset.label}</td><td class="tooltip-num tooltip-fila">${seg.dataset.value}</td></tr></table>`, true);
         });
         seg.addEventListener('mouseleave', () => _ttp?.hide());
       });
@@ -1100,7 +1100,7 @@ const SurveyDashboard = (() => {
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
+      txt += `<strong class="rotulo-mayusculas">${cleanContexto}</strong><br>`;
       if (criticos.length) {
         txt += `${criticos.length === 1 ? 'El servicio con <strong>menor visibilidad</strong> es' : 'Los servicios con <strong>menor visibilidad</strong> son'} `;
         txt += criticos

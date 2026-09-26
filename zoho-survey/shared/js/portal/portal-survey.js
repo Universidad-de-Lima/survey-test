@@ -96,7 +96,7 @@
       return '<div class="bar-item">' +
         '<div class="bar-label"><span class="bar-label-text">' + window.SurveyFormatters.formatDimensionName(item.dimension) + '</span></div>' +
         '<div class="bar-container">' +
-          '<div class="bar-fill animated ' + barClass + '" style="width:' + pct + '%;animation-delay:' + (index * 0.08) + 's">' +
+          '<div class="bar-fill animated ' + barClass + '" style="--w:' + pct + '%; --delay:' + (index * 0.08) + 's">' +
             '<span class="bar-value">' + fmtNum(pct, 2) + ' %</span>' +
           '</div>' +
         '</div>' +
@@ -122,17 +122,17 @@
   function tablaFilaHtml(item) {
     const fmt = window.SurveyFormatters || {};
     const vsCsatTxt = item.vsPromCsat >= 0
-      ? '<span style="color:var(--success-text);font-weight: var(--font-semibold);">+' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>'
-      : '<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>';
+      ? '<span class="valor-sube">+' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>'
+      : '<span class="valor-baja">' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>';
     const vsNpsTxt = item.vsPromNps >= 0
-      ? '<span style="color:var(--success-text);font-weight: var(--font-semibold);">+' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>'
-      : '<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>';
+      ? '<span class="valor-sube">+' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>'
+      : '<span class="valor-baja">' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>';
     return '<tr>' +
       '<td>' + esc(item.carrera) + '</td>' +
       '<td class="text-center">' + fmt.formatInteger(item.encuestas) + '</td>' +
-      '<td class="text-center" style="font-weight: var(--font-bold);">' + fmt.formatPercent(item.csat_score, 2) + '</td>' +
+      '<td class="text-center celda-negrita">' + fmt.formatPercent(item.csat_score, 2) + '</td>' +
       '<td class="text-center">' + vsCsatTxt + '</td>' +
-      '<td class="text-center" style="font-weight: var(--font-bold);">' + fmt.formatDecimal(item.nps_score, 2) + '</td>' +
+      '<td class="text-center celda-negrita">' + fmt.formatDecimal(item.nps_score, 2) + '</td>' +
       '<td class="text-center">' + vsNpsTxt + '</td>' +
     '</tr>';
   }
@@ -221,20 +221,20 @@
         '<td>' + (fmt.formatDimensionName ? fmt.formatDimensionName(item.dimension) : esc(item.dimension)) + '</td>' +
         '<td class="text-center">' + (fmt.formatInteger ? fmt.formatInteger(item.encuestas) : item.encuestas) + '</td>' +
         '<td class="text-center"><span class="heatmap-cell ' + heatClass + '">' + (fmt.formatPercent ? fmt.formatPercent(parseFloat(item.top3box), 2) : item.top3box + ' %') + '</span></td>' +
-        '<td class="text-center" style="font-weight:var(--font-bold);">' + (fmt.formatScore ? fmt.formatScore(parseFloat(item.top2box), 2) : item.top2box + ' %') + '</td>' +
-        '<td class="text-center" style="font-weight:var(--font-bold);">' + (fmt.formatScore ? fmt.formatScore(parseFloat(item.ponderado), 2) : item.ponderado + ' %') + '</td>' +
+        '<td class="text-center celda-negrita">' + (fmt.formatScore ? fmt.formatScore(parseFloat(item.top2box), 2) : item.top2box + ' %') + '</td>' +
+        '<td class="text-center celda-negrita">' + (fmt.formatScore ? fmt.formatScore(parseFloat(item.ponderado), 2) : item.ponderado + ' %') + '</td>' +
         '<td class="text-center">' + esc(catCorta) + '</td>' +
         '<td><div class="distribution-bar animated">' +
-          '<div class="distribution-segment" style="width:' + item.pctTotSat + '%;background:var(--gray-800);" data-label="Totalmente satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.totSat) : item.totSat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.totSat, item.total) : '') + ')"></div>' +
-          '<div class="distribution-segment" style="width:' + item.pctMuySat + '%;background:var(--gray-500);" data-label="Muy satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.muySat) : item.muySat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.muySat, item.total) : '') + ')"></div>' +
-          '<div class="distribution-segment" style="width:' + item.pctSat + '%;background:var(--gray-300);color:var(--gray-700);" data-label="Satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.sat) : item.sat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.sat, item.total) : '') + ')"></div>' +
-          '<div class="distribution-segment" style="width:' + item.pctInsat + '%;background:var(--ulima-orange);" data-label="Insatisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.insat) : item.insat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.insat, item.total) : '') + ')"></div>' +
-          '<div class="distribution-segment" style="width:' + item.pctTotInsat + '%;background:var(--ulima-red);" data-label="Totalmente insatisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.totInsat) : item.totInsat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.totInsat, item.total) : '') + ')"></div>' +
+          '<div class="distribution-segment csat-totsat" style="--w:' + item.pctTotSat + '%" data-label="Totalmente satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.totSat) : item.totSat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.totSat, item.total) : '') + ')"></div>' +
+          '<div class="distribution-segment csat-muysat" style="--w:' + item.pctMuySat + '%" data-label="Muy satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.muySat) : item.muySat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.muySat, item.total) : '') + ')"></div>' +
+          '<div class="distribution-segment csat-sat" style="--w:' + item.pctSat + '%" data-label="Satisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.sat) : item.sat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.sat, item.total) : '') + ')"></div>' +
+          '<div class="distribution-segment csat-insat" style="--w:' + item.pctInsat + '%" data-label="Insatisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.insat) : item.insat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.insat, item.total) : '') + ')"></div>' +
+          '<div class="distribution-segment csat-totinsat" style="--w:' + item.pctTotInsat + '%" data-label="Totalmente insatisfecho" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.totInsat) : item.totInsat) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.totInsat, item.total) : '') + ')"></div>' +
         '</div></td>';
       tr.querySelectorAll('.distribution-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
           const ttp = window.SurveyTooltip;
-          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
+          if (ttp && ttp.show) ttp.show(e, '<table class="tooltip-table"><tr><th class="tooltip-izq tooltip-fila-fuerte">Escala de Satisfacción</th><th class="tooltip-num tooltip-fila-fuerte">Respuestas</th></tr><tr><td class="tooltip-fila">' + esc(seg.dataset.label) + '</td><td class="tooltip-num tooltip-fila">' + seg.dataset.value + '</td></tr></table>', true);
         });
         seg.addEventListener('mouseleave', () => {
           const ttp = window.SurveyTooltip;
@@ -294,15 +294,15 @@
         '<td class="text-center">' + (fmt.formatInteger ? fmt.formatInteger(item.noUtilizo) : item.noUtilizo) + ' (' + (fmt.formatDecimal ? fmt.formatDecimal(item.pctNoUtilizo, 2) : item.pctNoUtilizo) + ' %)</td>' +
         '<td>' +
           '<div class="visibility-bar animated">' +
-            '<div class="visibility-segment no-conozco" style="width:' + item.pctNoConozco + '%;" data-label="No conozco" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.noConozco) : item.noConozco) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.noConozco, item.total) : '') + ')"></div>' +
-            '<div class="visibility-segment no-utilizo" style="width:' + item.pctNoUtilizo + '%;" data-label="No utilizo" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.noUtilizo) : item.noUtilizo) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.noUtilizo, item.total) : '') + ')"></div>' +
-            '<div class="visibility-segment conocido" style="width:' + item.pctConoce + '%;" data-label="Conozco/Utilizo" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.conoce) : item.conoce) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.conoce, item.total) : '') + ')"></div>' +
+            '<div class="visibility-segment no-conozco" style="--w:' + item.pctNoConozco + '%" data-label="No conozco" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.noConozco) : item.noConozco) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.noConozco, item.total) : '') + ')"></div>' +
+            '<div class="visibility-segment no-utilizo" style="--w:' + item.pctNoUtilizo + '%" data-label="No utilizo" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.noUtilizo) : item.noUtilizo) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.noUtilizo, item.total) : '') + ')"></div>' +
+            '<div class="visibility-segment conocido" style="--w:' + item.pctConoce + '%" data-label="Conozco/Utilizo" data-value="' + (fmt.formatInteger ? fmt.formatInteger(item.conoce) : item.conoce) + ' (' + (fmt.formatPctDecimal ? fmt.formatPctDecimal(item.conoce, item.total) : '') + ')"></div>' +
           '</div>' +
         '</td>';
       tr.querySelectorAll('.visibility-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
           const ttp = window.SurveyTooltip;
-          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
+          if (ttp && ttp.show) ttp.show(e, '<table class="tooltip-table"><tr><th class="tooltip-izq tooltip-fila-fuerte">Opción</th><th class="tooltip-num tooltip-fila-fuerte">Respuestas</th></tr><tr><td class="tooltip-fila">' + esc(seg.dataset.label) + '</td><td class="tooltip-num tooltip-fila">' + seg.dataset.value + '</td></tr></table>', true);
         });
         seg.addEventListener('mouseleave', () => {
           const ttp = window.SurveyTooltip;
@@ -340,7 +340,7 @@
     const fmtD = (d) => esc(fmt.formatDimensionName ? fmt.formatDimensionName(d) : d);
     let txt = '';
     if (hayFiltro) {
-      txt += '<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">' + esc(contexto) + '</strong><br>';
+      txt += '<strong class="rotulo-mayusculas">' + esc(contexto) + '</strong><br>';
       if (criticos.length) {
         txt += (criticos.length === 1 ? 'El servicio con <strong>menor visibilidad</strong> es' : 'Los servicios con <strong>menor visibilidad</strong> son') + ' ';
         txt += criticos
@@ -413,14 +413,14 @@
       kpis.push({ label: 'Índice de Empleabilidad', value: fmtNum(r.empleabilidad.score, 2) + ' %', color: '#1A73E8', icon: 'graduation-cap' });
     }
     const kpiHtml = kpis.map(k =>
-      '<div class="survey-kpi">' +
-        '<div class="survey-kpi-bar-top" style="background:' + k.color + ';"></div>' +
+      '<div class="survey-kpi" style="--kpi-color:' + k.color + ';">' +
+        '<div class="survey-kpi-bar-top"></div>' +
         '<div class="survey-kpi-body">' +
-          '<p class="survey-kpi-value" style="color:' + k.color + ';">' + k.value + '</p>' +
+          '<p class="survey-kpi-value">' + k.value + '</p>' +
           '<p class="survey-kpi-label">' + k.label + '</p>' +
         '</div>' +
-        '<div class="survey-kpi-icon" style="background:' + k.color + ';">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:white;">' + ICONS[k.icon] + '</svg>' +
+        '<div class="survey-kpi-icon">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS[k.icon] + '</svg>' +
         '</div>' +
       '</div>'
     ).join('');
@@ -486,9 +486,9 @@
       <div class="card radar-container">
         <svg class="radar-svg" viewBox="-40 -40 600 600" preserveAspectRatio="xMidYMid meet" id="radar-chart" role="img" aria-label="Gráfico radar de satisfacción por dimensión"></svg>
         <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-700);"></div>≥93 % (Fortaleza)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-400);"></div>80-92 % (Adecuado)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--ulima-red);"></div><80 % (Atención)</div>
+          <div class="legend-item"><div class="legend-dot punto-gris700"></div>≥93 % (Fortaleza)</div>
+          <div class="legend-item"><div class="legend-dot punto-gris400"></div>80-92 % (Adecuado)</div>
+          <div class="legend-item"><div class="legend-dot punto-rojo"></div><80 % (Atención)</div>
         </div>
       </div>
       <div class="insight-box success" aria-live="polite">
@@ -505,23 +505,23 @@
       <div class="survey-table-wrap">
         <table class="survey-table" id="tabla-preguntas">
           <thead><tr>
-            <th style="width: 25%;">Dimensión</th>
-            <th class="text-center" style="width: 12%;">Respuestas</th>
-            <th class="text-center" style="width: 12%;">Top 3 Box</th>
-            <th class="text-center" style="width: 12%;">Top 2 Box</th>
-            <th class="text-center" style="width: 12%;">Ponderado</th>
-            <th class="text-center" style="width: 12%;">Categoría</th>
-            <th style="width: 15%;">Distribución</th>
+            <th class="col-25">Dimensión</th>
+            <th class="text-center col-12">Respuestas</th>
+            <th class="text-center col-12">Top 3 Box</th>
+            <th class="text-center col-12">Top 2 Box</th>
+            <th class="text-center col-12">Ponderado</th>
+            <th class="text-center col-12">Categoría</th>
+            <th class="col-15">Distribución</th>
           </tr></thead>
           <tbody id="tbody-preguntas"></tbody>
         </table>
       </div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-800);"></div> Totalmente satisfecho</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-500);"></div> Muy satisfecho</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-300);"></div> Satisfecho</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--ulima-orange);"></div> Insatisfecho</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--ulima-red);"></div> Totalmente insatisfecho</div>
+        <div class="legend-item"><div class="legend-dot punto-gris800"></div> Totalmente satisfecho</div>
+        <div class="legend-item"><div class="legend-dot punto-gris500"></div> Muy satisfecho</div>
+        <div class="legend-item"><div class="legend-dot punto-gris300"></div> Satisfecho</div>
+        <div class="legend-item"><div class="legend-dot punto-naranja"></div> Insatisfecho</div>
+        <div class="legend-item"><div class="legend-dot punto-rojo"></div> Totalmente insatisfecho</div>
       </div>
       <div class="insight-box warning">
         <div class="insight-title">Nota</div>
@@ -533,12 +533,12 @@
         <table class="survey-table" id="tabla-detalle" role="region" aria-label="NPS y CSAT por carrera">
           <caption class="sr-only">Detalle de NPS y CSAT por carrera</caption>
           <thead><tr>
-            <th scope="col" style="width: 15%;">CARRERA</th>
-            <th scope="col" class="text-center" style="width: 17%;">ENCUESTAS</th>
-            <th scope="col" class="text-center" style="width: 17%;">Nivel de Satisfacción</th>
-            <th scope="col" class="text-center" style="width: 17%;">VS PROMEDIO <span id="detalle-promedio-ref"></span></th>
-            <th scope="col" class="text-center" style="width: 17%;">Índice de Promotores Netos</th>
-            <th scope="col" class="text-center" style="width: 17%;">VS PROMEDIO <span id="detalle-promedio-nps-ref"></span></th>
+            <th class="col-15" scope="col">CARRERA</th>
+            <th scope="col" class="text-center col-17">ENCUESTAS</th>
+            <th scope="col" class="text-center col-17">Nivel de Satisfacción</th>
+            <th scope="col" class="text-center col-17">VS PROMEDIO <span id="detalle-promedio-ref"></span></th>
+            <th scope="col" class="text-center col-17">Índice de Promotores Netos</th>
+            <th scope="col" class="text-center col-17">VS PROMEDIO <span id="detalle-promedio-nps-ref"></span></th>
           </tr></thead>
           <tbody id="tbody-detalle"></tbody>
         </table>
@@ -553,19 +553,19 @@
         <table class="survey-table" id="tabla-visibilidad" role="region" aria-label="Visibilidad de servicios">
           <caption class="sr-only">Visibilidad de servicios por carrera</caption>
           <thead><tr>
-            <th scope="col" style="width: 35%;">DIMENSIÓN</th>
-            <th scope="col" class="text-center" style="width: 15%;">RESPUESTAS</th>
-            <th scope="col" class="text-center" style="width: 15%;">NO CONOZCO</th>
-            <th scope="col" class="text-center" style="width: 15%;">NO UTILIZO</th>
-            <th scope="col" class="text-center" style="width: 20%;">DISTRIBUCIÓN</th>
+            <th class="col-35" scope="col">DIMENSIÓN</th>
+            <th scope="col" class="text-center col-15">RESPUESTAS</th>
+            <th scope="col" class="text-center col-15">NO CONOZCO</th>
+            <th scope="col" class="text-center col-15">NO UTILIZO</th>
+            <th scope="col" class="text-center col-20">DISTRIBUCIÓN</th>
           </tr></thead>
           <tbody id="tbody-visibilidad"></tbody>
         </table>
       </div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-800);"></div> No conozco</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-500);"></div> No utilizo</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--gray-300);"></div> Conozco/Utilizo</div>
+        <div class="legend-item"><div class="legend-dot punto-gris800"></div> No conozco</div>
+        <div class="legend-item"><div class="legend-dot punto-gris500"></div> No utilizo</div>
+        <div class="legend-item"><div class="legend-dot punto-gris300"></div> Conozco/Utilizo</div>
       </div>
       <div class="insight-box warning" aria-live="polite">
         <div class="insight-title">Oportunidad de mejora</div>
@@ -577,7 +577,7 @@
     <section class="survey-section" id="cualitativo-section">
       <h3 class="survey-section-title">${svg('message-square', 14)}ANÁLISIS CUALITATIVO</h3>
       <div class="kpi-grid" id="sentiment-kpis"></div>
-      <h3 class="survey-subsection-title" style="margin-top: 32px;">Respuestas por sentimiento</h3>
+      <h3 class="survey-subsection-title espacio-arriba-32">Respuestas por sentimiento</h3>
       <div class="grid-2">
         <div class="card">
           <div class="card-title">Distribución de sentimientos</div>
@@ -588,8 +588,8 @@
           <div id="seg-nps-container"></div>
         </div>
       </div>
-      <div class="grid-2" style="margin-top: 24px;">
-        <div class="card" style="grid-column: 1 / -1;">
+      <div class="grid-2 espacio-arriba-24">
+        <div class="card ocupa-fila-completa">
           <div class="card-title">Categorías — menciones totales</div>
           <div id="categorias-barras-container"></div>
         </div>
@@ -612,28 +612,28 @@
           <div class="bar-chart" id="intensidad-negativos-container"></div>
         </div>
       </div>
-      <h3 class="survey-subsection-title" style="margin-top:32px;">Respuestas por carrera — distribución NPS completa</h3>
-      <div class="table-scroll" style="margin-bottom: 24px;">
+      <h3 class="survey-subsection-title espacio-arriba-32">Respuestas por carrera — distribución NPS completa</h3>
+      <div class="table-scroll espacio-abajo-24">
         <table class="survey-table" id="tabla-nps-carrera" role="region" aria-label="Distribucion NPS por carrera">
           <caption class="sr-only">Distribucion NPS completa por carrera</caption>
           <thead><tr>
-            <th scope="col" style="width: 20%;">CARRERA</th>
-            <th scope="col" class="text-center" style="width: 16%;">TEXTO ABIERTO</th>
-            <th scope="col" class="text-center" style="width: 16%;">IDEAS ANALIZADAS</th>
-            <th scope="col" class="text-center" style="width: 16%;">PROMOTORES</th>
-            <th scope="col" class="text-center" style="width: 16%;">PASIVOS</th>
-            <th scope="col" class="text-center" style="width: 16%;">DETRACTores</th>
+            <th class="col-20" scope="col">CARRERA</th>
+            <th scope="col" class="text-center col-16">TEXTO ABIERTO</th>
+            <th scope="col" class="text-center col-16">IDEAS ANALIZADAS</th>
+            <th scope="col" class="text-center col-16">PROMOTORES</th>
+            <th scope="col" class="text-center col-16">PASIVOS</th>
+            <th scope="col" class="text-center col-16">DETRACTores</th>
           </tr></thead>
           <tbody id="tbody-nps-carrera"></tbody>
         </table>
       </div>
-      <h3 class="survey-subsection-title" style="margin-top:32px;">Detalle de ideas</h3>
-      <p style="color:var(--gray-500); font-size: var(--text-md); margin-bottom:12px; line-height:1.5;">
+      <h3 class="survey-subsection-title espacio-arriba-32">Detalle de ideas</h3>
+      <p class="nota-cualitativa">
         Busque y filtre las respuestas textuales de los alumnos. La columna "Idea analizada" corrige faltas ortográficas y modismos comunes para facilitar su lectura rápida sin alterar su significado original.
       </p>
-      <div class="filter-container" role="group" aria-label="Controles del explorador cualitativo" style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
-        <div class="filter-group" style="flex: 1; min-width: 200px;">
-          <input type="text" id="explorador-search" class="filter-select" placeholder="Buscar palabras clave en comentarios..." style="width: 100%; padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--gray-300); font-size: var(--text-md); font-family: inherit; background-image: none; cursor: text;">
+      <div class="filter-container fila-flexible espacio-abajo-16" role="group" aria-label="Controles del explorador cualitativo">
+        <div class="filter-group grupo-flexible">
+          <input type="text" id="explorador-search" class="filter-select campo-busqueda" placeholder="Buscar palabras clave en comentarios...">
         </div>
         <div class="filter-group">
           <label class="filter-label" for="explorador-categoria">Tema Padre:</label>
@@ -650,38 +650,38 @@
             <option value="negativo">Negativo</option>
           </select>
         </div>
-        <button class="filter-reset" id="explorador-reset" type="button" style="margin-left: auto;">Limpiar</button>
+        <button class="filter-reset a-la-derecha" id="explorador-reset" type="button">Limpiar</button>
       </div>
-      <div class="table-scroll" style="margin-bottom: 12px;">
+      <div class="table-scroll espacio-abajo-12">
         <table class="survey-table" id="tabla-explorador-comentarios" role="region" aria-label="Explorador de comentarios cualitativos">
           <caption class="sr-only">Explorador de comentarios con filtros de sentimiento y tema</caption>
           <thead><tr>
-            <th scope="col" style="width: 16%; text-align: left;">Carrera</th>
-            <th scope="col" style="width: 5%;" class="text-center">Ciclo</th>
-            <th scope="col" style="width: 5%;" class="text-center">NPS</th>
-            <th scope="col" style="width: 34%;">Texto abierto</th>
-            <th scope="col" style="width: 18%;">Idea analizada</th>
-            <th scope="col" style="width: 12%;">Tema</th>
-            <th scope="col" style="width: 5%;" class="text-center">Sentimiento</th>
-            <th scope="col" style="width: 5%;" class="text-center">Intensidad</th>
+            <th class="col-16 col-izq" scope="col">Carrera</th>
+            <th scope="col" class="text-center col-5">Ciclo</th>
+            <th scope="col" class="text-center col-5">NPS</th>
+            <th class="col-34" scope="col">Texto abierto</th>
+            <th class="col-18" scope="col">Idea analizada</th>
+            <th class="col-12" scope="col">Tema</th>
+            <th scope="col" class="text-center col-5">Sentimiento</th>
+            <th scope="col" class="text-center col-5">Intensidad</th>
           </tr></thead>
           <tbody id="tbody-explorador-comentarios"></tbody>
         </table>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
-        <span id="explorador-pagination-info" style="font-size: var(--text-md); color: var(--text2); font-weight: var(--font-medium);">Mostrando 0-0 de 0 comentarios</span>
-        <div style="display: flex; gap: 8px;">
-          <button id="explorador-export-csv" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);">Descargar</button>
-          <button id="explorador-btn-prev" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);" disabled>Anterior</button>
-          <button id="explorador-btn-next" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);" disabled>Siguiente</button>
+      <div class="fila-repartida espacio-abajo-28">
+        <span id="explorador-pagination-info" class="texto-paginacion">Mostrando 0-0 de 0 comentarios</span>
+        <div class="fila-junta">
+          <button id="explorador-export-csv" class="filter-reset boton-chico">Descargar</button>
+          <button id="explorador-btn-prev" class="filter-reset boton-chico" disabled>Anterior</button>
+          <button id="explorador-btn-next" class="filter-reset boton-chico" disabled>Siguiente</button>
         </div>
       </div>
-      <div class="insight-box info" aria-live="polite" style="margin-top:20px;">
+      <div class="insight-box info espacio-arriba-20" aria-live="polite">
         <div class="insight-title">Análisis IA</div>
         <p class="insight-text" id="insight-cualitativo">Cargando análisis cualitativo...</p>
-        <div id="insight-cualitativo-categorias" style="margin-top: 12px;"></div>
+        <div id="insight-cualitativo-categorias" class="espacio-arriba-12"></div>
       </div>
-      <div class="insight-box warning" style="margin-top: 20px;">
+      <div class="insight-box warning espacio-arriba-20">
         <div class="insight-title">Nota</div>
         <p class="insight-text">Análisis semántico automatizado de los comentarios de alumnos. Los comentarios se agrupan en categorías temáticas y se analiza su sentimiento e intensidad mediante modelos de embeddings locales (offline).</p>
       </div>
@@ -769,15 +769,15 @@
     if (npsBar) {
       npsBar.innerHTML =
         '<div class="csat-bar-row">' +
-          '<div class="csat-segment" style="width:' + pct(prom, npsTotal) + '%; background:var(--gray-700);" data-label="Promotores (9-10)" data-value="' + fmtInt(prom) + ' (' + fmtPctDecimal(prom, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(prom, npsTotal) + '</span></div>' +
-          '<div class="csat-segment" style="width:' + pct(pas, npsTotal) + '%; background:var(--gray-400);" data-label="Pasivos (7-8)" data-value="' + fmtInt(pas) + ' (' + fmtPctDecimal(pas, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(pas, npsTotal) + '</span></div>' +
-          '<div class="csat-segment" style="width:' + pct(det, npsTotal) + '%; background:var(--ulima-orange);" data-label="Detractores (0-6)" data-value="' + fmtInt(det) + ' (' + fmtPctDecimal(det, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(det, npsTotal) + '</span></div>' +
+          '<div class="csat-segment nps-prom" style="--w:' + pct(prom, npsTotal) + '%" data-label="Promotores (9-10)" data-value="' + fmtInt(prom) + ' (' + fmtPctDecimal(prom, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(prom, npsTotal) + '</span></div>' +
+          '<div class="csat-segment nps-pas" style="--w:' + pct(pas, npsTotal) + '%" data-label="Pasivos (7-8)" data-value="' + fmtInt(pas) + ' (' + fmtPctDecimal(pas, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(pas, npsTotal) + '</span></div>' +
+          '<div class="csat-segment nps-det" style="--w:' + pct(det, npsTotal) + '%" data-label="Detractores (0-6)" data-value="' + fmtInt(det) + ' (' + fmtPctDecimal(det, npsTotal) + ')"><span class="csat-label">' + fmtPctSimple(det, npsTotal) + '</span></div>' +
         '</div>';
       if (npsLegend) {
         npsLegend.innerHTML =
-          '<div class="legend-item" data-label="Promotores (9-10)"><div class="legend-dot" style="background:var(--gray-700);"></div>Promotores: ' + fmtInt(prom) + '</div>' +
-          '<div class="legend-item" data-label="Pasivos (7-8)"><div class="legend-dot" style="background:var(--gray-400);"></div>Pasivos: ' + fmtInt(pas) + '</div>' +
-          '<div class="legend-item" data-label="Detractores (0-6)"><div class="legend-dot" style="background:var(--ulima-orange);"></div>Detractores: ' + fmtInt(det) + '</div>';
+          '<div class="legend-item" data-label="Promotores (9-10)"><div class="legend-dot punto-gris700"></div>Promotores: ' + fmtInt(prom) + '</div>' +
+          '<div class="legend-item" data-label="Pasivos (7-8)"><div class="legend-dot punto-gris400"></div>Pasivos: ' + fmtInt(pas) + '</div>' +
+          '<div class="legend-item" data-label="Detractores (0-6)"><div class="legend-dot punto-naranja"></div>Detractores: ' + fmtInt(det) + '</div>';
         npsLegend.setAttribute('data-promotores', prom);
         npsLegend.setAttribute('data-pasivos', pas);
         npsLegend.setAttribute('data-detractores', det);
@@ -802,14 +802,14 @@
         '<div class="csat-bar-row">' +
           visibleLabels.map((item) => {
             const v = csat[item.key] || 0;
-            return '<div class="csat-segment" style="width:' + pct(v, csatTotal) + '%; background:' + item.color + ';" data-label="' + item.key + '" data-value="' + fmtInt(v) + ' (' + fmtPctDecimal(v, csatTotal) + ')"><span class="csat-label">' + fmtPctSimple(v, csatTotal) + '</span></div>';
+            return '<div class="csat-segment csat-var" style="--w:' + pct(v, csatTotal) + '%; --c:' + item.color + '" data-label="' + item.key + '" data-value="' + fmtInt(v) + ' (' + fmtPctDecimal(v, csatTotal) + ')"><span class="csat-label">' + fmtPctSimple(v, csatTotal) + '</span></div>';
           }).join('') +
         '</div>';
       if (csatLegend) {
         csatLegend.innerHTML = visibleLabels
           .map((item) => {
             const v = csat[item.key] || 0;
-            return '<div class="legend-item" data-label="' + item.key + '"><div class="legend-dot" style="background:' + item.color + ';"></div>' + item.key + ': ' + fmtInt(v) + '</div>';
+            return '<div class="legend-item" data-label="' + item.key + '"><div class="legend-dot punto-var" style="--c:' + item.color + '"></div>' + item.key + ': ' + fmtInt(v) + '</div>';
           })
           .join('');
       }
@@ -953,7 +953,7 @@
         const temp = document.createElement('div');
         temp.className = 'csat-label-above';
         temp.textContent = txt;
-        temp.style.cssText = 'position:absolute;left:-9999px';
+        temp.className = 'medidor-oculto';
         document.body.appendChild(temp);
         const labelW = temp.scrollWidth || 30;
         document.body.removeChild(temp);

@@ -110,7 +110,7 @@
         cats.map(c => '<option value="' + esc(c) + '"' + (sel.cats.indexOf(c) !== -1 ? ' selected' : '') + '>' + esc(c) + '</option>').join('');
     }
 
-    let html = '<div class="filter-container' + (isRadar ? ' filter-container-wrap' : '') + '" role="group" aria-label="Filtros de ' + grupo + '" style="margin-top: 16px;">';
+    let html = '<div class="filter-container' + (isRadar ? ' filter-container-wrap' : '') + '" role="group" aria-label="Filtros de ' + grupo + '" class="espacio-arriba-16">';
 
     if (isRadar) {
       html += '<div class="filter-group">' +

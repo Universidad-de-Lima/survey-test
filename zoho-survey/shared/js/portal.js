@@ -338,7 +338,7 @@ async function fetchArtifact(filename) {
 function renderSidebar(container) {
   container.innerHTML = '';
   const nav = el('nav', { 'aria-label': 'Navegación de encuestas' });
-  nav.appendChild(el('div', { class: 'sidebar-title', html: '<span style="display:inline-flex;align-items:center;gap:6px;"><span style="font-family:inherit;font-size: var(--text-md);font-weight: var(--font-semibold);background:rgba(26,26,26,0.08);color:var(--primary);padding:2px 8px;border-radius:4px;text-transform:none;">Encuestas de Satisfacción</span></span>' }));
+  nav.appendChild(el('div', { class: 'sidebar-title', html: '<span class="marca-linea"><span class="marca-insignia">Encuestas de Satisfacción</span></span>' }));
   const ol = el('ol', { class: 'sidebar-list portal-scrollbar' });
 
   PORTAL_PHASES.forEach((phase, idx) => {
@@ -400,23 +400,23 @@ function renderArtifactViewer(phaseId) {
     '<div class="artifact">' +
       '<header class="artifact-header">' +
         '<div class="artifact-header-row">' +
-          '<div style="min-width:0;">' +
+          '<div class="sin-desborde">' +
             '<div class="artifact-breadcrumb">' +
               '<span class="artifact-phase-tag">Item ' + phase.id + '</span>' +
               svg('chevron-right', 12) +
               '<span>' + phase.role + '</span>' +
             '</div>' +
             '<h1 class="artifact-title">' +
-              '<span style="color: var(--primary);">' + svg(phase.icon, 24) + '</span>' +
+              '<span class="texto-marca">' + svg(phase.icon, 24) + '</span>' +
               phase.fullName +
             '</h1>' +
           '</div>' +
           fileTabsHtml +
         '</div>' +
       '</header>' +
-      '<div class="main-scroll portal-scrollbar" style="flex:1 1 auto; overflow: visible; padding-top:0;">' +
-        '<div class="main-inner" style="max-width: 1024px;" id="artifactBody">' +
-          '<div class="state-box"><div class="spinner"></div><p style="font-size: var(--text-lg);">Cargando ' + state.activeFile + '…</p></div>' +
+      '<div class="main-scroll portal-scrollbar panel-desplazable">' +
+        '<div class="main-inner ancho-lectura" id="artifactBody">' +
+          '<div class="state-box"><div class="spinner"></div><p class="texto-carga">Cargando ' + state.activeFile + '…</p></div>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -430,12 +430,12 @@ function renderArtifactViewer(phaseId) {
 }
 
 function renderUnderConstruction() {
-  return '<div class="state-box" style="display:flex;align-items:center;justify-content:center;">' +
-    '<div style="text-align:center;padding:2rem;max-width:480px;">' +
-      '<img src="shared/img/todo-posible.webp" alt="En construcción" style="width:120px;height:auto;margin-bottom:1rem;">' +
-      '<div style="width:60px;height:3px;background:#FF5117;margin:1rem auto;border-radius:2px;"></div>' +
-      '<h1 style="font-size: var(--text-3xl);font-weight: var(--font-bold);color:#1a1410;margin-bottom:0.75rem;">PÁGINA EN CONSTRUCCIÓN</h1>' +
-      '<p style="font-size: var(--text-xl);color:#6b5e55;line-height:1.6;">Esta sección está siendo desarrollada. Pronto podrás ver los resultados aquí.</p>' +
+  return '<div class="state-box caja-centrada">' +
+    '<div class="aviso-construccion">' +
+      '<img src="shared/img/todo-posible.webp" alt="En construcción" class="imagen-construccion">' +
+      '<div class="raya-naranja"></div>' +
+      '<h1 class="titulo-construccion">PÁGINA EN CONSTRUCCIÓN</h1>' +
+      '<p class="texto-construccion">Esta sección está siendo desarrollada. Pronto podrás ver los resultados aquí.</p>' +
     '</div>' +
   '</div>';
 }
@@ -454,26 +454,26 @@ async function loadActiveFile(phase) {
 
   // Estudiantes Pregrado (1.0) / Graduados (1.2): dashboard completo del portal
   if (FASES_CON_DASHBOARD.indexOf(phase.id) !== -1) {
-    body.innerHTML = '<div class="state-box"><div class="spinner"></div><p style="font-size: var(--text-lg);">Cargando dashboard…</p></div>';
+    body.innerHTML = '<div class="state-box"><div class="spinner"></div><p class="texto-carga">Cargando dashboard…</p></div>';
     await window.SurveyPortalData.initSurveyData(window.SurveyPortalData.nivelDeFase(phase.id), filename);
     if (!window.SurveyPortalData.getSurveyData()) {
       // El periodo figura en periodos.json pero sus datos no se pudieron leer
       // (carpeta/JSON ausentes). Sin este aviso la pantalla se quedaba en
       // "Cargando dashboard…" de forma indefinida.
       body.innerHTML = '<div class="state-box error">' + svg('alert-circle', 28) +
-        '<p style="font-size: var(--text-lg);">No se pudieron cargar los datos del periodo "' + escapeHtml(String(filename)) + '". Revisa que existan los archivos JSON de ese periodo.</p></div>';
+        '<p class="texto-carga">No se pudieron cargar los datos del periodo "' + escapeHtml(String(filename)) + '". Revisa que existan los archivos JSON de ese periodo.</p></div>';
       return;
     }
     window.SurveyPortalSurvey.renderSurveyView();
     return;
   }
 
-  body.innerHTML = '<div class="state-box"><div class="spinner"></div><p style="font-size: var(--text-lg);">Cargando ' + filename + '…</p></div>';
+  body.innerHTML = '<div class="state-box"><div class="spinner"></div><p class="texto-carga">Cargando ' + filename + '…</p></div>';
 
   const data = await fetchArtifact(filename);
 
   if (data.error) {
-    body.innerHTML = '<div class="state-box error">' + svg('alert-circle', 28) + '<p style="font-size: var(--text-lg);">Error al cargar: ' + escapeHtml(data.error) + '</p></div>';
+    body.innerHTML = '<div class="state-box error">' + svg('alert-circle', 28) + '<p class="texto-carga">Error al cargar: ' + escapeHtml(data.error) + '</p></div>';
     return;
   }
   if (!data.exists) {
@@ -504,7 +504,7 @@ async function loadActiveFile(phase) {
   if (isZip) {
     contentHtml = '<div class="zip-box">' +
       '<div style="color: var(--primary);">' + svg('download', 32) + '</div>' +
-      '<p style="font-size: var(--text-xl); font-weight: var(--font-medium); color: var(--foreground);">Paquete de cambios binario</p>' +
+      '<p class="titulo-paquete">Paquete de cambios binario</p>' +
       '<a class="btn-zip" href="./portal-workspace/' + encodeURIComponent(filename) + '" download="' + filename + '">' + svg('download', 14) + 'Descargar ' + filename + '</a>' +
     '</div>';
   } else {
@@ -595,11 +595,7 @@ function mostrarAviso(texto) {
     aviso.setAttribute('role', 'status');
     // Centrado en la pantalla (antes salia pegado al borde inferior).
     // Colores del Manual de Marca: naranja institucional con letras blancas.
-    aviso.style.cssText =
-      'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1200;' +
-      'max-width:min(90vw,32rem);padding:10px 16px;border-radius:10px;text-align:center;' +
-      'font-size: var(--text-xl);font-weight: var(--font-medium);box-shadow:0 10px 30px rgba(0,0,0,0.25);' +
-      'background:var(--brand,#FF5117);color:#fff;border:none;';
+    aviso.className = 'aviso-refresco';
     document.body.appendChild(aviso);
   }
   aviso.textContent = texto; // textContent: nunca se inyecta HTML

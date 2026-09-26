@@ -53,7 +53,7 @@ window.SurveyRadarChart = (() => {
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
+      txt += `<strong class="rotulo-mayusculas">${cleanContexto}</strong><br>`;
       if (fortalezas.length) {
         txt += `${fortalezas.length === 1 ? 'La dimensión mejor evaluada es' : 'Las dimensiones mejor evaluadas son'} `;
         txt += fortalezas
@@ -279,13 +279,13 @@ window.SurveyRadarChart = (() => {
       const rEnd = (l.pct / 100) * maxR;
       const pxEnd = cx + rEnd * Math.cos(l.angle);
       const pyEnd = cy + rEnd * Math.sin(l.angle);
-      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" stroke="#9CA3AF" stroke-width="1" style="cursor:pointer;"
+      parts.push(`<line x1="${l.x}" y1="${l.y}" x2="${pxEnd}" y2="${pyEnd}" stroke="#9CA3AF" stroke-width="1" class="radar-clicable"
                   data-dim="${_fmt.formatDimensionNameForAttr(l.dim)}"
                   data-pct="${_fmt.formatDecimal(l.pct, 2)}"
                   data-t2b="${_fmt.formatDecimal(l.top2box, 2)}"
                   data-pond="${_fmt.formatDecimal(l.ponderado, 2)}"/>`);
 
-      parts.push(`<text x="${l.x}" y="${l.y}" font-size="10" font-weight="500" fill="#6B7280" style="cursor:pointer;"
+      parts.push(`<text x="${l.x}" y="${l.y}" font-size="10" font-weight="500" fill="#6B7280" class="radar-clicable"
                   text-anchor="${l.anchor}" dominant-baseline="middle"
                   data-dim="${_fmt.formatDimensionNameForAttr(l.dim)}"
                   data-pct="${_fmt.formatDecimal(l.pct, 2)}"
@@ -324,7 +324,7 @@ window.SurveyRadarChart = (() => {
       const py = cy + rFinal * Math.sin(a);
       const color = d.pct >= META_CSAT ? 'var(--satisfaction-high,#374151)' : d.pct >= 80 ? 'var(--satisfaction-medium,#9CA3AF)' : 'var(--satisfaction-low,#FF0000)';
 
-      parts.push(`<circle cx="${ox}" cy="${oy}" r="4" fill="${color}" style="cursor:pointer;opacity:0"
+      parts.push(`<circle cx="${ox}" cy="${oy}" r="4" fill="${color}" class="radar-invisible"
                   data-dim="${_fmt.formatDimensionNameForAttr(d.dim)}"
                   data-pct="${_fmt.formatDecimal(d.pct, 2)}"
                   data-t2b="${_fmt.formatDecimal(d.top2box, 2)}"
@@ -352,7 +352,7 @@ window.SurveyRadarChart = (() => {
         el.addEventListener('mousemove', (e) => {
           // Build tooltip: exploded pie chart (satisfacción) + horizontal bar chart (T3B, T2B, Ponderado)
           const d = allDims.find(x => _fmt.formatDimensionNameForAttr(x.dim) === dim);
-          let html = '<div style="display:flex;gap:12px;white-space:nowrap;">';
+          let html = '<div class="ciclo-fila">';
 
           // ——— Left column: exploded pie chart SVG ———
           if (d) {
@@ -448,15 +448,15 @@ window.SurveyRadarChart = (() => {
               svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy - 5}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="500">${l.shortName}</text>`);
               svgParts.push(`<text x="${l.ox + xOff}" y="${l.oy + 8}" text-anchor="${anchor}" fill="#fff" font-size="10" font-weight="600">${l.countText}</text>`);
             });
-            html += '<div style="display:flex;flex-direction:column;align-items:center;">';
+            html += '<div class="ciclo-col">';
             html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;
-            html += '<div style="text-align:center;color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);">Escala de Satisfacción</div>';
+            html += '<div class="ciclo-rotulo">Escala de Satisfacción</div>';
           html += '</div>';
           }
 
           // ——— Right column: horizontal bars ———
-          html += '<div style="display:flex;flex-direction:column;gap:6px;min-width:200px;border-left:1px solid rgba(255,255,255,0.2);padding:0 8px;">';
-          html += '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;">';
+          html += '<div class="ciclo-grupo">';
+          html += '<div class="ciclo-grupo-centrado">';
           const barItems = [
             { label: 'T3B', value: pct },
             { label: 'T2B', value: t2b },
@@ -466,22 +466,22 @@ window.SurveyRadarChart = (() => {
             const cssVal = String(item.value).replace(',', '.');
             const p = parseFloat(cssVal);
             const outside = p < 12;
-            html += '<div style="display:flex;align-items:center;gap:8px;">';
-            html += `<span style="color:#fff;font-size: var(--text-xs);font-weight: var(--font-semibold);width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
-            html += '<div style="flex:1;height:18px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:visible;position:relative;">';
-            html += `<div style="height:100%;width:${cssVal}%;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;transition:width 0.3s;min-width:0;">`;
+            html += '<div class="ciclo-linea">';
+            html += `<span class="ciclo-nombre">${item.label}</span>`;
+            html += '<div class="ciclo-pista">';
+            html += `<div class="ciclo-relleno" style="--w:${cssVal}%">`;
             if (!outside) {
-              html += `<span style="color:#111827;font-size: var(--text-xs);font-weight: var(--font-bold);line-height:1;">${item.value}%</span>`;
+              html += `<span class="ciclo-pct">${item.value}%</span>`;
             }
             html += '</div>';
             if (outside) {
-              html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size: var(--text-xs);font-weight: var(--font-bold);white-space:nowrap;">${item.value}%</span>`;
+              html += `<span class="ciclo-pct-fuera">${item.value}%</span>`;
             }
             html += '</div>';
             html += '</div>';
           });
           html += '</div>'; // close bars centering container
-          html += '<div style="color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);text-align:center;">Top Box y Ponderado</div>';
+          html += '<div class="ciclo-pie">Top Box y Ponderado</div>';
           html += '</div>'; // close right column
           html += '</div>'; // close flex container
           // raw=true justificado: html se construye con valores numericos (formatDecimal/formatPctDecimal)

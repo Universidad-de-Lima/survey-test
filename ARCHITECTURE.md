@@ -282,11 +282,18 @@ Sobre el **sitio publicado**, no sobre el disco: se abre cada pagina con el nave
 - `layout.css`: header, navegacion, grid y footer.
 - `components.css`: KPIs, filtros, barras, tooltips y tablas (la capa mas grande).
 - `sections.css`: secciones, responsive y ajustes visuales.
-- `generated.css`: estilos de los elementos que los modulos de JavaScript construyen al vuelo (antes escritos en linea dentro del propio modulo). Lo cargan el portal y las fichas, porque `sentiment-view.js` y los radares se usan en ambas.
+- `generated.css`: estilos de los elementos que los modulos de JavaScript construyen al vuelo (antes escritos en linea dentro del propio modulo). Lo cargan el portal y las fichas, porque `sentiment-view.js` y los radares se usan en ambas. **Se carga al final, despues de las demas hojas**, porque sus reglas estan pensadas para ajustar las de las capas anteriores cuando coinciden en fuerza.
 - `portal/`: `portal-base.css`, `portal-components.css`, `portal-sections.css` (estilos del portal v5.0).
 
 `dashboard.css` fue eliminado en v3.2.0 (CSS muerto; los imports viven en las capas base).
 `loader.css` fue eliminado en Fase 2 junto con `loader.js` (navegador de encuestas legacy, sin consumidores).
+
+### Donde vive cada cosa (estilos y programas)
+
+- Todo estilo vive en CSS. Los modulos de JavaScript solo arman elementos y ejecutan logica; no escriben reglas de estilo.
+- La unica excepcion es el DATO de una fila: la medida de una barra, su color o el color de una tarjeta viajan como variable CSS en linea (`--w`, `--c`, `--delay`, `--kpi-color`, `--cat-h`, `--cat-pct`). No son estilos: son valores que salen de los datos.
+- Los nombres de clase de `generated.css` siguen el nombre del elemento que construye cada modulo (`bar-item`, `cat-col`, `ring-*`, `ciclo-*`, `celda-*`, `insignia-*`), mas un bloque corto de utilidades de espaciado (`.espacio-arriba-*`, `.fila-*`) y de ancho de columna (`.col-*`).
+- Como se verifica: se toma una "foto" del aspecto de cada elemento visible (familia, tamanos, colores, margenes y medidas) de la version anterior y de la nueva, sobre las cinco paginas, y se comparan elemento por elemento. Se espera 97% o mas de elementos identicos y una diferencia de alto de pagina menor al 0,5%.
 
 ## Patrones Arquitectonicos
 

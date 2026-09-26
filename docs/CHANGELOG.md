@@ -2,6 +2,14 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Estilos y programas separados: todo el estilo vive en CSS
+
+- **Los estilos en línea de los módulos JavaScript pasaron a clases.** Se migraron los 8 módulos y las 5 páginas (1 145 declaraciones en 597 usos, 172 combinaciones distintas): `sentiment-view.js`, `portal-survey.js`, `dashboard.js`, `radar-chart.js`, `portal.js`, `portal-dashboard.js`, `portal-filters.js`, la plantilla, las tres fichas por período, `index.html` y `health.html`.
+- **Una sola excepción, el dato:** la medida de una barra, su color y el color de las tarjetas viajan como variable CSS (`--w`, `--c`, `--delay`, `--kpi-color`, `--cat-h`, `--cat-pct`). No son reglas de estilo: son el valor de esa fila.
+- **`generated.css` se carga al final**, después de `components.css` y `sections.css` (y de `portal-*.css` en el portal): sus reglas están pensadas para ajustar las de las capas anteriores cuando coinciden en fuerza.
+- **Tres diferencias que solo aparecieron al comparar las dos versiones**, ya corregidas: (1) el ancho fijo de 80px de la etiqueta de barra se había aplicado a todas las listas y las de aspectos no lo llevaban (los nombres se partían en dos líneas y la página crecía 220px); (2) las reglas de celda perdían ante `.survey-table td` y 182 celdas quedaban sin negrita (se recuperó con reglas dentro de la tabla); (3) las reglas de barra, al ser ahora más fuertes, borraban el color de las barras que lo toman de sus clases `high`/`medium`/`low`.
+- **Cómo se verificó:** foto del aspecto de cada elemento visible (familia, tamaños, colores, márgenes y medidas) de la versión anterior y de la nueva, a la misma ventana de 1400×1000, en las cinco páginas. Queda idéntico el 97-98% de los elementos; el portal no cambia de alto y las fichas varían 26px sobre más de 9 000px (0,3%), efecto de los altos de línea enteros.
+
 ## 2026-09-26 — Auditoría tipográfica completa: todo desde tokens, sin valores sueltos
 
 - **Fuentes:** la familia se declara ahora en `:root`, no solo en `body` (la raíz del documento resolvía a Times New Roman). No queda ninguna familia fuera de Roboto/Lusitania.

@@ -114,7 +114,7 @@
     <tr><th>Estado</th><th>Tipo</th><th>Periodo</th><th>HTML</th><th>JSONs</th><th>Último build</th></tr>
   </thead>
   <tbody id="results-body">
-    <tr><td colspan="6" style="text-align:center;padding:24px;">Verificando...</td></tr>
+    <tr><td colspan="6" class="bloque-centrado">Verificando...</td></tr>
   </tbody>
 </table>
 
@@ -187,7 +187,7 @@ async function run() {
       rowsHtml += `<tr>
         <td><span class="status-dot dot-warn"></span>Sin datos</td>
         <td>${esc(survey.label)}</td>
-        <td colspan="4" style="color:var(--gray)">No hay periodos configurados</td>
+        <td colspan="4" class="texto-gris">No hay periodos configurados</td>
       </tr>`;
       continue;
     }
@@ -202,7 +202,7 @@ async function run() {
           <td><span class="status-dot dot-pending"></span>Pendiente</td>
           <td>${esc(survey.label)}</td>
           <td><strong>${esc(period.label || period.id)}</strong></td>
-          <td colspan="3" style="color:var(--gray)">Nivel sin datos todavía (placeholder declarado)</td>
+          <td colspan="3" class="texto-gris">Nivel sin datos todavía (placeholder declarado)</td>
         </tr>`;
         continue;
       }
@@ -233,15 +233,15 @@ async function run() {
       rowsHtml += `<tr>
         <td>${statusHtml}${statusLabel}</td>
         <td>${esc(survey.label)}</td>
-        <td><strong>${esc(period.label || period.id)}</strong>${period.isNew ? ' <span style="color:var(--orange);font-size:11px;">★ NUEVO</span>' : ''}</td>
+        <td><strong>${esc(period.label || period.id)}</strong>${period.isNew ? ' <span class="texto-aviso">★ NUEVO</span>' : ''}</td>
         <td>${htmlOk ? '<span class="ok">✓</span>' : '<span class="err">✗</span>'}</td>
         <td>${jsonErrors === 0 ? '<span class="ok">✓ ' + jsonTotal + '/' + jsonTotal + '</span>' : '<span class="err">✗ ' + jsonErrors + ' errores</span>'}</td>
-        <td style="color:var(--gray)">—</td>
+        <td class="texto-gris">—</td>
       </tr>`;
     }
   }
 
-  tbody.innerHTML = rowsHtml || '<tr><td colspan="6" style="text-align:center;padding:24px;">Sin datos disponibles</td></tr>';
+  tbody.innerHTML = rowsHtml || '<tr><td colspan="6" class="bloque-centrado">Sin datos disponibles</td></tr>';
 
   document.getElementById('sum-total').textContent = totalPeriods;
   document.getElementById('sum-ok').textContent = totalOk;
@@ -251,7 +251,7 @@ async function run() {
 
 run().catch(err => {
   document.getElementById('results-body').innerHTML =
-    '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--red)">Error: ' + esc(err && err.message ? err.message : err) + '</td></tr>';
+    '<tr><td colspan="6" class="bloque-centrado texto-error">Error: ' + esc(err && err.message ? err.message : err) + '</td></tr>';
 });
 </script>
 </body>

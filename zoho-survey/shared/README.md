@@ -19,7 +19,7 @@ Capa de presentación base. Proporciona el sistema de diseño (CSS), la lógica 
 | `css/tokens.css` | 118 | Design tokens: 13 colores institucionales, tipografía (Roboto), z-index (8 niveles), espaciados (9), radios (8), sombras (3). |
 | `css/reset.css` | 69 | Reset universal + utilidades base (`.skip-link`, `.sr-only`, `.text-center`, `.mt-4`, `.software-italic`). |
 | `css/layout.css` | 174 | Sticky header, nav links, progress bar, main-content grid, footer. |
-| `css/generated.css` | 125 | Estilos de los elementos que los módulos de JavaScript construyen al vuelo (antes escritos en línea dentro del módulo). Lo cargan el portal y las fichas. |
+| `css/generated.css` | 274 | Estilos de los elementos que los módulos de JavaScript construyen al vuelo (antes escritos en línea dentro del módulo). Lo cargan el portal y las fichas, y va **al final** (después de las otras hojas) para poder ajustar sus reglas. |
 | `css/components.css` | 864 | KPI cards, distribution bars, filter system, custom select/multiselect, bar charts, radar SVG, tables (sticky header), heatmap, tooltip. |
 | `css/sections.css` | 244 | Selectores específicos de tabla + 3 media queries (1100/768/480px). |
 | `css/portal/` | — | `portal-base.css`, `portal-components.css`, `portal-sections.css`: estilos del portal v5.0. |

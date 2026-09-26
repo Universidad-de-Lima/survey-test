@@ -66,7 +66,7 @@
         '</div>' +
         '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
         '<span class="ring-per">próximamente</span>' +
-        '<span class="ring-satisf"><span class="ring-barra"><i style="width:0%"></i></span>' +
+        '<span class="ring-satisf"><span class="ring-barra"><i class="ring-relleno" style="--w:0%"></i></span>' +
           '<span class="sin-dato">—</span></span>' +
         tendenciaDe(medicion) +
       '</div>';
@@ -83,13 +83,13 @@
       (medicion.respuestas != null ? ' · ' + fmtNum(medicion.respuestas, 0) + ' respuestas' : '');
 
     return '<div class="ring">' +
-      '<div class="ring-aro" style="background:conic-gradient(' + color + ' 0 ' + llenadoDeNps(medicion.nps) +
+      '<div class="ring-aro" style="--aro:conic-gradient(' + color + ' 0 ' + llenadoDeNps(medicion.nps) +
         '%, var(--ring-track) 0)">' +
         '<div class="ring-centro"><b style="color:' + color + '">' + signo + fmtNum(medicion.nps, 2) + '</b><i>NPS</i></div>' +
       '</div>' +
       '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
       '<span class="ring-per">' + detalle + '</span>' +
-      '<span class="ring-satisf"><span class="ring-barra"><i style="width:' + csatPct + '%; background:' + colorCsat +
+      '<span class="ring-satisf"><span class="ring-barra"><i style="--w:' + csatPct + '%; --c:' + colorCsat +
         '"></i></span><span style="color:' + colorCsat + '">' + csatTexto + '</span></span>' +
       tendenciaDe(medicion) +
     '</div>';
@@ -113,16 +113,16 @@
         /* flex-wrap:nowrap es imprescindible: el contenedor del portal trae
            "wrap" en fila, y en columna eso estiraba las tarjetas de anillo a
            349/532 px cuando su contenido mide 165. */
-        '<div class="repo-card-inner" style="flex-direction:column; align-items:stretch; flex-wrap:nowrap; justify-content:flex-start;">' +
+        '<div class="repo-card-inner apilado">' +
           '<h2 class="repo-card-title">' + window.svg('gauge', 16) + 'Última encuesta de cada grupo</h2>' +
           '<p class="repo-card-desc">Cada anillo muestra la medición más reciente de una encuesta: el número del centro es su ' +
             '<strong>índice de promotores netos</strong>, el anillo se llena sobre la escala −100 a +100 (medio anillo es cero) ' +
             'y abajo va el <strong>nivel de satisfacción</strong>.</p>' +
           '<div class="ring-leyenda">' +
-            '<span><i style="background:var(--emerald)"></i>NPS de ' + META_NPS + ' o más</span>' +
-            '<span><i style="background:var(--amber)"></i>entre ' + META_NPS_MEDIO + ' y ' + META_NPS + '</span>' +
-            '<span><i style="background:var(--rose)"></i>debajo de ' + META_NPS_MEDIO + '</span>' +
-            '<span><i style="background:var(--ring-track)"></i>todavía sin datos</span>' +
+            '<span><i class="punto-verde"></i>NPS de ' + META_NPS + ' o más</span>' +
+            '<span><i class="punto-ambar"></i>entre ' + META_NPS_MEDIO + ' y ' + META_NPS + '</span>' +
+            '<span><i class="punto-rosa"></i>debajo de ' + META_NPS_MEDIO + '</span>' +
+            '<span><i class="punto-pista"></i>todavía sin datos</span>' +
           '</div>' +
           secciones +
         '</div>' +
@@ -151,10 +151,10 @@
         '<section class="section">' +
           '<div class="repo-card">' +
             '<div class="repo-card-inner">' +
-              '<div style="min-width:0; flex:1 1 300px; display:flex; flex-direction:column; justify-content:center;">' +
+              '<div class="columna-flexible">' +
                 '<h2 class="repo-card-title">' + svg('gauge', 16) + 'Nivel de Satisfacción</h2>' +
                 '<p class="repo-card-desc">' + REPO_TARGET.summary + '</p>' +
-                '<div class="satisfaction-bars" style="margin-top:16px;">' +
+                '<div class="satisfaction-bars espacio-arriba-16">' +
                   PORTAL_PHASES.filter(p => !p.optional).map(phase => {
                     const realScore = phase.id === '1.0' ? (dashData && dashData.resumen ? dashData.resumen.csat.score : null)
                       : phase.id === '1.2' ? (_data.getGraduateData() && _data.getGraduateData().resumen ? _data.getGraduateData().resumen.csat.score : null)
@@ -165,16 +165,16 @@
                     const color = realScore == null ? 'var(--muted)' : (pNum >= META_CSAT ? 'var(--emerald)' : pNum >= META_PONDERADO ? 'var(--amber)' : 'var(--rose)');
                     return '<div class="sat-row' + (realScore == null ? ' sat-row-locked' : '') + '">' +
                       '<div class="sat-info">' +
-                        '<span class="sat-icon" style="color: var(--muted-foreground);">' + svg(phase.icon, 16) + '</span>' +
-                        '<span style="display:flex;flex-direction:column;min-width:0;">' +
+                        '<span class="sat-icon sat-icon-tenue">' + svg(phase.icon, 16) + '</span>' +
+                        '<span class="columna-sin-desborde">' +
                           '<span class="sat-name">' + phase.name + '</span>' +
                           '<span class="sat-role">' + satRole(phase) + '</span>' +
                         '</span>' +
                       '</div>' +
                       '<div class="sat-bar-wrap">' +
-                        '<div class="sat-bar" style="width:' + pctCss + '%; background:' + color + ';"></div>' +
+                        '<div class="sat-bar" style="--w:' + pctCss + '%; --c:' + color + '"></div>' +
                       '</div>' +
-                      '<span class="sat-pct" style="color:' + color + ';">' + pct + '%</span>' +
+                      '<span class="sat-pct" style="--c:' + color + '">' + pct + '%</span>' +
                     '</div>';
                   }).join('') +
                 '</div>' +
@@ -186,10 +186,10 @@
         '<section class="section">' +
           '<div class="repo-card">' +
             '<div class="repo-card-inner">' +
-              '<div style="min-width:0; flex:1 1 300px; display:flex; flex-direction:column; justify-content:center;">' +
+              '<div class="columna-flexible">' +
                 '<h2 class="repo-card-title">' + svg('gauge', 16) + 'Índice de Promotores Netos</h2>' +
                 '<p class="repo-card-desc">El índice de promotores netos se obtiene a partir de la pregunta <strong>¿Qué tan probable es que recomiendes a la Universidad de Lima?</strong>. Se calcula restando el porcentaje de respuestas <strong>detractoras</strong> (valores de 0 a 6) del porcentaje de respuestas <strong>promotoras</strong> (valores de 9 y 10) sobre el total de respuestas de la escala de percepción de 10 puntos y excluyendo las <strong>respuestas vacías</strong>.</p>' +
-                '<div class="satisfaction-bars" style="margin-top:16px;">' +
+                '<div class="satisfaction-bars espacio-arriba-16">' +
                   PORTAL_PHASES.filter(p => !p.optional).map(phase => {
                     const realScore = phase.id === '1.0' ? (dashData && dashData.resumen ? dashData.resumen.nps.score : null)
                       : phase.id === '1.2' ? (_data.getGraduateData() && _data.getGraduateData().resumen ? _data.getGraduateData().resumen.nps.score : null)
@@ -200,16 +200,16 @@
                     const color = realScore == null ? 'var(--muted)' : (nNum >= META_NPS ? 'var(--emerald)' : nNum >= META_NPS_MEDIO ? 'var(--amber)' : 'var(--rose)');
                     return '<div class="sat-row' + (realScore == null ? ' sat-row-locked' : '') + '">' +
                       '<div class="sat-info">' +
-                        '<span class="sat-icon" style="color: var(--muted-foreground);">' + svg(phase.icon, 16) + '</span>' +
-                        '<span style="display:flex;flex-direction:column;min-width:0;">' +
+                        '<span class="sat-icon sat-icon-tenue">' + svg(phase.icon, 16) + '</span>' +
+                        '<span class="columna-sin-desborde">' +
                           '<span class="sat-name">' + phase.name + '</span>' +
                           '<span class="sat-role">' + satRole(phase) + '</span>' +
                         '</span>' +
                       '</div>' +
                       '<div class="sat-bar-wrap">' +
-                        '<div class="sat-bar" style="width:' + npsCss + '%; background:' + color + ';"></div>' +
+                        '<div class="sat-bar" style="--w:' + npsCss + '%; --c:' + color + '"></div>' +
                       '</div>' +
-                      '<span class="sat-pct" style="color:' + color + ';">' + nps + '</span>' +
+                      '<span class="sat-pct" style="--c:' + color + '">' + nps + '</span>' +
                     '</div>';
                   }).join('') +
                 '</div>' +
@@ -274,8 +274,8 @@
       }
     } catch (e) { /* sin red: omitir tamaño */ }
 
-    return '<div class="file-meta-bar" style="margin-top:-8px;">' +
-      '<span class="item filename" style="color:var(--primary);">' +
+    return '<div class="file-meta-bar subir-8">' +
+      '<span class="item filename texto-marca">' +
         svg('calendar', 14) +
         filename +
       '</span>' +
@@ -284,7 +284,7 @@
       (facultades ? '<span class="item">' + svg('landmark', 12) + facultades + '</span>' : '') +
       sizeItem +
       fechaItem +
-      '<a href="' + zipUrl + '" download="' + zipName + '" class="btn-download" style="text-decoration:none;">' +
+      '<a href="' + zipUrl + '" download="' + zipName + '" class="btn-download sin-subrayado">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>Descargar' +
       '</a>' +
     '</div>';

@@ -74,7 +74,7 @@ window.SurveySentimentView = (() => {
       barItem.innerHTML = `
         <div class="bar-label bar-label-fija">${item.label}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
+          <div class="bar-fill animated" style="--w:${pct}%; --c:${item.color}; --delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, total)}</span>
           </div>
         </div>
@@ -377,7 +377,7 @@ window.SurveySentimentView = (() => {
       barItem.innerHTML = `
         <div class="bar-label bar-label-fija">${item.label}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
+          <div class="bar-fill animated" style="--w:${pct}%; --c:${item.color}; --delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, totalIdeas)}</span>
           </div>
         </div>
@@ -440,7 +440,7 @@ window.SurveySentimentView = (() => {
       barItem.innerHTML = `
         <div class="bar-label">${_san.escapeHTML(item.name)}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${color}; --bar-delay:${index * 0.08}s">
+          <div class="bar-fill animated" style="--w:${pct}%; --c:${color}; --delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${displayVal}</span>
           </div>
         </div>
