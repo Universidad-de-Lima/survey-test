@@ -12,7 +12,9 @@
 
 /* --- Panel de sentimiento (shared/js/components/sentiment-view.js) --- */
 
-.bar-item .bar-label { width: 80px; }
+/* Solo las dos listas que llevaban ancho fijo (distribución y segmentos NPS): en las
+   listas de aspectos la etiqueta se ajusta sola o los nombres largos se parten en dos líneas. */
+.bar-item .bar-label-fija { width: 80px; }
 .bar-item .bar-fill {
   width: var(--bar-pct);
   background-color: var(--bar-color);
@@ -57,7 +59,7 @@
 .cat-col .cat-bar .cat-neu { background: var(--gray-400); }
 .cat-col .cat-bar .cat-neg { background: var(--ulima-red); }
 .cat-col .cat-name {
-  font-size: var(--text-xs); line-height: 15px; font-weight: var(--font-semibold);
+  font-size: var(--text-xs); line-height: 12px; font-weight: var(--font-semibold);
   color: var(--dark); text-align: center; white-space: normal;
   max-width: 64px; height: 24px; overflow: hidden;
 }

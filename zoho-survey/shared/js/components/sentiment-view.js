@@ -72,7 +72,7 @@ window.SurveySentimentView = (() => {
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
       barItem.innerHTML = `
-        <div class="bar-label">${item.label}</div>
+        <div class="bar-label bar-label-fija">${item.label}</div>
         <div class="bar-container">
           <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, total)}</span>
@@ -375,7 +375,7 @@ window.SurveySentimentView = (() => {
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
       barItem.innerHTML = `
-        <div class="bar-label">${item.label}</div>
+        <div class="bar-label bar-label-fija">${item.label}</div>
         <div class="bar-container">
           <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
             <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, totalIdeas)}</span>
