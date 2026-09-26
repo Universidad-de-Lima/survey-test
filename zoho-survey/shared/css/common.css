@@ -499,7 +499,7 @@ from {
 @media (max-width: 768px) {
 .radar-svg text {
     font-size: var(--text-md);
-    font-weight: var(--font-medium) !important;
+    font-weight: var(--font-medium);
   }
 
 .filter-container {
@@ -532,7 +532,7 @@ from {
 @media (max-width: 480px) {
 .radar-svg text {
     font-size: var(--text-xl);
-    font-weight: var(--font-bold) !important;
+    font-weight: var(--font-bold);
   }
 
 .bar-item {
