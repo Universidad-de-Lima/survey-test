@@ -1,0 +1,124 @@
+/* ============================================================================
+   Estilos de los elementos que los modulos de JavaScript construyen al vuelo.
+   Antes vivian escritos en linea dentro del propio modulo, mezclados con la
+   logica; aqui quedan separados, en un solo lugar y junto al resto del diseno.
+
+   Solo lo que es DATO viaja en linea, como variable CSS (--bar-pct, --cat-h):
+   la medida de una barra es el valor de esa fila, no una regla de estilo.
+
+   Esta hoja la cargan las dos familias de paginas (portal y fichas), porque
+   sentiment-view.js y los radares se usan en ambas.
+   ============================================================================ */
+
+/* --- Panel de sentimiento (shared/js/components/sentiment-view.js) --- */
+
+.bar-item .bar-label { width: 80px; }
+.bar-item .bar-fill {
+  width: var(--bar-pct);
+  background-color: var(--bar-color);
+  animation-delay: var(--bar-delay);
+}
+.bar-item .bar-value { color: #fff; }
+.bar-item .bar-value.bar-value-outside { color: var(--dark); }
+
+/* Tablas dentro de los globos de ayuda */
+.tooltip-table { border-collapse: collapse; font-size: var(--text-sm); line-height: 17px; }
+.tooltip-table td { padding: 2px 6px; vertical-align: middle; }
+.tooltip-table td.tooltip-num { text-align: right; }
+.tooltip-table td.tooltip-fila { border-bottom: 1px solid #eee; }
+.tooltip-table td.tooltip-sep { border-bottom: 1px solid #eee; padding: 0; }
+
+/* Tarjetas de indicadores (fichas por periodo) */
+.kpi-cards-bloque { display: block; }
+.kpi-cards-bloque .kpi-cards-row { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
+.kpi-cards-bloque .kpi-cards-row + .kpi-cards-row { margin-top: 16px; }
+.kpi-cards-bloque .kpi-card { flex: 1 1 18%; min-width: 150px; margin: 0; }
+
+/* Tarjetas de indicadores (portal): el color llega en --kpi-color */
+.survey-kpi .survey-kpi-bar-top { background: var(--kpi-color); }
+.survey-kpi .survey-kpi-value { color: var(--kpi-color); }
+.survey-kpi .survey-kpi-icon { background: var(--kpi-color); }
+
+/* Barras verticales por categoria */
+.cat-barras {
+  display: flex; align-items: flex-end; justify-content: space-around;
+  height: 180px; padding: 10px 0; gap: 4px;
+}
+.cat-barras.esta-vacio { display: block; height: auto; padding: 0; }
+.cat-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; gap: 6px; }
+.cat-col .cat-total { font-size: var(--text-sm); line-height: 17px; font-weight: var(--font-semibold); color: var(--text2); }
+.cat-col .cat-bar {
+  width: 36px; height: var(--cat-h);
+  background: var(--gray-200); border-radius: 4px 4px 0 0;
+  overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
+}
+.cat-col .cat-bar > div { width: 100%; height: var(--cat-pct); }
+.cat-col .cat-bar .cat-pos { background: var(--success-text); }
+.cat-col .cat-bar .cat-neu { background: var(--gray-400); }
+.cat-col .cat-bar .cat-neg { background: var(--ulima-red); }
+.cat-col .cat-name {
+  font-size: var(--text-xs); line-height: 15px; font-weight: var(--font-semibold);
+  color: var(--dark); text-align: center; white-space: normal;
+  max-width: 64px; height: 24px; overflow: hidden;
+}
+.seg-nps-barras { height: 180px; display: flex; flex-direction: column; justify-content: center; }
+
+/* Mensajes de "sin datos" */
+.sin-datos { color: var(--gray-500); font-size: var(--text-md); line-height: 18px; text-align: center; padding: 20px 0; }
+.sin-datos-lg { font-size: var(--text-lg); line-height: 20px; }
+.msj-corto { font-size: var(--text-md); line-height: 18px; color: var(--gray-500); }
+
+/* Tabla de NPS por carrera */
+.celda-carrera { color: var(--dark); }
+.celda-carrera-izq { color: var(--dark); text-align: left; }
+.celda-suave { color: var(--text2); }
+.celda-texto { line-height: 15px; color: var(--text); text-align: left; }
+.celda-destacada { font-weight: var(--font-semibold); color: var(--dark); }
+.celda-prom { font-weight: var(--font-semibold); color: var(--success-text); }
+.celda-det { font-weight: var(--font-semibold); color: var(--ulima-red); }
+.celda-vacia { color: var(--gray-500); padding: 24px; }
+
+/* Insignias del explorador de comentarios */
+.insignia { border-radius: 12px; padding: 3px 8px; font-size: var(--text-sm); line-height: 17px; font-weight: var(--font-bold); }
+.insignia-ruido { background: var(--gray-200); color: var(--gray-600); }
+.insignia-neutro { background: var(--gray-200); color: var(--gray-700); }
+.insignia-positivo { background: var(--success-pastel); color: var(--success-text); }
+.insignia-negativo { background: var(--danger-pastel); color: var(--ulima-red); }
+.insignia-nps {
+  border-radius: 50%; width: 24px; height: 24px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--text-sm); line-height: 17px; font-weight: var(--font-bold);
+}
+.insignia-nps-prom { background: var(--success-pastel); color: var(--success-text); }
+.insignia-nps-pas { background: var(--warning-pastel); color: var(--warning-text); }
+.insignia-nps-det { background: var(--danger-pastel); color: var(--ulima-red); }
+
+.texto-invalidado { color: var(--gray-400); font-style: italic; }
+.descarga-oculta { visibility: hidden; }
+
+/* Aviso de exportacion no disponible */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-overlay .modal-caja {
+  background: #fff; border-radius: 8px; padding: 24px; max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.modal-overlay h3 { margin: 0 0 12px 0; font-size: var(--text-2xl); line-height: 27px; color: #111827; }
+.modal-overlay p { margin: 0 0 20px 0; font-size: var(--text-xl); line-height: 21px; color: #6B7280; }
+.modal-overlay button {
+  background: #FF5117; color: #fff; border: none; border-radius: 4px;
+  padding: 8px 16px; font-size: var(--text-xl); cursor: pointer;
+}
+
+/* Analisis cualitativo por categoria */
+.insight-cat {
+  margin-top: 10px; padding: 8px 12px; background: var(--surface, #F4F8FC);
+  border-left: 3px solid var(--ulima-orange, #FF5117); border-radius: 4px;
+}
+.insight-cat .insight-cat-titulo {
+  font-size: var(--text-md); line-height: 18px; font-weight: var(--font-semibold);
+  color: var(--text1, #1A2B40); margin-bottom: 4px;
+}
+.insight-cat .insight-cat-texto { font-size: var(--text-md); line-height: 18px; color: var(--text2, #6878A0); }

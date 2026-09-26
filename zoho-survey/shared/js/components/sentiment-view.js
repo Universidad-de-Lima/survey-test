@@ -48,7 +48,7 @@ window.SurveySentimentView = (() => {
     if (!container) return;
     container.innerHTML = '';
     // Set fixed height to match Ideas por segmento NPS
-    container.style.cssText = 'height: 180px; display: flex; flex-direction: column; justify-content: center;';
+    container.className = 'seg-nps-barras';
 
     const pos = stats.pos.total;
     const neu = stats.neu.total;
@@ -72,10 +72,10 @@ window.SurveySentimentView = (() => {
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
       barItem.innerHTML = `
-        <div class="bar-label" style="width: 80px;">${item.label}</div>
+        <div class="bar-label">${item.label}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="width:${pct}%; background-color:${item.color}; animation-delay:${index * 0.08}s">
-            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${_fmt.formatPctSimple(item.value, total)}</span>
+          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, total)}</span>
           </div>
         </div>
       `;
@@ -83,12 +83,12 @@ window.SurveySentimentView = (() => {
       // Tooltip events
       barItem.addEventListener('mouseenter', (e) => {
         const b = item.breakdown;
-        let html = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Promotores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.prom)}</td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Pasivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pas)}</td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Detractores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.det)}</td></tr>`;
-        html += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${item.label}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, total)})</td></tr>`;
+        let html = '<table class="tooltip-table">';
+        html += `<tr><td>Promotores</td><td class="tooltip-num">${_fmt.formatInteger(b.prom)}</td></tr>`;
+        html += `<tr><td>Pasivos</td><td class="tooltip-num">${_fmt.formatInteger(b.pas)}</td></tr>`;
+        html += `<tr><td>Detractores</td><td class="tooltip-num">${_fmt.formatInteger(b.det)}</td></tr>`;
+        html += `<tr><td colspan="2" class="tooltip-sep"></td></tr>`;
+        html += `<tr><td><strong>${item.label}</strong></td><td class="tooltip-num">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, total)})</td></tr>`;
         html += '</table>';
         // raw=true justificado en todos los tooltips de este modulo:
         // los valores interpolados son numericos (formatInteger/formatPctSimple)
@@ -176,18 +176,18 @@ window.SurveySentimentView = (() => {
         const createKpiCard = (label, value, color, icon) => {
           if (esPortal) {
             return (
-              '<div class="survey-kpi">' +
-                '<div class="survey-kpi-bar-top" style="background:' + color + ';"></div>' +
+              '<div class="survey-kpi" style="--kpi-color:' + color + ';">' +
+                '<div class="survey-kpi-bar-top"></div>' +
                 '<div class="survey-kpi-body">' +
-                  '<p class="survey-kpi-value" style="color:' + color + ';">' + value + '</p>' +
+                  '<p class="survey-kpi-value">' + value + '</p>' +
                   '<p class="survey-kpi-label">' + label + '</p>' +
                 '</div>' +
-                '<div class="survey-kpi-icon" style="background:' + color + ';">' + window.svg(icon) + '</div>' +
+                '<div class="survey-kpi-icon">' + window.svg(icon) + '</div>' +
               '</div>'
             );
           }
           return (
-            `<div class="kpi-card" style="flex: 1 1 18%; min-width: 150px; margin: 0;">
+            `<div class="kpi-card">
               <div class="kpi-value ${color}">${value}</div>
               <div class="kpi-label ${color}">${label}</div>
             </div>`
@@ -211,16 +211,16 @@ window.SurveySentimentView = (() => {
             createKpiCard('Ideas analizadas', ideas, '#1A73E8', 'clipboard-list')
           ].join('');
         } else {
-          kpiGrid.style.display = 'block';
+          kpiGrid.className = 'kpi-cards-bloque';
           kpiGrid.innerHTML = `
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; width: 100%; margin-bottom: 16px;">
+            <div class="kpi-cards-row">
               ${createKpiCard('Total encuestados', totalRespuestas, 'color-emplea')}
               ${createKpiCard('Promotores', promotores, 'color-csat')}
               ${createKpiCard('Pasivos', pasivos, 'color-emplea')}
               ${createKpiCard('Detractores', detractores, 'color-negative')}
               ${createKpiCard('Con texto abierto', textAbierto, 'color-emplea')}
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; width: 100%;">
+            <div class="kpi-cards-row">
               ${createKpiCard('Intensidad prom.', _fmt.formatDecimal(intensidadProm, 2), 'color-emplea')}
               ${createKpiCard('Positivas', pos, 'color-csat')}
               ${createKpiCard('Neutras', neu, 'color-emplea')}
@@ -264,7 +264,7 @@ window.SurveySentimentView = (() => {
 
     container.innerHTML = '';
     // Horizontal flex row with bottom alignment for the columns
-    container.style.cssText = 'display: flex; align-items: flex-end; justify-content: space-around; height: 180px; padding-top: 10px; padding-bottom: 10px; gap: 4px;';
+    container.className = 'cat-barras';
     
     const stats = {};
 
@@ -279,8 +279,8 @@ window.SurveySentimentView = (() => {
     const sortedCats = Object.keys(stats).sort((a, b) => stats[b].total - stats[a].total);
 
     if (sortedCats.length === 0) {
-      container.style.cssText = '';
-      container.innerHTML = '<p style="color:var(--gray-500);font-size: var(--text-md);text-align:center;padding:20px 0;">No hay menciones registradas.</p>';
+      container.className = 'cat-barras esta-vacio';
+      container.innerHTML = '<p class="sin-datos">No hay menciones registradas.</p>';
       return;
     }
 
@@ -299,25 +299,25 @@ window.SurveySentimentView = (() => {
       const negPct = (negCount / s.total) * 100;
 
       const col = document.createElement('div');
-      col.style.cssText = 'display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; gap:6px;';
+      col.className = 'cat-col';
       col.innerHTML = `
-        <div style="font-size: var(--text-sm); line-height:17px; font-weight: var(--font-semibold); color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
-        <div style="width:36px; height:${heightPct}%; background:var(--gray-200); border-radius:4px 4px 0 0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;">
-          <div style="width:100%; height:${pPct}%; background:var(--success-text);"></div>
-          <div style="width:100%; height:${nPct}%; background:var(--gray-400);"></div>
-          <div style="width:100%; height:${negPct}%; background:var(--ulima-red);"></div>
+        <div class="cat-total">${_fmt.formatInteger(s.total)}</div>
+        <div class="cat-bar" style="--cat-h:${heightPct}%">
+          <div class="cat-pos" style="--cat-pct:${pPct}%"></div>
+          <div class="cat-neu" style="--cat-pct:${nPct}%"></div>
+          <div class="cat-neg" style="--cat-pct:${negPct}%"></div>
         </div>
-        <div style="font-size: var(--text-xs); font-weight: var(--font-semibold); color:var(--dark); text-align:center; white-space:normal; line-height:1.1; max-width:64px; height:24px; overflow:hidden;">${_san.escapeHTML(cat)}</div>
+        <div class="cat-name">${_san.escapeHTML(cat)}</div>
       `;
 
       // Tooltip enriquecido con conteos + porcentajes (2 decimales), consistente
       // con el resto de la app. Reemplaza al title HTML nativo.
-      let tooltipHtml = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
-      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(posCount)} (${_fmt.formatPctSimple(posCount, s.total)})</td></tr>`;
-      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(neuCount)} (${_fmt.formatPctSimple(neuCount, s.total)})</td></tr>`;
-      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(negCount)} (${_fmt.formatPctSimple(negCount, s.total)})</td></tr>`;
-      tooltipHtml += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
-      tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${_san.escapeHTML(cat)}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(s.total)} menciones</td></tr>`;
+      let tooltipHtml = '<table class="tooltip-table">';
+      tooltipHtml += `<tr><td>Positivos</td><td class="tooltip-num">${_fmt.formatInteger(posCount)} (${_fmt.formatPctSimple(posCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td>Neutros</td><td class="tooltip-num">${_fmt.formatInteger(neuCount)} (${_fmt.formatPctSimple(neuCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td>Negativos</td><td class="tooltip-num">${_fmt.formatInteger(negCount)} (${_fmt.formatPctSimple(negCount, s.total)})</td></tr>`;
+      tooltipHtml += `<tr><td colspan="2" class="tooltip-sep"></td></tr>`;
+      tooltipHtml += `<tr><td><strong>${_san.escapeHTML(cat)}</strong></td><td class="tooltip-num">${_fmt.formatInteger(s.total)} menciones</td></tr>`;
       tooltipHtml += '</table>';
       col.addEventListener('mouseenter', (e) => { if (_ttp) _ttp.show(e, tooltipHtml, true); });
       col.addEventListener('mousemove', (e) => { if (_ttp) _ttp.move(e); });
@@ -331,7 +331,7 @@ window.SurveySentimentView = (() => {
     const container = $('seg-nps-container');
     if (!container) return;
     container.innerHTML = '';
-    container.style.cssText = 'height: 180px; display: flex; flex-direction: column; justify-content: center;';
+    container.className = 'seg-nps-barras';
 
     const stats = {
       'Promotor': { total: 0, pos: 0, neu: 0, neg: 0 },
@@ -375,10 +375,10 @@ window.SurveySentimentView = (() => {
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
       barItem.innerHTML = `
-        <div class="bar-label" style="width: 80px;">${item.label}</div>
+        <div class="bar-label">${item.label}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="width:${pct}%; background-color:${item.color}; animation-delay:${index * 0.08}s">
-            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${_fmt.formatPctSimple(item.value, totalIdeas)}</span>
+          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${item.color}; --bar-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${_fmt.formatPctSimple(item.value, totalIdeas)}</span>
           </div>
         </div>
       `;
@@ -386,12 +386,12 @@ window.SurveySentimentView = (() => {
       // Tooltip events
       barItem.addEventListener('mouseenter', (e) => {
         const b = item.breakdown;
-        let html = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pos)}</td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neu)}</td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neg)}</td></tr>`;
-        html += `<tr><td colspan="2" style="border-bottom:1px solid #eee;padding:0;"></td></tr>`;
-        html += `<tr><td style="padding:2px 6px;vertical-align:middle;"><strong>${item.label}</strong></td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, totalIdeas)})</td></tr>`;
+        let html = '<table class="tooltip-table">';
+        html += `<tr><td>Positivos</td><td class="tooltip-num">${_fmt.formatInteger(b.pos)}</td></tr>`;
+        html += `<tr><td>Neutros</td><td class="tooltip-num">${_fmt.formatInteger(b.neu)}</td></tr>`;
+        html += `<tr><td>Negativos</td><td class="tooltip-num">${_fmt.formatInteger(b.neg)}</td></tr>`;
+        html += `<tr><td colspan="2" class="tooltip-sep"></td></tr>`;
+        html += `<tr><td><strong>${item.label}</strong></td><td class="tooltip-num">${_fmt.formatInteger(item.value)} ideas (${_fmt.formatPctSimple(item.value, totalIdeas)})</td></tr>`;
         html += '</table>';
         _ttp.show(e, html, true);
       });
@@ -414,7 +414,7 @@ window.SurveySentimentView = (() => {
     if (!container) return;
     container.innerHTML = '';
     if (data.length === 0) {
-      container.innerHTML = '<span style="font-size: var(--text-md); color:var(--gray-500);">Data insuficiente</span>';
+      container.innerHTML = '<span class="msj-corto">Data insuficiente</span>';
       return;
     }
     
@@ -440,15 +440,15 @@ window.SurveySentimentView = (() => {
       barItem.innerHTML = `
         <div class="bar-label">${_san.escapeHTML(item.name)}</div>
         <div class="bar-container">
-          <div class="bar-fill animated" style="width:${pct}%; background-color:${color}; animation-delay:${index * 0.08}s">
-            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}" style="${barValueOutside ? 'color: var(--dark);' : 'color: white;'}">${displayVal}</span>
+          <div class="bar-fill animated" style="--bar-pct:${pct}%; --bar-color:${color}; --bar-delay:${index * 0.08}s">
+            <span class="bar-value${barValueOutside ? ' bar-value-outside' : ''}">${displayVal}</span>
           </div>
         </div>
       `;
 
       const tooltipText = isIntensity ? 
-        `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">Intensidad promedio ${displayVal}</td></tr></table>` : 
-        `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${_fmt.formatInteger(item.val)} menciones</td></tr></table>`;
+        `<table class="tooltip-table"><tr><td class="tooltip-fila"><strong>${_san.escapeHTML(item.name)}</strong></td><td class="tooltip-num tooltip-fila">Intensidad promedio ${displayVal}</td></tr></table>` : 
+        `<table class="tooltip-table"><tr><td class="tooltip-fila"><strong>${_san.escapeHTML(item.name)}</strong></td><td class="tooltip-num tooltip-fila">${_fmt.formatInteger(item.val)} menciones</td></tr></table>`;
         
       barItem.addEventListener('mouseenter', (e) => {
         _ttp.show(e, tooltipText, true);
@@ -550,12 +550,12 @@ window.SurveySentimentView = (() => {
       const s = carStats[car];
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td style="color:var(--dark);">${_san.escapeHTML(car)}</td>
+        <td class="celda-carrera">${_san.escapeHTML(car)}</td>
         <td class="text-center">${s.uniqueComments.size}</td>
         <td class="text-center">${s.totalIdeas}</td>
-        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--success-text);">${s.prom}</td>
-        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--dark);">${s.pas}</td>
-        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--ulima-red);">${s.det}</td>
+        <td class="text-center celda-prom">${s.prom}</td>
+        <td class="text-center celda-destacada">${s.pas}</td>
+        <td class="text-center celda-det">${s.det}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -648,7 +648,7 @@ window.SurveySentimentView = (() => {
     const pageComments = state.filteredComments.slice(start, end);
 
     if (pageComments.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color:var(--gray-500); padding: 24px;">No se encontraron comentarios con los filtros actuales.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center celda-vacia">No se encontraron comentarios con los filtros actuales.</td></tr>';
       return;
     }
 
@@ -659,33 +659,23 @@ window.SurveySentimentView = (() => {
       let sentBadge = '';
       if (!c.es_valido) {
         const motivoLabel = c.motivo_invalidez === 'spam_o_ruido' ? 'Ruido' : 'Sin opinión';
-        sentBadge = `<span style="background:var(--gray-200); color:var(--gray-600); border-radius:12px; padding:3px 8px; font-size: var(--text-sm); font-weight: var(--font-bold);">${motivoLabel}</span>`;
+        sentBadge = `<span class="insignia insignia-ruido">${motivoLabel}</span>`;
       } else {
-        let bg = 'var(--gray-200)', fg = 'var(--gray-700)', label = 'Neutro';
+        let estado = 'neutro', label = 'Neutro';
         if (c.sentimiento === 'positivo') {
-          bg = 'var(--success-pastel)';
-          fg = 'var(--success-text)';
+          estado = 'positivo';
           label = 'Positivo';
         } else if (c.sentimiento === 'negativo') {
-          bg = 'var(--danger-pastel)';
-          fg = 'var(--ulima-red)';
+          estado = 'negativo';
           label = 'Negativo';
         }
-        sentBadge = `<span style="background:${bg}; color:${fg}; border-radius:12px; padding:3px 8px; font-size: var(--text-sm); font-weight: var(--font-bold);">${label}</span>`;
+        sentBadge = `<span class="insignia insignia-${estado}">${label}</span>`;
       }
 
-      let npsBg = 'var(--gray-200)', npsFg = 'var(--gray-700)';
-      if (c.nps_score >= 9) {
-        npsBg = 'var(--success-pastel)';
-        npsFg = 'var(--success-text)';
-      } else if (c.nps_score >= 7) {
-        npsBg = 'var(--warning-pastel)';
-        npsFg = 'var(--warning-text)';
-      } else {
-        npsBg = 'var(--danger-pastel)';
-        npsFg = 'var(--ulima-red)';
-      }
-      const npsBadge = `<span style="background:${npsBg}; color:${npsFg}; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size: var(--text-sm); font-weight: var(--font-bold);">${c.nps_score}</span>`;
+      let nivelNps = 'det';
+      if (c.nps_score >= 9) nivelNps = 'prom';
+      else if (c.nps_score >= 7) nivelNps = 'pas';
+      const npsBadge = `<span class="insignia-nps insignia-nps-${nivelNps}">${c.nps_score}</span>`;
 
       let safeCiclo = '-';
       if (c.ciclo) {
@@ -698,17 +688,17 @@ window.SurveySentimentView = (() => {
       const ideaAnalizadaText = c.fragmento_mostrar || c.fragmento_original;
       const displayIdeaAnalizada = c.es_valido
         ? _san.escapeHTML(ideaAnalizadaText)
-        : `<span style="color:var(--gray-400); font-style:italic;">[Invalidado: ${_san.escapeHTML(c.motivo_invalidez)}]</span> "${_san.escapeHTML(ideaAnalizadaText)}"`;
+        : `<span class="texto-invalidado">[Invalidado: ${_san.escapeHTML(c.motivo_invalidez)}]</span> "${_san.escapeHTML(ideaAnalizadaText)}"`;
 
       tr.innerHTML = `
-        <td style="color:var(--dark); text-align:left;">${_san.escapeHTML(c.carrera)}</td>
-        <td class="text-center" style="color:var(--text2);">${safeCiclo}</td>
+        <td class="celda-carrera-izq">${_san.escapeHTML(c.carrera)}</td>
+        <td class="text-center celda-suave">${safeCiclo}</td>
         <td class="text-center">${npsBadge}</td>
-        <td style="line-height:15px; color:var(--text); text-align:left;">${textoAbierto}</td>
-        <td style="line-height:15px; color:var(--text); text-align:left;">${displayIdeaAnalizada}</td>
-        <td style="color:var(--text2);">${_san.escapeHTML(c.categoria || '-')}</td>
+        <td class="celda-texto">${textoAbierto}</td>
+        <td class="celda-texto">${displayIdeaAnalizada}</td>
+        <td class="celda-suave">${_san.escapeHTML(c.categoria || '-')}</td>
         <td class="text-center">${sentBadge}</td>
-        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--dark);">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>
+        <td class="text-center celda-destacada">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -756,7 +746,7 @@ window.SurveySentimentView = (() => {
           const link = document.createElement('a');
           link.setAttribute('href', zipUrl);
           link.setAttribute('download', zipName);
-          link.style.visibility = 'hidden';
+          link.className = 'descarga-oculta';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -780,20 +770,20 @@ window.SurveySentimentView = (() => {
       overlay.setAttribute('role', 'dialog');
       overlay.setAttribute('aria-modal', 'true');
       overlay.setAttribute('aria-labelledby', 'export-modal-title');
-      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+      overlay.className = 'modal-overlay';
       const modal = document.createElement('div');
-      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:var(--font-family-primary);';
+      modal.className = 'modal-caja';
       const title = document.createElement('h3');
       title.id = 'export-modal-title';
       title.textContent = 'Exportación no disponible';
-      title.style.cssText = 'margin:0 0 12px 0;font-size: var(--text-2xl);color:#111827;';
+
       const body = document.createElement('p');
       body.textContent = message;
-      body.style.cssText = 'margin:0 0 20px 0;font-size: var(--text-xl);color:#6B7280;line-height:1.5;';
+
       const closeBtn = document.createElement('button');
       closeBtn.textContent = 'Cerrar';
       closeBtn.setAttribute('type', 'button');
-      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size: var(--text-xl);cursor:pointer;font-family:var(--font-family-primary);';
+
       closeBtn.addEventListener('click', () => overlay.remove());
       overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
       modal.appendChild(title);
@@ -915,7 +905,7 @@ window.SurveySentimentView = (() => {
 
     const kpiGrid = $('sentiment-kpis');
     if (kpiGrid && (!sentimientoData.topicos || !sentimientoData.topicos.length)) {
-      kpiGrid.innerHTML = `<p style="color:var(--gray-500);font-size: var(--text-lg);padding:20px 0;">
+      kpiGrid.innerHTML = `<p class="sin-datos sin-datos-lg">
         No hay datos de análisis semántico disponibles para este período.</p>`;
     }
 
@@ -990,14 +980,14 @@ window.SurveySentimentView = (() => {
       if (!texto) return;
 
       const item = document.createElement('div');
-      item.style.cssText = 'margin-top:10px;padding:8px 12px;background:var(--surface, #F4F8FC);border-left:3px solid var(--ulima-orange, #FF5117);border-radius:4px;';
+      item.className = 'insight-cat';
 
       const titulo = document.createElement('div');
-      titulo.style.cssText = 'font-size: var(--text-md);font-weight: var(--font-semibold);color:var(--text1, #1A2B40);margin-bottom:4px;';
+      titulo.className = 'insight-cat-titulo';
       titulo.textContent = cat;
 
       const desc = document.createElement('div');
-      desc.style.cssText = 'font-size: var(--text-md);color:var(--text2, #6878A0);line-height:1.5;';
+      desc.className = 'insight-cat-texto';
       desc.textContent = texto;
 
       item.appendChild(titulo);

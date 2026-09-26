@@ -10,11 +10,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
 <!-- Tokens canónicos (tokens.css). Debe cargarse antes que cualquier CSS del portal -->
-<link rel="stylesheet" href="shared/css/tokens.css?v=2026092611">
+<link rel="stylesheet" href="shared/css/tokens.css?v=2026092612">
+<!-- Estilos de los elementos que los modulos JS construyen (ver ARCHITECTURE.md) -->
+<link rel="stylesheet" href="shared/css/generated.css?v=2026092612">
 <!-- CSS del portal (modular: base + components + sections) -->
-<link rel="stylesheet" href="shared/css/portal/portal-base.css?v=2026092611">
-<link rel="stylesheet" href="shared/css/portal/portal-components.css?v=2026092611">
-<link rel="stylesheet" href="shared/css/portal/portal-sections.css?v=2026092611">
+<link rel="stylesheet" href="shared/css/portal/portal-base.css?v=2026092612">
+<link rel="stylesheet" href="shared/css/portal/portal-components.css?v=2026092612">
+<link rel="stylesheet" href="shared/css/portal/portal-sections.css?v=2026092612">
 </head>
 <body>
 <div class="app">
@@ -83,19 +85,19 @@
 
 
 <!-- Scripts del portal (orden crítico: config → utils → components → portal modules) -->
-<script src="shared/js/config/constants.js?v=2026092611" defer></script>
-<script src="shared/js/utils/sanitizer.js?v=2026092611" defer></script>
-<script src="shared/js/components/tooltip.js?v=2026092611" defer></script>
-<script src="shared/js/utils/dom-helpers.js?v=2026092611" defer></script>
-<script src="shared/js/utils/formatters.js?v=2026092611" defer></script>
-<script src="shared/js/components/sentiment-view.js?v=2026092611" defer></script>
-<script src="shared/js/components/custom-select.js?v=2026092611" defer></script>
-<script src="shared/js/components/multiselect.js?v=2026092611" defer></script>
-<script src="shared/js/portal/portal-data.js?v=2026092611" defer></script>
-<script src="shared/js/portal/portal-dashboard.js?v=2026092611" defer></script>
-<script src="shared/js/portal/portal-radar.js?v=2026092611" defer></script>
-<script src="shared/js/portal/portal-filters.js?v=2026092611" defer></script>
-<script src="shared/js/portal/portal-survey.js?v=2026092611" defer></script>
-<script src="shared/js/portal.js?v=2026092611" defer></script>
+<script src="shared/js/config/constants.js?v=2026092612" defer></script>
+<script src="shared/js/utils/sanitizer.js?v=2026092612" defer></script>
+<script src="shared/js/components/tooltip.js?v=2026092612" defer></script>
+<script src="shared/js/utils/dom-helpers.js?v=2026092612" defer></script>
+<script src="shared/js/utils/formatters.js?v=2026092612" defer></script>
+<script src="shared/js/components/sentiment-view.js?v=2026092612" defer></script>
+<script src="shared/js/components/custom-select.js?v=2026092612" defer></script>
+<script src="shared/js/components/multiselect.js?v=2026092612" defer></script>
+<script src="shared/js/portal/portal-data.js?v=2026092612" defer></script>
+<script src="shared/js/portal/portal-dashboard.js?v=2026092612" defer></script>
+<script src="shared/js/portal/portal-radar.js?v=2026092612" defer></script>
+<script src="shared/js/portal/portal-filters.js?v=2026092612" defer></script>
+<script src="shared/js/portal/portal-survey.js?v=2026092612" defer></script>
+<script src="shared/js/portal.js?v=2026092612" defer></script>
 </body>
 </html>

@@ -282,6 +282,7 @@ Sobre el **sitio publicado**, no sobre el disco: se abre cada pagina con el nave
 - `layout.css`: header, navegacion, grid y footer.
 - `components.css`: KPIs, filtros, barras, tooltips y tablas (la capa mas grande).
 - `sections.css`: secciones, responsive y ajustes visuales.
+- `generated.css`: estilos de los elementos que los modulos de JavaScript construyen al vuelo (antes escritos en linea dentro del propio modulo). Lo cargan el portal y las fichas, porque `sentiment-view.js` y los radares se usan en ambas.
 - `portal/`: `portal-base.css`, `portal-components.css`, `portal-sections.css` (estilos del portal v5.0).
 
 `dashboard.css` fue eliminado en v3.2.0 (CSS muerto; los imports viven en las capas base).
