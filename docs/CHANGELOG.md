@@ -9,9 +9,12 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
   cuadrícula y no solo las palabras.
 - El número grande de los indicadores crece por ancho de pantalla (24 / 28 / 32 px), así que cada
   tamaño tiene su propia altura entera (26 / 31 / 35 px) en lugar de un solo valor fijo.
-- Se dejan a propósito dos multiplicadores sin convertir (`body` en `reset.css` y `.portal-md`),
-  porque contienen textos de varios tamaños: al pasar a píxeles, un texto más grande que la línea
-  quedaría apretado. Los elementos internos que sí tienen tamaño propio ya llevan píxeles.
+- El texto largo (historial y transcripciones) recibe un alto entero por tamaño: 26px el párrafo
+  (15px), y 53 / 35 / 32 / 28 / 25px para los cuatro títulos y las tablas, que tienen su propio
+  tamaño. Así ningún texto queda con la línea entre dos píxeles ni apretado.
+- El texto general de las páginas de detalle pasa de 1,6 a 1,5 de alto de línea (21px exactos para
+  la letra de 14px). El resto de valores sin unidad se quedan porque ya dan píxeles enteros en sus
+  tamaños (1,5 × 12px = 18; 1,6 × 15px = 24; 1,1 × 10px = 11).
 
 ## 2026-09-26 — Texto nítido: sin suavizado artificial y medidas enteras
 

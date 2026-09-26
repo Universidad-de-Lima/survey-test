@@ -626,9 +626,11 @@ svg { display: block; }
 }
 
 /* ---------- Markdown rendering ---------- */
+/* Altos de línea en píxeles enteros: el multiplicador 1,75 daba 26,25px en el
+   texto de 15px, y cada título tiene su propio tamaño. */
 .portal-md {
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 26px;
   color: rgba(26,26,26,0.9);
 }
 .portal-md h1 {
@@ -638,6 +640,7 @@ svg { display: block; }
   letter-spacing: -1px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
+  line-height: 53px;
 }
 .portal-md h2 {
   margin: 36px 0 16px;
@@ -647,6 +650,7 @@ svg { display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
+  line-height: 35px;
 }
 .portal-md h2::before {
   content: "";
@@ -661,6 +665,7 @@ svg { display: block; }
   font-size: 18px;
   font-weight: 600;
   color: rgba(26,26,26,0.95);
+  line-height: 32px;
 }
 .portal-md h4 {
   margin: 20px 0 8px;
@@ -668,6 +673,7 @@ svg { display: block; }
   font-weight: 600;
   letter-spacing: 0;
   color: rgba(26,26,26,0.9);
+  line-height: 28px;
 }
 .portal-md p { margin: 12px 0; }
 .portal-md ul {
@@ -745,6 +751,7 @@ svg { display: block; }
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 8px;
+  line-height: 25px;
 }
 .portal-md thead { background: rgba(245,245,245,0.7); }
 .portal-md th {
