@@ -9,7 +9,8 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Todos los tamaños, grosores y familias salen de tokens:** los valores escritos a mano (13px, 12px, 11px, ...) se reemplazaron por `var(--text-*)`, `var(--font-*)` y `var(--font-family-primary)`.
 - **Tokens nuevos:** grosor 600 (`--font-semibold`) y escala de cifras destacadas (`--display-md/lg/xl` = 28/32/36px), declarados en `tokens.css`.
 - **Valores fuera de escala corregidos:** 9→10px, 15→14px, 20→18px, 30→28px, 35→36px; en `health.html`, 22→24px y 16→18px.
-- **Altos de línea enteros:** 22 reglas de texto de 11px y 13px llevaban línea fraccionaria (16,5px y 19,5px) por heredar el multiplicador 1,5; ahora llevan 17px y 20px.
+- **Altos de línea enteros:** las 68 reglas de texto de 8, 10, 11 y 13px llevaban línea fraccionaria (12, 15, 16,5 y 19,5px) por heredar el multiplicador 1,5; ahora cada una declara su alto entero (12, 15, 17 y 20px). También el contador del panel de sentimiento, que se escribía desde JavaScript.
+- **`health.html`:** la página no declaraba tamaño base, así que el navegador ponía 16px; ahora usa 14px con línea de 21px.
 - **Fuera `!important`** de las reglas de tipografía de los radares: era innecesario, porque el CSS ya gana a los atributos del SVG.
 - **Documentado** el estándar completo (fuente, escalas, niveles de título, reglas y forma de verificación) en `ARCHITECTURE.md`.
 - Verificado sobre el sitio publicado con el navegador en modo sin ventana: la revisión recorre el documento elemento por elemento y busca familia distinta, valores fraccionarios y valores fuera de escala.

@@ -301,7 +301,7 @@ window.SurveySentimentView = (() => {
       const col = document.createElement('div');
       col.style.cssText = 'display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; gap:6px;';
       col.innerHTML = `
-        <div style="font-size: var(--text-sm); font-weight: var(--font-semibold); color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
+        <div style="font-size: var(--text-sm); line-height:17px; font-weight: var(--font-semibold); color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
         <div style="width:36px; height:${heightPct}%; background:var(--gray-200); border-radius:4px 4px 0 0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;">
           <div style="width:100%; height:${pPct}%; background:var(--success-text);"></div>
           <div style="width:100%; height:${nPct}%; background:var(--gray-400);"></div>
