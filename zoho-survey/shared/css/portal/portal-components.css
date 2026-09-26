@@ -336,7 +336,7 @@
 .flow-card-name {
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 14px;
   color: var(--foreground);
 }
 .flow-card-label {
@@ -618,7 +618,7 @@
   box-sizing: border-box;
   padding: var(--space-sm) var(--space-md);
   font-size: var(--text-md);
-  line-height: 1.35;
+  line-height: 16px;
   color: var(--gray-900);
   cursor: pointer;
   user-select: none;
@@ -730,7 +730,7 @@
 .survey-insight {
   border: 1px solid var(--border); border-radius: 10px;
   background: rgba(245,245,245,0.3); padding: 14px 16px; margin-top: 14px;
-  font-size: 12px; line-height: 1.6; color: var(--muted-foreground);
+  font-size: 12px; line-height: 19px; color: var(--muted-foreground);
 }
 .survey-insight strong { color: var(--foreground); font-weight: 600; }
 .survey-evidence {
@@ -742,7 +742,7 @@
   color: rgba(26,26,26,0.8);
   margin-top: 14px;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 22px;
 }
 .survey-evidence strong { font-style: normal; font-weight: 600; color: var(--foreground); }
 .survey-evidence code {
@@ -925,7 +925,7 @@
   display: block;
   font-size: var(--text-md);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 14px;
 }
 .ring-per {
   display: block;

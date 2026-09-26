@@ -704,8 +704,8 @@ window.SurveySentimentView = (() => {
         <td style="color:var(--dark); text-align:left;">${_san.escapeHTML(c.carrera)}</td>
         <td class="text-center" style="color:var(--text2);">${safeCiclo}</td>
         <td class="text-center">${npsBadge}</td>
-        <td style="line-height:1.4; color:var(--text); text-align:left;">${textoAbierto}</td>
-        <td style="line-height:1.4; color:var(--text); text-align:left;">${displayIdeaAnalizada}</td>
+        <td style="line-height:15px; color:var(--text); text-align:left;">${textoAbierto}</td>
+        <td style="line-height:15px; color:var(--text); text-align:left;">${displayIdeaAnalizada}</td>
         <td style="color:var(--text2);">${_san.escapeHTML(c.categoria || '-')}</td>
         <td class="text-center">${sentBadge}</td>
         <td class="text-center" style="font-weight:600; color:var(--dark);">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>

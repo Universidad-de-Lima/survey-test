@@ -2,6 +2,15 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Alturas de línea en píxeles enteros
+
+- Trece alturas de línea que daban fracciones de píxel (1,1 × 15px = 16,5; 1,7 × 13px = 22,1;
+  1,35 × 12px = 16,2, etc.) pasan a su píxel más cercano, para que la línea completa caiga en la
+  cuadrícula y no solo las palabras.
+- Se dejan a propósito dos multiplicadores sin convertir (`body` en `reset.css` y `.portal-md`),
+  porque contienen textos de varios tamaños: al pasar a píxeles, un texto más grande que la línea
+  quedaría apretado. Los elementos internos que sí tienen tamaño propio ya llevan píxeles.
+
 ## 2026-09-26 — Texto nítido: sin suavizado artificial y medidas enteras
 
 - Se quita el suavizado global (`-webkit-font-smoothing: antialiased` y su equivalente de Firefox) de

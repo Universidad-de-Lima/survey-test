@@ -162,7 +162,7 @@ svg { display: block; }
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
-.brand-text { line-height: 1.1; }
+.brand-text { line-height: 15px; }
 .brand-title-row { display: flex; align-items: center; gap: 8px; }
 .brand-title {
   font-size: 13px;
@@ -712,7 +712,7 @@ svg { display: block; }
   border-radius: 8px;
   padding: 16px;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 20px;
 }
 .portal-md pre code {
   background: transparent;
