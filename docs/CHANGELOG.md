@@ -2,6 +2,17 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Limpieza y reordenamiento de las hojas de estilo
+
+- **Reglas repetidas:** 53 reglas estaban escritas igual en dos hojas (el portal y las fichas por período mantenían cada una su copia). Ahora viven una sola vez en `shared/css/common.css`, que se carga después de `tokens.css` y antes de las hojas propias de cada familia.
+- **Código muerto:** se borraron 43 clases que ninguna página ni módulo usaba (familias `.flow-*`, `.metric-*`, `.verdict-*`, `.vars-*`, `.brand-*`, `.splash`, `.fade-out`, `.software-italic`), 1 identificador (`#tabla-sentimiento-carrera`) y 20 tokens sin uso.
+- **Colores:** 23 colores escritos a mano que ya existían como token pasaron a `var(--token)`; 65 variables que `portal-base.css` volvía a declarar igual que `tokens.css` se retiraron (quedan solo las 11 propias del portal y las 2 que difieren a propósito: `--muted` y `--surface`).
+- **`!important`:** se quitaron los 8 que quedaban. La comparación del aspecto demostró que no hacían falta.
+- **Carpetas y nombres:** las hojas quedaron ordenadas por familia — lo compartido en la raíz (`tokens.css`, `reset.css`, `common.css`, `generated.css`), las fichas en `dashboard/` y el portal en `portal/` con nombres sin prefijo repetido (`portal/base.css` en vez de `portal/portal-base.css`).
+- **Una prueba guardiana nueva:** `zoho-survey/scripts/tests/test_css_limpio.py` falla si vuelve a aparecer una clase muerta, una regla repetida igual en dos hojas o un token sin uso. Se subió primero en rojo (con los 43 hallazgos) y quedó verde al terminar la limpieza.
+- **48 selectores que se quedan distintos a propósito** (el portal usa su paleta y su tamaño de texto; las fichas el semáforo verde/ámbar/rojo) quedaron documentados en `shared/css/DIVERGENCIAS.md` para que nadie los una por error.
+- **Verificación:** la misma foto del aspecto de cada elemento, a 1400×1000, contra el estado anterior, en las cinco páginas: **100,0% idéntico en las cuatro páginas reales y las mismas figuras en cada una**, después de cada una de las cinco etapas del trabajo.
+
 ## 2026-09-26 — Estilos y programas separados: todo el estilo vive en CSS
 
 - **Los estilos en línea de los módulos JavaScript pasaron a clases.** Se migraron los 8 módulos y las 5 páginas (1 145 declaraciones en 597 usos, 172 combinaciones distintas): `sentiment-view.js`, `portal-survey.js`, `dashboard.js`, `radar-chart.js`, `portal.js`, `portal-dashboard.js`, `portal-filters.js`, la plantilla, las tres fichas por período, `index.html` y `health.html`.

@@ -52,7 +52,7 @@ class TestCssLimpio(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.fuentes = '\n'.join(p.read_text(encoding='utf-8', errors='ignore') for p in FUENTES)
-        cls.hojas = {p.name: _reglas(p.read_text(encoding='utf-8')) for p in HOJAS}
+        cls.hojas = {str(p.relative_to(RAIZ)): _reglas(p.read_text(encoding='utf-8')) for p in HOJAS}
 
     def _en_uso(self, nombre):
         """La clase aparece en alguna pagina o modulo; tambien si el programa la arma por trozos."""

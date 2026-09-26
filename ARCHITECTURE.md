@@ -277,13 +277,29 @@ Sobre el **sitio publicado**, no sobre el disco: se abre cada pagina con el nave
 
 `zoho-survey/shared/css/` contiene:
 
-- `tokens.css`: design tokens y variables CSS (colores institucionales, tipografia, espaciados, z-index, radios, sombras).
-- `reset.css`: reset y utilidades base (`.skip-link`, `.sr-only`).
-- `layout.css`: header, navegacion, grid y footer.
-- `components.css`: KPIs, filtros, barras, tooltips y tablas (la capa mas grande).
-- `sections.css`: secciones, responsive y ajustes visuales.
-- `generated.css`: estilos de los elementos que los modulos de JavaScript construyen al vuelo (antes escritos en linea dentro del propio modulo). Lo cargan el portal y las fichas, porque `sentiment-view.js` y los radares se usan en ambas. **Se carga al final, despues de las demas hojas**, porque sus reglas estan pensadas para ajustar las de las capas anteriores cuando coinciden en fuerza.
-- `portal/`: `portal-base.css`, `portal-components.css`, `portal-sections.css` (estilos del portal v5.0).
+Lo compartido vive en la raiz de la carpeta; lo propio de cada familia, en su subcarpeta:
+
+| Hoja | Para que | Se carga |
+| --- | --- | --- |
+| `tokens.css` | valores: colores, tipografia, espaciados, z-index, radios, sombras | primero, en las dos familias |
+| `reset.css` | reset y utilidades base (`.skip-link`, `.sr-only`) | solo las fichas |
+| `common.css` | reglas que usan **las dos** familias (filtros, KPI, tablas, indicadores) | despues de `tokens.css` |
+| `generated.css` | estilos de los elementos que arman los modulos de JavaScript al vuelo (`sentiment-view.js`, los radares, los anillos) | **al final**, en las dos familias |
+| `dashboard/layout.css` | fichas por periodo: header, navegacion, grid, footer | antes de `generated.css` |
+| `dashboard/components.css` | fichas por periodo: KPIs, filtros, barras, tooltips, tablas | idem |
+| `dashboard/sections.css` | fichas por periodo: secciones, responsive, ajustes | idem |
+| `portal/base.css` | portal v5.0: shell (header, sidebar, main, footer), markdown, evidencias | antes de `generated.css` |
+| `portal/components.css` | portal v5.0: componentes y filtros | idem |
+| `portal/sections.css` | portal v5.0: secciones y responsive | idem |
+
+Reglas que sostienen el orden:
+
+1. Una regla que necesiten las dos familias se escribe **una sola vez** en `common.css`. Si las dos versiones se ven distintas a proposito, se quedan separadas (ver `shared/css/DIVERGENCIAS.md`).
+2. Un nombre no repite el de su carpeta: `portal/base.css`, no `portal/portal-base.css`.
+3. `generated.css` va al final: sus reglas estan pensadas para ajustar las de las capas anteriores cuando coinciden en fuerza.
+4. Al tocar cualquier hoja se sube el `?v=` de las cinco paginas, para que el navegador no sirva la version vieja.
+
+`shared/css/DIVERGENCIAS.md` lista los 48 selectores que el portal y las fichas escriben distinto a proposito, con lo que cambia en cada uno. La prueba `zoho-survey/scripts/tests/test_css_limpio.py` (en GitHub Actions) falla si vuelve a aparecer una clase muerta, una regla repetida igual en dos hojas o un token sin uso.
 
 `dashboard.css` fue eliminado en v3.2.0 (CSS muerto; los imports viven en las capas base).
 `loader.css` fue eliminado en Fase 2 junto con `loader.js` (navegador de encuestas legacy, sin consumidores).
