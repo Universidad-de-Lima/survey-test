@@ -110,7 +110,10 @@
 
     return '<section class="section">' +
       '<div class="repo-card">' +
-        '<div class="repo-card-inner" style="flex-direction:column; align-items:stretch;">' +
+        /* flex-wrap:nowrap es imprescindible: el contenedor del portal trae
+           "wrap" en fila, y en columna eso estiraba las tarjetas de anillo a
+           349/532 px cuando su contenido mide 165. */
+        '<div class="repo-card-inner" style="flex-direction:column; align-items:stretch; flex-wrap:nowrap; justify-content:flex-start;">' +
           '<h2 class="repo-card-title">' + window.svg('gauge', 16) + 'Última encuesta de cada grupo</h2>' +
           '<p class="repo-card-desc">Cada anillo muestra la medición más reciente de una encuesta: el número del centro es su ' +
             '<strong>índice de promotores netos</strong>, el anillo se llena sobre la escala −100 a +100 (medio anillo es cero) ' +
