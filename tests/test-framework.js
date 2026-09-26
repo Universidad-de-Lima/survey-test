@@ -77,6 +77,16 @@ window.TestFramework = (() => {
     return { passed, failed, total: passed + failed, results };
   }
 
+  // Los estilos del reporte viven en CSS, no repartidos por las etiquetas.
+  const ESTILOS = `
+    .resumen { font-family: 'Roboto', 'Lusitania'; font-size: 13px; max-width: 800px; margin: 20px auto; }
+    .marcador { color: var(--c); }
+    .grupo { color: #374151; font-weight: 700; margin-top: 12px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; }
+    .pasa { color: #065F46; padding: 2px 0 2px 16px; }
+    .falla { color: #991B1B; padding: 2px 0 2px 16px; }
+    .detalle { color: #6B7280; font-size: 11px; }
+  `;
+
   function renderTo(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
@@ -85,16 +95,17 @@ window.TestFramework = (() => {
     const pct = s.total > 0 ? Math.round((s.passed / s.total) * 100) : 100;
     const color = pct === 100 ? '#065F46' : pct >= 80 ? '#92400E' : '#991B1B';
 
-    let html = `<div style="font-family:'Roboto','Lusitania';font-size:13px;max-width:800px;margin:20px auto;">`;
-    html += `<h2 style="color:${color};">${s.passed}/${s.total} passed (${pct}%)</h2>`;
+    let html = `<style>${ESTILOS}</style>`;
+    html += `<div class="resumen">`;
+    html += `<h2 class="marcador" style="--c:${color};">${s.passed}/${s.total} passed (${pct}%)</h2>`;
 
     s.results.forEach((r) => {
       if (r.type === 'describe') {
-        html += `<div style="color:#374151;font-weight:700;margin-top:12px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">${r.name}</div>`;
+        html += `<div class="grupo">${r.name}</div>`;
       } else if (r.type === 'pass') {
-        html += `<div style="color:#065F46;padding:2px 0 2px 16px;">✓ ${r.name}</div>`;
+        html += `<div class="pasa">✓ ${r.name}</div>`;
       } else if (r.type === 'fail') {
-        html += `<div style="color:#991B1B;padding:2px 0 2px 16px;">✗ ${r.name}<br><span style="color:#6B7280;font-size:11px;">${r.error}</span></div>`;
+        html += `<div class="falla">✗ ${r.name}<br><span class="detalle">${r.error}</span></div>`;
       }
     });
 

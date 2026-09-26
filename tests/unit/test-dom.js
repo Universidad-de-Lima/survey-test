@@ -96,7 +96,7 @@ test('renderInsightsIA crea elementos por categoría', () => {
   });
 
   const cats = document.getElementById('insight-cualitativo-categorias');
-  const items = cats.querySelectorAll('div[style*="border-left"]');
+  const items = cats.querySelectorAll('.insight-cat');
   assertEqual(items.length, 3, 'Debe crear 3 divs de categoría');
 });
 
@@ -152,7 +152,7 @@ test('renderInsightsIA no crea elementos para categorías con texto vacío', () 
     }
   });
   const cats = document.getElementById('insight-cualitativo-categorias');
-  const items = cats.querySelectorAll('div[style*="border-left"]');
+  const items = cats.querySelectorAll('.insight-cat');
   assertEqual(items.length, 1, 'Solo Académico debe renderizarse');
 });
 
