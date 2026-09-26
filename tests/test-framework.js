@@ -85,7 +85,7 @@ window.TestFramework = (() => {
     const pct = s.total > 0 ? Math.round((s.passed / s.total) * 100) : 100;
     const color = pct === 100 ? '#065F46' : pct >= 80 ? '#92400E' : '#991B1B';
 
-    let html = `<div style="font-family:monospace;font-size:13px;max-width:800px;margin:20px auto;">`;
+    let html = `<div style="font-family:'Roboto','Lusitania';font-size:13px;max-width:800px;margin:20px auto;">`;
     html += `<h2 style="color:${color};">${s.passed}/${s.total} passed (${pct}%)</h2>`;
 
     s.results.forEach((r) => {

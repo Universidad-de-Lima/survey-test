@@ -81,7 +81,7 @@
   --text-md: 12px;
   --text-lg: 13px;
   --text-2xl: 18px;
-  --font-family-display: 'Roboto', 'Lusitania', sans-serif;
+  --font-family-display: 'Roboto', 'Lusitania';
   --font-bold: 700;
   --font-regular: 400;
   --font-medium: 500;
@@ -97,7 +97,7 @@
 html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   background: var(--background);
   color: var(--foreground);
   font-size: 14px;
@@ -105,11 +105,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.mono { font-family: 'Roboto', 'Lusitania', sans-serif; }
+.mono { font-family: 'Roboto', 'Lusitania'; }
 a { color: inherit; text-decoration: none; }
-/* Los controles de formulario NO heredan la tipografía por defecto: el
-   navegador les pone la suya (Arial). Se obliga a heredarla para que todo el
-   portal quede en Roboto. */
+/* Los controles de formulario no heredan la tipografía por defecto: el
+   navegador les pone la suya. Se obliga a heredarla para que todo el portal
+   quede en Roboto. */
 button, input, select, textarea { font-family: inherit; }
 button { cursor: pointer; }
 svg { display: block; }
@@ -173,7 +173,7 @@ svg { display: block; }
   color: var(--foreground);
 }
 .brand-badge {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 9px;
   font-weight: 600;
   background: var(--muted);
@@ -199,7 +199,7 @@ svg { display: block; }
   min-width: 0;
 }
 .repo-info .name {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 12px;
   color: var(--muted-foreground);
   white-space: nowrap;
@@ -329,7 +329,7 @@ svg { display: block; }
 }
 .sidebar-content-row .icon { flex-shrink: 0; }
 .sidebar-content-row .phase-id {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 10px;
   font-weight: 700;
   color: var(--muted-foreground);
@@ -461,7 +461,7 @@ svg { display: block; }
   color: var(--primary);
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-weight: 700;
 }
 .artifact-title {
@@ -487,7 +487,7 @@ svg { display: block; }
   border-radius: 6px;
   border: none;
   background: transparent;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 9px;
   font-weight: 500;
   color: var(--muted-foreground);
@@ -517,7 +517,7 @@ svg { display: block; }
 }
 .file-meta-bar .item { display: inline-flex; align-items: center; gap: 6px; }
 .file-meta-bar .filename {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-weight: 600;
   color: var(--foreground);
 }
@@ -576,7 +576,7 @@ svg { display: block; }
 .pending-title { font-size: 16px; font-weight: 600; color: var(--foreground); }
 .pending-desc { margin-top: 4px; max-width: 480px; font-size: 13px; color: var(--muted-foreground); }
 .pending-code {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   background: var(--muted);
   padding: 2px 6px;
   border-radius: 4px;
@@ -698,7 +698,7 @@ svg { display: block; }
 .portal-md strong { font-weight: 600; color: var(--foreground); }
 .portal-md em { font-style: italic; color: rgba(26,26,26,0.8); }
 .portal-md code {
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   background: var(--muted);
   padding: 2px 6px;
   border-radius: 4px;
@@ -768,7 +768,7 @@ svg { display: block; }
 mark.ed {
   background: rgba(16,185,129,0.15);
   color: #047857;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 0.8em;
   font-weight: 600;
   padding: 1px 4px;
@@ -777,7 +777,7 @@ mark.ed {
 mark.ei {
   background: rgba(14,165,233,0.15);
   color: #0369A1;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 0.8em;
   font-weight: 600;
   padding: 1px 4px;
@@ -786,7 +786,7 @@ mark.ei {
 mark.inf {
   background: rgba(139,92,246,0.15);
   color: #6D28D9;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 0.8em;
   font-weight: 600;
   padding: 1px 4px;
@@ -795,7 +795,7 @@ mark.inf {
 mark.hip {
   background: rgba(245,158,11,0.15);
   color: #B45309;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 0.8em;
   font-weight: 600;
   padding: 1px 4px;
@@ -804,7 +804,7 @@ mark.hip {
 mark.inc {
   background: rgba(244,63,94,0.15);
   color: #BE123C;
-  font-family: 'Roboto', 'Lusitania', sans-serif;
+  font-family: 'Roboto', 'Lusitania';
   font-size: 0.8em;
   font-weight: 600;
   padding: 1px 4px;

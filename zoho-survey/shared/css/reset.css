@@ -25,8 +25,8 @@ body {
 }
 
 /* ── Controles de formulario ── */
-/* No heredan la tipografía por defecto (el navegador les pone Arial); sin esto
-   los desplegables de filtro y los campos salen con otra letra. */
+/* No heredan la tipografía por defecto: el navegador les pone la suya; sin
+   esto los desplegables de filtro y los campos salen con otra letra. */
 button,
 input,
 select,

@@ -2,6 +2,16 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Tipografía única: Roboto con Lusitania de respaldo
+
+- Todo el proyecto declara una sola familia: `'Roboto', 'Lusitania'`. Se quitó la cadena anterior
+  (`-apple-system`, `Segoe UI`, `sans-serif`) de las hojas de estilo, del reporte de pruebas y del
+  chequeo técnico. Si ninguna de las dos existe en el equipo, el navegador usa su letra por defecto.
+- Los controles de formulario (desplegables, campos de texto y botones) ahora heredan la tipografía:
+  el navegador les ponía la suya, así que los doce filtros de cada página de detalle salían con otra
+  letra. Regla agregada en `portal-base.css` y en `reset.css`.
+- El enlace de Google Fonts carga además el grosor 600, que usaban 29 reglas y se dibujaba con el 700.
+
 ## 2026-09-25 — El Dashboard abre con la última encuesta de cada grupo
 
 - La vista **Dashboard** empieza con una fila de **anillos**: uno por encuesta (los nueve niveles
