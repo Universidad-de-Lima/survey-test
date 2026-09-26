@@ -17,6 +17,10 @@
     --border: #e5e7eb;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html {
+    /* La familia se declara en la raíz: si no, el navegador usa una con serifas. */
+    font-family: 'Roboto', 'Lusitania';
+  }
   body {
     font-family: 'Roboto', 'Lusitania';
     background: var(--bg);
@@ -25,8 +29,8 @@
     max-width: 900px;
     margin: 0 auto;
   }
-  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  h2 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; }
+  h1 { font-size: 24px; line-height: 36px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 18px; line-height: 27px; font-weight: 600; margin: 24px 0 12px; }
   .subtitle { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
   .summary {
     display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap;

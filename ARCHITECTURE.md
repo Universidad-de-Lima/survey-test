@@ -227,6 +227,52 @@ El orden de carga es critico y debe respetarse. Verificado por `zoho-survey/scri
 
 > **Advertencia:** `dom-helpers.js` debe cargarse **siempre antes** que `custom-select.js` para evitar errores `TypeError: window.SurveyDomHelpers is undefined`.
 
+## Tipografia — Estandar Del Proyecto
+
+Fuente unica: **Roboto** (principal) con **Lusitania** (respaldo). No se admite ninguna otra familia, ni genericas (`sans-serif`, `serif`, `monospace`) ni las del sistema (`Segoe UI`, `-apple-system`, Arial, Times New Roman).
+
+- Se declara en `tokens.css` (`--font-family-primary`, `--font-family-display`) y se aplica en `:root`, para que ningun elemento quede sin familia y el navegador no ponga una con serifas.
+- El enlace de Google Fonts carga los grosores 300, 400, 500, 600, 700 y 900. Usar un grosor no cargado obliga al navegador a engrosar la letra por su cuenta y el texto se ve sucio.
+- Los controles de formulario (`select`, `input`, `textarea`, `button`) no heredan la tipografia por si solos: `reset.css` y `portal-base.css` lo fuerzan con `font-family: inherit; font-size: inherit;`.
+- `health.html` es una pagina tecnica independiente: no carga `tokens.css`, declara la familia en su raiz y usa los mismos valores.
+
+### Escalas (unica fuente: `tokens.css`)
+
+| Uso | Tokens | Valores |
+| --- | --- | --- |
+| Texto | `--text-xxs` ... `--text-4xl` | 8, 10, 11, 12, 13, 14, 18, 24, 36 px |
+| Cifras destacadas de indicadores | `--display-md`, `--display-lg`, `--display-xl` | 28, 32, 36 px |
+| Grosores | `--font-light` ... `--font-black` | 300, 400, 500, 600, 700, 900 |
+
+Todo tamano, grosor y familia del proyecto sale de un token. No se escriben valores sueltos.
+
+### Niveles de titulo y rotulo
+
+Los mismos valores en el portal y en las paginas de detalle, para que el proyecto se lea como una sola pieza:
+
+| Nivel | Letra | Grosor | Alto de linea |
+| --- | --- | --- | --- |
+| Titulo de bloque grande | 24px | 700 | 36px |
+| Titulo de seccion | 18px | 700 | 27px |
+| Titulo de seccion en pantalla angosta | 14px | 700 | 21px |
+| Subtitulo y titulo de tarjeta | 13px | 700 | 20px |
+| Titulo de hallazgo | 12px | 700 | 18px |
+| Rotulo de indicador | 11px | 500 | 17px |
+| Texto corrido | 14px | 400 | 21px |
+| Texto corrido largo (articulos y fichas) | 14px | 400 | 25px |
+
+### Reglas de mantenimiento
+
+- Los altos de linea van **en pixeles enteros**: el navegador no puede partir un pixel y a media altura la letra se ve borrosa. Equivalencias: 10->15, 11->17, 12->18, 13->20, 14->21, 18->27, 24->36.
+- El espaciado entre letras es `0` por defecto, `1px` en rotulos en mayusculas y `-1px` en el logotipo. Sin decimales.
+- Prohibido `!important` en reglas de tipografia y prohibido el suavizado global (`-webkit-font-smoothing: antialiased` apaga la nitidez de Windows).
+- Las cifras de indicadores usan `font-variant-numeric: tabular-nums` para que no bailen al cambiar de valor.
+- Al cambiar cualquier archivo de `css/` o `js/` hay que subir el `?v=` de `index.html` y de las paginas de detalle, o el navegador sigue sirviendo el archivo viejo.
+
+### Como se verifica
+
+Sobre el **sitio publicado**, no sobre el disco: se abre cada pagina con el navegador del equipo en modo sin ventana y su puerto de depuracion, y se recorre el documento elemento por elemento. La revision reporta cualquier elemento visible cuya familia no sea Roboto o Lusitania, o cuyo tamano, alto de linea o espaciado entre letras no caiga en pixel entero, o que use un valor fuera de las escalas de arriba. El objetivo del proyecto es **cero hallazgos** en el portal, en las paginas de detalle y en `health.html`.
+
 ## CSS
 
 `zoho-survey/shared/css/` contiene:

@@ -2,6 +2,18 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Auditoría tipográfica completa: todo desde tokens, sin valores sueltos
+
+- **Fuentes:** la familia se declara ahora en `:root`, no solo en `body` (la raíz del documento resolvía a Times New Roman). No queda ninguna familia fuera de Roboto/Lusitania.
+- **Controles:** `select`, `input`, `textarea` y `button` heredan también el tamaño, no solo la familia (los botones sin tamaño propio quedaban en 13,3333px, el valor que pone el navegador).
+- **Todos los tamaños, grosores y familias salen de tokens:** los valores escritos a mano (13px, 12px, 11px, ...) se reemplazaron por `var(--text-*)`, `var(--font-*)` y `var(--font-family-primary)`.
+- **Tokens nuevos:** grosor 600 (`--font-semibold`) y escala de cifras destacadas (`--display-md/lg/xl` = 28/32/36px), declarados en `tokens.css`.
+- **Valores fuera de escala corregidos:** 9→10px, 15→14px, 20→18px, 30→28px, 35→36px; en `health.html`, 22→24px y 16→18px.
+- **Altos de línea enteros:** 22 reglas de texto de 11px y 13px llevaban línea fraccionaria (16,5px y 19,5px) por heredar el multiplicador 1,5; ahora llevan 17px y 20px.
+- **Fuera `!important`** de las reglas de tipografía de los radares: era innecesario, porque el CSS ya gana a los atributos del SVG.
+- **Documentado** el estándar completo (fuente, escalas, niveles de título, reglas y forma de verificación) en `ARCHITECTURE.md`.
+- Verificado sobre el sitio publicado con el navegador en modo sin ventana: la revisión recorre el documento elemento por elemento y busca familia distinta, valores fraccionarios y valores fuera de escala.
+
 ## 2026-09-26 — Escala única de títulos y subtítulos
 
 - Los títulos y subtítulos usan una sola escala: 24px (bloques grandes, título del visor y h1 del

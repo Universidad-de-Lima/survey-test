@@ -122,17 +122,17 @@
   function tablaFilaHtml(item) {
     const fmt = window.SurveyFormatters || {};
     const vsCsatTxt = item.vsPromCsat >= 0
-      ? '<span style="color:var(--success-text);font-weight:600;">+' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>'
-      : '<span style="color:var(--ulima-red);font-weight:600;">' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>';
+      ? '<span style="color:var(--success-text);font-weight: var(--font-semibold);">+' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>'
+      : '<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">' + fmt.formatInteger(Math.round(item.vsPromCsat)) + '</span>';
     const vsNpsTxt = item.vsPromNps >= 0
-      ? '<span style="color:var(--success-text);font-weight:600;">+' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>'
-      : '<span style="color:var(--ulima-red);font-weight:600;">' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>';
+      ? '<span style="color:var(--success-text);font-weight: var(--font-semibold);">+' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>'
+      : '<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">' + fmt.formatInteger(Math.round(item.vsPromNps)) + '</span>';
     return '<tr>' +
       '<td>' + esc(item.carrera) + '</td>' +
       '<td class="text-center">' + fmt.formatInteger(item.encuestas) + '</td>' +
-      '<td class="text-center" style="font-weight:700;">' + fmt.formatPercent(item.csat_score, 2) + '</td>' +
+      '<td class="text-center" style="font-weight: var(--font-bold);">' + fmt.formatPercent(item.csat_score, 2) + '</td>' +
       '<td class="text-center">' + vsCsatTxt + '</td>' +
-      '<td class="text-center" style="font-weight:700;">' + fmt.formatDecimal(item.nps_score, 2) + '</td>' +
+      '<td class="text-center" style="font-weight: var(--font-bold);">' + fmt.formatDecimal(item.nps_score, 2) + '</td>' +
       '<td class="text-center">' + vsNpsTxt + '</td>' +
     '</tr>';
   }
@@ -234,7 +234,7 @@
       tr.querySelectorAll('.distribution-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
           const ttp = window.SurveyTooltip;
-          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size:11px;"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
+          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
         });
         seg.addEventListener('mouseleave', () => {
           const ttp = window.SurveyTooltip;
@@ -302,7 +302,7 @@
       tr.querySelectorAll('.visibility-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
           const ttp = window.SurveyTooltip;
-          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size:11px;"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
+          if (ttp && ttp.show) ttp.show(e, '<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + esc(seg.dataset.label) + '</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">' + seg.dataset.value + '</td></tr></table>', true);
         });
         seg.addEventListener('mouseleave', () => {
           const ttp = window.SurveyTooltip;
@@ -340,7 +340,7 @@
     const fmtD = (d) => esc(fmt.formatDimensionName ? fmt.formatDimensionName(d) : d);
     let txt = '';
     if (hayFiltro) {
-      txt += '<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px;">' + esc(contexto) + '</strong><br>';
+      txt += '<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">' + esc(contexto) + '</strong><br>';
       if (criticos.length) {
         txt += (criticos.length === 1 ? 'El servicio con <strong>menor visibilidad</strong> es' : 'Los servicios con <strong>menor visibilidad</strong> son') + ' ';
         txt += criticos
@@ -628,7 +628,7 @@
         </table>
       </div>
       <h3 class="survey-subsection-title" style="margin-top:32px;">Detalle de ideas</h3>
-      <p style="color:var(--gray-500); font-size:12px; margin-bottom:12px; line-height:1.5;">
+      <p style="color:var(--gray-500); font-size: var(--text-md); margin-bottom:12px; line-height:1.5;">
         Busque y filtre las respuestas textuales de los alumnos. La columna "Idea analizada" corrige faltas ortográficas y modismos comunes para facilitar su lectura rápida sin alterar su significado original.
       </p>
       <div class="filter-container" role="group" aria-label="Controles del explorador cualitativo" style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
@@ -669,11 +669,11 @@
         </table>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
-        <span id="explorador-pagination-info" style="font-size: 12px; color: var(--text2); font-weight: 500;">Mostrando 0-0 de 0 comentarios</span>
+        <span id="explorador-pagination-info" style="font-size: var(--text-md); color: var(--text2); font-weight: var(--font-medium);">Mostrando 0-0 de 0 comentarios</span>
         <div style="display: flex; gap: 8px;">
-          <button id="explorador-export-csv" class="filter-reset" style="padding: 4px 10px; font-size: 12px;">Descargar</button>
-          <button id="explorador-btn-prev" class="filter-reset" style="padding: 4px 10px; font-size: 12px;" disabled>Anterior</button>
-          <button id="explorador-btn-next" class="filter-reset" style="padding: 4px 10px; font-size: 12px;" disabled>Siguiente</button>
+          <button id="explorador-export-csv" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);">Descargar</button>
+          <button id="explorador-btn-prev" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);" disabled>Anterior</button>
+          <button id="explorador-btn-next" class="filter-reset" style="padding: 4px 10px; font-size: var(--text-md);" disabled>Siguiente</button>
         </div>
       </div>
       <div class="insight-box info" aria-live="polite" style="margin-top:20px;">

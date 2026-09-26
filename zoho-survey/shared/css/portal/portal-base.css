@@ -97,18 +97,18 @@
 html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Roboto', 'Lusitania';
+  font-family: var(--font-family-primary);
   background: var(--background);
   color: var(--foreground);
-  font-size: 14px;
+  font-size: var(--text-xl);
   line-height: 1.5;
 }
-.mono { font-family: 'Roboto', 'Lusitania'; }
+.mono { font-family: var(--font-family-primary); }
 a { color: inherit; text-decoration: none; }
 /* Los controles de formulario no heredan la tipografía por defecto: el
    navegador les pone la suya. Se obliga a heredarla para que todo el portal
    quede en Roboto. */
-button, input, select, textarea { font-family: inherit; }
+button, input, select, textarea { font-family: inherit; font-size: inherit; }
 button { cursor: pointer; }
 svg { display: block; }
 
@@ -165,16 +165,16 @@ svg { display: block; }
 .brand-text { line-height: 15px; }
 .brand-title-row { display: flex; align-items: center; gap: 8px; }
 .brand-title {
-  font-size: 13px;
+  font-size: var(--text-lg);
   line-height: 20px;
-  font-weight: 900;
+  font-weight: var(--font-black);
   letter-spacing: 0;
   color: var(--foreground);
 }
 .brand-badge {
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 9px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
   background: var(--muted);
   color: var(--muted-foreground);
   padding: 2px 6px;
@@ -182,7 +182,7 @@ svg { display: block; }
 }
 .brand-sub {
   margin-top: 2px;
-  font-size: 10px;
+  font-size: var(--text-xs);
   color: var(--muted-foreground);
 }
 .header-sep {
@@ -198,16 +198,16 @@ svg { display: block; }
   min-width: 0;
 }
 .repo-info .name {
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
   color: var(--muted-foreground);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .repo-info .depth {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
   background: rgba(26,26,26,0.08);
   color: var(--primary);
   padding: 2px 6px;
@@ -221,8 +221,8 @@ svg { display: block; }
   border: none;
   background: transparent;
   color: var(--muted-foreground);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--text-md);
+  font-weight: var(--font-medium);
   transition: background .15s, color .15s;
 }
 .btn-dashboard:hover { background: var(--muted); color: var(--foreground); }
@@ -256,8 +256,8 @@ svg { display: block; }
 .sidebar-title {
   line-height: 17px;
   padding: 4px 8px 8px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
   letter-spacing: 1px;
   color: var(--muted-foreground);
 }
@@ -313,8 +313,8 @@ svg { display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   border: 1px solid rgba(26,26,26,0.5);
   background: var(--primary);
   color: var(--primary-foreground);
@@ -329,15 +329,15 @@ svg { display: block; }
 }
 .sidebar-content-row .icon { flex-shrink: 0; }
 .sidebar-content-row .phase-id {
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 10px;
-  font-weight: 700;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
   color: var(--muted-foreground);
 }
 .sidebar-item.active .phase-id { color: var(--primary); }
 .sidebar-content-row .phase-name {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--text-xl);
+  font-weight: var(--font-medium);
   color: rgba(26,26,26,0.85);
   white-space: nowrap;
   overflow: hidden;
@@ -346,8 +346,8 @@ svg { display: block; }
 .sidebar-item.active .phase-name { color: var(--foreground); }
 .sidebar-content-row .opt {
   margin-left: auto;
-  font-size: 9px;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
   background: var(--muted);
   color: var(--muted-foreground);
   padding: 2px 6px;
@@ -355,7 +355,7 @@ svg { display: block; }
 }
 .sidebar-role {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
   white-space: nowrap;
   overflow: hidden;
@@ -375,7 +375,7 @@ svg { display: block; }
   border: 1px solid rgba(232,232,232,0.7);
   background: rgba(245,245,245,0.4);
   border-radius: 6px;
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 
@@ -422,17 +422,17 @@ svg { display: block; }
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 .footer-brand {
   display: flex; align-items: center; gap: 8px;
-  font-weight: 500;
+  font-weight: var(--font-medium);
   color: var(--foreground);
 }
 .footer-brand svg { color: var(--emerald); }
 .dot-sep { color: var(--muted-foreground); opacity: 0.7; }
-.footer-sub { color: var(--muted-foreground); font-weight: 400; }
+.footer-sub { color: var(--muted-foreground); font-weight: var(--font-regular); }
 
 /* ---------- Artifact viewer ---------- */
 .artifact { display: flex; flex-direction: column; height: 100%; }
@@ -451,8 +451,8 @@ svg { display: block; }
 }
 .artifact-breadcrumb {
   display: flex; align-items: center; gap: 8px;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   letter-spacing: 1px;
   color: var(--muted-foreground);
 }
@@ -461,15 +461,15 @@ svg { display: block; }
   color: var(--primary);
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'Roboto', 'Lusitania';
-  font-weight: 700;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-bold);
 }
 .artifact-title {
   line-height: 36px;
   margin: 6px 0 0;
   display: flex; align-items: center; gap: 10px;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
   letter-spacing: 0;
 }
 .artifact-title svg { color: var(--primary); }
@@ -488,9 +488,9 @@ svg { display: block; }
   border-radius: 6px;
   border: none;
   background: transparent;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 9px;
-  font-weight: 500;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
   color: var(--muted-foreground);
   transition: all .15s;
   white-space: nowrap;
@@ -512,14 +512,14 @@ svg { display: block; }
   background: rgba(245,245,245,0.3);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
   margin-top: 9px;
 }
 .file-meta-bar .item { display: inline-flex; align-items: center; gap: 6px; }
 .file-meta-bar .filename {
-  font-family: 'Roboto', 'Lusitania';
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-semibold);
   color: var(--foreground);
 }
 .file-meta-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); display: inline-block; }
@@ -530,8 +530,8 @@ svg { display: block; }
   border: 1px solid var(--border);
   background: var(--background);
   border-radius: 6px;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   color: var(--foreground);
   text-decoration: none;
 }
@@ -574,14 +574,14 @@ svg { display: block; }
   border-radius: 50%;
   color: rgba(26,26,26,0.6);
 }
-.pending-title { font-size: 18px; line-height: 27px; font-weight: 700; color: var(--foreground); }
-.pending-desc { margin-top: 4px; max-width: 480px; font-size: 13px; color: var(--muted-foreground); }
+.pending-title { font-size: var(--text-2xl); line-height: 27px; font-weight: var(--font-bold); color: var(--foreground); }
+.pending-desc { margin-top: 4px; max-width: 480px; font-size: var(--text-lg); color: var(--muted-foreground); }
 .pending-code {
-  font-family: 'Roboto', 'Lusitania';
+  font-family: var(--font-family-primary);
   background: var(--muted);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--foreground);
 }
 .pending-role {
@@ -590,10 +590,10 @@ svg { display: block; }
   border: 1px solid var(--border);
   background: var(--card);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--muted-foreground);
 }
-.pending-role .role-name { font-weight: 500; color: var(--foreground); }
+.pending-role .role-name { font-weight: var(--font-medium); color: var(--foreground); }
 
 .zip-box {
   display: flex; flex-direction: column;
@@ -610,8 +610,8 @@ svg { display: block; }
   color: var(--primary-foreground);
   border: none;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
   text-decoration: none;
 }
 .btn-zip:hover { background: #333; }
@@ -624,7 +624,7 @@ svg { display: block; }
   border: 1px solid rgba(16,185,129,0.3);
   background: rgba(16,185,129,0.05);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--text-md);
   color: #047857;
 }
 
@@ -632,23 +632,24 @@ svg { display: block; }
 /* Altos de línea en píxeles enteros: el multiplicador 1,75 daba 26,25px en el
    texto de 15px, y cada título tiene su propio tamaño. */
 .portal-md {
-  font-size: 15px;
-  line-height: 26px;
+  font-size: var(--text-xl);
+  line-height: 25px;
   color: rgba(26,26,26,0.9);
 }
 .portal-md h1 {
   margin: 8px 0 20px;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--text-3xl);
+  line-height: 36px;
+  font-weight: var(--font-bold);
   letter-spacing: -1px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
-  line-height: 42px;
 }
 .portal-md h2 {
   margin: 36px 0 16px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--text-2xl);
+  line-height: 27px;
+  font-weight: var(--font-semibold);
   letter-spacing: 0;
   display: flex;
   align-items: center;
@@ -665,18 +666,18 @@ svg { display: block; }
 }
 .portal-md h3 {
   margin: 24px 0 12px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--text-2xl);
+  line-height: 27px;
+  font-weight: var(--font-semibold);
   color: rgba(26,26,26,0.95);
-  line-height: 32px;
 }
 .portal-md h4 {
   margin: 20px 0 8px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  line-height: 21px;
+  font-weight: var(--font-semibold);
   letter-spacing: 0;
   color: rgba(26,26,26,0.9);
-  line-height: 25px;
 }
 .portal-md p { margin: 12px 0; }
 .portal-md ul {
@@ -694,7 +695,7 @@ svg { display: block; }
   padding-left: 4px;
 }
 .portal-md ul li::marker, .portal-md ol li::marker { color: rgba(26,26,26,0.6); }
-.portal-md ol li::marker { font-weight: 600; }
+.portal-md ol li::marker { font-weight: var(--font-semibold); }
 .portal-md a {
   color: var(--primary);
   text-decoration: underline;
@@ -702,14 +703,14 @@ svg { display: block; }
   text-underline-offset: 2px;
 }
 .portal-md a:hover { text-decoration-color: var(--primary); }
-.portal-md strong { font-weight: 600; color: var(--foreground); }
+.portal-md strong { font-weight: var(--font-semibold); color: var(--foreground); }
 .portal-md em { font-style: italic; color: rgba(26,26,26,0.8); }
 .portal-md code {
-  font-family: 'Roboto', 'Lusitania';
+  font-family: var(--font-family-primary);
   background: var(--muted);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: var(--text-lg);
   border: 1px solid rgba(232,232,232,0.6);
   color: rgba(26,26,26,0.9);
 }
@@ -720,7 +721,7 @@ svg { display: block; }
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  font-size: 13px;
+  font-size: var(--text-lg);
   line-height: 20px;
 }
 .portal-md pre code {
@@ -749,7 +750,7 @@ svg { display: block; }
   margin: 20px 0;
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--text-xl);
   display: block;
   overflow-x: auto;
   border: 1px solid var(--border);
@@ -760,7 +761,7 @@ svg { display: block; }
 .portal-md th {
   padding: 10px 12px;
   text-align: left;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
@@ -776,45 +777,45 @@ svg { display: block; }
 mark.ed {
   background: rgba(16,185,129,0.15);
   color: #047857;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   padding: 1px 4px;
   border-radius: 3px;
 }
 mark.ei {
   background: rgba(14,165,233,0.15);
   color: #0369A1;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   padding: 1px 4px;
   border-radius: 3px;
 }
 mark.inf {
   background: rgba(139,92,246,0.15);
   color: #6D28D9;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   padding: 1px 4px;
   border-radius: 3px;
 }
 mark.hip {
   background: rgba(245,158,11,0.15);
   color: #B45309;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   padding: 1px 4px;
   border-radius: 3px;
 }
 mark.inc {
   background: rgba(244,63,94,0.15);
   color: #BE123C;
-  font-family: 'Roboto', 'Lusitania';
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-family-primary);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   padding: 1px 4px;
   border-radius: 3px;
 }
@@ -846,8 +847,8 @@ mark.inc {
   justify-content: space-between;
   padding: 0 16px;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
 }
 .mobile-drawer-body {
   flex: 1;

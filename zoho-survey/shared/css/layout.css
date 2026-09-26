@@ -39,6 +39,7 @@
 }
 
 .nav-links a {
+  line-height: 17px;
   text-decoration: none;
   color: var(--ulima-gray);
   font-weight: var(--font-medium);
@@ -143,6 +144,7 @@
 
 /* ── Footer ── */
 .footer {
+  line-height: 17px;
   background: var(--black);
   color: var(--white);
   padding: var(--space-2xl);

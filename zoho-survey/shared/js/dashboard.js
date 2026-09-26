@@ -653,7 +653,7 @@ const SurveyDashboard = (() => {
         });
         html += '<div style="display:flex;flex-direction:column;align-items:center;">';
           html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;
-          html += '<div style="text-align:center;color:#fff;font-size:12px;font-weight:500;">Escala de Satisfacción</div>';
+          html += '<div style="text-align:center;color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);">Escala de Satisfacción</div>';
         html += '</div>';
 
             return html;
@@ -714,21 +714,21 @@ const SurveyDashboard = (() => {
           const p = item.value;
           const outside = p < 12;
           html += '<div style="display:flex;align-items:center;gap:8px;">';
-          html += `<span style="color:#fff;font-size:10px;font-weight:600;width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
+          html += `<span style="color:#fff;font-size: var(--text-xs);font-weight: var(--font-semibold);width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
           html += '<div style="flex:1;height:18px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:visible;position:relative;">';
           html += `<div style="height:100%;width:${cssVal}%;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;transition:width 0.3s;min-width:0;">`;
           if (!outside) {
-            html += `<span style="color:#111827;font-size:9px;font-weight:700;line-height:1;">${_fmt.formatDecimal(p, 2)} %</span>`;
+            html += `<span style="color:#111827;font-size: var(--text-xs);font-weight: var(--font-bold);line-height:1;">${_fmt.formatDecimal(p, 2)} %</span>`;
           }
           html += '</div>';
           if (outside) {
-            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size:9px;font-weight:700;white-space:nowrap;">${_fmt.formatDecimal(p, 2)} %</span>`;
+            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size: var(--text-xs);font-weight: var(--font-bold);white-space:nowrap;">${_fmt.formatDecimal(p, 2)} %</span>`;
           }
           html += '</div>';
           html += '</div>';
         });
         html += '</div>'; // close bars centering container
-        html += '<div style="color:#fff;font-size:12px;font-weight:500;text-align:center;">Top Box y Ponderado</div>';
+        html += '<div style="color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);text-align:center;">Top Box y Ponderado</div>';
         html += '</div>'; // close right column
         html += '</div>'; // close flex container
         // raw=true justificado: html se construye con valores numericos (formatInteger/formatPctSimple)
@@ -906,7 +906,7 @@ const SurveyDashboard = (() => {
       `;
       tr.querySelectorAll('.distribution-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
-          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size:11px;"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
+          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Escala de Satisfacción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
         });
         seg.addEventListener('mouseleave', () => _ttp?.hide());
       });
@@ -996,20 +996,20 @@ const SurveyDashboard = (() => {
       const tr = document.createElement('tr');
       const vsCsatTxt =
         item.vsPromCsat >= 0
-          ? `<span style="color:var(--success-text);font-weight:600;">+${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`
-          : `<span style="color:var(--ulima-red);font-weight:600;">${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`;
+          ? `<span style="color:var(--success-text);font-weight: var(--font-semibold);">+${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`
+          : `<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">${_fmt.formatInteger(Math.round(item.vsPromCsat))}</span>`;
 
       const vsNpsTxt =
         item.vsPromNps >= 0
-          ? `<span style="color:var(--success-text);font-weight:600;">+${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`
-          : `<span style="color:var(--ulima-red);font-weight:600;">${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`;
+          ? `<span style="color:var(--success-text);font-weight: var(--font-semibold);">+${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`
+          : `<span style="color:var(--ulima-red);font-weight: var(--font-semibold);">${_fmt.formatInteger(Math.round(item.vsPromNps))}</span>`;
 
       tr.innerHTML = `
         <td>${_san.escapeHTML(item.carrera)}</td>
         <td class="text-center">${_fmt.formatInteger(item.encuestas)}</td>
-        <td class="text-center" style="font-weight:700;">${_fmt.formatPercent(item.csat, 2)}</td>
+        <td class="text-center" style="font-weight: var(--font-bold);">${_fmt.formatPercent(item.csat, 2)}</td>
         <td class="text-center">${vsCsatTxt}</td>
-        <td class="text-center" style="font-weight:700;">${_fmt.formatDecimal(item.nps, 2)}</td>
+        <td class="text-center" style="font-weight: var(--font-bold);">${_fmt.formatDecimal(item.nps, 2)}</td>
         <td class="text-center">${vsNpsTxt}</td>
       `;
       fragment.appendChild(tr);
@@ -1069,7 +1069,7 @@ const SurveyDashboard = (() => {
       `;
       tr.querySelectorAll('.visibility-segment').forEach((seg) => {
         seg.addEventListener('mousemove', (e) => {
-          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size:11px;"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
+          if (_ttp) _ttp.show(e, `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><th style="text-align:left;padding:2px 6px;border-bottom:1px solid #ccc;">Opción</th><th style="text-align:right;padding:2px 6px;border-bottom:1px solid #ccc;">Respuestas</th></tr><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.label}</td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${seg.dataset.value}</td></tr></table>`, true);
         });
         seg.addEventListener('mouseleave', () => _ttp?.hide());
       });
@@ -1100,7 +1100,7 @@ const SurveyDashboard = (() => {
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
+      txt += `<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
       if (criticos.length) {
         txt += `${criticos.length === 1 ? 'El servicio con <strong>menor visibilidad</strong> es' : 'Los servicios con <strong>menor visibilidad</strong> son'} `;
         txt += criticos

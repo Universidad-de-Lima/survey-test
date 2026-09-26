@@ -83,7 +83,7 @@ window.SurveySentimentView = (() => {
       // Tooltip events
       barItem.addEventListener('mouseenter', (e) => {
         const b = item.breakdown;
-        let html = '<table style="border-collapse:collapse;font-size:11px;">';
+        let html = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Promotores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.prom)}</td></tr>`;
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Pasivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pas)}</td></tr>`;
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Detractores</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.det)}</td></tr>`;
@@ -280,7 +280,7 @@ window.SurveySentimentView = (() => {
 
     if (sortedCats.length === 0) {
       container.style.cssText = '';
-      container.innerHTML = '<p style="color:var(--gray-500);font-size:12px;text-align:center;padding:20px 0;">No hay menciones registradas.</p>';
+      container.innerHTML = '<p style="color:var(--gray-500);font-size: var(--text-md);text-align:center;padding:20px 0;">No hay menciones registradas.</p>';
       return;
     }
 
@@ -301,18 +301,18 @@ window.SurveySentimentView = (() => {
       const col = document.createElement('div');
       col.style.cssText = 'display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; gap:6px;';
       col.innerHTML = `
-        <div style="font-size:11px; font-weight:600; color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
+        <div style="font-size: var(--text-sm); font-weight: var(--font-semibold); color:var(--text2);">${_fmt.formatInteger(s.total)}</div>
         <div style="width:36px; height:${heightPct}%; background:var(--gray-200); border-radius:4px 4px 0 0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;">
           <div style="width:100%; height:${pPct}%; background:var(--success-text);"></div>
           <div style="width:100%; height:${nPct}%; background:var(--gray-400);"></div>
           <div style="width:100%; height:${negPct}%; background:var(--ulima-red);"></div>
         </div>
-        <div style="font-size:10px; font-weight:600; color:var(--dark); text-align:center; white-space:normal; line-height:1.1; max-width:64px; height:24px; overflow:hidden;">${_san.escapeHTML(cat)}</div>
+        <div style="font-size: var(--text-xs); font-weight: var(--font-semibold); color:var(--dark); text-align:center; white-space:normal; line-height:1.1; max-width:64px; height:24px; overflow:hidden;">${_san.escapeHTML(cat)}</div>
       `;
 
       // Tooltip enriquecido con conteos + porcentajes (2 decimales), consistente
       // con el resto de la app. Reemplaza al title HTML nativo.
-      let tooltipHtml = '<table style="border-collapse:collapse;font-size:11px;">';
+      let tooltipHtml = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
       tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(posCount)} (${_fmt.formatPctSimple(posCount, s.total)})</td></tr>`;
       tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(neuCount)} (${_fmt.formatPctSimple(neuCount, s.total)})</td></tr>`;
       tooltipHtml += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(negCount)} (${_fmt.formatPctSimple(negCount, s.total)})</td></tr>`;
@@ -386,7 +386,7 @@ window.SurveySentimentView = (() => {
       // Tooltip events
       barItem.addEventListener('mouseenter', (e) => {
         const b = item.breakdown;
-        let html = '<table style="border-collapse:collapse;font-size:11px;">';
+        let html = '<table style="border-collapse:collapse;font-size: var(--text-sm);">';
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Positivos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.pos)}</td></tr>`;
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Neutros</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neu)}</td></tr>`;
         html += `<tr><td style="padding:2px 6px;vertical-align:middle;">Negativos</td><td style="text-align:right;padding:2px 6px;vertical-align:middle;">${_fmt.formatInteger(b.neg)}</td></tr>`;
@@ -414,7 +414,7 @@ window.SurveySentimentView = (() => {
     if (!container) return;
     container.innerHTML = '';
     if (data.length === 0) {
-      container.innerHTML = '<span style="font-size:12px; color:var(--gray-500);">Data insuficiente</span>';
+      container.innerHTML = '<span style="font-size: var(--text-md); color:var(--gray-500);">Data insuficiente</span>';
       return;
     }
     
@@ -447,8 +447,8 @@ window.SurveySentimentView = (() => {
       `;
 
       const tooltipText = isIntensity ? 
-        `<table style="border-collapse:collapse;font-size:11px;"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">Intensidad promedio ${displayVal}</td></tr></table>` : 
-        `<table style="border-collapse:collapse;font-size:11px;"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${_fmt.formatInteger(item.val)} menciones</td></tr></table>`;
+        `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">Intensidad promedio ${displayVal}</td></tr></table>` : 
+        `<table style="border-collapse:collapse;font-size: var(--text-sm);"><tr><td style="padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;"><strong>${_san.escapeHTML(item.name)}</strong></td><td style="text-align:right;padding:2px 6px;border-bottom:1px solid #eee;vertical-align:middle;">${_fmt.formatInteger(item.val)} menciones</td></tr></table>`;
         
       barItem.addEventListener('mouseenter', (e) => {
         _ttp.show(e, tooltipText, true);
@@ -553,9 +553,9 @@ window.SurveySentimentView = (() => {
         <td style="color:var(--dark);">${_san.escapeHTML(car)}</td>
         <td class="text-center">${s.uniqueComments.size}</td>
         <td class="text-center">${s.totalIdeas}</td>
-        <td class="text-center" style="font-weight:600; color:var(--success-text);">${s.prom}</td>
-        <td class="text-center" style="font-weight:600; color:var(--dark);">${s.pas}</td>
-        <td class="text-center" style="font-weight:600; color:var(--ulima-red);">${s.det}</td>
+        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--success-text);">${s.prom}</td>
+        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--dark);">${s.pas}</td>
+        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--ulima-red);">${s.det}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -659,7 +659,7 @@ window.SurveySentimentView = (() => {
       let sentBadge = '';
       if (!c.es_valido) {
         const motivoLabel = c.motivo_invalidez === 'spam_o_ruido' ? 'Ruido' : 'Sin opinión';
-        sentBadge = `<span style="background:var(--gray-200); color:var(--gray-600); border-radius:12px; padding:3px 8px; font-size:11px; font-weight:700;">${motivoLabel}</span>`;
+        sentBadge = `<span style="background:var(--gray-200); color:var(--gray-600); border-radius:12px; padding:3px 8px; font-size: var(--text-sm); font-weight: var(--font-bold);">${motivoLabel}</span>`;
       } else {
         let bg = 'var(--gray-200)', fg = 'var(--gray-700)', label = 'Neutro';
         if (c.sentimiento === 'positivo') {
@@ -671,7 +671,7 @@ window.SurveySentimentView = (() => {
           fg = 'var(--ulima-red)';
           label = 'Negativo';
         }
-        sentBadge = `<span style="background:${bg}; color:${fg}; border-radius:12px; padding:3px 8px; font-size:11px; font-weight:700;">${label}</span>`;
+        sentBadge = `<span style="background:${bg}; color:${fg}; border-radius:12px; padding:3px 8px; font-size: var(--text-sm); font-weight: var(--font-bold);">${label}</span>`;
       }
 
       let npsBg = 'var(--gray-200)', npsFg = 'var(--gray-700)';
@@ -685,7 +685,7 @@ window.SurveySentimentView = (() => {
         npsBg = 'var(--danger-pastel)';
         npsFg = 'var(--ulima-red)';
       }
-      const npsBadge = `<span style="background:${npsBg}; color:${npsFg}; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">${c.nps_score}</span>`;
+      const npsBadge = `<span style="background:${npsBg}; color:${npsFg}; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size: var(--text-sm); font-weight: var(--font-bold);">${c.nps_score}</span>`;
 
       let safeCiclo = '-';
       if (c.ciclo) {
@@ -708,7 +708,7 @@ window.SurveySentimentView = (() => {
         <td style="line-height:15px; color:var(--text); text-align:left;">${displayIdeaAnalizada}</td>
         <td style="color:var(--text2);">${_san.escapeHTML(c.categoria || '-')}</td>
         <td class="text-center">${sentBadge}</td>
-        <td class="text-center" style="font-weight:600; color:var(--dark);">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>
+        <td class="text-center" style="font-weight: var(--font-semibold); color:var(--dark);">${c.intensidad ? Math.round(Number(c.intensidad)) : '-'}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -782,18 +782,18 @@ window.SurveySentimentView = (() => {
       overlay.setAttribute('aria-labelledby', 'export-modal-title');
       overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
       const modal = document.createElement('div');
-      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:Roboto,Lusitania;';
+      modal.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:var(--font-family-primary);';
       const title = document.createElement('h3');
       title.id = 'export-modal-title';
       title.textContent = 'Exportación no disponible';
-      title.style.cssText = 'margin:0 0 12px 0;font-size:16px;color:#111827;';
+      title.style.cssText = 'margin:0 0 12px 0;font-size: var(--text-2xl);color:#111827;';
       const body = document.createElement('p');
       body.textContent = message;
-      body.style.cssText = 'margin:0 0 20px 0;font-size:14px;color:#6B7280;line-height:1.5;';
+      body.style.cssText = 'margin:0 0 20px 0;font-size: var(--text-xl);color:#6B7280;line-height:1.5;';
       const closeBtn = document.createElement('button');
       closeBtn.textContent = 'Cerrar';
       closeBtn.setAttribute('type', 'button');
-      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size:14px;cursor:pointer;font-family:Roboto,Lusitania;';
+      closeBtn.style.cssText = 'background:#FF5117;color:#fff;border:none;border-radius:4px;padding:8px 16px;font-size: var(--text-xl);cursor:pointer;font-family:var(--font-family-primary);';
       closeBtn.addEventListener('click', () => overlay.remove());
       overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
       modal.appendChild(title);
@@ -915,7 +915,7 @@ window.SurveySentimentView = (() => {
 
     const kpiGrid = $('sentiment-kpis');
     if (kpiGrid && (!sentimientoData.topicos || !sentimientoData.topicos.length)) {
-      kpiGrid.innerHTML = `<p style="color:var(--gray-500);font-size:13px;padding:20px 0;">
+      kpiGrid.innerHTML = `<p style="color:var(--gray-500);font-size: var(--text-lg);padding:20px 0;">
         No hay datos de análisis semántico disponibles para este período.</p>`;
     }
 
@@ -993,11 +993,11 @@ window.SurveySentimentView = (() => {
       item.style.cssText = 'margin-top:10px;padding:8px 12px;background:var(--surface, #F4F8FC);border-left:3px solid var(--ulima-orange, #FF5117);border-radius:4px;';
 
       const titulo = document.createElement('div');
-      titulo.style.cssText = 'font-size:12px;font-weight:600;color:var(--text1, #1A2B40);margin-bottom:4px;';
+      titulo.style.cssText = 'font-size: var(--text-md);font-weight: var(--font-semibold);color:var(--text1, #1A2B40);margin-bottom:4px;';
       titulo.textContent = cat;
 
       const desc = document.createElement('div');
-      desc.style.cssText = 'font-size:12px;color:var(--text2, #6878A0);line-height:1.5;';
+      desc.style.cssText = 'font-size: var(--text-md);color:var(--text2, #6878A0);line-height:1.5;';
       desc.textContent = texto;
 
       item.appendChild(titulo);

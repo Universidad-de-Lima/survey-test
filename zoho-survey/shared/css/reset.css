@@ -18,7 +18,7 @@ body {
   background: var(--white);
   color: var(--gray-800);
   line-height: 1.5;
-  font-size: 14px;
+  font-size: var(--text-xl);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -30,6 +30,7 @@ input,
 select,
 textarea {
   font-family: inherit;
+  font-size: inherit;
 }
 
 /* ── Accesibilidad ── */

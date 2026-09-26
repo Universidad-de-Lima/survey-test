@@ -105,7 +105,7 @@
     let txt = '';
 
     if (hayFiltro) {
-      txt += `<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
+      txt += `<strong style="font-size: var(--text-sm);text-transform:uppercase;letter-spacing:1px;">${cleanContexto}</strong><br>`;
       if (fortalezas.length) {
         txt += `${fortalezas.length === 1 ? 'La dimensión mejor evaluada es' : 'Las dimensiones mejor evaluadas son'} `;
         txt += fortalezas
@@ -450,7 +450,7 @@
           });
           html += '<div style="display:flex;flex-direction:column;align-items:center;">';
           html += `<svg width="200" height="170" viewBox="-25 -30 230 200">${svgParts.join('')}</svg>`;
-          html += '<div style="text-align:center;color:#fff;font-size:12px;font-weight:500;">Escala de Satisfacción</div>';
+          html += '<div style="text-align:center;color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);">Escala de Satisfacción</div>';
         html += '</div>';
         }
 
@@ -466,21 +466,21 @@
           const p = parseFloat(cssVal);
           const outside = p < 12;
           html += '<div style="display:flex;align-items:center;gap:8px;">';
-          html += `<span style="color:#fff;font-size:10px;font-weight:600;width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
+          html += `<span style="color:#fff;font-size: var(--text-xs);font-weight: var(--font-semibold);width:60px;text-align:right;flex-shrink:0;">${item.label}</span>`;
           html += '<div style="flex:1;height:18px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:visible;position:relative;">';
           html += `<div style="height:100%;width:${cssVal}%;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;transition:width 0.3s;min-width:0;">`;
           if (!outside) {
-            html += `<span style="color:#111827;font-size:9px;font-weight:700;line-height:1;">${item.value}%</span>`;
+            html += `<span style="color:#111827;font-size: var(--text-xs);font-weight: var(--font-bold);line-height:1;">${item.value}%</span>`;
           }
           html += '</div>';
           if (outside) {
-            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size:9px;font-weight:700;white-space:nowrap;">${item.value}%</span>`;
+            html += `<span style="position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:4px;color:#fff;font-size: var(--text-xs);font-weight: var(--font-bold);white-space:nowrap;">${item.value}%</span>`;
           }
           html += '</div>';
           html += '</div>';
         });
         html += '</div>';
-        html += '<div style="color:#fff;font-size:12px;font-weight:500;text-align:center;">Top Box y Ponderado</div>';
+        html += '<div style="color:#fff;font-size: var(--text-md);font-weight: var(--font-medium);text-align:center;">Top Box y Ponderado</div>';
         html += '</div>';
         html += '</div>';
         showRadarTooltip(e, html);

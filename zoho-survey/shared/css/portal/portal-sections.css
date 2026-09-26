@@ -65,7 +65,7 @@
   height: 4px;
 }
 .survey-kpi-body { min-width: 0; flex: 1; }
-.survey-kpi-value { font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 26px; margin: 0; }
+.survey-kpi-value { font-size: var(--text-3xl); font-weight: var(--font-bold); letter-spacing: -1px; line-height: 26px; margin: 0; }
 .survey-kpi-icon {
   width: 24px; height: 24px;
   flex-shrink: 0;
@@ -76,15 +76,15 @@
 .survey-kpi-icon svg { width: 66%; height: 66%; }
 
 @media (min-width: 768px) {
-  .survey-kpi-value { font-size: 28px; line-height: 31px; }
+  .survey-kpi-value { font-size: var(--display-md); line-height: 31px; }
   .survey-kpi-icon { width: 28px; height: 28px; }
 }
 @media (min-width: 1024px) {
-  .survey-kpi-value { font-size: 32px; line-height: 35px; }
+  .survey-kpi-value { font-size: var(--display-lg); line-height: 35px; }
   .survey-kpi-icon { width: 32px; height: 32px; }
 }
-.survey-kpi-label { font-size: 11px; line-height: 17px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }
-.survey-kpi-meta { font-size: 11px; color: var(--muted-foreground); margin-top: 4px; line-height: 15px; }
+.survey-kpi-label { font-size: var(--text-sm); line-height: 17px; font-weight: var(--font-medium); color: var(--muted-foreground); letter-spacing: 0; margin-top: 6px; white-space: nowrap; }
+.survey-kpi-meta { font-size: var(--text-sm); color: var(--muted-foreground); margin-top: 4px; line-height: 15px; }
 
 /* ---------- Top 3 por categoría (réplica index.html) ---------- */
 .grid-2 {
@@ -226,7 +226,7 @@
 .survey-table tr:hover { background: var(--gray-50); }
 .survey-table .text-center { text-align: center; }
 .survey-dist-bar { display: flex; height: 32px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px; }
-.survey-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11px; color: var(--muted-foreground); }
+.survey-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: var(--text-sm); color: var(--muted-foreground); }
 .survey-legend-item { display: flex; align-items: center; gap: 6px; }
 .survey-legend-dot { width: 10px; height: 10px; border-radius: var(--radius-md); flex-shrink: 0; }
 
@@ -284,7 +284,7 @@
 
 .csat-label {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: var(--text-md);
   letter-spacing: 0;
 }
 
@@ -368,18 +368,18 @@
     gap: var(--space-xs);
   }
   .filter-label {
-    font-size: 10px;
+    font-size: var(--text-xs);
     letter-spacing: 0;
   }
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
-    font-size: 11px;
+    font-size: var(--text-sm);
     padding-top: 5px;
     padding-bottom: 5px;
   }
   .filter-reset {
-    font-size: 10px;
+    font-size: var(--text-xs);
     padding: 5px 10px;
     min-width: 72px;
   }
@@ -406,18 +406,18 @@
   .filter-select,
   .filter-custom-toggle,
   .filter-multiselect-toggle {
-    font-size: 10px;
+    font-size: var(--text-xs);
     padding: 4px 24px 4px 8px;
   }
   .grid-2 {
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-  .bar-label { width: 230px; font-size: 11px; }
+  .bar-label { width: 230px; font-size: var(--text-sm); }
   .card { padding: var(--space-lg); }
-  .card-title { font-size: 12px; line-height: 18px; }
+  .card-title { font-size: var(--text-md); line-height: 18px; }
   .radar-svg text {
-    font-size: 12px !important;
+    font-size: var(--text-md);
     font-weight: var(--font-medium) !important;
   }
 }
@@ -448,10 +448,10 @@
     width: 100%;
     text-align: left;
     min-height: auto;
-    font-size: 10px;
+    font-size: var(--text-xs);
   }
   .radar-svg text {
-    font-size: 14px !important;
+    font-size: var(--text-xl);
     font-weight: var(--font-bold) !important;
   }
 }
@@ -541,5 +541,5 @@
 /* Mismo comportamiento que las páginas de detalle: en pantallas angostas el
    título de sección baja a 14px, para que las dos familias hagan lo mismo. */
 @media (max-width: 768px) {
-  .survey-section-title { font-size: 14px; line-height: 21px; }
+  .survey-section-title { font-size: var(--text-xl); line-height: 21px; }
 }

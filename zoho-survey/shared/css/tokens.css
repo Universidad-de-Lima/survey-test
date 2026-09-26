@@ -37,13 +37,23 @@
   --danger-text: #991B1B;
 
   /* ── Tipografía ── */
+  /* Se declara en la raíz para que ningún elemento quede sin familia (el
+     navegador pondría una con serifas). */
+  font-family: var(--font-family-primary);
   --font-family-primary: 'Roboto', 'Lusitania';
   --font-family-display: 'Roboto', 'Lusitania';
   --font-light: 300;
   --font-regular: 400;
   --font-medium: 500;
+  --font-semibold: 600;
   --font-bold: 700;
   --font-black: 900;
+
+  /* Números grandes de los indicadores: son cifras destacadas, no texto de
+     lectura, así que tienen su propia escala por encima de la de texto. */
+  --display-md: 28px;
+  --display-lg: 32px;
+  --display-xl: 36px;
 
   /* ── Accesibilidad ── */
   --focus-outline: 2px solid var(--ulima-orange);
