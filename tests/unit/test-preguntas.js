@@ -22,12 +22,17 @@ require(path.join(raiz, 'shared/js/utils/sanitizer.js'));
 require(path.join(raiz, 'shared/js/utils/formatters.js'));
 require(path.join(raiz, 'shared/js/portal/portal-preguntas.js'));
 
+// Respuesta simulada del traductor (se cambia en cada prueba).
+let consultaSimulada = { dato: 'satisfaccion', periodo: '2026-1', entidad: 'Psicología', orden: '' };
 const llamadasExternas = [];
 global.fetch = function (url, opciones) {
   // Las direcciones externas (el registro de preguntas) no se piden de verdad:
   // se anotan y se responde lo que se quiera comprobar.
   if (/^https?:\/\//.test(String(url))) {
     llamadasExternas.push({ url: String(url), opciones: opciones || {} });
+    if (String(url).indexOf('/interpretar') !== -1) {
+      return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ consulta: consultaSimulada }); } });
+    }
     if (String(url).indexOf('/preguntas') !== -1 && !(opciones && opciones.method === 'POST')) {
       return Promise.resolve({
         ok: true,
@@ -138,6 +143,31 @@ let porAnio, porCarrera, enTotal, alumnos20261;
   await (async function () {
     const P2 = window.SurveyPortalPreguntas;
     await P2.registrar('¿Cuál es el NPS de 2026-1?', 'NPS');
+
+    // La IA traduce una pregunta que las palabras clave NO reconocen.
+    const conIA = await P2.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
+    // Y cuando el traductor dice que no es de las encuestas, no se responde.
+    consultaSimulada = { dato: 'ninguna', periodo: '', entidad: '', orden: '' };
+    const noEsDeEncuestas = await P2.responderConIA('¿cómo estará el clima mañana?');
+    // Y si inventa un nombre que no está en los datos, se avisa.
+    consultaSimulada = { dato: 'nps', periodo: '2026-1', entidad: 'Carrera Inexistente', orden: '' };
+    const entidadRara = await P2.responderConIA('¿cuál es el NPS de Carrera Inexistente?');
+    consultaSimulada = { dato: 'satisfaccion', periodo: '2026-1', entidad: 'Psicología', orden: '' };
+
+    test('la IA que traduce hace que el motor responda con los datos', () => {
+      assertIncludes(texto(conIA), 'Psicología', 'la carrera traducida');
+      assertIncludes(texto(conIA), '97,22', 'satisfacción de Psicología');
+      assertIncludes(fuentes(conIA), 'csat_carrera.json', 'la respuesta cita su archivo');
+    });
+
+    test('si la pregunta no es de las encuestas, la IA tampoco responde', () => {
+      assertTrue(noEsDeEncuestas.alcance === false, 'debe quedar fuera de alcance');
+    });
+
+    test('si la IA nombra algo que no existe en los datos, se avisa', () => {
+      assertTrue(entidadRara.alcance === false, 'no debe responder de más');
+      assertIncludes(texto(entidadRara), 'No encontre', 'debe decir que no lo encontró');
+    });
 
     test('"cuántos alumnos se encuestaron en el 2026" lista los períodos de ese año', () => {
       assertIncludes(texto(porAnio), '2026-1', 'período de pregrado');

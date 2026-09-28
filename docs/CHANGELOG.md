@@ -2,6 +2,15 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-28 — El asistente 1.9 ahora entiende la pregunta (y sigue sin inventar)
+
+- **Capa nueva de traducción.** Cuando las palabras clave del motor no alcanzan, el portal manda la pregunta a una función en Vercel (`/api/interpretar`) que la traduce a una consulta ordenada: `{dato, periodo, entidad, orden}`. El motor de datos toma esa consulta y responde con el número real y su archivo de origen.
+- **La IA no responde ni calcula:** solo dice *qué* se pregunta. Ningún número sale del modelo, así que no puede inventar cifras. Si la consulta nombra algo que no existe en los datos publicados, el portal lo dice ("No encontré … entre las carreras, facultades o ciclos publicados").
+- **Fuera de tema sigue fuera:** si la pregunta no es de las encuestas (la hora, el clima, noticias), el traductor devuelve `ninguna` y el portal contesta el mismo aviso de siempre.
+- **Modelo:** cadena de modelos gratuitos de NVIDIA, con la misma llave que ya usa el proceso del ETL (`NVIDIA_API_KEY` en Vercel). Si un modelo falla, se prueba el siguiente.
+- **Más formas de preguntar:** «cuántos alumnos se encuestaron en el 2026» (todos los períodos de ese año), «cuántos respondieron de Psicología» (total por carrera, de `ids.json`), «cuántos se encuestaron en total», y «¿cuál es el NPS del 2026?».
+- **Pruebas:** 19 del asistente en el portal (3 nuevas para la capa de traducción) y 9 del endpoint en el backend.
+
 ## 2026-09-26 — Item 1.9: asistente de preguntas (solo datos de las encuestas)
 
 - **Qué hace:** la barra lateral ya tiene el item **1.9 "Preguntas"** funcionando. Se escribe una pregunta y responde con los números que están en los JSON publicados de cada período: NPS, satisfacción, respuestas, carreras, ciclos, dimensiones (Top 3 Box), comentarios, temas y comparaciones entre períodos.

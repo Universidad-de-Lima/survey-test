@@ -15,6 +15,9 @@ window.SurveyPortalPreguntas = (function () {
 
   // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
   var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
+  // Traduce la pregunta a una consulta ordenada cuando las palabras no alcanzan.
+  // No responde: solo dice que dato se pide (ver survey-tracker/apps/backend/api/interpretar.js).
+  var INTERPRETE_URL = 'https://qr-smoky-theta.vercel.app/api/interpretar';
 
   var CATALOGO = null;   // periodos con sus JSON chicos
   var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
@@ -508,6 +511,80 @@ window.SurveyPortalPreguntas = (function () {
       .catch(function () { FRECUENTES = []; return FRECUENTES; });
   }
 
+  // ---------- IA que entiende la pregunta (solo traduce) ----------
+  // Cada dato que devuelve el traductor se convierte en una frase que el motor de datos
+  // ya sabe leer: asi los numeros siguen saliendo de los JSON y no del modelo.
+  var FRASE_DEL_DATO = {
+    nps: 'nps',
+    satisfaccion: 'satisfaccion',
+    respuestas: 'cuantos alumnos se encuestaron',
+    carreras: 'cuantas carreras',
+    facultades: 'cuantas facultades',
+    ciclos: 'nps por ciclo',
+    dimensiones: 'dimensiones',
+    comentarios: 'comentarios',
+    temas: 'temas mas comentados',
+    comparacion: 'comparar periodos',
+    fechas: 'cuando fue el levantamiento',
+    periodos: 'que datos hay'
+  };
+
+  function interpretarConIA(texto) {
+    return fetch(INTERPRETE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta: String(texto).slice(0, 300) })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { return (d && d.consulta) ? d.consulta : null; })
+      .catch(function () { return null; });
+  }
+
+  function fraseDeConsulta(c) {
+    var base = FRASE_DEL_DATO[c.dato];
+    if (!base) return null;
+    var partes = [base];
+    if (c.periodo) partes.push(c.periodo);
+    if (c.entidad) partes.push(c.entidad);
+    if (c.orden) partes.push(c.orden);
+    return partes.join(' ');
+  }
+
+  // El nombre que devolvio el traductor tiene que existir en los datos publicados:
+  // si no existe, se dice; no se responde de mas.
+  function entidadConocida(nombre) {
+    if (!nombre) return true;
+    var p = periodoDeLaPregunta('', '1.0');
+    var listas = [].concat(
+      (p.filtros && p.filtros.carreras) || [],
+      (p.filtros && p.filtros.facultades) || [],
+      (p.filtros && p.filtros.ciclos) || [],
+      Object.keys((p.filtros && p.filtros.facultad_carrera) || {})
+    );
+    return !!buscaNombre(sin(nombre), listas);
+  }
+
+  // Responde: primero con las palabras conocidas; si no alcanzan, con la IA; y si tampoco,
+  // el aviso de siempre. En ningun caso el numero sale del modelo.
+  function responderConIA(texto) {
+    return cargar().then(function () {
+      return Promise.resolve(respuesta(sin(texto)));
+    }).then(function (r) {
+      if (r && r.alcance !== false) return r;
+
+      return interpretarConIA(texto).then(function (c) {
+        if (!c || c.dato === 'ninguna') return noSe(null);
+        if (c.entidad && !entidadConocida(c.entidad)) {
+          return noSe('No encontre "' + c.entidad + '" entre las carreras, facultades o ciclos publicados.');
+        }
+        var frase = fraseDeConsulta(c);
+        if (!frase) return noSe(null);
+        return Promise.resolve(respuesta(sin(frase))).then(function (r2) {
+          return (r2 && r2.alcance !== false) ? r2 : noSe(null);
+        });
+      });
+    });
+  }
+
   // ---------- pantalla del item 1.9 ----------
   var SUGERENCIAS = [
     '¿Cuántas respuestas tenemos en 2026-1?',
@@ -568,6 +645,8 @@ window.SurveyPortalPreguntas = (function () {
     var t = sin(texto);
     return cargar().then(function () {
       return respuesta(t);
+    }).then(function (r0) {
+      return (r0 && r0.alcance !== false) ? r0 : responderConIA(texto);
     }).then(function (r) {
       pintar(caja, r);
       registrar(texto, (r && r.titulo) || '');
@@ -630,6 +709,8 @@ window.SurveyPortalPreguntas = (function () {
     preguntar: preguntar,
     responder: function (texto) { return cargar().then(function () { return respuesta(sin(texto)); }); },
     iniciar: iniciar,
+    responderConIA: responderConIA,
+    interpretarConIA: interpretarConIA,
     registrar: registrar,
     cargarFrecuentes: cargarFrecuentes,
     frecuentes: function () { return FRECUENTES; },

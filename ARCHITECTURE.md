@@ -316,7 +316,9 @@ Reglas que sostienen el orden:
 
 ### Item 1.9 — Asistente de preguntas
 
-`shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON publicados** de cada periodo. No hay modelo de lenguaje, servidor ni llave: es un motor de consulta (reconoce el dato pedido, el periodo, la carrera, la facultad o el ciclo, y devuelve el numero real).
+`shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON publicados** de cada periodo. El motor reconoce el dato pedido, el periodo, la carrera, la facultad o el ciclo, y devuelve el numero real.
+
+Si las palabras de la pregunta no alcanzan, el portal pide una **traduccion** a la funcion `/api/interpretar` (proyecto survey-tracker, cadena de modelos gratuitos de NVIDIA): esa funcion devuelve unicamente `{dato, periodo, entidad, orden}` y el motor de datos vuelve a responder. **El modelo no calcula ni redacta cifras**: solo dice que se pregunta, de modo que el numero siempre sale del JSON. Si el modelo nombra una carrera o facultad que no existe en los datos, el portal lo dice.
 
 Reglas del modulo:
 
