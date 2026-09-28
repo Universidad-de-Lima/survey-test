@@ -123,6 +123,17 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
     });
   });
 
+  test('la pantalla del 1.9 se puede dibujar', () => {
+    const html = P.render();
+    assertIncludes(html, 'preguntasForm', 'formulario');
+    assertIncludes(html, 'preguntasTexto', 'campo de texto');
+    assertIncludes(html, 'preguntas-sugerencia', 'preguntas sugeridas');
+  });
+
+  await (async function () {
+    const P2 = window.SurveyPortalPreguntas;
+    await P2.registrar('¿Cuál es el NPS de 2026-1?', 'NPS');
+
   test('registrar manda la pregunta al contador de más frecuentes', () => {
     const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
     assertTrue(post.length >= 1, 'debe haber al menos un envío');
@@ -136,16 +147,6 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
     assertTrue(post[0].opciones.body.indexOf('intencion') !== -1, 'debe decir qué tipo de pregunta fue');
   });
 
-  test('la pantalla del 1.9 se puede dibujar', () => {
-    const html = P.render();
-    assertIncludes(html, 'preguntasForm', 'formulario');
-    assertIncludes(html, 'preguntasTexto', 'campo de texto');
-    assertIncludes(html, 'preguntas-sugerencia', 'preguntas sugeridas');
-  });
-
-  await (async function () {
-    const P2 = window.SurveyPortalPreguntas;
-    await P2.registrar('¿Cuál es el NPS de 2026-1?', 'NPS');
     let lista = null;
     try { lista = await P2.cargarFrecuentes(); } catch (e) { lista = null; }
     test('las más frecuentes se pueden leer del registro', () => {
