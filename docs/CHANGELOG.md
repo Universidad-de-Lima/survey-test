@@ -2,6 +2,16 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-28 — Los conteos de todas las preguntas quedan publicados (`conteos.json`)
+
+- **Qué se agrega.** Un archivo nuevo por período, `conteos.json`, con los conteos que hasta ahora no publicaba ningún otro: las preguntas de perfil (situación laboral, tiempo laboral y las que traiga cada encuesta), contadas por opción, y **cada opción partida por carrera, facultad y ciclo**. Trae además el **catálogo**: la lista de todas las preguntas de la encuesta y en qué archivo vive el conteo de cada una. Con eso el asistente del ítem 1.9 puede responder «¿qué porcentaje de graduados de Economía trabaja?» sin escribir código por pregunta.
+- **Nada se duplica.** Las preguntas de escala siguen en `dimensiones.json` (con sus siete niveles), la de recomendación en `nps_*.json`, la de satisfacción general en `csat_*.json`, las respuestas por carrera y ciclo en `ids.json` y los comentarios en `sentimiento.json`. El archivo es **aditivo**: no cambia ninguna clave de los nueve que ya existían.
+- **La empleabilidad, ahora por carrera.** Se publica con las mismas reglas que el total global, así que el 87,29 % de Graduados no cambia: se le agrega el corte por carrera (Economía: 14 de 14 = 100,00 %) y por facultad.
+- **Cuántos no respondieron.** Cada pregunta dice cuántas respuestas vinieron en blanco (`sin_respuesta`): en Graduados, 276 de 598 en «Tiempo laboral».
+- **El ETL dejó de saltarse el período.** `conteos.json` entró en la lista de archivos que revisa el atajo de idempotencia; antes, un período con el CSV sin cambios se saltaba y nunca habría generado el archivo nuevo.
+- **Contrato y pruebas.** Schema Draft-07 propio (`scripts/schemas/conteos.schema.json`), invariantes en el validador (el catálogo no puede estar vacío; los cortes deben sumar el total de su opción; toda pregunta contada figura en el catálogo) y 8 pruebas unitarias nuevas que se ejecutan en cada push.
+- **Verificación.** Los nueve archivos de siempre quedaron **idénticos**: mismos NPS (61,31 / 72,61 / 85,62), mismos CSAT (96,97 % / 97,85 % / 99,00 %) y mismas respuestas (3998 / 4239 / 598); lo único que cambió en `dashboard_data.json` es la fecha de generación. Los comentarios ya analizados se reutilizaron **al 100 %** (0 de 1827 y 0 de 427 cambiaron): solo se analizaron los nuevos (6 y 2). Y el catálogo quedó con 46 preguntas en Graduados y 31 en cada período de Pregrado.
+
 ## 2026-09-28 — El asistente 1.9 ahora entiende la pregunta (y sigue sin inventar)
 
 - **Capa nueva de traducción.** Cuando las palabras clave del motor no alcanzan, el portal manda la pregunta a una función en Vercel (`/api/interpretar`) que la traduce a una consulta ordenada: `{dato, periodo, entidad, orden}`. El motor de datos toma esa consulta y responde con el número real y su archivo de origen.

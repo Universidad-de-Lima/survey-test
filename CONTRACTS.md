@@ -294,6 +294,54 @@ Cada fila incluye:
 
 Invariante: la suma total de `total` debe ser mayor a 0.
 
+## `conteos.json`
+
+Schema: `zoho-survey/scripts/schemas/conteos.schema.json`.
+
+Conteos por pregunta de cada encuesta, más el catálogo de preguntas y la empleabilidad por carrera y
+facultad. Alimenta al asistente del ítem 1.9 del portal: con este archivo se puede responder «¿qué
+porcentaje de graduados de Economía trabaja?» sin que nadie escriba código por pregunta.
+
+**Es aditivo:** ningún archivo existente cambia, así que el portal anterior sigue funcionando igual.
+
+### Forma del documento
+
+- `version` — versión del contrato (hoy `"1.0"`).
+- `nivel` — nivel interno de la encuesta (`undergraduate`, `graduate`, …).
+- `respuestas` — cuántas respuestas tiene el período.
+- `catalogo` — **la lista de preguntas de la encuesta y dónde vive el conteo de cada una**:
+  - `donde: "conteos.json"` → su conteo está en este archivo (preguntas de perfil, y las de escala
+    que no están en el mapa de `dimensiones.json`);
+  - `donde: "dimensiones.json"` → pregunta de escala: sus siete niveles ya están publicados ahí;
+  - `donde: "nps_carrera.json"` / `"csat_carrera.json"` → la pregunta de recomendación y la de
+    satisfacción general;
+  - `donde: "sentimiento.json"` → el comentario abierto.
+- `preguntas` — una entrada por pregunta contada:
+  - `pregunta`, `total` (respuestas del período) y `sin_respuesta` (cuántas la dejaron en blanco;
+    solo aparece si hay alguna);
+  - `por_opcion`: una entrada por opción con su `total` y, cuando corresponde, `por_carrera`,
+    `por_facultad` y `por_ciclo`.
+- `empleabilidad` — la misma métrica que `dashboard_data.json` → `resumen.empleabilidad` (mismas
+  reglas: `EMPLEABILIDAD_CATEGORIAS` de `lib/config.py`), partida por carrera y por facultad.
+  Solo aparece si la encuesta tiene la pregunta de situación laboral.
+
+### Reglas
+
+- Las preguntas de escala **no se repiten** aquí si ya están en `dimensiones.json`.
+- Las preguntas de NPS y CSAT **no se repiten** aquí: están en `nps_carrera.json` y
+  `csat_carrera.json`.
+- No se publica el cruce carrera + ciclo (ya existe en `ids.json` y `csat_ciclo_carrera.json`), para
+  que el archivo no crezca de más.
+- En una encuesta cuyas preguntas ya están todas publicadas (Pregrado) la lista `preguntas` queda
+  **vacía a propósito**: su valor es el catálogo.
+
+### invariantes de validación
+
+- `catalogo` no puede estar vacío.
+- La suma de las opciones de una pregunta no puede superar su `total`.
+- El corte por carrera, facultad o ciclo de una opción debe sumar exactamente su `total`.
+- Toda pregunta contada tiene que figurar en el catálogo.
+
 ## `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`
 
 Schemas: `nps_ciclo_carrera.schema.json`, `csat_ciclo_carrera.schema.json`.
