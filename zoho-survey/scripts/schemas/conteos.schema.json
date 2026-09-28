@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "conteos.schema.json",
+  "title": "conteos.json",
+  "description": "Conteos por pregunta que no publica ningun otro archivo, mas el catalogo de preguntas y la empleabilidad por carrera y facultad.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "nivel", "respuestas", "catalogo", "preguntas"],
+  "properties": {
+    "version": { "type": "string" },
+    "nivel": { "type": "string" },
+    "respuestas": { "type": "integer", "minimum": 0 },
+    "catalogo": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pregunta", "donde", "tipo", "opciones"],
+        "properties": {
+          "pregunta": { "type": "string", "minLength": 1 },
+          "donde": { "enum": ["conteos.json", "dimensiones.json", "sentimiento.json", "nps_carrera.json", "csat_carrera.json"] },
+          "tipo": { "enum": ["perfil", "escala", "texto", "nps", "csat"] },
+          "opciones": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "preguntas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pregunta", "total", "por_opcion"],
+        "properties": {
+          "pregunta": { "type": "string", "minLength": 1 },
+          "total": { "type": "integer", "minimum": 0 },
+          "sin_respuesta": { "type": "integer", "minimum": 0 },
+          "por_opcion": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["opcion", "total"],
+              "properties": {
+                "opcion": { "type": "string" },
+                "total": { "type": "integer", "minimum": 0 },
+                "por_carrera": { "$ref": "#/definitions/conteos" },
+                "por_facultad": { "$ref": "#/definitions/conteos" },
+                "por_ciclo": { "$ref": "#/definitions/conteos" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "empleabilidad": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total"],
+      "properties": {
+        "total": { "$ref": "#/definitions/empleo" },
+        "por_carrera": { "type": "array", "items": { "$ref": "#/definitions/empleo" } },
+        "por_facultad": { "type": "array", "items": { "$ref": "#/definitions/empleo" } }
+      }
+    }
+  },
+  "definitions": {
+    "conteos": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "empleo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "empleados", "total"],
+      "properties": {
+        "carrera": { "type": "string" },
+        "facultad": { "type": "string" },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "empleados": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

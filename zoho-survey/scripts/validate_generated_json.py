@@ -52,6 +52,7 @@ SCHEMA_BY_FILE: Dict[str, str] = {
     "ids.json": "ids.schema.json",
     "nps_ciclo_carrera.json": "nps_ciclo_carrera.schema.json",
     "csat_ciclo_carrera.json": "csat_ciclo_carrera.schema.json",
+    "conteos.json": "conteos.schema.json",
 }
 
 # Archivos obligatorios por periodo (shape minimo; el schema formal vive en SCHEMA_BY_FILE).
@@ -63,6 +64,7 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "csat_ciclo_carrera.json": dict(type=list, non_empty=True),
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
+    "conteos.json": dict(type=dict, non_empty=True),
 }
 
 # Archivos legacy: validados si existen, pero su ausencia no genera error.
@@ -188,6 +190,37 @@ def validate_dimensiones_invariants(value: List[dict]) -> None:
         raise ValueError("dimensiones.json no contiene filas validas con total > 0")
 
 
+def validate_conteos_invariants(value: dict, filename: str) -> None:
+    """Invariantes: cada corte cuadra con su total, las opciones no pasan el total de
+    respuestas, y toda pregunta contada figura en el catalogo."""
+    preguntas = value.get("preguntas")
+    if not isinstance(preguntas, list):
+        raise ValueError(f"{filename}: 'preguntas' debe ser una lista")
+    # Ojo: una encuesta cuyas preguntas ya estan todas publicadas (Pregrado) deja esta
+    # lista vacia a proposito. Lo que no puede faltar es el catalogo.
+    if not value.get("catalogo"):
+        raise ValueError(f"{filename}: no trae catalogo de preguntas")
+    catalogo = {c.get("pregunta") for c in value.get("catalogo", [])}
+    for pregunta in preguntas:
+        nombre = str(pregunta.get("pregunta"))
+        total = pregunta.get("total", 0)
+        if not isinstance(total, int):
+            raise ValueError(f"{filename}: '{nombre}' no trae total numerico")
+        suma = sum(o.get("total", 0) for o in pregunta.get("por_opcion", []))
+        if suma > total:
+            raise ValueError(f"{filename}: '{nombre}' suma {suma} en sus opciones y su total es {total}")
+        for opcion in pregunta.get("por_opcion", []):
+            for corte in ("por_carrera", "por_facultad", "por_ciclo"):
+                if corte in opcion:
+                    parcial = sum(opcion[corte].values())
+                    if parcial != opcion.get("total", 0):
+                        raise ValueError(
+                            f"{filename}: la opcion '{opcion.get('opcion')}' de '{nombre}' suma "
+                            f"{parcial} en {corte} y su total es {opcion.get('total')}")
+        if nombre not in catalogo:
+            raise ValueError(f"{filename}: la pregunta '{nombre}' no figura en el catalogo")
+
+
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:
     """Invariante: la suma total debe ser > 0."""
     total = 0
@@ -278,6 +311,8 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
         validate_sentimiento_invariants(value)
     elif filename == "dashboard_data.json":
         validate_dashboard_csat_extended(value)
+    elif filename == "conteos.json":
+        validate_conteos_invariants(value, filename)
 
     return value, schema_errors
 
