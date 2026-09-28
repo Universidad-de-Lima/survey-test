@@ -143,6 +143,83 @@
       ]
     },
 
+    "exigencia_academica": {
+      "dimension_correcta": "Exigencia académica",
+      "categoria_padre": "Académico",
+      "palabras_clave": [
+        "exigencia",
+        "exigente",
+        "más exigencia",
+        "rigor académico",
+        "nivel académico",
+        "carga académica",
+        "estándares académicos",
+        "exijan más",
+        "falta exigir"
+      ],
+      "no_clasificar_en": [
+        "Satisfacción estudiantil",
+        "Calidad de la formación académica",
+        "Metodologías"
+      ],
+      "ejemplos": [
+        "rigor académico / exigencia alta → Exigencia académica (Académico)",
+        "falta que los profesores exijan más a los alumnos en sus cursos → Exigencia académica (Académico)",
+        "hay estándares académicos que no se cumplen → Exigencia académica (Académico)"
+      ],
+      "_nota_categoria_padre": "IMPORTANTE: 'Exigencia académica' SIEMPRE pertenece a la categoría padre 'Académico', NUNCA a 'Docencia' ni a 'Satisfacción estudiantil'."
+    },
+
+    "espacios_de_alimentacion": {
+      "dimension_correcta": "Espacios de alimentación",
+      "categoria_padre": "Infraestructura",
+      "palabras_clave": [
+        "cafetería",
+        "kiosko",
+        "comedor",
+        "restaurantes",
+        "patio de comidas",
+        "almuerzo",
+        "comer",
+        "mesas",
+        "fila",
+        "atención en la cafetería"
+      ],
+      "no_clasificar_en": [
+        "Espacios comunes",
+        "Atención del personal administrativo"
+      ],
+      "ejemplos": [
+        "buenos restaurantes → Espacios de alimentación (Infraestructura)",
+        "no hay mesas libres en la cafetería / hay mucha fila → Espacios de alimentación (Infraestructura)",
+        "la organización de los patios de comidas → Espacios de alimentación (Infraestructura)"
+      ]
+    },
+
+    "ubicacion": {
+      "dimension_correcta": "Ubicación",
+      "categoria_padre": "Infraestructura",
+      "palabras_clave": [
+        "ubicación",
+        "distancia",
+        "transporte",
+        "bus",
+        "buses",
+        "tráfico",
+        "llegar",
+        "queda lejos",
+        "viven lejos"
+      ],
+      "no_clasificar_en": [
+        "Espacios comunes"
+      ],
+      "ejemplos": [
+        "el tráfico para llegar → Ubicación (Infraestructura)",
+        "deberían implementar transporte para quienes viven lejos → Ubicación (Infraestructura)",
+        "debería haber un bus a Mayorazgo → Ubicación (Infraestructura)"
+      ]
+    },
+
     "categorias_padre_docencia": {
       "_descripcion": "REGLA HARD: las siguientes dimensiones SIEMPRE pertenecen a la categoría padre 'Docencia', NUNCA a 'Académico'. Si la IA las clasifica en 'Académico', es un error.",
       "dimensiones_docencia": [

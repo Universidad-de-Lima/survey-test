@@ -154,37 +154,29 @@ def _build_contexto_institucional(ctx: dict) -> str:
         lineas.append("Estas reglas tienen PRIORIDAD sobre la heurística general. Si un comentario")
         lineas.append("menciona las palabras clave, clasificar SIEMPRE en la dimensión indicada.\n")
 
-        # Metodologías
-        met = rce.get("metodologias", {})
-        if met:
-            met_dim = met.get("dimension_correcta", "Metodologías")
-            met_padre = met.get("categoria_padre", "Docencia")
-            lineas.append("### '{}' ({})".format(met_dim, met_padre))
-            pks = met.get("palabras_clave", [])
+        # Reglas simples: todas tienen la misma forma (dimension_correcta,
+        # categoria_padre, palabras_clave, no_clasificar_en, ejemplos). Se recorre la
+        # configuracion para que cualquier regla agregada al JSON salga en el prompt sin
+        # tocar este codigo. Las dos de forma distinta se arman mas abajo.
+        _reglas_especiales = {"distincion_empleabilidad_vs_perspectivas",
+                              "categorias_padre_docencia"}
+        for _clave, _regla in rce.items():
+            if _clave.startswith("_") or _clave in _reglas_especiales:
+                continue
+            if not isinstance(_regla, dict) or "dimension_correcta" not in _regla:
+                continue
+            _dim = _regla.get("dimension_correcta", "")
+            _padre = _regla.get("categoria_padre", "")
+            lineas.append("### '{}' ({})".format(_dim, _padre))
+            pks = _regla.get("palabras_clave", [])
             if pks:
                 lineas.append("Palabras clave: " + ", ".join(pks))
-            no_en = met.get("no_clasificar_en", [])
+            no_en = _regla.get("no_clasificar_en", [])
             if no_en:
                 lineas.append("NO clasificar en: " + ", ".join(no_en))
-            for ej in met.get("ejemplos", []):
+            for ej in _regla.get("ejemplos", []):
                 lineas.append("  Ej: " + ej)
-            lineas.append("")
-
-        # Disponibilidad para asesorías
-        asesor = rce.get("disponibilidad_para_asesorias", {})
-        if asesor:
-            as_dim = asesor.get("dimension_correcta", "Disponibilidad para asesorías")
-            as_padre = asesor.get("categoria_padre", "Docencia")
-            lineas.append("### '{}' ({})".format(as_dim, as_padre))
-            pks = asesor.get("palabras_clave", [])
-            if pks:
-                lineas.append("Palabras clave: " + ", ".join(pks))
-            no_en = asesor.get("no_clasificar_en", [])
-            if no_en:
-                lineas.append("NO clasificar en: " + ", ".join(no_en))
-            for ej in asesor.get("ejemplos", []):
-                lineas.append("  Ej: " + ej)
-            nota = asesor.get("_nota_categoria_padre", "")
+            nota = _regla.get("_nota_categoria_padre", "")
             if nota:
                 lineas.append("  **" + nota + "**")
             lineas.append("")
@@ -338,10 +330,10 @@ Solo usa "Pendiente de Clasificación" cuando la unidad sea genuinamente incompr
 - "Biblioteca" / "libros" / "material bibliográfico" → **Material bibliográfico en la biblioteca**
 - "Wifi" / "internet" / "conexión" → **Conexión Wi-Fi en el campus**
 - "Mi Ulima" / "portal" / "Blackboard" / "aula virtual" → **Portal web de la Universidad (Mi Ulima)** o **Aula virtual**
-- "Comida" / "cafetería" / "kiosko" → **Espacios de alimentación**
+- "Comida" / "cafetería" / "kiosko" / "comedor" / "restaurantes" / "patio de comidas" / "almuerzo" / "comer" / "mesas" / "fila" → **Espacios de alimentación**
 - "Deportes" / "cancha" / "gimnasio" → **Actividades deportivas**
 - "Psicología" / "tópico" / "salud mental" → **Servicio de atención psicopedagógica** o **Servicio médico y su infraestructura**
-- "Distancia" / "ubicación" / "transporte" → **Ubicación**
+- "Distancia" / "ubicación" / "transporte" / "bus" / "buses" / "tráfico" / "llegar" / "queda lejos" / "viven lejos" → **Ubicación**
 - "mi carrera" / "otras carreras" / "comunica" / "atención a la carrera" / "cesura" → **La carrera** (cuando se refiere a la carrera profesional específica del estudiante, no a la calidad docente)
 - "Libertad de expresión" / "derechos estudiantiles" / "distanciamiento de la rectora" → **Satisfacción estudiantil** (aspectos institucionales generales)
 - "Hay un par de cosas que mejorar" / "tiene fallas que pueden arreglarse" / "no me deja poner mi respuesta completa" / "no es nada relacionado a la carrera" / "podría ser mas" → **Satisfacción estudiantil** (valoración general que no encaja en una dimensión específica)
@@ -350,6 +342,7 @@ Solo usa "Pendiente de Clasificación" cuando la unidad sea genuinamente incompr
 - "atención de los profesores tanto en clase como en las asesorías" / "asesorías es muy buena" → **Disponibilidad para asesorías**
 - "disposición para dudas" / "dar críticas en asesorías" / "guien en asesorías" → **Disponibilidad para asesorías**
 - "depende de la carrera" / "dependiendo de la carrera" → **La carrera**
+- "exigencia" / "exigente" / "más exigencia" / "rigor académico" / "nivel académico" / "carga académica" / "estándares académicos" / "exijan más" / "falta exigir" → **Exigencia académica**
 - "muchos alumnos" / "demasiados alumnos" / "mucha gente" / "sobrepoblación" → **Espacios comunes**
 
 **Cuando una queja mencione "soporte" o "áreas" de forma genérica, usa "Procedimientos administrativos" o "Soporte técnico del sistema informático" según contexto, NO "Pendiente de Clasificación".**
