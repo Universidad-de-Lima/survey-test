@@ -314,6 +314,21 @@ Reglas que sostienen el orden:
 - Los nombres de clase de `generated.css` siguen el nombre del elemento que construye cada modulo (`bar-item`, `cat-col`, `ring-*`, `ciclo-*`, `celda-*`, `insignia-*`), mas un bloque corto de utilidades de espaciado (`.espacio-arriba-*`, `.fila-*`) y de ancho de columna (`.col-*`).
 - Como se verifica: se toma una "foto" del aspecto de cada elemento visible (familia, tamanos, colores, margenes y medidas) de la version anterior y de la nueva, sobre las cinco paginas, y se comparan elemento por elemento. Se espera 97% o mas de elementos identicos y una diferencia de alto de pagina menor al 0,5%.
 
+### Item 1.9 — Asistente de preguntas
+
+`shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON publicados** de cada periodo. El motor reconoce el dato pedido, el periodo, la carrera, la facultad o el ciclo, y devuelve el numero real.
+
+Si las palabras de la pregunta no alcanzan, el portal pide una **traduccion** a la funcion `/api/interpretar` (proyecto survey-tracker, cadena de modelos gratuitos de NVIDIA): esa funcion devuelve unicamente `{dato, periodo, entidad, orden}` y el motor de datos vuelve a responder. **El modelo no calcula ni redacta cifras**: solo dice que se pregunta, de modo que el numero siempre sale del JSON. Si el modelo nombra una carrera o facultad que no existe en los datos, el portal lo dice.
+
+Reglas del modulo:
+
+1. **Nada se inventa y nada sale de fuera de las encuestas.** Si el dato no esta en los JSON, responde que solo contesta sobre las encuestas (hora, clima, noticias y cualquier tema ajeno quedan fuera por definicion).
+2. **Toda respuesta cita su archivo** ("Fuente: Periodo — archivo.json"), para poder comprobarla.
+3. Los archivos grandes (`dimensiones.json`, `sentimiento.json`) se leen **solo si la pregunta los pide**.
+4. La pantalla vive en el item 1.9 del portal y su estilo esta en `shared/css/portal/components.css` (clases `.preguntas*`).
+
+Se comprueba con `tests/unit/test-preguntas.js` (jsdom, lee los JSON del repositorio).
+
 ## Patrones Arquitectonicos
 
 - **Datos precomputados**: el frontend consume JSON, no recalcula agregados que pertenecen al ETL.

@@ -1,0 +1,721 @@
+/* ============================================================
+   SURVEY PORTAL PREGUNTAS — Asistente del item 1.9.
+   Responde SOLO con lo que esta en los JSON publicados de las encuestas.
+   Si un dato no esta en esos JSON, lo dice y no improvisa: no hay respuestas
+   sobre hora, clima, noticias ni nada que no venga de las encuestas.
+   Cada respuesta dice de que archivo salio.
+   ============================================================ */
+window.SurveyPortalPreguntas = (function () {
+  'use strict';
+
+  var FASE_NIVEL = { '1.0': 'students/undergraduate', '1.2': 'students/graduate' };
+  var FASE_NOMBRE = { '1.0': 'Estudiantes Pregrado', '1.2': 'Graduados Pregrado' };
+  var ARCHIVOS = ['dashboard_data', 'nps_carrera', 'csat_carrera', 'nps_ciclo_carrera',
+                  'csat_ciclo_carrera', 'filtros', 'ids'];
+
+  // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
+  var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
+  // Traduce la pregunta a una consulta ordenada cuando las palabras no alcanzan.
+  // No responde: solo dice que dato se pide (ver survey-tracker/apps/backend/api/interpretar.js).
+  var INTERPRETE_URL = 'https://qr-smoky-theta.vercel.app/api/interpretar';
+
+  var CATALOGO = null;   // periodos con sus JSON chicos
+  var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
+  var SENT = null;       // sentimiento.json (grande: se lee solo si hace falta)
+  var FRECUENTES = [];   // preguntas mas consultadas (vienen del registro)
+
+  // ---------- utilidades ----------
+  function esc(t) {
+    if (window.SurveySanitizer && window.SurveySanitizer.escapeHTML) return window.SurveySanitizer.escapeHTML(t);
+    return String(t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function sin(texto) {
+    return String(texto == null ? '' : texto).toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // Numeros como en el resto del proyecto: sin separador de miles, coma decimal.
+  function n(valor) {
+    if (valor == null || isNaN(valor)) return 'sin dato';
+    var entero = Math.abs(valor) >= 1000 ? String(Math.round(valor)) : String(valor);
+    if (!(Math.abs(valor) >= 1000)) entero = String(Math.round(valor * 100) / 100).replace('.', ',');
+    return entero;
+  }
+
+  function pct(valor) {
+    if (valor == null || isNaN(valor)) return 'sin dato';
+    return (Math.round(valor * 100) / 100).toString().replace('.', ',') + ' %';
+  }
+
+  function leer(ruta) {
+    return fetch(ruta, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('sin archivo');
+      return r.json();
+    });
+  }
+
+  // ---------- carga de los JSON publicados ----------
+  function periodosDeFase(fase) {
+    var nivel = FASE_NIVEL[fase];
+    if (!nivel) return Promise.resolve([]);
+    return leer(nivel + '/periodos.json').then(function (lista) {
+      return (lista || []).filter(function (p) { return p && p.id && p.id !== 'proximamente'; })
+        .map(function (p) { return p.id; });
+    }).catch(function () { return []; });
+  }
+
+  function cargarPeriodo(fase, periodo) {
+    var base = FASE_NIVEL[fase] + '/' + periodo + '/json/';
+    return Promise.all(ARCHIVOS.map(function (a) {
+      return leer(base + a + '.json').catch(function () { return null; });
+    })).then(function (r) {
+      return {
+        fase: fase, nivel: FASE_NIVEL[fase], nombre: FASE_NOMBRE[fase], periodo: periodo,
+        base: base,
+        dash: r[0], npsCarrera: r[1] || [], csatCarrera: r[2] || [],
+        npsCiclo: r[3] || [], csatCiclo: r[4] || [], filtros: r[5] || {}, ids: r[6] || []
+      };
+    });
+  }
+
+  function cargar() {
+    if (CATALOGO) return Promise.resolve(CATALOGO);
+    var fases = Object.keys(FASE_NIVEL);
+    return Promise.all(fases.map(function (f) {
+      return periodosDeFase(f).then(function (periodos) {
+        return Promise.all(periodos.map(function (p) { return cargarPeriodo(f, p); }));
+      });
+    })).then(function (grupos) {
+      CATALOGO = [];
+      grupos.forEach(function (g) { g.forEach(function (p) { if (p.dash) CATALOGO.push(p); }); });
+      return CATALOGO;
+    });
+  }
+
+  function deFase(fase) { return (CATALOGO || []).filter(function (p) { return p.fase === fase; }); }
+  function dePeriodo(periodo) { return (CATALOGO || []).filter(function (p) { return p.periodo === periodo; }); }
+
+  function mencionaPeriodo(t) {
+    // Se busca el periodo mas largo que aparezca en la pregunta: asi "2026-1" gana a "2026".
+    var m = (CATALOGO || []).filter(function (p) { return t.indexOf(sin(p.periodo)) !== -1; })
+      .sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
+    return m.length ? m[0] : null;
+  }
+
+  function mencionados(t) {
+    return (CATALOGO || []).filter(function (p) { return t.indexOf(sin(p.periodo)) !== -1; });
+  }
+
+  // Un periodo escrito completo ("2026-1") manda; si solo dice el anio ("2026"),
+  // la respuesta abarca todos los periodos publicados de ese anio.
+  function periodoExplicito(t) {
+    var largos = (CATALOGO || []).filter(function (p) {
+      return sin(p.periodo).indexOf('-') !== -1 && t.indexOf(sin(p.periodo)) !== -1;
+    }).sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
+    return largos.length ? largos[0] : null;
+  }
+
+  function anioMencionado(t) {
+    var m = String(t).match(/(^|[^0-9])(20[0-9]{2})([^0-9]|$)/);
+    return m ? m[2] : null;
+  }
+
+  function periodosDelAnio(t) {
+    var anio = anioMencionado(t);
+    if (!anio) return [];
+    return (CATALOGO || []).filter(function (p) { return sin(p.periodo).indexOf(anio) === 0; });
+  }
+
+  function faseMencionada(t) {
+    if (t.indexOf('graduad') !== -1) return '1.2';
+    if (t.indexOf('pregrado') !== -1 || t.indexOf('estudiante') !== -1) return '1.0';
+    return null;
+  }
+
+  function periodoDeLaPregunta(t, fasePorDefecto) {
+    return periodoExplicito(t) || mencionaPeriodo(t) || ultimo(faseMencionada(t) || fasePorDefecto || '1.0');
+  }
+
+  function ultimo(fase) {
+    var l = deFase(fase);
+    return l.length ? l[0] : null;   // periodos.json viene del mas nuevo al mas viejo
+  }
+
+  function fuente(p, archivo) {
+    return 'Fuente: ' + p.nombre + ' ' + p.periodo + ' — ' + archivo;
+  }
+
+  function buscaNombre(t, lista) {
+    var mejor = null;
+    (lista || []).forEach(function (nombre) {
+      var x = sin(nombre);
+      if (t.indexOf(x) !== -1 && (!mejor || x.length > sin(mejor).length)) mejor = nombre;
+    });
+    return mejor;
+  }
+
+  // ---------- respuestas ----------
+  function respuesta(t) {
+    var trae = function (l) { return t.indexOf(l) !== -1; };
+
+    // 1) Que hay publicado
+    if (trae('qué datos') || trae('qué información') || trae('qué periodos') || trae('qué encuestas hay')) {
+      return {
+        titulo: 'Datos publicados',
+        lineas: (CATALOGO || []).map(function (p) {
+          return p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas, ' +
+            'NPS ' + n(p.dash.resumen.nps.score) + ', satisfaccion ' + pct(p.dash.resumen.csat.score);
+        }),
+        fuentes: ['Fuente: dashboard_data.json de cada periodo publicado']
+      };
+    }
+
+    // 2) Cuantas respuestas / cuantos alumnos o estudiantes se encuestaron
+    if (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') ||
+        trae('participaron') || trae('se encuest') || trae('fueron encuest') || trae('encuestados') ||
+        trae('cuantos alumnos') || trae('cuantas alumnas') || trae('cuantos estudiantes') ||
+        trae('cuanta gente') || trae('cuantas personas') || trae('tamano de la muestra') || trae('muestra')) {
+      var p = periodoDeLaPregunta(t, '1.0');
+
+      // Si la pregunta nombra una carrera, se responde con el total de esa carrera.
+      var car = buscaNombre(t, p.filtros && p.filtros.carreras);
+      if (car) {
+        var filaI = (p.ids || []).filter(function (x) { return x.carrera === car; });
+        var total = filaI.reduce(function (a, x) { return a + (Number(x.total) || 0); }, 0);
+        if (total) {
+          return {
+            titulo: 'Alumnos encuestados de ' + car,
+            lineas: [p.nombre + ' ' + p.periodo + ': ' + n(total) + ' respuestas de ' + car + '.'],
+            fuentes: [fuente(p, 'ids.json')]
+          };
+        }
+      }
+
+      // Si la pregunta habla de un anio (2026, 2025...), se muestran todos los periodos de ese anio.
+      var delAnio = periodosDelAnio(t);
+      if (!periodoExplicito(t) && delAnio.length) {
+        return {
+          titulo: 'Alumnos encuestados en ' + anioMencionado(t),
+          lineas: delAnio.map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
+          }),
+          fuentes: delAnio.map(function (x) { return fuente(x, 'dashboard_data.json'); })
+        };
+      }
+
+      if (trae('total') || trae('en general') || trae('todos los periodos') || trae('todas las encuestas')) {
+        return {
+          titulo: 'Respuestas recibidas (todos los periodos publicados)',
+          lineas: (CATALOGO || []).map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
+          }),
+          fuentes: (CATALOGO || []).map(function (x) { return fuente(x, 'dashboard_data.json'); })
+        };
+      }
+
+      return {
+        titulo: 'Respuestas recibidas',
+        lineas: [p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas.'],
+        fuentes: [fuente(p, 'dashboard_data.json')]
+      };
+    }
+
+    // 3) Fechas del levantamiento
+    if (trae('cuando') || trae('fecha') || trae('desde') || trae('dias')) {
+      var p2 = periodoDeLaPregunta(t, '1.0');
+      var r = p2.dash.resumen;
+      return {
+        titulo: 'Período de levantamiento',
+        lineas: [p2.nombre + ' ' + p2.periodo + ': del ' + r.fecha_inicio + ' al ' + r.fecha_fin +
+                 ' (' + n(r.dias) + ' dias, ' + n(r.dias_recoleccion) + ' dias de recoleccion).'],
+        fuentes: [fuente(p2, 'dashboard_data.json')]
+      };
+    }
+
+    // 3) Comparacion entre periodos (va antes que NPS y CSAT: la pregunta puede nombrar los dos)
+    // Solo compara si nombra dos periodos, o si usa una palabra de comparacion.
+    var dichos = mencionados(t);
+    if (dichos.length >= 2 || trae('compar') || trae('diferencia') || trae('evolucion') ||
+        trae('cambio') || trae('cambia') || trae('subio') || trae('bajo el nps')) {
+      var enPregunta = mencionados(t).sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
+      var grupo = enPregunta.length >= 2 ? enPregunta.filter(function (p) { return p.fase === enPregunta[0].fase; })
+                                         : deFase('1.0');
+      if (grupo.length >= 2) {
+        var nuevo = grupo[0], viejo = grupo[grupo.length - 1];
+        var dNps = Math.round((nuevo.dash.resumen.nps.score - viejo.dash.resumen.nps.score) * 100) / 100;
+        var dCsat = Math.round((nuevo.dash.resumen.csat.score - viejo.dash.resumen.csat.score) * 100) / 100;
+        return {
+          titulo: 'Comparación ' + viejo.periodo + ' → ' + nuevo.periodo + ' (' + nuevo.nombre + ')',
+          lineas: ['NPS: ' + n(viejo.dash.resumen.nps.score) + ' → ' + n(nuevo.dash.resumen.nps.score) +
+                   ' (' + (dNps >= 0 ? '+' : '') + n(dNps) + ').',
+                   'Satisfacción: ' + pct(viejo.dash.resumen.csat.score) + ' → ' + pct(nuevo.dash.resumen.csat.score) +
+                   ' (' + (dCsat >= 0 ? '+' : '') + pct(Math.abs(dCsat)).replace(' %', ' puntos') + ').',
+                   'Respuestas: ' + n(viejo.dash.resumen.encuestas) + ' → ' + n(nuevo.dash.resumen.encuestas) + '.'],
+          fuentes: ['Fuente: dashboard_data.json de ' + viejo.periodo + ' y de ' + nuevo.periodo]
+        };
+      }
+    }
+
+    // 4) NPS: global, por carrera o por ciclo
+    if (trae('nps')) {
+      var p3 = periodoDeLaPregunta(t, '1.0');
+      var carrera = buscaNombre(t, p3.filtros && p3.filtros.carreras);
+      var facultad = buscaNombre(t, p3.filtros && p3.filtros.facultades);
+      var ciclo = buscaNombre(t, p3.filtros && p3.filtros.ciclos);
+
+      if (carrera) {
+        var fila = (p3.npsCarrera || []).filter(function (x) { return x.carrera === carrera; })[0];
+        var filaCsat = (p3.csatCarrera || []).filter(function (x) { return x.carrera === carrera; })[0];
+        if (!fila) return noSe('No hay NPS publicado para la carrera "' + carrera + '".');
+        return {
+          titulo: 'NPS de ' + carrera,
+          lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fila.score) + ' (promotores ' + n(fila.promotores) +
+                   ', pasivos ' + n(fila.pasivos) + ', detractores ' + n(fila.detractores) + ').' +
+                   (filaCsat ? ' Satisfacción: ' + pct(filaCsat.score) + '.' : '')],
+          fuentes: [fuente(p3, 'nps_carrera.json y csat_carrera.json')]
+        };
+      }
+
+      if (facultad) {
+        var suyas = (p3.npsCarrera || []).filter(function (x) { return sin(x.facultad || '') === sin(facultad); });
+        if (!suyas.length) {
+          var nombres = (p3.filtros && p3.filtros.facultad_carrera && p3.filtros.facultad_carrera[facultad]) || [];
+          suyas = (p3.npsCarrera || []).filter(function (x) { return nombres.indexOf(x.carrera) !== -1; });
+        }
+        return {
+          titulo: 'NPS de las carreras de ' + facultad,
+          lineas: suyas.map(function (x) { return x.carrera + ': NPS ' + n(x.score); }),
+          fuentes: [fuente(p3, 'nps_carrera.json')]
+        };
+      }
+
+      if (ciclo) {
+        var fc = (p3.npsCiclo || []).filter(function (x) { return x.ciclo === ciclo; })[0];
+        if (!fc) return noSe('No hay NPS publicado para el ' + ciclo + '.');
+        return {
+          titulo: 'NPS del ' + ciclo,
+          lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fc.score) + ' (promotores ' + n(fc.promotores) +
+                   ', pasivos ' + n(fc.pasivos) + ', detractores ' + n(fc.detractores) + ').'],
+          fuentes: [fuente(p3, 'nps_ciclo_carrera.json')]
+        };
+      }
+
+      if (trae('mejor') || trae('mayor') || trae('mas alto') || trae('peor') || trae('menor') || trae('mas bajo') || trae('ranking')) {
+        var esMejor = !(trae('peor') || trae('menor') || trae('mas bajo'));
+        var porCiclo = trae('ciclo');
+        var lista = porCiclo ? (p3.npsCiclo || []) : (p3.npsCarrera || []);
+        var campo = porCiclo ? 'ciclo' : 'carrera';
+        var orden = lista.slice().sort(function (a, b) { return b.score - a.score; });
+        if (!orden.length) return noSe('No hay NPS publicado por ' + campo + ' en ese periodo.');
+        var top = esMejor ? orden.slice(0, 3) : orden.slice(-3).reverse();
+        return {
+          titulo: 'NPS por ' + campo + ' (' + (esMejor ? 'más alto' : 'más bajo') + ')',
+          lineas: top.map(function (x) { return x[campo] + ': ' + n(x.score); }),
+          fuentes: [fuente(p3, porCiclo ? 'nps_ciclo_carrera.json' : 'nps_carrera.json')]
+        };
+      }
+
+      var delAnioNps = periodosDelAnio(t);
+      if (!periodoExplicito(t) && delAnioNps.length) {
+        return {
+          titulo: 'NPS de ' + anioMencionado(t),
+          lineas: delAnioNps.map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': NPS ' + n(x.dash.resumen.nps.score) +
+              ' (' + n(x.dash.resumen.encuestas) + ' respuestas).';
+          }),
+          fuentes: delAnioNps.map(function (x) { return fuente(x, 'dashboard_data.json'); })
+        };
+      }
+
+      var rr = p3.dash.resumen.nps;
+      return {
+        titulo: 'NPS ' + p3.nombre + ' ' + p3.periodo,
+        lineas: ['NPS ' + n(rr.score) + ' (promotores ' + n(rr.promotores) + ', pasivos ' + n(rr.pasivos) +
+                 ', detractores ' + n(rr.detractores) + ', sobre ' + n(rr.total) + ' respuestas).',
+                 'Clasificación: ' + p3.dash.hallazgos.nps_tipo + '.'],
+        fuentes: [fuente(p3, 'dashboard_data.json')]
+      };
+    }
+
+    // 5) Satisfaccion (CSAT)
+    if (trae('satisfaccion') || trae('csat') || trae('satisfechos') || trae('insatisfechos')) {
+      var p4 = periodoDeLaPregunta(t, '1.0');
+      var c = p4.dash.resumen.csat;
+      var nombreCar = buscaNombre(t, p4.filtros && p4.filtros.carreras);
+      if (nombreCar) {
+        var f2 = (p4.csatCarrera || []).filter(function (x) { return x.carrera === nombreCar; })[0];
+        if (!f2) return noSe('No hay satisfacción publicada para la carrera "' + nombreCar + '".');
+        return {
+          titulo: 'Satisfacción de ' + nombreCar,
+          lineas: [p4.nombre + ' ' + p4.periodo + ': ' + pct(f2.score) + ' (totalmente satisfecho ' +
+                   n(f2['Totalmente satisfecho']) + ', muy satisfecho ' + n(f2['Muy satisfecho']) +
+                   ', satisfecho ' + n(f2['Satisfecho']) + ', insatisfecho ' + n(f2['Insatisfecho']) +
+                   ', totalmente insatisfecho ' + n(f2['Totalmente insatisfecho']) + ').'],
+          fuentes: [fuente(p4, 'csat_carrera.json')]
+        };
+      }
+      // El detalle por nivel no viene en dashboard_data: se suma de csat_carrera.json,
+      // que es la misma fuente que usa el dashboard para su grafico de distribucion.
+      var niveles = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
+      var suma = {};
+      niveles.forEach(function (k) { suma[k] = 0; });
+      (p4.csatCarrera || []).forEach(function (x) {
+        niveles.forEach(function (k) { suma[k] += Number(x[k]) || 0; });
+      });
+      var totalSuma = niveles.reduce(function (a, k) { return a + suma[k]; }, 0);
+      return {
+        titulo: 'Satisfacción ' + p4.nombre + ' ' + p4.periodo,
+        lineas: ['Satisfacción: ' + pct(c.score) + ' (sobre ' + n(c.total) + ' respuestas).',
+                 'Totalmente satisfecho ' + n(suma[niveles[0]]) + ', muy satisfecho ' + n(suma[niveles[1]]) +
+                 ', satisfecho ' + n(suma[niveles[2]]) + ', insatisfecho ' + n(suma[niveles[3]]) +
+                 ', totalmente insatisfecho ' + n(suma[niveles[4]]) + ' (suma de las carreras: ' + n(totalSuma) + ').'],
+        fuentes: [fuente(p4, 'dashboard_data.json y csat_carrera.json')]
+      };
+    }
+
+    // 7) Cuantas carreras o facultades
+    if (trae('cuantas carreras') || trae('cuantas facultades')) {
+      var p5 = periodoDeLaPregunta(t, '1.0');
+      var f3 = p5.filtros || {};
+      return {
+        titulo: 'Carreras y facultades',
+        lineas: [p5.nombre + ' ' + p5.periodo + ': ' + n((f3.carreras || []).length) + ' carreras y ' +
+                 n((f3.facultades || []).length) + ' facultades.'],
+        fuentes: [fuente(p5, 'filtros.json')]
+      };
+    }
+
+    // 8) Dimensiones (Top 3 Box) — se leen solo si la pregunta las pide
+    if (trae('dimension') || trae('top 3') || trae('t3b') || trae('aspecto')) {
+      return conDimensiones(t);
+    }
+
+    // 9) Comentarios y sentimiento
+    if (trae('comentario') || trae('sentimiento') || trae('positivo') || trae('negativo') ||
+        trae('topico') || trae('tema') || trae('opinion')) {
+      return conSentimiento(t);
+    }
+
+    return noSe(null);
+  }
+
+  function noSe(motivo) {
+    return {
+      alcance: false,
+      titulo: 'No puedo responder eso',
+      lineas: [motivo || ('Solo respondo con los datos de las encuestas publicadas: NPS, satisfacción, ' +
+               'carreras, ciclos, dimensiones, comentarios y períodos.')],
+      fuentes: []
+    };
+  }
+
+  function conDimensiones(t) {
+    var p = periodoDeLaPregunta(t, '1.0');
+    return cargarDimensiones(p).then(function (filas) {
+      if (!filas.length) return noSe('No hay dimensiones publicadas para ese periodo.');
+      var porDim = {};
+      filas.forEach(function (x) {
+        var k = x.dimension;
+        if (!k) return;
+        if (!porDim[k]) porDim[k] = { dimension: k, t3b: 0, total: 0, categoria: x.categoria };
+        porDim[k].t3b += Number(x.t3b) || 0;
+        porDim[k].total += Number(x.total) || 0;
+      });
+      var lista = Object.keys(porDim).map(function (k) {
+        var d = porDim[k];
+        return { dimension: d.dimension, categoria: d.categoria, pct: d.total ? 100 * d.t3b / d.total : null };
+      }).sort(function (a, b) { return b.pct - a.pct; });
+      var pedida = buscaNombre(t, lista.map(function (x) { return x.dimension; }));
+      if (pedida) {
+        var una = lista.filter(function (x) { return x.dimension === pedida; })[0];
+        return {
+          titulo: 'Dimensión: ' + una.dimension,
+          lineas: ['Top 3 Box: ' + pct(una.pct) + ' (categoria ' + una.categoria + ').'],
+          fuentes: [fuente(p, 'dimensiones.json')]
+        };
+      }
+      var esMejor = !(t.indexOf('peor') !== -1 || t.indexOf('menor') !== -1 || t.indexOf('más bajo') !== -1);
+      var top = esMejor ? lista.slice(0, 5) : lista.slice(-5).reverse();
+      return {
+        titulo: 'Dimensiones por Top 3 Box (' + (esMejor ? 'mejor evaluadas' : 'peor evaluadas') + ')',
+        lineas: top.map(function (x) { return x.dimension + ': ' + pct(x.pct) + ' (' + x.categoria + ')'; }),
+        fuentes: [fuente(p, 'dimensiones.json')]
+      };
+    });
+  }
+
+  function conSentimiento(t) {
+    var p = periodoDeLaPregunta(t, '1.0');
+    return cargarSentimiento(p).then(function (s) {
+      if (!s || !s.resumen) return noSe('No hay comentarios publicados para ese periodo.');
+      var r = s.resumen;
+      var d = r.distribucion_sentimiento || {};
+      if (t.indexOf('topico') !== -1 || t.indexOf('tema') !== -1) {
+        var tops = (s.topicos || []).slice().sort(function (a, b) { return b.total_comentarios - a.total_comentarios; }).slice(0, 5);
+        return {
+          titulo: 'Temas más comentados',
+          lineas: tops.map(function (x) {
+            return x.topico + ': ' + n(x.total_comentarios) + ' comentarios (positivos ' + n(x.positivos) +
+              ', negativos ' + n(x.negativos) + ', neutros ' + n(x.neutros) + ').';
+          }),
+          fuentes: [fuente(p, 'sentimiento.json')]
+        };
+      }
+      return {
+        titulo: 'Comentarios de ' + p.nombre + ' ' + p.periodo,
+        lineas: ['Respuestas con comentario: ' + n(r.total_con_comentario) + '; analizados: ' + n(r.total_analizados) + '.',
+                 'Sentimiento: positivos ' + n(d.positivo) + ', neutros ' + n(d.neutro) + ', negativos ' + n(d.negativo) + '.'],
+        fuentes: [fuente(p, 'sentimiento.json')]
+      };
+    });
+  }
+
+  function cargarDimensiones(p) {
+    if (DIMS && DIMS[p.nivel + p.periodo]) return Promise.resolve(DIMS[p.nivel + p.periodo]);
+    DIMS = DIMS || {};
+    return leer(p.base + 'dimensiones.json').catch(function () { return []; }).then(function (f) {
+      DIMS[p.nivel + p.periodo] = f || [];
+      return DIMS[p.nivel + p.periodo];
+    });
+  }
+
+  function cargarSentimiento(p) {
+    if (SENT && SENT[p.nivel + p.periodo]) return Promise.resolve(SENT[p.nivel + p.periodo]);
+    SENT = SENT || {};
+    return leer(p.base + 'sentimiento.json').catch(function () { return null; }).then(function (s) {
+      SENT[p.nivel + p.periodo] = s;
+      return s;
+    });
+  }
+
+  // ---------- registro de preguntas y mas frecuentes ----------
+  // Se manda la pregunta tal cual (el servidor le quita correos, telefonos y
+  // numeros largos antes de guardarla). Si el registro falla, la respuesta al
+  // usuario no se ve afectada: se ignora en silencio.
+  function registrar(texto, intencion) {
+    if (!texto || !String(texto).trim()) return Promise.resolve(null);
+    return fetch(REGISTRO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta: String(texto).slice(0, 160), intencion: intencion || '' })
+    }).catch(function () { return null; });
+  }
+
+  function cargarFrecuentes() {
+    return fetch(REGISTRO_URL, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { FRECUENTES = (d && d.frecuentes) || []; return FRECUENTES; })
+      .catch(function () { FRECUENTES = []; return FRECUENTES; });
+  }
+
+  // ---------- IA que entiende la pregunta (solo traduce) ----------
+  // Cada dato que devuelve el traductor se convierte en una frase que el motor de datos
+  // ya sabe leer: asi los numeros siguen saliendo de los JSON y no del modelo.
+  var FRASE_DEL_DATO = {
+    nps: 'nps',
+    satisfaccion: 'satisfaccion',
+    respuestas: 'cuantos alumnos se encuestaron',
+    carreras: 'cuantas carreras',
+    facultades: 'cuantas facultades',
+    ciclos: 'nps por ciclo',
+    dimensiones: 'dimensiones',
+    comentarios: 'comentarios',
+    temas: 'temas mas comentados',
+    comparacion: 'comparar periodos',
+    fechas: 'cuando fue el levantamiento',
+    periodos: 'que datos hay'
+  };
+
+  function interpretarConIA(texto) {
+    return fetch(INTERPRETE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta: String(texto).slice(0, 300) })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { return (d && d.consulta) ? d.consulta : null; })
+      .catch(function () { return null; });
+  }
+
+  function fraseDeConsulta(c) {
+    var base = FRASE_DEL_DATO[c.dato];
+    if (!base) return null;
+    var partes = [base];
+    if (c.periodo) partes.push(c.periodo);
+    if (c.entidad) partes.push(c.entidad);
+    if (c.orden) partes.push(c.orden);
+    return partes.join(' ');
+  }
+
+  // El nombre que devolvio el traductor tiene que existir en los datos publicados:
+  // si no existe, se dice; no se responde de mas.
+  function entidadConocida(nombre) {
+    if (!nombre) return true;
+    var p = periodoDeLaPregunta('', '1.0');
+    var listas = [].concat(
+      (p.filtros && p.filtros.carreras) || [],
+      (p.filtros && p.filtros.facultades) || [],
+      (p.filtros && p.filtros.ciclos) || [],
+      Object.keys((p.filtros && p.filtros.facultad_carrera) || {})
+    );
+    return !!buscaNombre(sin(nombre), listas);
+  }
+
+  // Responde: primero con las palabras conocidas; si no alcanzan, con la IA; y si tampoco,
+  // el aviso de siempre. En ningun caso el numero sale del modelo.
+  function responderConIA(texto) {
+    return cargar().then(function () {
+      return Promise.resolve(respuesta(sin(texto)));
+    }).then(function (r) {
+      if (r && r.alcance !== false) return r;
+
+      return interpretarConIA(texto).then(function (c) {
+        if (!c || c.dato === 'ninguna') return noSe(null);
+        if (c.entidad && !entidadConocida(c.entidad)) {
+          return noSe('No encontre "' + c.entidad + '" entre las carreras, facultades o ciclos publicados.');
+        }
+        var frase = fraseDeConsulta(c);
+        if (!frase) return noSe(null);
+        return Promise.resolve(respuesta(sin(frase))).then(function (r2) {
+          return (r2 && r2.alcance !== false) ? r2 : noSe(null);
+        });
+      });
+    });
+  }
+
+  // ---------- pantalla del item 1.9 ----------
+  var SUGERENCIAS = [
+    '¿Cuántas respuestas tenemos en 2026-1?',
+    '¿Cuál es el NPS de 2026-1?',
+    '¿Qué carreras tienen el NPS más bajo?',
+    '¿Cuál es la satisfacción de Psicología?',
+    '¿Cómo cambió el NPS de 2025-2 a 2026-1?',
+    '¿Qué dimensiones están mejor evaluadas?',
+    '¿Cuántos comentarios hay y cómo se reparten?',
+    '¿Qué temas son los más comentados?'
+  ];
+
+  function render() {
+    return '<div class="preguntas">' +
+      '<div class="preguntas-aviso">' +
+        '<p class="preguntas-aviso-titulo">Responde solo con los datos de las encuestas</p>' +
+        '<p class="preguntas-aviso-texto">Todo lo que sale aquí viene de los JSON publicados de cada periodo ' +
+        '(NPS, satisfacción, carreras, ciclos, dimensiones y comentarios), y cada respuesta dice de qué archivo ' +
+        'salió. Si la pregunta no se puede responder con esos datos —por ejemplo la hora, el clima o cualquier ' +
+        'tema ajeno a las encuestas— lo digo, no la invento. Las preguntas se guardan de forma anónima, sin correos ' +
+        'ni números, para saber cuáles se consultan más.</p>' +
+      '</div>' +
+      '<form class="preguntas-form" id="preguntasForm">' +
+        '<label class="preguntas-etiqueta" for="preguntasTexto">Escribe tu pregunta</label>' +
+        '<div class="preguntas-fila">' +
+          '<input class="preguntas-campo" id="preguntasTexto" type="text" autocomplete="off" ' +
+          'placeholder="Ejemplo: ¿cuál es el NPS de Ingeniería en 2026-1?">' +
+          '<button class="preguntas-boton" type="submit">Preguntar</button>' +
+        '</div>' +
+      '</form>' +
+      '<div class="preguntas-frecuentes" id="preguntasFrecuentes" hidden>' +
+        '<p class="preguntas-etiqueta">Las más preguntadas</p>' +
+        '<div class="preguntas-sugerencias" id="preguntasMasUsadas"></div>' +
+      '</div>' +
+      '<div class="preguntas-sugerencias" id="preguntasSugerencias">' +
+        SUGERENCIAS.map(function (s) {
+          return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(s) + '">' + esc(s) + '</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="preguntas-respuestas" id="preguntasRespuestas"></div>' +
+      '</div>';
+  }
+
+  function pintar(contenedor, r) {
+    var bloque = document.createElement('div');
+    bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
+    var html = '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p><ul class="preguntas-lista">';
+    (r.lineas || []).forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
+    html += '</ul>';
+    (r.fuentes || []).forEach(function (f) { html += '<p class="preguntas-fuente">' + esc(f) + '</p>'; });
+    bloque.innerHTML = html;
+    contenedor.insertBefore(bloque, contenedor.firstChild);
+  }
+
+  function preguntar(texto) {
+    var caja = document.getElementById('preguntasRespuestas');
+    if (!caja || !String(texto || '').trim()) return Promise.resolve(null);
+    var t = sin(texto);
+    return cargar().then(function () {
+      return respuesta(t);
+    }).then(function (r0) {
+      return (r0 && r0.alcance !== false) ? r0 : responderConIA(texto);
+    }).then(function (r) {
+      pintar(caja, r);
+      registrar(texto, (r && r.titulo) || '');
+      actualizarContadorDeUso((r && r.titulo) || '');
+      return r;
+    }).catch(function () {
+      pintar(caja, noSe('No se pudieron leer los datos publicados en este momento.'));
+      return null;
+    });
+  }
+
+  // Deja a la vista las preguntas mas consultadas por todos.
+  function pintarFrecuentes() {
+    var caja = document.getElementById('preguntasMasUsadas');
+    var bloque = document.getElementById('preguntasFrecuentes');
+    if (!caja || !bloque) return;
+    if (!FRECUENTES.length) { bloque.hidden = true; return; }
+    caja.innerHTML = FRECUENTES.slice(0, 6).map(function (f) {
+      return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(f.texto) + '">' +
+        esc(f.texto) + ' <span class="preguntas-veces">' + esc(String(f.veces)) + '</span></button>';
+    }).join('');
+    bloque.hidden = false;
+    caja.querySelectorAll('.preguntas-sugerencia').forEach(function (b) {
+      b.addEventListener('click', function () { preguntar(b.getAttribute('data-pregunta')); });
+    });
+  }
+
+  function actualizarContadorDeUso(titulo) {
+    if (!titulo) return;
+    setTimeout(function () { cargarFrecuentes().then(pintarFrecuentes); }, 1500);
+  }
+
+  function enganchar() {
+    var form = document.getElementById('preguntasForm');
+    if (form) {
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var campo = document.getElementById('preguntasTexto');
+        preguntar(campo ? campo.value : '');
+        if (campo) campo.value = '';
+      });
+    }
+    var sug = document.getElementById('preguntasSugerencias');
+    if (sug) {
+      sug.querySelectorAll('.preguntas-sugerencia').forEach(function (b) {
+        b.addEventListener('click', function () { preguntar(b.getAttribute('data-pregunta')); });
+      });
+    }
+  }
+
+  function iniciar() {
+    return cargar().then(function () {
+      enganchar();
+      return cargarFrecuentes().then(pintarFrecuentes);
+    });
+  }
+
+  return {
+    cargar: cargar,
+    preguntar: preguntar,
+    responder: function (texto) { return cargar().then(function () { return respuesta(sin(texto)); }); },
+    iniciar: iniciar,
+    responderConIA: responderConIA,
+    interpretarConIA: interpretarConIA,
+    registrar: registrar,
+    cargarFrecuentes: cargarFrecuentes,
+    frecuentes: function () { return FRECUENTES; },
+    render: render,
+    sugerencias: SUGERENCIAS,
+    catalogo: function () { return CATALOGO; }
+  };
+})();
