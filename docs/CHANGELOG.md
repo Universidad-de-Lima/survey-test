@@ -2,6 +2,15 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-26 — Item 1.9: asistente de preguntas (solo datos de las encuestas)
+
+- **Qué hace:** la barra lateral ya tiene el item **1.9 "Preguntas"** funcionando. Se escribe una pregunta y responde con los números que están en los JSON publicados de cada período: NPS, satisfacción, respuestas, carreras, ciclos, dimensiones (Top 3 Box), comentarios, temas y comparaciones entre períodos.
+- **La regla:** todo sale de los JSON; **nada se inventa**. Cada respuesta dice de qué archivo salió (por ejemplo `Fuente: Estudiantes Pregrado 2026-1 — nps_carrera.json`). Si la pregunta no se puede responder con esos datos (hora, clima, noticias, cualquier tema ajeno a las encuestas), contesta que solo responde sobre las encuestas y no improvisa.
+- **Sin modelo de lenguaje y sin servidor:** es un motor de consulta sobre los datos. No usa ninguna IA externa, no gasta dinero ni necesita llaves: por eso tampoco puede "alucinar".
+- **Módulos nuevos:** `shared/js/portal/portal-preguntas.js` (motor + pantalla) y `tests/unit/test-preguntas.js` (9 pruebas con jsdom, que leen los JSON del repositorio y comprueban que las respuestas salgan de ahí y que lo que no está en los datos no se responda).
+- **Los archivos grandes se leen solo si hacen falta:** `dimensiones.json` y `sentimiento.json` se piden únicamente cuando la pregunta los necesita; el resto (dashboard, NPS y CSAT por carrera y por ciclo, filtros) se carga una vez.
+- **Verificación:** 20 preguntas probadas contra los datos reales (incluidas "¿qué hora es?", "¿cómo estará el clima?" y "¿quién ganó el partido?", que quedan fuera de alcance), y la pantalla probada de punta a punta en el navegador: clic en el item, escribir, enviar, y respuesta en pantalla con su fuente.
+
 ## 2026-09-26 — Limpieza y reordenamiento de las hojas de estilo
 
 - **Reglas repetidas:** 53 reglas estaban escritas igual en dos hojas (el portal y las fichas por período mantenían cada una su copia). Ahora viven una sola vez en `shared/css/common.css`, que se carga después de `tokens.css` y antes de las hojas propias de cada familia.

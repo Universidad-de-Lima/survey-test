@@ -50,6 +50,7 @@ PORTAL_SCRIPT_ORDER = [
     "portal/portal-radar.js",
     "portal/portal-filters.js",
     "portal/portal-survey.js",
+    "portal/portal-preguntas.js",
     "portal.js",
 ]
 

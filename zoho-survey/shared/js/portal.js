@@ -447,6 +447,14 @@ async function loadActiveFile(phase) {
 
   // Fases en construcción declaradas + fases cuyo dashboard todavía no tiene
   // datos publicados: ambas muestran la misma página.
+  // Item 1.9: asistente de preguntas. Responde solo con los JSON publicados
+  // de las encuestas (ver shared/js/portal/portal-preguntas.js).
+  if (phase.id === '1.9') {
+    body.innerHTML = window.SurveyPortalPreguntas.render();
+    await window.SurveyPortalPreguntas.iniciar();
+    return;
+  }
+
   if (UNDER_CONSTRUCTION.indexOf(phase.id) !== -1 || !window.SurveyPortalData.tieneDatosDeFase(phase.id)) {
     body.innerHTML = renderUnderConstruction();
     return;
