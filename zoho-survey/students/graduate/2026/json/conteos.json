@@ -214,6 +214,20 @@
       ]
     },
     {
+      "pregunta": "Disponibilidad para asesorías",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
       "pregunta": "Empleabilidad, vinculación y ALUMNI",
       "donde": "dimensiones.json",
       "tipo": "escala",
@@ -610,20 +624,6 @@
         "Tiempo completo",
         "Tiempo parcial"
       ]
-    },
-    {
-      "pregunta": "Disponibilidad para asesorias",
-      "donde": "conteos.json",
-      "tipo": "escala",
-      "opciones": [
-        "Insatisfecho",
-        "Muy satisfecho",
-        "No conozco",
-        "No utilizo",
-        "Satisfecho",
-        "Totalmente insatisfecho",
-        "Totalmente satisfecho"
-      ]
     }
   ],
   "preguntas": [
@@ -838,172 +838,6 @@
         }
       ],
       "sin_respuesta": 276
-    },
-    {
-      "pregunta": "Disponibilidad para asesorias",
-      "total": 598,
-      "por_opcion": [
-        {
-          "opcion": "Insatisfecho",
-          "total": 18,
-          "por_carrera": {
-            "Administración": 2,
-            "Arquitectura": 1,
-            "Comunicación": 5,
-            "Derecho": 4,
-            "Ingeniería Industrial": 2,
-            "Ingeniería de Sistemas": 2,
-            "Psicología": 2
-          },
-          "por_facultad": {
-            "Facultad de Arquitectura": 1,
-            "Facultad de Ciencias Empresariales": 2,
-            "Facultad de Comunicación": 5,
-            "Facultad de Derecho": 4,
-            "Facultad de Ingeniería": 4,
-            "Facultad de Psicología": 2
-          },
-          "por_ciclo": {
-            "NA": 18
-          }
-        },
-        {
-          "opcion": "Muy satisfecho",
-          "total": 185,
-          "por_carrera": {
-            "Administración": 24,
-            "Arquitectura": 10,
-            "Comunicación": 41,
-            "Contabilidad y Finanzas": 6,
-            "Derecho": 15,
-            "Economía": 1,
-            "Ingeniería Civil": 7,
-            "Ingeniería Industrial": 50,
-            "Ingeniería de Sistemas": 10,
-            "Negocios Internacionales": 8,
-            "Psicología": 13
-          },
-          "por_facultad": {
-            "Facultad de Arquitectura": 10,
-            "Facultad de Ciencias Empresariales": 38,
-            "Facultad de Comunicación": 41,
-            "Facultad de Derecho": 15,
-            "Facultad de Economía": 1,
-            "Facultad de Ingeniería": 67,
-            "Facultad de Psicología": 13
-          },
-          "por_ciclo": {
-            "NA": 185
-          }
-        },
-        {
-          "opcion": "No conozco",
-          "total": 2,
-          "por_carrera": {
-            "Derecho": 1,
-            "Negocios Internacionales": 1
-          },
-          "por_facultad": {
-            "Facultad de Ciencias Empresariales": 1,
-            "Facultad de Derecho": 1
-          },
-          "por_ciclo": {
-            "NA": 2
-          }
-        },
-        {
-          "opcion": "No utilizo",
-          "total": 7,
-          "por_carrera": {
-            "Administración": 2,
-            "Derecho": 2,
-            "Ingeniería Civil": 2,
-            "Negocios Internacionales": 1
-          },
-          "por_facultad": {
-            "Facultad de Ciencias Empresariales": 3,
-            "Facultad de Derecho": 2,
-            "Facultad de Ingeniería": 2
-          },
-          "por_ciclo": {
-            "NA": 7
-          }
-        },
-        {
-          "opcion": "Satisfecho",
-          "total": 187,
-          "por_carrera": {
-            "Administración": 26,
-            "Arquitectura": 10,
-            "Comunicación": 49,
-            "Contabilidad y Finanzas": 3,
-            "Derecho": 11,
-            "Economía": 9,
-            "Ingeniería Civil": 9,
-            "Ingeniería Industrial": 41,
-            "Ingeniería de Sistemas": 7,
-            "Negocios Internacionales": 13,
-            "Psicología": 9
-          },
-          "por_facultad": {
-            "Facultad de Arquitectura": 10,
-            "Facultad de Ciencias Empresariales": 42,
-            "Facultad de Comunicación": 49,
-            "Facultad de Derecho": 11,
-            "Facultad de Economía": 9,
-            "Facultad de Ingeniería": 57,
-            "Facultad de Psicología": 9
-          },
-          "por_ciclo": {
-            "NA": 187
-          }
-        },
-        {
-          "opcion": "Totalmente insatisfecho",
-          "total": 2,
-          "por_carrera": {
-            "Administración": 1,
-            "Comunicación": 1
-          },
-          "por_facultad": {
-            "Facultad de Ciencias Empresariales": 1,
-            "Facultad de Comunicación": 1
-          },
-          "por_ciclo": {
-            "NA": 2
-          }
-        },
-        {
-          "opcion": "Totalmente satisfecho",
-          "total": 197,
-          "por_carrera": {
-            "Administración": 28,
-            "Arquitectura": 1,
-            "Comunicación": 43,
-            "Contabilidad y Finanzas": 3,
-            "Derecho": 12,
-            "Economía": 4,
-            "Ingeniería Ambiental": 1,
-            "Ingeniería Civil": 4,
-            "Ingeniería Industrial": 52,
-            "Ingeniería de Sistemas": 10,
-            "Negocios Internacionales": 16,
-            "Psicología": 23
-          },
-          "por_facultad": {
-            "Facultad de Arquitectura": 1,
-            "Facultad de Ciencias Empresariales": 47,
-            "Facultad de Comunicación": 43,
-            "Facultad de Derecho": 12,
-            "Facultad de Economía": 4,
-            "Facultad de Ingeniería": 67,
-            "Facultad de Psicología": 23
-          },
-          "por_ciclo": {
-            "NA": 197
-          }
-        }
-      ]
     }
   ],
   "empleabilidad": {
