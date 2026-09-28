@@ -629,3 +629,21 @@
   line-height: 18px;
   color: var(--gray-600);
 }
+
+.preguntas-frecuentes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.preguntas-veces {
+  display: inline-block;
+  margin-left: var(--space-xs);
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: var(--text-sm);
+  line-height: 17px;
+  font-weight: var(--font-medium);
+}

@@ -22,7 +22,20 @@ require(path.join(raiz, 'shared/js/utils/sanitizer.js'));
 require(path.join(raiz, 'shared/js/utils/formatters.js'));
 require(path.join(raiz, 'shared/js/portal/portal-preguntas.js'));
 
-global.fetch = function (url) {
+const llamadasExternas = [];
+global.fetch = function (url, opciones) {
+  // Las direcciones externas (el registro de preguntas) no se piden de verdad:
+  // se anotan y se responde lo que se quiera comprobar.
+  if (/^https?:\/\//.test(String(url))) {
+    llamadasExternas.push({ url: String(url), opciones: opciones || {} });
+    if (String(url).indexOf('/preguntas') !== -1 && !(opciones && opciones.method === 'POST')) {
+      return Promise.resolve({
+        ok: true,
+        json: function () { return Promise.resolve({ frecuentes: [{ texto: '¿Cuál es el NPS de 2026-1?', veces: 7 }] }); }
+      });
+    }
+    return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ ok: true }); } });
+  }
   const rel = String(url).replace(/^\.\//, '');
   const destino = path.join(raiz, rel.split('/').join(path.sep));
   return new Promise(function (ok) {
@@ -49,6 +62,7 @@ function test(name, fn) {
 }
 
 function assertTrue(cond, msg) { assert.ok(cond, msg); }
+function assertEqual(a, b) { assert.strictEqual(a, b, 'se esperaba ' + b + ' y llegó ' + a); }
 function assertIncludes(texto, trozo, msg) {
   assert.ok(String(texto).indexOf(trozo) !== -1, (msg || '') + ' (no contiene "' + trozo + '": ' + texto + ')');
 }
@@ -109,12 +123,35 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
     });
   });
 
+  test('la pregunta se registra para contar las más frecuentes', () => {
+    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
+    assertTrue(post.length >= 1, 'debe haber al menos un envío');
+    assertIncludes(post[0].url, '/api/preguntas', 'dirección del registro');
+    assertIncludes(post[0].opciones.body, 'NPS de 2026-1', 'la pregunta enviada');
+  });
+
+  test('el registro no guarda datos personales de más de 160 caracteres', () => {
+    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
+    assertTrue(post[0].opciones.body.length <= 300, 'el cuerpo no debe crecer sin control');
+  });
+
   test('la pantalla del 1.9 se puede dibujar', () => {
     const html = P.render();
     assertIncludes(html, 'preguntasForm', 'formulario');
     assertIncludes(html, 'preguntasTexto', 'campo de texto');
     assertIncludes(html, 'preguntas-sugerencia', 'preguntas sugeridas');
   });
+
+  await (async function () {
+    const P2 = window.SurveyPortalPreguntas;
+    let lista = null;
+    try { lista = await P2.cargarFrecuentes(); } catch (e) { lista = null; }
+    test('las más frecuentes se pueden leer del registro', () => {
+      assertTrue(Array.isArray(lista), 'debe devolver una lista');
+      assertEqual(lista[0].texto, '¿Cuál es el NPS de 2026-1?');
+      assertEqual(lista[0].veces, 7);
+    });
+  })();
 
   console.log('\n=== Tests JS del asistente 1.9 (jsdom) ===');
   console.log('passed=' + passed + ' failed=' + failed + ' total=' + (passed + failed));

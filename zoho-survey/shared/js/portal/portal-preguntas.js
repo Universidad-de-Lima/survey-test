@@ -13,9 +13,13 @@ window.SurveyPortalPreguntas = (function () {
   var ARCHIVOS = ['dashboard_data', 'nps_carrera', 'csat_carrera', 'nps_ciclo_carrera',
                   'csat_ciclo_carrera', 'filtros'];
 
+  // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
+  var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
+
   var CATALOGO = null;   // periodos con sus JSON chicos
   var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
   var SENT = null;       // sentimiento.json (grande: se lee solo si hace falta)
+  var FRECUENTES = [];   // preguntas mas consultadas (vienen del registro)
 
   // ---------- utilidades ----------
   function esc(t) {
@@ -412,6 +416,26 @@ window.SurveyPortalPreguntas = (function () {
     });
   }
 
+  // ---------- registro de preguntas y mas frecuentes ----------
+  // Se manda la pregunta tal cual (el servidor le quita correos, telefonos y
+  // numeros largos antes de guardarla). Si el registro falla, la respuesta al
+  // usuario no se ve afectada: se ignora en silencio.
+  function registrar(texto, intencion) {
+    if (!texto || !String(texto).trim()) return Promise.resolve(null);
+    return fetch(REGISTRO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta: String(texto).slice(0, 160), intencion: intencion || '' })
+    }).catch(function () { return null; });
+  }
+
+  function cargarFrecuentes() {
+    return fetch(REGISTRO_URL, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { FRECUENTES = (d && d.frecuentes) || []; return FRECUENTES; })
+      .catch(function () { FRECUENTES = []; return FRECUENTES; });
+  }
+
   // ---------- pantalla del item 1.9 ----------
   var SUGERENCIAS = [
     '¿Cuántas respuestas tenemos en 2026-1?',
@@ -431,7 +455,8 @@ window.SurveyPortalPreguntas = (function () {
         '<p class="preguntas-aviso-texto">Todo lo que sale aquí viene de los JSON publicados de cada periodo ' +
         '(NPS, satisfacción, carreras, ciclos, dimensiones y comentarios), y cada respuesta dice de qué archivo ' +
         'salió. Si la pregunta no se puede responder con esos datos —por ejemplo la hora, el clima o cualquier ' +
-        'tema ajeno a las encuestas— lo digo, no la invento.</p>' +
+        'tema ajeno a las encuestas— lo digo, no la invento. Las preguntas se guardan de forma anónima, sin correos ' +
+        'ni números, para saber cuáles se consultan más.</p>' +
       '</div>' +
       '<form class="preguntas-form" id="preguntasForm">' +
         '<label class="preguntas-etiqueta" for="preguntasTexto">Escribe tu pregunta</label>' +
@@ -441,6 +466,10 @@ window.SurveyPortalPreguntas = (function () {
           '<button class="preguntas-boton" type="submit">Preguntar</button>' +
         '</div>' +
       '</form>' +
+      '<div class="preguntas-frecuentes" id="preguntasFrecuentes" hidden>' +
+        '<p class="preguntas-etiqueta">Las más preguntadas</p>' +
+        '<div class="preguntas-sugerencias" id="preguntasMasUsadas"></div>' +
+      '</div>' +
       '<div class="preguntas-sugerencias" id="preguntasSugerencias">' +
         SUGERENCIAS.map(function (s) {
           return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(s) + '">' + esc(s) + '</button>';
@@ -469,11 +498,34 @@ window.SurveyPortalPreguntas = (function () {
       return respuesta(t);
     }).then(function (r) {
       pintar(caja, r);
+      registrar(texto, (r && r.titulo) || '');
+      actualizarContadorDeUso((r && r.titulo) || '');
       return r;
     }).catch(function () {
       pintar(caja, noSe('No se pudieron leer los datos publicados en este momento.'));
       return null;
     });
+  }
+
+  // Deja a la vista las preguntas mas consultadas por todos.
+  function pintarFrecuentes() {
+    var caja = document.getElementById('preguntasMasUsadas');
+    var bloque = document.getElementById('preguntasFrecuentes');
+    if (!caja || !bloque) return;
+    if (!FRECUENTES.length) { bloque.hidden = true; return; }
+    caja.innerHTML = FRECUENTES.slice(0, 6).map(function (f) {
+      return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(f.texto) + '">' +
+        esc(f.texto) + ' <span class="preguntas-veces">' + esc(String(f.veces)) + '</span></button>';
+    }).join('');
+    bloque.hidden = false;
+    caja.querySelectorAll('.preguntas-sugerencia').forEach(function (b) {
+      b.addEventListener('click', function () { preguntar(b.getAttribute('data-pregunta')); });
+    });
+  }
+
+  function actualizarContadorDeUso(titulo) {
+    if (!titulo) return;
+    setTimeout(function () { cargarFrecuentes().then(pintarFrecuentes); }, 1500);
   }
 
   function enganchar() {
@@ -495,7 +547,10 @@ window.SurveyPortalPreguntas = (function () {
   }
 
   function iniciar() {
-    return cargar().then(function () { enganchar(); });
+    return cargar().then(function () {
+      enganchar();
+      return cargarFrecuentes().then(pintarFrecuentes);
+    });
   }
 
   return {
@@ -503,6 +558,9 @@ window.SurveyPortalPreguntas = (function () {
     preguntar: preguntar,
     responder: function (texto) { return cargar().then(function () { return respuesta(sin(texto)); }); },
     iniciar: iniciar,
+    registrar: registrar,
+    cargarFrecuentes: cargarFrecuentes,
+    frecuentes: function () { return FRECUENTES; },
     render: render,
     sugerencias: SUGERENCIAS,
     catalogo: function () { return CATALOGO; }
