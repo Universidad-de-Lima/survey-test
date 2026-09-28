@@ -11,7 +11,7 @@ window.SurveyPortalPreguntas = (function () {
   var FASE_NIVEL = { '1.0': 'students/undergraduate', '1.2': 'students/graduate' };
   var FASE_NOMBRE = { '1.0': 'Estudiantes Pregrado', '1.2': 'Graduados Pregrado' };
   var ARCHIVOS = ['dashboard_data', 'nps_carrera', 'csat_carrera', 'nps_ciclo_carrera',
-                  'csat_ciclo_carrera', 'filtros'];
+                  'csat_ciclo_carrera', 'filtros', 'ids'];
 
   // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
   var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
@@ -73,7 +73,7 @@ window.SurveyPortalPreguntas = (function () {
         fase: fase, nivel: FASE_NIVEL[fase], nombre: FASE_NOMBRE[fase], periodo: periodo,
         base: base,
         dash: r[0], npsCarrera: r[1] || [], csatCarrera: r[2] || [],
-        npsCiclo: r[3] || [], csatCiclo: r[4] || [], filtros: r[5] || {}
+        npsCiclo: r[3] || [], csatCiclo: r[4] || [], filtros: r[5] || {}, ids: r[6] || []
       };
     });
   }
@@ -106,6 +106,26 @@ window.SurveyPortalPreguntas = (function () {
     return (CATALOGO || []).filter(function (p) { return t.indexOf(sin(p.periodo)) !== -1; });
   }
 
+  // Un periodo escrito completo ("2026-1") manda; si solo dice el anio ("2026"),
+  // la respuesta abarca todos los periodos publicados de ese anio.
+  function periodoExplicito(t) {
+    var largos = (CATALOGO || []).filter(function (p) {
+      return sin(p.periodo).indexOf('-') !== -1 && t.indexOf(sin(p.periodo)) !== -1;
+    }).sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
+    return largos.length ? largos[0] : null;
+  }
+
+  function anioMencionado(t) {
+    var m = String(t).match(/(^|[^0-9])(20[0-9]{2})([^0-9]|$)/);
+    return m ? m[2] : null;
+  }
+
+  function periodosDelAnio(t) {
+    var anio = anioMencionado(t);
+    if (!anio) return [];
+    return (CATALOGO || []).filter(function (p) { return sin(p.periodo).indexOf(anio) === 0; });
+  }
+
   function faseMencionada(t) {
     if (t.indexOf('graduad') !== -1) return '1.2';
     if (t.indexOf('pregrado') !== -1 || t.indexOf('estudiante') !== -1) return '1.0';
@@ -113,7 +133,7 @@ window.SurveyPortalPreguntas = (function () {
   }
 
   function periodoDeLaPregunta(t, fasePorDefecto) {
-    return mencionaPeriodo(t) || ultimo(faseMencionada(t) || fasePorDefecto || '1.0');
+    return periodoExplicito(t) || mencionaPeriodo(t) || ultimo(faseMencionada(t) || fasePorDefecto || '1.0');
   }
 
   function ultimo(fase) {
@@ -150,9 +170,49 @@ window.SurveyPortalPreguntas = (function () {
       };
     }
 
-    // 2) Cuantas respuestas
-    if (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') || trae('participaron')) {
+    // 2) Cuantas respuestas / cuantos alumnos o estudiantes se encuestaron
+    if (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') ||
+        trae('participaron') || trae('se encuest') || trae('fueron encuest') || trae('encuestados') ||
+        trae('cuantos alumnos') || trae('cuantas alumnas') || trae('cuantos estudiantes') ||
+        trae('cuanta gente') || trae('cuantas personas') || trae('tamano de la muestra') || trae('muestra')) {
       var p = periodoDeLaPregunta(t, '1.0');
+
+      // Si la pregunta nombra una carrera, se responde con el total de esa carrera.
+      var car = buscaNombre(t, p.filtros && p.filtros.carreras);
+      if (car) {
+        var filaI = (p.ids || []).filter(function (x) { return x.carrera === car; });
+        var total = filaI.reduce(function (a, x) { return a + (Number(x.total) || 0); }, 0);
+        if (total) {
+          return {
+            titulo: 'Alumnos encuestados de ' + car,
+            lineas: [p.nombre + ' ' + p.periodo + ': ' + n(total) + ' respuestas de ' + car + '.'],
+            fuentes: [fuente(p, 'ids.json')]
+          };
+        }
+      }
+
+      // Si la pregunta habla de un anio (2026, 2025...), se muestran todos los periodos de ese anio.
+      var delAnio = periodosDelAnio(t);
+      if (!periodoExplicito(t) && delAnio.length) {
+        return {
+          titulo: 'Alumnos encuestados en ' + anioMencionado(t),
+          lineas: delAnio.map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
+          }),
+          fuentes: delAnio.map(function (x) { return fuente(x, 'dashboard_data.json'); })
+        };
+      }
+
+      if (trae('total') || trae('en general') || trae('todos los periodos') || trae('todas las encuestas')) {
+        return {
+          titulo: 'Respuestas recibidas (todos los periodos publicados)',
+          lineas: (CATALOGO || []).map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
+          }),
+          fuentes: (CATALOGO || []).map(function (x) { return fuente(x, 'dashboard_data.json'); })
+        };
+      }
+
       return {
         titulo: 'Respuestas recibidas',
         lineas: [p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas.'],
@@ -252,6 +312,18 @@ window.SurveyPortalPreguntas = (function () {
           titulo: 'NPS por ' + campo + ' (' + (esMejor ? 'más alto' : 'más bajo') + ')',
           lineas: top.map(function (x) { return x[campo] + ': ' + n(x.score); }),
           fuentes: [fuente(p3, porCiclo ? 'nps_ciclo_carrera.json' : 'nps_carrera.json')]
+        };
+      }
+
+      var delAnioNps = periodosDelAnio(t);
+      if (!periodoExplicito(t) && delAnioNps.length) {
+        return {
+          titulo: 'NPS de ' + anioMencionado(t),
+          lineas: delAnioNps.map(function (x) {
+            return x.nombre + ' ' + x.periodo + ': NPS ' + n(x.dash.resumen.nps.score) +
+              ' (' + n(x.dash.resumen.encuestas) + ' respuestas).';
+          }),
+          fuentes: delAnioNps.map(function (x) { return fuente(x, 'dashboard_data.json'); })
         };
       }
 

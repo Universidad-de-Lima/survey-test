@@ -69,9 +69,14 @@ function assertIncludes(texto, trozo, msg) {
 
 const P = window.SurveyPortalPreguntas;
 let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
+let porAnio, porCarrera, enTotal, alumnos20261;
 
 (async function () {
   nps2026 = await P.responder('¿Cuál es el NPS de 2026-1?');
+  porAnio = await P.responder('¿Cuántos alumnos se encuestaron en el 2026?');
+  porCarrera = await P.responder('¿Cuántos alumnos respondieron de Psicología?');
+  enTotal = await P.responder('¿Cuántos se encuestaron en total?');
+  alumnos20261 = await P.responder('cuantos alumnos se encuestaron en 2026-1');
   respuestas2026 = await P.responder('¿Cuántas respuestas tenemos en 2026-1?');
   comparacion = await P.responder('¿Cómo cambió el NPS de 2025-2 a 2026-1?');
   npsIngenieria = await P.responder('¿Cuál es el NPS de Ingeniería de Sistemas?');
@@ -133,6 +138,30 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
   await (async function () {
     const P2 = window.SurveyPortalPreguntas;
     await P2.registrar('¿Cuál es el NPS de 2026-1?', 'NPS');
+
+    test('"cuántos alumnos se encuestaron en el 2026" lista los períodos de ese año', () => {
+      assertIncludes(texto(porAnio), '2026-1', 'período de pregrado');
+      assertIncludes(texto(porAnio), '4239', 'respuestas de pregrado 2026-1');
+      assertIncludes(texto(porAnio), 'Graduados', 'encuesta de graduados');
+      assertIncludes(texto(porAnio), '598', 'respuestas de graduados');
+    });
+
+    test('con un período escrito completo responde solo ese período', () => {
+      assertIncludes(texto(alumnos20261), '4239', 'respuestas de 2026-1');
+      assertTrue(texto(alumnos20261).indexOf('598') === -1, 'no debe mezclar graduados');
+    });
+
+    test('"cuántos alumnos respondieron de Psicología" usa el total de esa carrera', () => {
+      assertIncludes(texto(porCarrera), 'Psicología', 'la carrera pedida');
+      assertIncludes(texto(porCarrera), '431', 'respuestas de Psicología');
+      assertIncludes(fuentes(porCarrera), 'ids.json', 'fuente por carrera');
+    });
+
+    test('"en total" muestra todos los períodos publicados', () => {
+      assertIncludes(texto(enTotal), '2026-1', 'período 2026-1');
+      assertIncludes(texto(enTotal), '2025-2', 'período 2025-2');
+      assertIncludes(texto(enTotal), 'Graduados', 'encuesta de graduados');
+    });
 
   test('registrar manda la pregunta al contador de más frecuentes', () => {
     const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
