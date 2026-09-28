@@ -151,7 +151,7 @@ let porAnio, porCarrera, enTotal, alumnos20261;
     const noEsDeEncuestas = await P2.responderConIA('¿cómo estará el clima mañana?');
     // Y si inventa un nombre que no está en los datos, se avisa.
     consultaSimulada = { dato: 'nps', periodo: '2026-1', entidad: 'Carrera Inexistente', orden: '' };
-    const entidadRara = await P2.responderConIA('¿cuál es el NPS de Carrera Inexistente?');
+    const entidadRara = await P2.responderConIA('quiero saber el resultado de la Carrera Inexistente');
     consultaSimulada = { dato: 'satisfaccion', periodo: '2026-1', entidad: 'Psicología', orden: '' };
 
     test('la IA que traduce hace que el motor responda con los datos', () => {
