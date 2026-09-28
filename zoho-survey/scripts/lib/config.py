@@ -80,7 +80,7 @@ COLUMN_RENAME_GRADUADO: Dict[str, str] = {
     "La actualización de los conocimientos transmitidos": "Conocimientos actualizados",
     "El compromiso con el aprendizaje de los alumnos": "Compromiso",
     "La retroalimentación de las tareas, trabajos y desempeño": "Retroalimentación",
-    "La disposición y tiempo para asesorar a los alumnos": "Disponibilidad para asesorias",
+    "La disposición y tiempo para asesorar a los alumnos": "Disponibilidad para asesorías",
     "La disciplina en el cumplimiento de las normas y programas": "Cumplimiento de normas y programas",
     "El desarrollo de tus habilidades de trabajo en equipo": "Habilidades para trabajar en equipo",
     "El desarrollo de tus habilidades de comunicación": "Habilidades de comunicación",
