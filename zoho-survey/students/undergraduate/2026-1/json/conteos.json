@@ -1,0 +1,426 @@
+{
+  "version": "1.0",
+  "nivel": "undergraduate",
+  "respuestas": 4239,
+  "catalogo": [
+    {
+      "pregunta": "Actividades deportivas",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Ambientes y salas para estudio",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Atención del personal administrativo",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Aula virtual",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Aulas de clase",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Ayuda financiera",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Calidad de la enseñanza en la carrera",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Calidad de la formación académica",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Claridad de los recursos académicos",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Condiciones ambientales en laboratorios",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Conexión Wi-Fi en el campus",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Cursos del programa y contenidos",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Empleabilidad, vinculación y ALUMNI",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Equipamiento tecnológico en laboratorios",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Evaluación del aprendizaje",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Información sobre el récord académico",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Intercambio estudiantil",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "La Universidad de Lima",
+      "donde": "csat_carrera.json",
+      "tipo": "csat",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "La carrera",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Material bibliográfico en la biblioteca",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Perfil del egreso de la carrera",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Plan curricular y perfil de egreso",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Portal web de la Universidad (Mi Ulima)",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Procedimientos administrativos",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Recomiendas la Universidad de Lima",
+      "donde": "nps_carrera.json",
+      "tipo": "nps",
+      "opciones": []
+    },
+    {
+      "pregunta": "Servicio de atención psicopedagógica",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Servicio médico y su infraestructura",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Software especializado empleado en la carrera",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Soporte técnico del sistema informático",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Talleres de actividades artísticas y culturales",
+      "donde": "dimensiones.json",
+      "tipo": "escala",
+      "opciones": [
+        "Totalmente satisfecho",
+        "Muy satisfecho",
+        "Satisfecho",
+        "Insatisfecho",
+        "Totalmente insatisfecho",
+        "No utilizo",
+        "No conozco"
+      ]
+    },
+    {
+      "pregunta": "Comentario NPS",
+      "donde": "sentimiento.json",
+      "tipo": "texto",
+      "opciones": []
+    }
+  ],
+  "preguntas": []
+}
