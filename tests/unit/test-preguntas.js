@@ -123,16 +123,17 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
     });
   });
 
-  test('la pregunta se registra para contar las más frecuentes', () => {
+  test('registrar manda la pregunta al contador de más frecuentes', () => {
     const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
     assertTrue(post.length >= 1, 'debe haber al menos un envío');
     assertIncludes(post[0].url, '/api/preguntas', 'dirección del registro');
     assertIncludes(post[0].opciones.body, 'NPS de 2026-1', 'la pregunta enviada');
   });
 
-  test('el registro no guarda datos personales de más de 160 caracteres', () => {
+  test('lo que se registra va acotado (no crece sin control)', () => {
     const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
     assertTrue(post[0].opciones.body.length <= 300, 'el cuerpo no debe crecer sin control');
+    assertTrue(post[0].opciones.body.indexOf('intencion') !== -1, 'debe decir qué tipo de pregunta fue');
   });
 
   test('la pantalla del 1.9 se puede dibujar', () => {
@@ -144,6 +145,7 @@ let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
 
   await (async function () {
     const P2 = window.SurveyPortalPreguntas;
+    await P2.registrar('¿Cuál es el NPS de 2026-1?', 'NPS');
     let lista = null;
     try { lista = await P2.cargarFrecuentes(); } catch (e) { lista = null; }
     test('las más frecuentes se pueden leer del registro', () => {
