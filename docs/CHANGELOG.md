@@ -8,12 +8,12 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
-## 2026-09-29 — Se dejan de publicar seis campos que ningún módulo leía
+## 2026-09-29 — Se retiran tres campos de `sentimiento.json` (la barra de visibilidad estuvo a punto de caer)
 
-- **Qué se quita.** De `dimensiones.json`: `b2b`, `no_utilizo` y `no_conozco`. De `sentimiento.json`: `por_carrera`, `por_ciclo` y `distribucion_intensidad` (y el cálculo que la alimentaba).
-- **Por qué.** Ningún módulo del frontend menciona esos nombres: el `b2b` es la suma de «Insatisfecho» + «Totalmente insatisfecho», que ya viajan en la misma fila, y los otros dos nunca se mostraron. La distribución por carrera y ciclo que sí se muestra sale de `dimensiones.json`, `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`, no de `sentimiento.json`.
-- **Qué cambia en el contrato.** Los dos schemas y las secciones de `CONTRACTS.md` se actualizaron en el mismo commit. Las filas de `dimensiones.json` ahora declaran la escala de satisfacción (cinco niveles) y los agregados `t3b`, `total` y `t3b_pct`.
-- **Verificación.** 312 pruebas en verde, los contratos válidos, los números publicados idénticos y la foto del aspecto de las cinco páginas en 100,0 % (mismas figuras).
+- **Lo que se buscaba.** Dejar de publicar campos que ningún módulo parecía leer: candidatos `b2b`, `no_utilizo` y `no_conozco` en `dimensiones.json`, y `por_carrera`, `por_ciclo` y `distribucion_intensidad` en `sentimiento.json`.
+- **Lo que apareció al probarlo.** La comparación del aspecto (elemento por elemento, antes y después, en las cinco páginas) mostró que se perdían 15 filas de las barras de visibilidad —los segmentos «conocido», «no-utilizo» y «no-conozco»— y que cada página se acortaba 545 píxeles. Esos tres campos **sí se usan**: el frontend arma los nombres de los segmentos en tiempo de ejecución, por eso una búsqueda por nombre no los encuentra.
+- **Lo que quedó.** De `dimensiones.json` no se retiró nada; los tres campos siguen publicados y el ETL ahora lleva un comentario que explica por qué. De `sentimiento.json` se retiraron los tres: la comparación confirmó que no se mueve ningún elemento ni una figura.
+- **Verificación.** 312 pruebas en verde, contratos válidos, los números publicados idénticos (3998/61,31/96,97 · 4239/72,61/97,85 · 598/85,62/99,00) y el peso por período de 5,8 MB a 4,2 MB.
 
 ## 2026-09-29 — Se retira `conteos.json` (ningún visual lo leía)
 

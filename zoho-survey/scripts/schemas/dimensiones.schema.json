@@ -14,13 +14,18 @@
       "categoria",
       "dimension",
       "t3b",
+      "b2b",
       "total",
       "t3b_pct",
+      "no_utilizo",
+      "no_conozco",
       "Totalmente satisfecho",
       "Muy satisfecho",
       "Satisfecho",
       "Insatisfecho",
-      "Totalmente insatisfecho"
+      "Totalmente insatisfecho",
+      "No utilizo",
+      "No conozco"
     ],
     "additionalProperties": false,
     "properties": {
@@ -75,6 +80,21 @@
       "Totalmente insatisfecho": {
         "type": "integer",
         "minimum": 0
+      },
+      "b2b": {
+        "type": "integer"
+      },
+      "no_utilizo": {
+        "type": "integer"
+      },
+      "no_conozco": {
+        "type": "integer"
+      },
+      "No utilizo": {
+        "type": "integer"
+      },
+      "No conozco": {
+        "type": "integer"
       }
     }
   }

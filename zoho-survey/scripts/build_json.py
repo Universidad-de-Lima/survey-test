@@ -447,10 +447,7 @@ def main() -> None:
                 if dim not in sub.columns:
                     continue
                 serie = sub[dim].dropna()
-                # Solo los cinco niveles de la escala: el b2b se deduce de los dos ultimos
-                # (Insatisfecho + Totalmente insatisfecho) y "No utilizo"/"No conozco" no se
-                # publican porque ningun consumidor los lee.
-                conteos = {r: int((serie == r).sum()) for r in RESPUESTAS_TEXTO[:5]}
+                conteos = {r: int((serie == r).sum()) for r in RESPUESTAS_TEXTO}
                 t3b = conteos["Totalmente satisfecho"] + conteos["Muy satisfecho"] + conteos["Satisfecho"]
                 b2b = conteos["Insatisfecho"] + conteos["Totalmente insatisfecho"]
                 total = t3b + b2b
@@ -461,10 +458,18 @@ def main() -> None:
                     "categoria": cat,
                     "dimension": dim,
                     "t3b": t3b,
+                    # b2b, no_utilizo y no_conozco se publican porque los consume la barra de
+                    # visibilidad de cada dimension (los segmentos "conocido", "no-utilizo" y
+                    # "no-conozco"). El frontend arma esos nombres en tiempo de ejecucion, por eso
+                    # no aparecen como texto en el codigo.
+                    "b2b": b2b,
                     "total": total,
                     "t3b_pct": calc_csat(t3b, total),
+                    "no_utilizo": conteos["No utilizo"],
+                    "no_conozco": conteos["No conozco"],
                     **conteos
                 })
+
         with open(ruta_salida / "dimensiones.json", "w", encoding="utf-8") as f:
             json.dump(rows, f, ensure_ascii=False)
 

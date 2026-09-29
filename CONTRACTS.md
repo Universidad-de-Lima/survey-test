@@ -258,15 +258,18 @@ Cada fila incluye:
 
 - `facultad`, `carrera`, `ciclo`
 - `categoria`, `dimension`
-- `t3b`, `total`, `t3b_pct` (minúsculas)
+- `t3b`, `b2b`, `total`, `t3b_pct`, `no_utilizo`, `no_conozco` (minúsculas)
 - `Totalmente satisfecho`, `Muy satisfecho`, `Satisfecho`, `Insatisfecho`, `Totalmente insatisfecho` (capitalizadas)
+- `No utilizo`, `No conozco` (capitalizadas)
 
 Invariante: debe existir al menos una fila con `total > 0`.
 
-> **Nota:** el `b2b` no se publica: es la suma de `Insatisfecho` + `Totalmente insatisfecho`, que ya
-> viajan en la misma fila. Tampoco se publican `No utilizo` ni `No conozco`: ningún consumidor los
-> lee. La escala publicada es la de satisfacción (los primeros cinco valores de `RESPUESTAS_TEXTO`).
-
+> **Nota:** estos cinco campos del borde de la escala **sí se publican y no se pueden retirar sin
+> quitar la barra de visibilidad de cada dimensión**: esa barra dibuja tres segmentos («conocido»,
+> «no-utilizo» y «no-conozco») usando `no_utilizo` y `no_conozco` (minúsculas), y el `b2b` es la suma
+> de `Insatisfecho` + `Totalmente insatisfecho`. El frontend compone los nombres de esos segmentos en
+> tiempo de ejecución, así que no aparecen como texto literal en el código: una búsqueda por nombre
+> no los encuentra. Queda documentado en el CHANGELOG del 2026-09-29.
 ## `filtros.json`
 
 Schema: `zoho-survey/scripts/schemas/filtros.schema.json`.
