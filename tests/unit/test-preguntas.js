@@ -105,6 +105,9 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   consultaSimulada = { se_puede: false, operacion: 'ninguna', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: 'Eso no está en las encuestas.' };
   const formNo = await P.responderConIA('¿cómo estará el clima mañana?');
   consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
+  consultaSimulada = { se_puede: true, operacion: 'porcentaje', periodo: '', filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }, { pregunta: 'Situación laboral', valores: ['Trabajador dependiente', 'Trabajador independiente', 'Prácticas profesionales', 'Prácticas pre - profesionales'] }], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: '' };
+  const formFiltros = await P.responderConIA('¿qué porcentaje de graduados de la carrera de economía trabajan?');
+  consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
   // Las reglas ya NO responden la pregunta de Economia: la resuelve el formulario.
   const reglasEconomia = await P.responder('¿qué porcentaje de graduados de la carrera de economía trabajan?');
 
@@ -191,6 +194,14 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('si el formulario dice que no se puede, se respeta el motivo', () => {
     assertTrue(formNo.alcance === false, 'queda fuera de alcance');
     assertIncludes(texto(formNo), 'no está en las encuestas', 'el motivo');
+  });
+
+  test('si el modelo cuenta por filtros, igual sale "de los 14, cuantos" (14 de 14)', () => {
+    assertTrue(formFiltros.alcance !== false, 'debe responder');
+    assertIncludes(texto(formFiltros), '14', 'el grupo y la cuenta');
+    assertIncludes(texto(formFiltros), '100', 'el porcentaje');
+    assertIncludes(texto(formFiltros), 'Carrera = Economía', 'el grupo');
+    assertIncludes(fuentes(formFiltros), 'respuestas.json', 'la cita de la tabla');
   });
 
   test('la pregunta de Economía ya no la responde el cruce de reglas (la resuelve el formulario)', () => {

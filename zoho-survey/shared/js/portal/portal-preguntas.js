@@ -771,10 +771,30 @@ window.SurveyPortalPreguntas = (function () {
         fuentes: [fuente(p, 'respuestas.json')]
       };
     }
-    if (!filtroTexto) return null;   // no hay nada que contar
+    if (!filtros.length) return null;   // no hay nada que contar
+    // El modelo a veces expresa la cuenta como un filtro mas ("y que su situacion laboral
+    // sea trabajador o practicas"): se informa el grupo sin ese ultimo filtro y el
+    // porcentaje que lo cumple, para no perder la lectura "de los N, cuantos".
+    var ultimo = filtros[filtros.length - 1];
+    var grupo = filtros.slice(0, -1);
+    var subGrupo = tabla.filas.filter(function (fila) {
+      return grupo.every(function (cada) {
+        var idx = cab.indexOf(cada.pregunta);
+        return cada.opciones.some(function (o) {
+          return (tabla.opciones[cada.pregunta] || []).indexOf(o) === fila[idx];
+        });
+      });
+    });
+    var lineaGrupo = grupo.length
+      ? 'De los ' + n(subGrupo.length) + ' con ' + grupo.map(function (cada) {
+          return cada.pregunta + ' = ' + cada.opciones.join(' o ');
+        }).join('; ') + ', cumplen ' + ultimo.pregunta + ' = ' + ultimo.opciones.join(' o ') +
+        ': ' + n(denom) + ' (' + pct(subGrupo.length ? 100 * denom / subGrupo.length : 0) + ').'
+      : 'Cumplen ' + ultimo.pregunta + ' = ' + ultimo.opciones.join(' o ') + ': ' + n(denom) +
+        ' de ' + n(tabla.respuestas) + ' (' + pct(tabla.respuestas ? 100 * denom / tabla.respuestas : 0) + ').';
     return {
       titulo: 'Cruce: ' + filtroTexto,
-      lineas: [cabecera],
+      lineas: [cabecera, lineaGrupo],
       fuentes: [fuente(p, 'respuestas.json')]
     };
   }
