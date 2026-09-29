@@ -248,6 +248,27 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     });
   })();
 
+    test('las palabras coloquiales del contexto apuntan a preguntas publicadas', () => {
+    const ctx = JSON.parse(fs.readFileSync(path.join(raiz, 'shared/config/asistente_contexto.json'), 'utf8'));
+    const cabeceras = [
+      'students/undergraduate/2025-2/json/respuestas.json',
+      'students/undergraduate/2026-1/json/respuestas.json',
+      'students/graduate/2026/json/respuestas.json'
+    ].reduce(function (todas, rel) {
+      const d = JSON.parse(fs.readFileSync(path.join(raiz, rel), 'utf8'));
+      return todas.concat(d.cabeceras);
+    }, []);
+    const huerfanas = Object.keys(ctx.palabras_coloquiales).filter(function (c) {
+      return cabeceras.indexOf(c) === -1;
+    });
+    assertEqual(huerfanas.join(', '), '', 'claves que ya no son preguntas publicadas');
+    assertTrue(Array.isArray(ctx.que_es) && ctx.que_es.length > 0, 'falta que_es');
+    assertTrue(Array.isArray(ctx.reglas) && ctx.reglas.length > 0, 'falta reglas');
+    Object.keys(ctx.palabras_coloquiales).forEach(function (c) {
+      assertTrue(ctx.palabras_coloquiales[c].length > 0, 'la lista de ' + c + ' no puede estar vacia');
+    });
+  });
+
   console.log('\n=== Tests JS del asistente 1.9 (jsdom) ===');
   console.log('passed=' + passed + ' failed=' + failed + ' total=' + (passed + failed));
   if (failed > 0) {
