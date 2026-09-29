@@ -66,6 +66,7 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
     "conteos.json": dict(type=dict, non_empty=True),
+    "respuestas.json": dict(type=dict, non_empty=True),
 }
 
 # Archivos legacy: validados si existen, pero su ausencia no genera error.

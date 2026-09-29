@@ -342,6 +342,44 @@ porcentaje de graduados de Economía trabaja?» sin que nadie escriba código po
 - El corte por carrera, facultad o ciclo de una opción debe sumar exactamente su `total`.
 - Toda pregunta contada tiene que figurar en el catálogo.
 
+## `respuestas.json`
+
+Schema: `zoho-survey/scripts/schemas/respuestas.schema.json`.
+
+La tabla de respuestas de un período: lo que hoy vive en la bandeja
+(`data/zoho_pendientes/*.jsonl`), en un archivo que el navegador puede leer para responder
+consultas filtrando y contando. Alimenta al asistente del ítem 1.9, incluidos los cruces entre
+preguntas ("de los que trabajan a tiempo completo, cuántos están satisfechos").
+
+### Forma del documento
+
+- `cabeceras` — las preguntas del período, en orden.
+- `opciones` — por cada pregunta, sus respuestas posibles (una sola vez, ordenadas). La primera
+  puede ser `"(sin respuesta)"`, para las respuestas en blanco.
+- `filas` — **una fila por respuesta**, con un número por pregunta que apunta a su opción en
+  `opciones`. Por eso pesa poco: el texto va una sola vez, en `opciones`.
+- `ids` y `fechas` — en paralelo a `filas` (misma posición, misma respuesta). El `id` enlaza con el
+  análisis de los comentarios (`sentimiento.json`); la `fecha` (AAAA-MM-DD) permite contar por día o
+  por semana.
+- `excluidas` — lo que quedó fuera y por qué (`no es una pregunta` para `Estado de respuesta`;
+  `texto libre` para las abiertas y para cualquier columna con más de 50 valores distintos).
+
+### Reglas
+
+- **No viaja el texto libre**: los comentarios siguen en `sentimiento.json`, analizados y con los
+  datos personales enmascarados.
+- Los números de las filas son índices, no valores: para leer qué respondió alguien hay que buscar
+  el número en `opciones[cabecera]`.
+- Las fechas se normalizan a `AAAA-MM-DD` (la bandeja las trae en el formato de Zoho, en español).
+- Es aditivo: ningún archivo existente cambia.
+
+### invariantes de validación
+
+- `opciones` tiene exactamente las mismas claves que `cabeceras`, y ninguna pregunta queda sin opciones.
+- Cada fila tiene tantos números como preguntas, y cada número cae dentro de las opciones de su pregunta.
+- `respuestas` coincide con la cantidad de filas.
+- `ids` y `fechas`, si están, tienen la misma cantidad de valores que filas.
+
 ## `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`
 
 Schemas: `nps_ciclo_carrera.schema.json`, `csat_ciclo_carrera.schema.json`.

@@ -2,6 +2,15 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-29 — La tabla de respuestas del período (base del asistente 1.9)
+
+- **Qué se agrega.** Un archivo nuevo por período, `respuestas.json`: **una fila por respuesta**, con un número por pregunta que apunta a su opción (así el texto va una sola vez y el archivo pesa poco), más el `id` y la `fecha` de cada respuesta. Es la "hoja" con la que el asistente del ítem 1.9 podrá responder filtrando y contando, incluidos los cruces entre preguntas que hoy no se pueden ("de los que trabajan a tiempo completo, cuántos están satisfechos con su perfil de egreso").
+- **Qué no lleva.** El texto libre de la pregunta abierta no entra: sigue en `sentimiento.json`, ya analizado y con los datos personales enmascarados. Tampoco entran `Estado de respuesta` (solo filtra las completas) ni las columnas que no son preguntas.
+- **Tamaño real publicado.** 3 998 respuestas y 33 preguntas (367 KB, 80 KB comprimido) en Alumnos 2025-2; 4 239 y 33 (389 KB, 86 KB) en Alumnos 2026-1; 598 y 48 (79 KB, 15 KB) en Graduados 2026. El navegador lo baja una sola vez por período y solo cuando la pregunta lo necesita.
+- **Sin cambios en lo demás.** Los nueve archivos de siempre quedaron con los **mismos números** (NPS, satisfacción y cantidad de respuestas idénticos en los tres períodos): lo único distinto es la fecha de generación del dashboard. Los comentarios ya analizados se reutilizaron: aparecieron 24 fragmentos nuevos en Graduados y 150 en Alumnos 2026-1, por las respuestas que siguen entrando.
+- **Un detalle que se vio en la corrida.** En Alumnos 2025-2 los 3 998 "comentarios" vuelven a descartarse como inválidos (el análisis los revisa y no encuentra texto aprovechable). Queda anotado para revisar ese período, porque no es normal que todas las respuestas traigan algo escrito.
+- **Contrato y pruebas.** Schema propio (`scripts/schemas/respuestas.schema.json`), invariantes en el validador (cada fila con un número por pregunta y dentro de sus opciones; `ids` y `fechas` con el mismo largo que las filas) y 7 pruebas unitarias nuevas, que corren en cada push.
+
 ## 2026-09-28 — Los conteos de todas las preguntas quedan publicados (`conteos.json`)
 
 - **Qué se agrega.** Un archivo nuevo por período, `conteos.json`, con los conteos que hasta ahora no publicaba ningún otro: las preguntas de perfil (situación laboral, tiempo laboral y las que traiga cada encuesta), contadas por opción, y **cada opción partida por carrera, facultad y ciclo**. Trae además el **catálogo**: la lista de todas las preguntas de la encuesta y en qué archivo vive el conteo de cada una. Con eso el asistente del ítem 1.9 puede responder «¿qué porcentaje de graduados de Economía trabaja?» sin escribir código por pregunta.

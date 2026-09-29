@@ -153,6 +153,10 @@ En `json/` (consumidos por frontend):
     el conteo de cada una) y empleabilidad global, por carrera y por facultad. Alimenta al asistente
     del ítem 1.9. No repite lo que ya publican `dimensiones.json`, `nps_*.json`, `csat_*.json`,
     `ids.json` ni `sentimiento.json`.
+11. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
+    que apuntan a las opciones de cada pregunta, más el `id` y la `fecha` de cada una. Es lo que
+    permite responder consultas filtrando y contando, incluidos los cruces entre preguntas.
+    No incluye el texto libre (vive en `sentimiento.json`).
 
 En `intermediate/` (no consumidos por frontend):
 10. `fragmentos_nps.json` — Meaning Units extraidas.
