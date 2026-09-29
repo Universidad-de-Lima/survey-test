@@ -8,6 +8,13 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
+## 2026-09-29 — Auditoría de documentación tras las tres reducciones
+
+- **Qué se revisó.** Que ningún documento mencione archivos que ya no existen, que los cinco archivos publicados por período estén en `CONTRACTS.md` y que los conteos de pruebas sean los reales.
+- **Lo que se corrigió.** `ARCHITECTURE.md` tenía cuatro menciones a `nps_carrera.json` y `csat_carrera.json` (ahora apuntan a las partes de `resumenes.json`). `tests/README.md` y `AGENTS.md` no contaban las 19 pruebas del asistente del ítem 1.9: ahora dicen 160 pruebas de JavaScript y 312 de Python.
+- **Lo que quedó bien sin tocar.** `CONTRACTS.md` documenta los cinco archivos publicados; los archivos retirados solo se mencionan en este registro, donde se explica su retiro.
+- **Hallazgo pendiente (no se tocó).** `CONTRACTS.md` contiene el documento dos veces y las dos copias **no** son iguales (23 176 y 20 977 caracteres). Unificarlas es una decisión aparte: hay que leerlas y ver qué le falta a cada una.
+
 ## 2026-09-29 — Los cinco resúmenes del período pasan a un solo archivo (`resumenes.json`)
 
 - **Qué cambia.** `ids.json`, `nps_carrera.json`, `csat_carrera.json`, `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json` se unifican en `resumenes.json`, con la misma información bajo las claves `ids`, `nps_carrera`, `csat_carrera`, `nps_ciclo_carrera` y `csat_ciclo_carrera`. Cada período pasa de 9 archivos a 5.

@@ -143,8 +143,8 @@ En `json/` (consumidos por frontend):
 2. `dimensiones.json` — agregados por facultad/carrera/ciclo/categoria/dimension.
 6. `filtros.json` (v2.0) — opciones de filtros en cascada.
 7. `sentimiento.json` (v3.0) — analisis cualitativo completo (consumido por frontend).
-8. `nps_carrera.json` (legacy) — NPS por carrera (fallback para encuestas sin ciclo).
-9. `csat_carrera.json` (legacy) — CSAT por carrera (fallback para encuestas sin ciclo).
+8. `resumenes.json (parte nps_carrera)` (legacy) — NPS por carrera (fallback para encuestas sin ciclo).
+9. `resumenes.json (parte csat_carrera)` (legacy) — CSAT por carrera (fallback para encuestas sin ciclo).
 5. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
     que apuntan a las opciones de cada pregunta, más el `id` y la `fecha` de cada una. Es lo que
     permite responder consultas filtrando y contando, incluidos los cruces entre preguntas.
@@ -335,7 +335,7 @@ Se comprueba con `tests/unit/test-preguntas.js` (jsdom, lee los JSON del reposit
 - **Datos precomputados**: el frontend consume JSON, no recalcula agregados que pertenecen al ETL.
 - **Separacion de datos y vista**: los JSON no deben depender del layout visual.
 - **Delegacion progresiva**: `dashboard.js` delega en modulos compartidos cuando existen; mantiene fallback inline para KPIs, distribuciones y tablas detalladas.
-- **Compatibilidad backward**: los contratos legacy se conservan cuando todavia hay consumidores (ej. `nps_carrera.json`/`csat_carrera.json` como fallback para encuestas sin ciclo).
+- **Compatibilidad backward**: los contratos legacy se conservan cuando todavia hay consumidores (ej. `resumenes.json (parte nps_carrera)`/`resumenes.json (parte csat_carrera)` como fallback para encuestas sin ciclo).
 - **Degradacion controlada**: errores de carga JSON opcionales se tratan con `console.warn` sin romper toda la pagina. Endpoints criticos (`dashboard_data`, `filtros`, `dimensiones`) fallan rapido via `Promise.all`.
 - **Resolucion de dependencias en runtime**: los modulos IIFE referencian `window.Survey*` al momento de uso, no al de carga. Esto permite que el dashboard funcione aunque falten modulos opcionales.
 
@@ -435,7 +435,7 @@ Los CSV de prueba con IP están cubiertos por `sanitize_csv_pii.py` (redime `Dir
 ## Deuda Tecnica Vigente
 
 - La logica de ciclos esta externalizada en `SURVEY_CONFIG`, pero todavia no es dinamica por periodo.
-- `nps_carrera.json` y `csat_carrera.json` son legacy; el frontend los usa como fallback para encuestas sin ciclo (`has_ciclo=false`, ej. Graduados).
+- las partes `nps_carrera` y `csat_carrera` de `resumenes.json` son legacy; el frontend los usa como fallback para encuestas sin ciclo (`has_ciclo=false`, ej. Graduados).
 - `postgraduate/` y los directorios de niveles sin datos (`alumni/`, `employers/`, `faculty-staff/`, `nonfaculty-staff/`) existen como placeholders sin datos procesados.
 - El template `zoho-survey/template/index.html` no tiene version de contrato propia.
 - El portal y el dashboard por periodo renderizan vistas similares con codigo parcialmente duplicado (`portal/*.js` vs `components/*.js` + `dashboard.js`); unificar en una sola fuente es deuda planificada.

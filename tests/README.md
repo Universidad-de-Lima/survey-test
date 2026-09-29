@@ -78,8 +78,9 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | Archivo | Tests reales | Módulo bajo prueba |
 | --- | --- | --- |
 | `test-dom.js` | 33 | `SurveyFormatters`, `SurveySanitizer`, `SurveyDomHelpers`, `SurveyTooltip` (con DOM real) |
+| `test-preguntas.js` | 19 | `SurveyPortalPreguntas` (asistente del ítem 1.9, con los JSON publicados) |
 
-### Total: 108 tests TestFramework (94 base + 14 de `test-portal-data.js`) + 33 tests jsdom = 141 tests
+### Total: 108 tests TestFramework (94 base + 14 de `test-portal-data.js`) + 52 tests jsdom (33 de `test-dom.js` + 19 de `test-preguntas.js`) = 160 tests
 
 > **Historial:** un snapshot previo de auditoría reportaba `test-sanitizer.js` vacío y
 > `test-sentiment-view.js` ausente; ambos fueron verificados y restaurados/implementados
