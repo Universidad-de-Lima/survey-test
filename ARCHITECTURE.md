@@ -2,6 +2,22 @@
 
 Este documento es la fuente canonica para entender la estructura tecnica de `survey-test`. Los contratos de datos viven en `CONTRACTS.md` y formalmente en `zoho-survey/scripts/schemas/*.schema.json`; las reglas para agentes viven en `AGENTS.md`.
 
+## Quien calcula cada numero (regla vigente)
+
+Los JSON publicados llevan los datos **resueltos**: el frontend solo les da formato (redondear, el
+signo de porcentaje, el separador de miles). La regla tiene un limite medido, y conviene tenerlo
+presente antes de proponer mover mas calculos:
+
+- **Lo que no depende de un filtro** sale calculado del ETL y el frontend lo lee.
+- **Lo que depende de un filtro** (facultad, carrera o ciclo que elige la persona) lo agrupa la
+  pantalla, porque no existe forma de precalcular todas las combinaciones.
+
+Medición del 2026-09-29 sobre `zoho-survey/shared/js/`: de 96 lineas que calculan algo, 44 son
+formato o geometria de los dibujos (el ancho de una barra, el angulo del radar, el redondeo al
+mostrar) y 52 son agregaciones sobre los filtros elegidos. Un intento de publicar un agregado por
+dimension para reemplazar esas 52 se revirtio: solo servia a la vista sin filtros y exigia un camino
+extra en el codigo para mostrar los mismos numeros.
+
 ## Mapa De Componentes
 
 ```mermaid
