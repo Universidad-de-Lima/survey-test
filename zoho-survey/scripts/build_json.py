@@ -447,7 +447,10 @@ def main() -> None:
                 if dim not in sub.columns:
                     continue
                 serie = sub[dim].dropna()
-                conteos = {r: int((serie == r).sum()) for r in RESPUESTAS_TEXTO}
+                # Solo los cinco niveles de la escala: el b2b se deduce de los dos ultimos
+                # (Insatisfecho + Totalmente insatisfecho) y "No utilizo"/"No conozco" no se
+                # publican porque ningun consumidor los lee.
+                conteos = {r: int((serie == r).sum()) for r in RESPUESTAS_TEXTO[:5]}
                 t3b = conteos["Totalmente satisfecho"] + conteos["Muy satisfecho"] + conteos["Satisfecho"]
                 b2b = conteos["Insatisfecho"] + conteos["Totalmente insatisfecho"]
                 total = t3b + b2b
@@ -458,11 +461,8 @@ def main() -> None:
                     "categoria": cat,
                     "dimension": dim,
                     "t3b": t3b,
-                    "b2b": b2b,
                     "total": total,
                     "t3b_pct": calc_csat(t3b, total),
-                    "no_utilizo": conteos["No utilizo"],
-                    "no_conozco": conteos["No conozco"],
                     **conteos
                 })
         with open(ruta_salida / "dimensiones.json", "w", encoding="utf-8") as f:
@@ -845,43 +845,6 @@ def main() -> None:
             for c in valid_comments:
                 dist_sent[c["sentimiento"]] += 1
                 
-            dist_int = {"alta": 0, "media": 0, "baja": 0}
-            for c in valid_comments:
-                val = c["intensidad"]
-                if val >= 4.0:
-                    dist_int["alta"] += 1
-                elif val >= 2.5:
-                    dist_int["media"] += 1
-                else:
-                    dist_int["baja"] += 1
-
-            # Distribución por carrera
-            por_carrera: List[Dict[str, any]] = []
-            for car, sub in df_sent.groupby("carrera"):
-                valid_sub = [c for c in comentarios_detallados if c["carrera"] == car and c["es_valido"]]
-                invalid_sub = [c for c in comentarios_detallados if c["carrera"] == car and not c["es_valido"]]
-                por_carrera.append({
-                    "carrera": car,
-                    "facultad": sub["facultad"].iloc[0] if not sub.empty else "",
-                    "total": len(valid_sub),
-                    "pasivos": sum(1 for c in valid_sub if 7 <= c["nps_score"] <= 8),
-                    "detractores": sum(1 for c in valid_sub if c["nps_score"] <= 6),
-                    "comentarios_invalidos": len(invalid_sub)
-                })
-            por_carrera.sort(key=lambda x: x["total"], reverse=True)
-
-            # Distribución por ciclo
-            por_ciclo: List[Dict[str, any]] = []
-            for cic, sub in df_sent.groupby("ciclo"):
-                valid_sub = [c for c in comentarios_detallados if c["ciclo"] == cic and c["es_valido"]]
-                por_ciclo.append({
-                    "ciclo": cic,
-                    "total": len(valid_sub),
-                    "pasivos": sum(1 for c in valid_sub if 7 <= c["nps_score"] <= 8),
-                    "detractores": sum(1 for c in valid_sub if c["nps_score"] <= 6)
-                })
-            por_ciclo.sort(key=lambda x: int("".join(filter(str.isdigit, x["ciclo"])) or 0))
-
             # Generar Insights Narrativos (Fase 8: vía lib/insights_generator.py)
             # Reemplaza templates hardcodeados por heurísticas deterministas.
             # Excluye "Pendiente de Clasificación" de temas relevantes.
@@ -902,16 +865,13 @@ def main() -> None:
                     "total_analizados": total_analizados,
                     "comentarios_invalidos": total_invalidos,
                     "distribucion_sentimiento": dist_sent,
-                    "distribucion_intensidad": dist_int,
                     "pasivos": pasivos_con_com,
                     "detractores": detractores_con_com,
                     "nota": "Se analizan y clasifican semánticamente todos los comentarios libres ingresados en la encuesta."
                 },
                 "insights_ia": insights_ia,
                 "topicos": topicos_globales,
-                "comentarios": comentarios_detallados,
-                "por_carrera": por_carrera,
-                "por_ciclo": por_ciclo
+                "comentarios": comentarios_detallados
             }
         else:
             sentimiento = {
@@ -922,7 +882,6 @@ def main() -> None:
                     "total_analizados": 0,
                     "comentarios_invalidos": 0,
                     "distribucion_sentimiento": {"positivo": 0, "neutro": 0, "negativo": 0},
-                    "distribucion_intensidad": {"alta": 0, "media": 0, "baja": 0},
                     "pasivos": 0,
                     "detractores": 0,
                     "nota": "No se encontró la columna de comentarios NPS en los datos."
@@ -932,9 +891,7 @@ def main() -> None:
                     "por_categoria_padre": {}
                 },
                 "topicos": [],
-                "comentarios": [],
-                "por_carrera": [],
-                "por_ciclo": []
+                "comentarios": []
             }
 
         # Guardar únicamente en sentimiento.json (formato v3.0 consolidado y minificado)

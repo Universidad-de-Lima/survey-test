@@ -258,13 +258,14 @@ Cada fila incluye:
 
 - `facultad`, `carrera`, `ciclo`
 - `categoria`, `dimension`
-- `t3b`, `b2b`, `total`, `t3b_pct`, `no_utilizo`, `no_conozco` (minúsculas)
+- `t3b`, `total`, `t3b_pct` (minúsculas)
 - `Totalmente satisfecho`, `Muy satisfecho`, `Satisfecho`, `Insatisfecho`, `Totalmente insatisfecho` (capitalizadas)
-- `No utilizo`, `No conozco` (capitalizadas)
 
 Invariante: debe existir al menos una fila con `total > 0`.
 
-> **Nota:** El ETL produce ambos casings para `no_utilizo`/`No utilizo` y `no_conozco`/`No conozco` por compatibilidad. Los schemas los declaran ambos.
+> **Nota:** el `b2b` no se publica: es la suma de `Insatisfecho` + `Totalmente insatisfecho`, que ya
+> viajan en la misma fila. Tampoco se publican `No utilizo` ni `No conozco`: ningún consumidor los
+> lee. La escala publicada es la de satisfacción (los primeros cinco valores de `RESPUESTAS_TEXTO`).
 
 ## `filtros.json`
 
@@ -314,21 +315,22 @@ CSAT requiere (capitalizadas, catálogo Zoho):
 
 Schema: `zoho-survey/scripts/schemas/sentimiento.schema.json`.
 
-Claves requeridas a top-level (7):
+Claves requeridas a top-level (5):
 
 - `version` (`"3.0"`)
 - `resumen`
 - `insights_ia`
 - `topicos`
 - `comentarios`
-- `por_carrera`
-- `por_ciclo`
+
+> **Nota:** `por_carrera`, `por_ciclo` y `distribucion_intensidad` ya no se publican: ningún módulo
+> del frontend los lee. El análisis por carrera y por ciclo que sí se muestra sale de
+> `dimensiones.json`, `nps_*` y `csat_*`.
 
 `resumen` requiere:
 
 - `total_respuestas`, `total_con_comentario`, `total_analizados`, `comentarios_invalidos`
 - `distribucion_sentimiento` (objeto con `positivo`, `neutro`, `negativo`)
-- `distribucion_intensidad` (objeto con `alta`, `media`, `baja`)
 - `pasivos`, `detractores`, `nota` (string)
 
 `insights_ia` requiere:

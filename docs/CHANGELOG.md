@@ -2,6 +2,13 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-29 — Se dejan de publicar seis campos que ningún módulo leía
+
+- **Qué se quita.** De `dimensiones.json`: `b2b`, `no_utilizo` y `no_conozco`. De `sentimiento.json`: `por_carrera`, `por_ciclo` y `distribucion_intensidad` (y el cálculo que la alimentaba).
+- **Por qué.** Ningún módulo del frontend menciona esos nombres: el `b2b` es la suma de «Insatisfecho» + «Totalmente insatisfecho», que ya viajan en la misma fila, y los otros dos nunca se mostraron. La distribución por carrera y ciclo que sí se muestra sale de `dimensiones.json`, `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`, no de `sentimiento.json`.
+- **Qué cambia en el contrato.** Los dos schemas y las secciones de `CONTRACTS.md` se actualizaron en el mismo commit. Las filas de `dimensiones.json` ahora declaran la escala de satisfacción (cinco niveles) y los agregados `t3b`, `total` y `t3b_pct`.
+- **Verificación.** 312 pruebas en verde, los contratos válidos, los números publicados idénticos y la foto del aspecto de las cinco páginas en 100,0 % (mismas figuras).
+
 ## 2026-09-29 — Se retira `conteos.json` (ningún visual lo leía)
 
 - **Qué era.** Un archivo por período con los conteos de las preguntas de perfil, la empleabilidad por carrera y un catálogo de preguntas. Se agregó el 2026-09-28.
