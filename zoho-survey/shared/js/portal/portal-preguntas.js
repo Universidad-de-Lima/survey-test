@@ -43,6 +43,18 @@ window.SurveyPortalPreguntas = (function () {
     return sin(texto).replace(/s\b/g, '');
   }
 
+  // Un nombre de pregunta pegado a un "de" ("la carrera de Economia", "la facultad de
+  // Derecho") no es el tema de la pregunta: ahi "carrera" o "facultad" describen el
+  // grupo. Sin este candado, "que porcentaje de graduados de la carrera de economia
+  // trabajan" elegia "La carrera" como objetivo y respondia otra cosa.
+  function nombreComoCalificador(t, nombre) {
+    var texto = sinS(t);
+    var x = sinS(nombre);
+    var i = texto.indexOf(x);
+    if (i === -1) return false;
+    return /^\s+de\s/.test(texto.slice(i + x.length, i + x.length + 8));
+  }
+
 
   // Numeros como en el resto del proyecto: sin separador de miles, coma decimal.
   function n(valor) {
@@ -579,7 +591,8 @@ window.SurveyPortalPreguntas = (function () {
     (tabla.cabeceras || []).forEach(function (c) {
       if (esFiltro(c)) return;
       var x = sin(c);
-      if (x.length >= 5 && sinS(t).indexOf(sinS(x)) !== -1 && (!mejor || x.length > sin(mejor).length)) mejor = c;
+      if (x.length >= 5 && sinS(t).indexOf(sinS(x)) !== -1 && !nombreComoCalificador(t, c) &&
+          (!mejor || x.length > sin(mejor).length)) mejor = c;
     });
     if (mejor) return mejor;
     for (var k = 0; k < ALIAS_PREGUNTA.length; k++) {

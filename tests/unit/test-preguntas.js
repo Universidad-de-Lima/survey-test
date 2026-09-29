@@ -105,6 +105,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   consultaSimulada = { se_puede: false, operacion: 'ninguna', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: 'Eso no está en las encuestas.' };
   const formNo = await P.responderConIA('¿cómo estará el clima mañana?');
   consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
+  // Las reglas ya NO responden la pregunta de Economia: la resuelve el formulario.
+  const reglasEconomia = await P.responder('¿qué porcentaje de graduados de la carrera de economía trabajan?');
 
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
@@ -191,6 +193,11 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(formNo), 'no está en las encuestas', 'el motivo');
   });
 
+  test('la pregunta de Economía ya no la responde el cruce de reglas (la resuelve el formulario)', () => {
+    assertTrue(reglasEconomia.alcance === false, 'las reglas no deben responderla');
+    assertTrue(texto(reglasEconomia).indexOf('La carrera') === -1, 'no debe hablar de "La carrera"');
+  });
+
   test('el mensaje que se manda lleva el contexto y el menú del período', () => {
     const envios = llamadasExternas.filter(function (c) { return String(c.url).indexOf('/interpretar') !== -1; });
     const envio = envios.filter(function (c) { return String(c.opciones.body).indexOf('economía trabajan') !== -1; })[0];
@@ -269,14 +276,14 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     });
 
   test('registrar manda la pregunta al contador de más frecuentes', () => {
-    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
+    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST' && String(c.url).indexOf('/api/preguntas') !== -1);
     assertTrue(post.length >= 1, 'debe haber al menos un envío');
     assertIncludes(post[0].url, '/api/preguntas', 'dirección del registro');
     assertIncludes(post[0].opciones.body, 'NPS de 2026-1', 'la pregunta enviada');
   });
 
   test('lo que se registra va acotado (no crece sin control)', () => {
-    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST');
+    const post = llamadasExternas.filter(c => c.opciones && c.opciones.method === 'POST' && String(c.url).indexOf('/api/preguntas') !== -1);
     assertTrue(post[0].opciones.body.length <= 300, 'el cuerpo no debe crecer sin control');
     assertTrue(post[0].opciones.body.indexOf('intencion') !== -1, 'debe decir qué tipo de pregunta fue');
   });
