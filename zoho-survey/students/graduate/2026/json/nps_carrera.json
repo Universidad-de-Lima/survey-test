@@ -1,0 +1,86 @@
+[
+  {
+    "carrera": "Administración",
+    "promotores": 74,
+    "pasivos": 5,
+    "detractores": 4,
+    "score": 84.34
+  },
+  {
+    "carrera": "Arquitectura",
+    "promotores": 19,
+    "pasivos": 3,
+    "detractores": 0,
+    "score": 86.36
+  },
+  {
+    "carrera": "Comunicación",
+    "promotores": 111,
+    "pasivos": 25,
+    "detractores": 3,
+    "score": 77.7
+  },
+  {
+    "carrera": "Contabilidad y Finanzas",
+    "promotores": 9,
+    "pasivos": 3,
+    "detractores": 0,
+    "score": 75.0
+  },
+  {
+    "carrera": "Derecho",
+    "promotores": 40,
+    "pasivos": 5,
+    "detractores": 0,
+    "score": 88.89
+  },
+  {
+    "carrera": "Economía",
+    "promotores": 11,
+    "pasivos": 3,
+    "detractores": 0,
+    "score": 78.57
+  },
+  {
+    "carrera": "Ingeniería Ambiental",
+    "promotores": 1,
+    "pasivos": 0,
+    "detractores": 0,
+    "score": 100.0
+  },
+  {
+    "carrera": "Ingeniería Civil",
+    "promotores": 18,
+    "pasivos": 4,
+    "detractores": 0,
+    "score": 81.82
+  },
+  {
+    "carrera": "Ingeniería Industrial",
+    "promotores": 135,
+    "pasivos": 9,
+    "detractores": 1,
+    "score": 92.41
+  },
+  {
+    "carrera": "Ingeniería de Sistemas",
+    "promotores": 25,
+    "pasivos": 3,
+    "detractores": 1,
+    "score": 82.76
+  },
+  {
+    "carrera": "Negocios Internacionales",
+    "promotores": 38,
+    "pasivos": 0,
+    "detractores": 1,
+    "score": 94.87
+  },
+  {
+    "carrera": "Psicología",
+    "promotores": 42,
+    "pasivos": 4,
+    "detractores": 1,
+    "score": 87.23
+  }
+]
