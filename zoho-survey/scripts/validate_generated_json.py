@@ -190,6 +190,37 @@ def validate_dimensiones_invariants(value: List[dict]) -> None:
         raise ValueError("dimensiones.json no contiene filas validas con total > 0")
 
 
+def validate_respuestas_invariants(value: dict, filename: str) -> None:
+    """Invariantes de respuestas.json: cada fila tiene un numero por pregunta, cada numero
+    cae dentro de las opciones de esa pregunta, y el ID y la fecha acompanan a las filas."""
+    cabeceras = value.get("cabeceras")
+    opciones = value.get("opciones")
+    filas = value.get("filas")
+    if not isinstance(cabeceras, list) or not cabeceras:
+        raise ValueError(f"{filename}: no trae cabeceras")
+    if not isinstance(opciones, dict) or set(opciones) != set(cabeceras):
+        raise ValueError(f"{filename}: las opciones no corresponden exactamente a las cabeceras")
+    if not isinstance(filas, list) or not filas:
+        raise ValueError(f"{filename}: no trae filas")
+    if value.get("respuestas") != len(filas):
+        raise ValueError(f"{filename}: 'respuestas' ({value.get('respuestas')}) no coincide con las filas ({len(filas)})")
+    for nombre, lista in opciones.items():
+        if not lista:
+            raise ValueError(f"{filename}: la pregunta '{nombre}' no tiene opciones")
+    for i, fila in enumerate(filas):
+        if len(fila) != len(cabeceras):
+            raise ValueError(f"{filename}: la fila {i} tiene {len(fila)} valores y hay {len(cabeceras)} preguntas")
+        for j, indice in enumerate(fila):
+            if not isinstance(indice, int) or not 0 <= indice < len(opciones[cabeceras[j]]):
+                raise ValueError(
+                    f"{filename}: la fila {i} apunta a la opcion {indice} de '{cabeceras[j]}', "
+                    f"que tiene {len(opciones[cabeceras[j]])} opciones"
+                )
+    for campo in ("ids", "fechas"):
+        if campo in value and len(value[campo]) != len(filas):
+            raise ValueError(f"{filename}: '{campo}' tiene {len(value[campo])} valores y hay {len(filas)} filas")
+
+
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:
     """Invariante: la suma total debe ser > 0."""
     total = 0
