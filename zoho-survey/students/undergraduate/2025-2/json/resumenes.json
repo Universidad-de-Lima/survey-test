@@ -1,0 +1,3685 @@
+{
+  "version": "1.0",
+  "ids": [
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "10° Ciclo",
+      "total": 17
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "2° Ciclo",
+      "total": 22
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "3° Ciclo",
+      "total": 19
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "4° Ciclo",
+      "total": 65
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "5° Ciclo",
+      "total": 24
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "6° Ciclo",
+      "total": 14
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "7° Ciclo",
+      "total": 18
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "8° Ciclo",
+      "total": 24
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "9° Ciclo",
+      "total": 8
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "10° Ciclo",
+      "total": 8
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "1° Ciclo",
+      "total": 34
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "2° Ciclo",
+      "total": 53
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "3° Ciclo",
+      "total": 39
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "4° Ciclo",
+      "total": 72
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "5° Ciclo",
+      "total": 80
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "6° Ciclo",
+      "total": 69
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "7° Ciclo",
+      "total": 59
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "8° Ciclo",
+      "total": 62
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "9° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "10° Ciclo",
+      "total": 2
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "1° Ciclo",
+      "total": 1
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "2° Ciclo",
+      "total": 7
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "3° Ciclo",
+      "total": 5
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "4° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "5° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "6° Ciclo",
+      "total": 16
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "7° Ciclo",
+      "total": 8
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "8° Ciclo",
+      "total": 22
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "9° Ciclo",
+      "total": 3
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "10° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "1° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "2° Ciclo",
+      "total": 12
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "3° Ciclo",
+      "total": 14
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "4° Ciclo",
+      "total": 48
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "5° Ciclo",
+      "total": 28
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "6° Ciclo",
+      "total": 26
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "7° Ciclo",
+      "total": 26
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "8° Ciclo",
+      "total": 29
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "9° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "10° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "1° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "2° Ciclo",
+      "total": 28
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "3° Ciclo",
+      "total": 46
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "4° Ciclo",
+      "total": 103
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "5° Ciclo",
+      "total": 45
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "6° Ciclo",
+      "total": 71
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "7° Ciclo",
+      "total": 17
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "8° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "9° Ciclo",
+      "total": 11
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "10° Ciclo",
+      "total": 26
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "1° Ciclo",
+      "total": 5
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "2° Ciclo",
+      "total": 41
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "3° Ciclo",
+      "total": 51
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "4° Ciclo",
+      "total": 78
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "5° Ciclo",
+      "total": 42
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "6° Ciclo",
+      "total": 64
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "7° Ciclo",
+      "total": 36
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "8° Ciclo",
+      "total": 60
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "9° Ciclo",
+      "total": 33
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "10° Ciclo",
+      "total": 43
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "11° Ciclo",
+      "total": 20
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "12° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "1° Ciclo",
+      "total": 10
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "2° Ciclo",
+      "total": 47
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "3° Ciclo",
+      "total": 36
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "4° Ciclo",
+      "total": 72
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "5° Ciclo",
+      "total": 43
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "6° Ciclo",
+      "total": 105
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "7° Ciclo",
+      "total": 26
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "8° Ciclo",
+      "total": 57
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "9° Ciclo",
+      "total": 32
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "10° Ciclo",
+      "total": 7
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "1° Ciclo",
+      "total": 1
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "2° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "3° Ciclo",
+      "total": 44
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "4° Ciclo",
+      "total": 83
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "5° Ciclo",
+      "total": 22
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "6° Ciclo",
+      "total": 18
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "7° Ciclo",
+      "total": 38
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "8° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "9° Ciclo",
+      "total": 4
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "10° Ciclo",
+      "total": 13
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "1° Ciclo",
+      "total": 8
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "2° Ciclo",
+      "total": 13
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "3° Ciclo",
+      "total": 23
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "4° Ciclo",
+      "total": 57
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "5° Ciclo",
+      "total": 29
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "6° Ciclo",
+      "total": 44
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "7° Ciclo",
+      "total": 31
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "8° Ciclo",
+      "total": 23
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "9° Ciclo",
+      "total": 4
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "10° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "1° Ciclo",
+      "total": 27
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "2° Ciclo",
+      "total": 55
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "3° Ciclo",
+      "total": 24
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "4° Ciclo",
+      "total": 117
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "5° Ciclo",
+      "total": 70
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "6° Ciclo",
+      "total": 48
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "7° Ciclo",
+      "total": 42
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "8° Ciclo",
+      "total": 42
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "9° Ciclo",
+      "total": 13
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "10° Ciclo",
+      "total": 14
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "1° Ciclo",
+      "total": 19
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "2° Ciclo",
+      "total": 33
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "3° Ciclo",
+      "total": 31
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "4° Ciclo",
+      "total": 76
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "5° Ciclo",
+      "total": 44
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "6° Ciclo",
+      "total": 75
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "7° Ciclo",
+      "total": 37
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "8° Ciclo",
+      "total": 41
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "9° Ciclo",
+      "total": 12
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "10° Ciclo",
+      "total": 8
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "11° Ciclo",
+      "total": 6
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "12° Ciclo",
+      "total": 11
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "1° Ciclo",
+      "total": 6
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "2° Ciclo",
+      "total": 25
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "3° Ciclo",
+      "total": 1
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "4° Ciclo",
+      "total": 95
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "5° Ciclo",
+      "total": 21
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "6° Ciclo",
+      "total": 44
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "7° Ciclo",
+      "total": 27
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "8° Ciclo",
+      "total": 40
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "9° Ciclo",
+      "total": 32
+    }
+  ],
+  "nps_carrera": [
+    {
+      "carrera": "Administración",
+      "promotores": 353,
+      "pasivos": 122,
+      "detractores": 22,
+      "score": 66.6
+    },
+    {
+      "carrera": "Arquitectura",
+      "promotores": 137,
+      "pasivos": 65,
+      "detractores": 9,
+      "score": 60.66
+    },
+    {
+      "carrera": "Comunicación",
+      "promotores": 264,
+      "pasivos": 133,
+      "detractores": 39,
+      "score": 51.61
+    },
+    {
+      "carrera": "Contabilidad y Finanzas",
+      "promotores": 64,
+      "pasivos": 14,
+      "detractores": 6,
+      "score": 69.05
+    },
+    {
+      "carrera": "Derecho",
+      "promotores": 346,
+      "pasivos": 136,
+      "detractores": 30,
+      "score": 61.72
+    },
+    {
+      "carrera": "Economía",
+      "promotores": 157,
+      "pasivos": 84,
+      "detractores": 18,
+      "score": 53.67
+    },
+    {
+      "carrera": "Ingeniería Civil",
+      "promotores": 156,
+      "pasivos": 75,
+      "detractores": 14,
+      "score": 57.96
+    },
+    {
+      "carrera": "Ingeniería Industrial",
+      "promotores": 329,
+      "pasivos": 112,
+      "detractores": 18,
+      "score": 67.76
+    },
+    {
+      "carrera": "Ingeniería de Sistemas",
+      "promotores": 262,
+      "pasivos": 108,
+      "detractores": 12,
+      "score": 65.45
+    },
+    {
+      "carrera": "Marketing",
+      "promotores": 151,
+      "pasivos": 49,
+      "detractores": 13,
+      "score": 64.79
+    },
+    {
+      "carrera": "Negocios Internacionales",
+      "promotores": 255,
+      "pasivos": 111,
+      "detractores": 18,
+      "score": 61.72
+    },
+    {
+      "carrera": "Psicología",
+      "promotores": 195,
+      "pasivos": 102,
+      "detractores": 19,
+      "score": 55.7
+    }
+  ],
+  "csat_carrera": [
+    {
+      "carrera": "Administración",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 225,
+      "Muy satisfecho": 132,
+      "Satisfecho": 130,
+      "Insatisfecho": 8,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.99
+    },
+    {
+      "carrera": "Arquitectura",
+      "facultad": "Facultad de Arquitectura",
+      "Totalmente satisfecho": 62,
+      "Muy satisfecho": 61,
+      "Satisfecho": 86,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 99.05
+    },
+    {
+      "carrera": "Comunicación",
+      "facultad": "Facultad de Comunicación",
+      "Totalmente satisfecho": 137,
+      "Muy satisfecho": 127,
+      "Satisfecho": 144,
+      "Insatisfecho": 19,
+      "Totalmente insatisfecho": 9,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 93.58
+    },
+    {
+      "carrera": "Contabilidad y Finanzas",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 36,
+      "Muy satisfecho": 29,
+      "Satisfecho": 16,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.43
+    },
+    {
+      "carrera": "Derecho",
+      "facultad": "Facultad de Derecho",
+      "Totalmente satisfecho": 219,
+      "Muy satisfecho": 150,
+      "Satisfecho": 133,
+      "Insatisfecho": 9,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.05
+    },
+    {
+      "carrera": "Economía",
+      "facultad": "Facultad de Economía",
+      "Totalmente satisfecho": 91,
+      "Muy satisfecho": 78,
+      "Satisfecho": 78,
+      "Insatisfecho": 11,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.37
+    },
+    {
+      "carrera": "Ingeniería Civil",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 107,
+      "Muy satisfecho": 74,
+      "Satisfecho": 58,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 3,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.55
+    },
+    {
+      "carrera": "Ingeniería Industrial",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 224,
+      "Muy satisfecho": 115,
+      "Satisfecho": 108,
+      "Insatisfecho": 11,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.39
+    },
+    {
+      "carrera": "Ingeniería de Sistemas",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 186,
+      "Muy satisfecho": 105,
+      "Satisfecho": 83,
+      "Insatisfecho": 7,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.91
+    },
+    {
+      "carrera": "Marketing",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 80,
+      "Muy satisfecho": 57,
+      "Satisfecho": 66,
+      "Insatisfecho": 8,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.31
+    },
+    {
+      "carrera": "Negocios Internacionales",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 157,
+      "Muy satisfecho": 104,
+      "Satisfecho": 113,
+      "Insatisfecho": 7,
+      "Totalmente insatisfecho": 3,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.4
+    },
+    {
+      "carrera": "Psicología",
+      "facultad": "Facultad de Psicología",
+      "Totalmente satisfecho": 102,
+      "Muy satisfecho": 103,
+      "Satisfecho": 101,
+      "Insatisfecho": 10,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.84
+    }
+  ],
+  "nps_ciclo_carrera": [
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "10° Ciclo",
+      "promotores": 10,
+      "pasivos": 5,
+      "detractores": 2,
+      "score": 47.06
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "2° Ciclo",
+      "promotores": 14,
+      "pasivos": 7,
+      "detractores": 1,
+      "score": 59.09
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "3° Ciclo",
+      "promotores": 12,
+      "pasivos": 5,
+      "detractores": 2,
+      "score": 52.63
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "4° Ciclo",
+      "promotores": 43,
+      "pasivos": 21,
+      "detractores": 1,
+      "score": 64.62
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "5° Ciclo",
+      "promotores": 15,
+      "pasivos": 7,
+      "detractores": 2,
+      "score": 54.17
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "6° Ciclo",
+      "promotores": 12,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 85.71
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "7° Ciclo",
+      "promotores": 8,
+      "pasivos": 9,
+      "detractores": 1,
+      "score": 38.89
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "8° Ciclo",
+      "promotores": 19,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 79.17
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "9° Ciclo",
+      "promotores": 4,
+      "pasivos": 4,
+      "detractores": 0,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "10° Ciclo",
+      "promotores": 6,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "1° Ciclo",
+      "promotores": 28,
+      "pasivos": 4,
+      "detractores": 2,
+      "score": 76.47
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "2° Ciclo",
+      "promotores": 38,
+      "pasivos": 14,
+      "detractores": 1,
+      "score": 69.81
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "3° Ciclo",
+      "promotores": 26,
+      "pasivos": 12,
+      "detractores": 1,
+      "score": 64.1
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "4° Ciclo",
+      "promotores": 50,
+      "pasivos": 18,
+      "detractores": 4,
+      "score": 63.89
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "5° Ciclo",
+      "promotores": 52,
+      "pasivos": 21,
+      "detractores": 7,
+      "score": 56.25
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "6° Ciclo",
+      "promotores": 51,
+      "pasivos": 17,
+      "detractores": 1,
+      "score": 72.46
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "7° Ciclo",
+      "promotores": 40,
+      "pasivos": 17,
+      "detractores": 2,
+      "score": 64.41
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "8° Ciclo",
+      "promotores": 47,
+      "pasivos": 12,
+      "detractores": 3,
+      "score": 70.97
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "9° Ciclo",
+      "promotores": 15,
+      "pasivos": 5,
+      "detractores": 1,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "10° Ciclo",
+      "promotores": 2,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "1° Ciclo",
+      "promotores": 1,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "2° Ciclo",
+      "promotores": 5,
+      "pasivos": 1,
+      "detractores": 1,
+      "score": 57.14
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "3° Ciclo",
+      "promotores": 5,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "4° Ciclo",
+      "promotores": 8,
+      "pasivos": 1,
+      "detractores": 1,
+      "score": 70.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "5° Ciclo",
+      "promotores": 7,
+      "pasivos": 1,
+      "detractores": 2,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "6° Ciclo",
+      "promotores": 10,
+      "pasivos": 4,
+      "detractores": 2,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "7° Ciclo",
+      "promotores": 8,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "8° Ciclo",
+      "promotores": 17,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 77.27
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "9° Ciclo",
+      "promotores": 1,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 33.33
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "10° Ciclo",
+      "promotores": 8,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 80.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "1° Ciclo",
+      "promotores": 5,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "2° Ciclo",
+      "promotores": 6,
+      "pasivos": 5,
+      "detractores": 1,
+      "score": 41.67
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "3° Ciclo",
+      "promotores": 10,
+      "pasivos": 2,
+      "detractores": 2,
+      "score": 57.14
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "4° Ciclo",
+      "promotores": 35,
+      "pasivos": 10,
+      "detractores": 3,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "5° Ciclo",
+      "promotores": 18,
+      "pasivos": 6,
+      "detractores": 4,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "6° Ciclo",
+      "promotores": 18,
+      "pasivos": 7,
+      "detractores": 1,
+      "score": 65.38
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "7° Ciclo",
+      "promotores": 18,
+      "pasivos": 6,
+      "detractores": 2,
+      "score": 61.54
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "8° Ciclo",
+      "promotores": 27,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 93.1
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "9° Ciclo",
+      "promotores": 6,
+      "pasivos": 4,
+      "detractores": 0,
+      "score": 60.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "10° Ciclo",
+      "promotores": 12,
+      "pasivos": 8,
+      "detractores": 1,
+      "score": 52.38
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "1° Ciclo",
+      "promotores": 12,
+      "pasivos": 8,
+      "detractores": 1,
+      "score": 52.38
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "2° Ciclo",
+      "promotores": 17,
+      "pasivos": 9,
+      "detractores": 2,
+      "score": 53.57
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "3° Ciclo",
+      "promotores": 31,
+      "pasivos": 14,
+      "detractores": 1,
+      "score": 65.22
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "4° Ciclo",
+      "promotores": 61,
+      "pasivos": 36,
+      "detractores": 6,
+      "score": 53.4
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "5° Ciclo",
+      "promotores": 31,
+      "pasivos": 11,
+      "detractores": 3,
+      "score": 62.22
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "6° Ciclo",
+      "promotores": 49,
+      "pasivos": 18,
+      "detractores": 4,
+      "score": 63.38
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "7° Ciclo",
+      "promotores": 15,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 88.24
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "8° Ciclo",
+      "promotores": 18,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 85.71
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "9° Ciclo",
+      "promotores": 9,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 81.82
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "10° Ciclo",
+      "promotores": 19,
+      "pasivos": 5,
+      "detractores": 2,
+      "score": 65.38
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "1° Ciclo",
+      "promotores": 5,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "2° Ciclo",
+      "promotores": 29,
+      "pasivos": 12,
+      "detractores": 0,
+      "score": 70.73
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "3° Ciclo",
+      "promotores": 31,
+      "pasivos": 17,
+      "detractores": 3,
+      "score": 54.9
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "4° Ciclo",
+      "promotores": 47,
+      "pasivos": 25,
+      "detractores": 6,
+      "score": 52.56
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "5° Ciclo",
+      "promotores": 29,
+      "pasivos": 10,
+      "detractores": 3,
+      "score": 61.9
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "6° Ciclo",
+      "promotores": 37,
+      "pasivos": 24,
+      "detractores": 3,
+      "score": 53.12
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "7° Ciclo",
+      "promotores": 23,
+      "pasivos": 10,
+      "detractores": 3,
+      "score": 55.56
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "8° Ciclo",
+      "promotores": 30,
+      "pasivos": 20,
+      "detractores": 10,
+      "score": 33.33
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "9° Ciclo",
+      "promotores": 14,
+      "pasivos": 10,
+      "detractores": 9,
+      "score": 15.15
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "10° Ciclo",
+      "promotores": 30,
+      "pasivos": 8,
+      "detractores": 5,
+      "score": 58.14
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "11° Ciclo",
+      "promotores": 15,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "12° Ciclo",
+      "promotores": 14,
+      "pasivos": 6,
+      "detractores": 1,
+      "score": 61.9
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "1° Ciclo",
+      "promotores": 7,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 70.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "2° Ciclo",
+      "promotores": 29,
+      "pasivos": 16,
+      "detractores": 2,
+      "score": 57.45
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "3° Ciclo",
+      "promotores": 24,
+      "pasivos": 10,
+      "detractores": 2,
+      "score": 61.11
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "4° Ciclo",
+      "promotores": 52,
+      "pasivos": 19,
+      "detractores": 1,
+      "score": 70.83
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "5° Ciclo",
+      "promotores": 26,
+      "pasivos": 13,
+      "detractores": 4,
+      "score": 51.16
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "6° Ciclo",
+      "promotores": 76,
+      "pasivos": 23,
+      "detractores": 6,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "7° Ciclo",
+      "promotores": 13,
+      "pasivos": 9,
+      "detractores": 4,
+      "score": 34.62
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "8° Ciclo",
+      "promotores": 40,
+      "pasivos": 12,
+      "detractores": 5,
+      "score": 61.4
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "9° Ciclo",
+      "promotores": 20,
+      "pasivos": 12,
+      "detractores": 0,
+      "score": 62.5
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "10° Ciclo",
+      "promotores": 2,
+      "pasivos": 4,
+      "detractores": 1,
+      "score": 14.29
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "1° Ciclo",
+      "promotores": 0,
+      "pasivos": 1,
+      "detractores": 0,
+      "score": 0.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "2° Ciclo",
+      "promotores": 16,
+      "pasivos": 3,
+      "detractores": 2,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "3° Ciclo",
+      "promotores": 25,
+      "pasivos": 17,
+      "detractores": 2,
+      "score": 52.27
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "4° Ciclo",
+      "promotores": 49,
+      "pasivos": 28,
+      "detractores": 6,
+      "score": 51.81
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "5° Ciclo",
+      "promotores": 9,
+      "pasivos": 13,
+      "detractores": 0,
+      "score": 40.91
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "6° Ciclo",
+      "promotores": 13,
+      "pasivos": 3,
+      "detractores": 2,
+      "score": 61.11
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "7° Ciclo",
+      "promotores": 26,
+      "pasivos": 9,
+      "detractores": 3,
+      "score": 60.53
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "8° Ciclo",
+      "promotores": 15,
+      "pasivos": 5,
+      "detractores": 1,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "9° Ciclo",
+      "promotores": 2,
+      "pasivos": 1,
+      "detractores": 1,
+      "score": 25.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "10° Ciclo",
+      "promotores": 8,
+      "pasivos": 4,
+      "detractores": 1,
+      "score": 53.85
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "1° Ciclo",
+      "promotores": 6,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "2° Ciclo",
+      "promotores": 8,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 61.54
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "3° Ciclo",
+      "promotores": 17,
+      "pasivos": 5,
+      "detractores": 1,
+      "score": 69.57
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "4° Ciclo",
+      "promotores": 35,
+      "pasivos": 18,
+      "detractores": 4,
+      "score": 54.39
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "5° Ciclo",
+      "promotores": 17,
+      "pasivos": 11,
+      "detractores": 1,
+      "score": 55.17
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "6° Ciclo",
+      "promotores": 30,
+      "pasivos": 10,
+      "detractores": 4,
+      "score": 59.09
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "7° Ciclo",
+      "promotores": 19,
+      "pasivos": 11,
+      "detractores": 1,
+      "score": 58.06
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "8° Ciclo",
+      "promotores": 14,
+      "pasivos": 7,
+      "detractores": 2,
+      "score": 52.17
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "9° Ciclo",
+      "promotores": 2,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "10° Ciclo",
+      "promotores": 15,
+      "pasivos": 4,
+      "detractores": 2,
+      "score": 61.9
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "1° Ciclo",
+      "promotores": 19,
+      "pasivos": 8,
+      "detractores": 0,
+      "score": 70.37
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "2° Ciclo",
+      "promotores": 31,
+      "pasivos": 23,
+      "detractores": 1,
+      "score": 54.55
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "3° Ciclo",
+      "promotores": 18,
+      "pasivos": 4,
+      "detractores": 2,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "4° Ciclo",
+      "promotores": 86,
+      "pasivos": 27,
+      "detractores": 4,
+      "score": 70.09
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "5° Ciclo",
+      "promotores": 54,
+      "pasivos": 13,
+      "detractores": 3,
+      "score": 72.86
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "6° Ciclo",
+      "promotores": 38,
+      "pasivos": 9,
+      "detractores": 1,
+      "score": 77.08
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "7° Ciclo",
+      "promotores": 31,
+      "pasivos": 10,
+      "detractores": 1,
+      "score": 71.43
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "8° Ciclo",
+      "promotores": 26,
+      "pasivos": 12,
+      "detractores": 4,
+      "score": 52.38
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "9° Ciclo",
+      "promotores": 11,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 84.62
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "10° Ciclo",
+      "promotores": 8,
+      "pasivos": 6,
+      "detractores": 0,
+      "score": 57.14
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "1° Ciclo",
+      "promotores": 16,
+      "pasivos": 2,
+      "detractores": 1,
+      "score": 78.95
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "2° Ciclo",
+      "promotores": 19,
+      "pasivos": 14,
+      "detractores": 0,
+      "score": 57.58
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "3° Ciclo",
+      "promotores": 23,
+      "pasivos": 6,
+      "detractores": 2,
+      "score": 67.74
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "4° Ciclo",
+      "promotores": 48,
+      "pasivos": 26,
+      "detractores": 2,
+      "score": 60.53
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "5° Ciclo",
+      "promotores": 34,
+      "pasivos": 8,
+      "detractores": 2,
+      "score": 72.73
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "6° Ciclo",
+      "promotores": 60,
+      "pasivos": 13,
+      "detractores": 2,
+      "score": 77.33
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "7° Ciclo",
+      "promotores": 20,
+      "pasivos": 16,
+      "detractores": 1,
+      "score": 51.35
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "8° Ciclo",
+      "promotores": 25,
+      "pasivos": 14,
+      "detractores": 2,
+      "score": 56.1
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "9° Ciclo",
+      "promotores": 9,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "10° Ciclo",
+      "promotores": 6,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "11° Ciclo",
+      "promotores": 3,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 50.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "12° Ciclo",
+      "promotores": 5,
+      "pasivos": 5,
+      "detractores": 1,
+      "score": 36.36
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "1° Ciclo",
+      "promotores": 4,
+      "pasivos": 2,
+      "detractores": 0,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "2° Ciclo",
+      "promotores": 16,
+      "pasivos": 8,
+      "detractores": 1,
+      "score": 60.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "3° Ciclo",
+      "promotores": 0,
+      "pasivos": 1,
+      "detractores": 0,
+      "score": 0.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "4° Ciclo",
+      "promotores": 60,
+      "pasivos": 30,
+      "detractores": 5,
+      "score": 57.89
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "5° Ciclo",
+      "promotores": 16,
+      "pasivos": 3,
+      "detractores": 2,
+      "score": 66.67
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "6° Ciclo",
+      "promotores": 25,
+      "pasivos": 15,
+      "detractores": 4,
+      "score": 47.73
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "7° Ciclo",
+      "promotores": 14,
+      "pasivos": 10,
+      "detractores": 3,
+      "score": 40.74
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "8° Ciclo",
+      "promotores": 25,
+      "pasivos": 12,
+      "detractores": 3,
+      "score": 55.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "9° Ciclo",
+      "promotores": 21,
+      "pasivos": 11,
+      "detractores": 0,
+      "score": 65.62
+    }
+  ],
+  "csat_ciclo_carrera": [
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 3,
+      "Muy satisfecho": 5,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.12
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 7,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 7,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 23,
+      "Muy satisfecho": 16,
+      "Satisfecho": 25,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.46
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 9,
+      "Satisfecho": 11,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 6,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 3,
+      "Satisfecho": 10,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 6,
+      "Satisfecho": 9,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 3,
+      "Muy satisfecho": 2,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 6,
+      "Muy satisfecho": 1,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 10,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 21,
+      "Muy satisfecho": 17,
+      "Satisfecho": 15,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 14,
+      "Satisfecho": 9,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 34,
+      "Muy satisfecho": 21,
+      "Satisfecho": 16,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.61
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 36,
+      "Muy satisfecho": 20,
+      "Satisfecho": 20,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 27,
+      "Muy satisfecho": 18,
+      "Satisfecho": 23,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.55
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 23,
+      "Muy satisfecho": 17,
+      "Satisfecho": 17,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.61
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 37,
+      "Muy satisfecho": 7,
+      "Satisfecho": 17,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.39
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 7,
+      "Satisfecho": 4,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.24
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 2,
+      "Muy satisfecho": 0,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 0,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 0,
+      "Muy satisfecho": 4,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 1,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 4,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 6,
+      "Muy satisfecho": 0,
+      "Satisfecho": 2,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 80.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 5,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 93.75
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 3,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 10,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 0,
+      "Muy satisfecho": 2,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 1,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 4,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 1,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 83.33
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 2,
+      "Muy satisfecho": 6,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.86
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 15,
+      "Satisfecho": 15,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.83
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 10,
+      "Muy satisfecho": 7,
+      "Satisfecho": 8,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 89.29
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 7,
+      "Satisfecho": 12,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 11,
+      "Muy satisfecho": 4,
+      "Satisfecho": 9,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.31
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 9,
+      "Satisfecho": 5,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Marketing",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 6,
+      "Muy satisfecho": 3,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 8,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 3,
+      "Satisfecho": 11,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 11,
+      "Muy satisfecho": 10,
+      "Satisfecho": 4,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 89.29
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 20,
+      "Muy satisfecho": 15,
+      "Satisfecho": 11,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 38,
+      "Muy satisfecho": 27,
+      "Satisfecho": 37,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 99.03
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 17,
+      "Muy satisfecho": 11,
+      "Satisfecho": 16,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.78
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 31,
+      "Muy satisfecho": 17,
+      "Satisfecho": 20,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.77
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 5,
+      "Satisfecho": 3,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.12
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 6,
+      "Satisfecho": 5,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.24
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 2,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 6,
+      "Muy satisfecho": 9,
+      "Satisfecho": 9,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.31
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 2,
+      "Muy satisfecho": 3,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 20,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 20,
+      "Muy satisfecho": 7,
+      "Satisfecho": 21,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.12
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 26,
+      "Muy satisfecho": 27,
+      "Satisfecho": 24,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.72
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 16,
+      "Satisfecho": 12,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.24
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 17,
+      "Satisfecho": 26,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.19
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 8,
+      "Satisfecho": 11,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.44
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 15,
+      "Satisfecho": 23,
+      "Insatisfecho": 5,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 88.33
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 5,
+      "Satisfecho": 10,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 3,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 81.82
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 21,
+      "Muy satisfecho": 13,
+      "Satisfecho": 8,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.67
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "11° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 5,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "12° Ciclo",
+      "Totalmente satisfecho": 10,
+      "Muy satisfecho": 4,
+      "Satisfecho": 7,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 3,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 17,
+      "Muy satisfecho": 16,
+      "Satisfecho": 14,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 18,
+      "Muy satisfecho": 10,
+      "Satisfecho": 7,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.22
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 29,
+      "Muy satisfecho": 31,
+      "Satisfecho": 11,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.61
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 20,
+      "Muy satisfecho": 10,
+      "Satisfecho": 12,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.67
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 45,
+      "Muy satisfecho": 30,
+      "Satisfecho": 28,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.1
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 7,
+      "Satisfecho": 10,
+      "Insatisfecho": 4,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 84.62
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 26,
+      "Muy satisfecho": 15,
+      "Satisfecho": 16,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 6,
+      "Satisfecho": 11,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 2,
+      "Satisfecho": 2,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 71.43
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 0,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 5,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 17,
+      "Muy satisfecho": 10,
+      "Satisfecho": 15,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.45
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 27,
+      "Muy satisfecho": 20,
+      "Satisfecho": 32,
+      "Insatisfecho": 4,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.18
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 7,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 6,
+      "Satisfecho": 3,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 88.89
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 13,
+      "Satisfecho": 11,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.74
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 4,
+      "Muy satisfecho": 15,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 2,
+      "Muy satisfecho": 0,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 3,
+      "Muy satisfecho": 5,
+      "Satisfecho": 5,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 3,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 3,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 7,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 23,
+      "Muy satisfecho": 14,
+      "Satisfecho": 17,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 2,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 94.74
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 11,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 24,
+      "Muy satisfecho": 13,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.45
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 9,
+      "Muy satisfecho": 13,
+      "Satisfecho": 9,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 5,
+      "Satisfecho": 9,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.65
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 3,
+      "Muy satisfecho": 0,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 7,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.24
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 5,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 22,
+      "Muy satisfecho": 12,
+      "Satisfecho": 21,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 12,
+      "Muy satisfecho": 5,
+      "Satisfecho": 7,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 60,
+      "Muy satisfecho": 32,
+      "Satisfecho": 21,
+      "Insatisfecho": 4,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.58
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 40,
+      "Muy satisfecho": 12,
+      "Satisfecho": 17,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.57
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 26,
+      "Muy satisfecho": 13,
+      "Satisfecho": 6,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 93.75
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 18,
+      "Muy satisfecho": 13,
+      "Satisfecho": 11,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 14,
+      "Satisfecho": 10,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.86
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 2,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 7,
+      "Satisfecho": 1,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 92.86
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 5,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 9,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 16,
+      "Muy satisfecho": 8,
+      "Satisfecho": 7,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 40,
+      "Muy satisfecho": 21,
+      "Satisfecho": 14,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.68
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 24,
+      "Muy satisfecho": 11,
+      "Satisfecho": 9,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 36,
+      "Muy satisfecho": 14,
+      "Satisfecho": 22,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.0
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 16,
+      "Satisfecho": 7,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 1,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.3
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 17,
+      "Muy satisfecho": 8,
+      "Satisfecho": 14,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.12
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 6,
+      "Muy satisfecho": 6,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "10° Ciclo",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 5,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "11° Ciclo",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 2,
+      "Satisfecho": 3,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "12° Ciclo",
+      "Totalmente satisfecho": 3,
+      "Muy satisfecho": 7,
+      "Satisfecho": 0,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 90.91
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "1° Ciclo",
+      "Totalmente satisfecho": 2,
+      "Muy satisfecho": 2,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "2° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 11,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "3° Ciclo",
+      "Totalmente satisfecho": 0,
+      "Muy satisfecho": 0,
+      "Satisfecho": 1,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "4° Ciclo",
+      "Totalmente satisfecho": 31,
+      "Muy satisfecho": 29,
+      "Satisfecho": 32,
+      "Insatisfecho": 3,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.84
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "5° Ciclo",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 6,
+      "Satisfecho": 6,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.24
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "6° Ciclo",
+      "Totalmente satisfecho": 17,
+      "Muy satisfecho": 12,
+      "Satisfecho": 13,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 95.45
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "7° Ciclo",
+      "Totalmente satisfecho": 5,
+      "Muy satisfecho": 8,
+      "Satisfecho": 13,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.3
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "8° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 14,
+      "Satisfecho": 12,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.5
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "9° Ciclo",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 7,
+      "Satisfecho": 12,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    }
+  ]
+}

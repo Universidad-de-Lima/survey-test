@@ -1,0 +1,311 @@
+{
+  "version": "1.0",
+  "ids": [
+    {
+      "facultad": "Facultad de Arquitectura",
+      "carrera": "Arquitectura",
+      "ciclo": "NA",
+      "total": 22
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Administración",
+      "ciclo": "NA",
+      "total": 83
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Contabilidad y Finanzas",
+      "ciclo": "NA",
+      "total": 12
+    },
+    {
+      "facultad": "Facultad de Ciencias Empresariales",
+      "carrera": "Negocios Internacionales",
+      "ciclo": "NA",
+      "total": 39
+    },
+    {
+      "facultad": "Facultad de Comunicación",
+      "carrera": "Comunicación",
+      "ciclo": "NA",
+      "total": 139
+    },
+    {
+      "facultad": "Facultad de Derecho",
+      "carrera": "Derecho",
+      "ciclo": "NA",
+      "total": 45
+    },
+    {
+      "facultad": "Facultad de Economía",
+      "carrera": "Economía",
+      "ciclo": "NA",
+      "total": 14
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Ambiental",
+      "ciclo": "NA",
+      "total": 1
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Civil",
+      "ciclo": "NA",
+      "total": 22
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería Industrial",
+      "ciclo": "NA",
+      "total": 145
+    },
+    {
+      "facultad": "Facultad de Ingeniería",
+      "carrera": "Ingeniería de Sistemas",
+      "ciclo": "NA",
+      "total": 29
+    },
+    {
+      "facultad": "Facultad de Psicología",
+      "carrera": "Psicología",
+      "ciclo": "NA",
+      "total": 47
+    }
+  ],
+  "nps_carrera": [
+    {
+      "carrera": "Administración",
+      "promotores": 74,
+      "pasivos": 5,
+      "detractores": 4,
+      "score": 84.34
+    },
+    {
+      "carrera": "Arquitectura",
+      "promotores": 19,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 86.36
+    },
+    {
+      "carrera": "Comunicación",
+      "promotores": 111,
+      "pasivos": 25,
+      "detractores": 3,
+      "score": 77.7
+    },
+    {
+      "carrera": "Contabilidad y Finanzas",
+      "promotores": 9,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 75.0
+    },
+    {
+      "carrera": "Derecho",
+      "promotores": 40,
+      "pasivos": 5,
+      "detractores": 0,
+      "score": 88.89
+    },
+    {
+      "carrera": "Economía",
+      "promotores": 11,
+      "pasivos": 3,
+      "detractores": 0,
+      "score": 78.57
+    },
+    {
+      "carrera": "Ingeniería Ambiental",
+      "promotores": 1,
+      "pasivos": 0,
+      "detractores": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Ingeniería Civil",
+      "promotores": 18,
+      "pasivos": 4,
+      "detractores": 0,
+      "score": 81.82
+    },
+    {
+      "carrera": "Ingeniería Industrial",
+      "promotores": 135,
+      "pasivos": 9,
+      "detractores": 1,
+      "score": 92.41
+    },
+    {
+      "carrera": "Ingeniería de Sistemas",
+      "promotores": 25,
+      "pasivos": 3,
+      "detractores": 1,
+      "score": 82.76
+    },
+    {
+      "carrera": "Negocios Internacionales",
+      "promotores": 38,
+      "pasivos": 0,
+      "detractores": 1,
+      "score": 94.87
+    },
+    {
+      "carrera": "Psicología",
+      "promotores": 42,
+      "pasivos": 4,
+      "detractores": 1,
+      "score": 87.23
+    }
+  ],
+  "csat_carrera": [
+    {
+      "carrera": "Administración",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 48,
+      "Muy satisfecho": 22,
+      "Satisfecho": 11,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.59
+    },
+    {
+      "carrera": "Arquitectura",
+      "facultad": "Facultad de Arquitectura",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 9,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Comunicación",
+      "facultad": "Facultad de Comunicación",
+      "Totalmente satisfecho": 62,
+      "Muy satisfecho": 41,
+      "Satisfecho": 34,
+      "Insatisfecho": 2,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 98.56
+    },
+    {
+      "carrera": "Contabilidad y Finanzas",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 8,
+      "Muy satisfecho": 2,
+      "Satisfecho": 2,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Derecho",
+      "facultad": "Facultad de Derecho",
+      "Totalmente satisfecho": 25,
+      "Muy satisfecho": 14,
+      "Satisfecho": 6,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Economía",
+      "facultad": "Facultad de Economía",
+      "Totalmente satisfecho": 7,
+      "Muy satisfecho": 3,
+      "Satisfecho": 4,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Ingeniería Ambiental",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 1,
+      "Muy satisfecho": 0,
+      "Satisfecho": 0,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Ingeniería Civil",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 13,
+      "Muy satisfecho": 4,
+      "Satisfecho": 5,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Ingeniería Industrial",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 102,
+      "Muy satisfecho": 26,
+      "Satisfecho": 17,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    },
+    {
+      "carrera": "Ingeniería de Sistemas",
+      "facultad": "Facultad de Ingeniería",
+      "Totalmente satisfecho": 15,
+      "Muy satisfecho": 10,
+      "Satisfecho": 3,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 96.55
+    },
+    {
+      "carrera": "Negocios Internacionales",
+      "facultad": "Facultad de Ciencias Empresariales",
+      "Totalmente satisfecho": 20,
+      "Muy satisfecho": 13,
+      "Satisfecho": 5,
+      "Insatisfecho": 1,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 97.44
+    },
+    {
+      "carrera": "Psicología",
+      "facultad": "Facultad de Psicología",
+      "Totalmente satisfecho": 30,
+      "Muy satisfecho": 9,
+      "Satisfecho": 8,
+      "Insatisfecho": 0,
+      "Totalmente insatisfecho": 0,
+      "No utilizo": 0,
+      "No conozco": 0,
+      "score": 100.0
+    }
+  ],
+  "nps_ciclo_carrera": [],
+  "csat_ciclo_carrera": []
+}
