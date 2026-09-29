@@ -658,6 +658,114 @@ window.SurveyPortalPreguntas = (function () {
     });
   }
 
+  // ---------- contexto del asistente (documento base) y menu del periodo ----------
+  var CONTEXTO = null;   // asistente_contexto.json (chico: se lee una vez por carga)
+
+  function cargarContexto() {
+    if (CONTEXTO) return Promise.resolve(CONTEXTO);
+    return leer('shared/config/asistente_contexto.json').catch(function () { return null; }).then(function (x) {
+      CONTEXTO = x || {};
+      return CONTEXTO;
+    });
+  }
+
+  // El texto que viaja como contexto: solo las secciones de prosa (las palabras
+  // coloquiales ya van dentro del menu).
+  function textoDeContexto(ctx) {
+    if (!ctx) return '';
+    var partes = [];
+    [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'], ['reglas', 'Reglas']].forEach(function (par) {
+      var lista = ctx[par[0]];
+      if (lista && lista.length) {
+        partes.push('## ' + par[1] + '\n' + lista.map(function (x) { return '- ' + x; }).join('\n'));
+      }
+    });
+    return partes.join('\n\n');
+  }
+
+  function etiquetaDe(p) { return p.nombre + ' ' + p.periodo; }
+
+  // El menu del periodo: que preguntas hay, con que palabras se piden y que opciones
+  // tienen. Es lo unico que el modelo puede elegir.
+  function construirMenu(p, tabla, ctx) {
+    var palabras = (ctx && ctx.palabras_coloquiales) || {};
+    var lineas = ['## Menú — ' + etiquetaDe(p) + ' (' + n(tabla.respuestas) + ' respuestas, ' +
+                  tabla.cabeceras.length + ' preguntas)'];
+    tabla.cabeceras.forEach(function (c) {
+      var ops = (tabla.opciones[c] || []).filter(function (o) { return sin(o) !== sin('(sin respuesta)'); });
+      var coloq = palabras[c] || [];
+      lineas.push('- ' + c + (coloq.length ? ' (se pide como: ' + coloq.join(', ') + ')' : '') +
+                  ' -> ' + ops.join(' · '));
+    });
+    return lineas.join('\n');
+  }
+
+  // Ejecuta el formulario sobre la tabla: valida cada nombre contra lo publicado y
+  // cuenta. Devuelve la respuesta, o {problema: motivo} si algun nombre no existe.
+  function ejecutarFormulario(p, tabla, f) {
+    var cab = tabla.cabeceras || [];
+    function exacto(nombre) {
+      var x = sin(nombre);
+      var halladas = cab.filter(function (c) { return sin(c) === x; });
+      return halladas.length ? halladas[0] : null;
+    }
+    function valoresDe(pregunta, lista) {
+      var ops = tabla.opciones[pregunta] || [];
+      var malos = (lista || []).filter(function (v) {
+        return !ops.some(function (o) { return sin(o) === sin(v); });
+      });
+      if (malos.length) return { problema: 'No encontré estas opciones en "' + pregunta + '": ' + malos.join(', ') + '.' };
+      return { valores: (lista || []).map(function (v) {
+        return ops.filter(function (o) { return sin(o) === sin(v); })[0];
+      }) };
+    }
+    var filtros = [];
+    var listaFiltros = f.filtros || [];
+    for (var i = 0; i < listaFiltros.length; i++) {
+      var pregunta = exacto(listaFiltros[i].pregunta);
+      if (!pregunta) return { problema: 'No encontré la pregunta "' + listaFiltros[i].pregunta + '" en las encuestas publicadas.' };
+      var v = valoresDe(pregunta, listaFiltros[i].valores);
+      if (v.problema) return v;
+      filtros.push({ pregunta: pregunta, opciones: v.valores });
+    }
+    var sub = tabla.filas.filter(function (fila) {
+      return filtros.every(function (cada) {
+        var idx = cab.indexOf(cada.pregunta);
+        return cada.opciones.some(function (o) {
+          return (tabla.opciones[cada.pregunta] || []).indexOf(o) === fila[idx];
+        });
+      });
+    });
+    var filtroTexto = filtros.map(function (cada) {
+      return cada.pregunta + ' = ' + cada.opciones.join(' o ');
+    }).join('; ');
+    var denom = sub.length;
+    var cabecera = (filtroTexto ? 'Filtro: ' + filtroTexto + ' -> ' : 'Total: ') +
+                   n(denom) + ' respuestas de ' + n(tabla.respuestas) + '.';
+
+    if (f.pregunta_objetivo) {
+      var objetivo = exacto(f.pregunta_objetivo);
+      if (!objetivo) return { problema: 'No encontré la pregunta "' + f.pregunta_objetivo + '" en las encuestas publicadas.' };
+      var vo = valoresDe(objetivo, f.valores_objetivo);
+      if (vo.problema) return vo;
+      if (!vo.valores.length) return { problema: 'No se indicó qué valores contar de "' + objetivo + '".' };
+      var cuenta = contarEnTabla(tabla, sub, objetivo, vo.valores);
+      return {
+        titulo: 'Cruce: ' + objetivo + ' — ' + (filtroTexto || 'todas las respuestas'),
+        lineas: [cabecera,
+                 vo.valores.join(' / ') + ': ' + n(cuenta) + ' de ' + n(denom) +
+                   ' (' + pct(denom ? 100 * cuenta / denom : 0) + ').'],
+        fuentes: [fuente(p, 'respuestas.json')]
+      };
+    }
+    if (!filtroTexto) return null;   // no hay nada que contar
+    return {
+      titulo: 'Cruce: ' + filtroTexto,
+      lineas: [cabecera],
+      fuentes: [fuente(p, 'respuestas.json')]
+    };
+  }
+
   // ---------- registro de preguntas y mas frecuentes ----------
   // Se manda la pregunta tal cual (el servidor le quita correos, telefonos y
   // numeros largos antes de guardarla). Si el registro falla, la respuesta al
@@ -696,11 +804,17 @@ window.SurveyPortalPreguntas = (function () {
     periodos: 'que datos hay'
   };
 
-  function interpretarConIA(texto) {
+  // Manda la pregunta con el contexto y el menu; el modelo devuelve el formulario
+  // (nunca cifras: los numeros los saca la pagina de los JSON publicados).
+  function interpretarConIA(texto, contexto, menu) {
     return fetch(INTERPRETE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pregunta: String(texto).slice(0, 300) })
+      body: JSON.stringify({
+        pregunta: String(texto).slice(0, 300),
+        contexto: String(contexto || '').slice(0, 6000),
+        menu: String(menu || '').slice(0, 16000)
+      })
     }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { return (d && d.consulta) ? d.consulta : null; })
       .catch(function () { return null; });
@@ -732,21 +846,41 @@ window.SurveyPortalPreguntas = (function () {
 
   // Responde: primero con las palabras conocidas; si no alcanzan, con la IA; y si tampoco,
   // el aviso de siempre. En ningun caso el numero sale del modelo.
+  // Responde: primero las palabras conocidas; si no alcanzan, el contexto + el menu
+  // del periodo + la IA; y lo que devuelve se valida contra los datos publicados
+  // antes de responder. En ningun caso el numero sale del modelo.
   function responderConIA(texto) {
     return cargar().then(function () {
       return Promise.resolve(respuesta(sin(texto)));
     }).then(function (r) {
       if (r && r.alcance !== false) return r;
 
-      return interpretarConIA(texto).then(function (c) {
-        if (!c || c.dato === 'ninguna') return noSe(null);
-        if (c.entidad && !entidadConocida(c.entidad)) {
-          return noSe('No encontre "' + c.entidad + '" entre las carreras, facultades o ciclos publicados.');
+      var p = periodoDeLaPregunta(sin(texto), '1.0');
+      if (!p || !p.base) return noSe(null);
+      return Promise.all([cargarTabla(p), cargarContexto()]).then(function (cargados) {
+        var tabla = cargados[0];
+        var ctx = cargados[1];
+        if (!tabla || !tabla.cabeceras) return null;
+        return interpretarConIA(texto, textoDeContexto(ctx), construirMenu(p, tabla, ctx))
+          .then(function (f) { return { p: p, tabla: tabla, f: f }; });
+      }).then(function (x) {
+        if (!x || !x.f) return noSe(null);
+        var f = x.f;
+        if (f.se_puede === false || f.operacion === 'ninguna') {
+          return noSe(f.motivo ? String(f.motivo) : null);
         }
-        var frase = fraseDeConsulta(c);
+        if (f.pregunta_objetivo || (f.filtros || []).length) {
+          var r2 = ejecutarFormulario(x.p, x.tabla, f);
+          if (r2 && r2.problema) return noSe(r2.problema);
+          if (r2) return r2;
+        }
+        if (f.entidad && !entidadConocida(f.entidad)) {
+          return noSe('No encontre "' + f.entidad + '" entre las carreras, facultades o ciclos publicados.');
+        }
+        var frase = fraseDeConsulta({ dato: f.operacion, entidad: f.entidad || '', orden: f.orden || '' });
         if (!frase) return noSe(null);
-        return Promise.resolve(respuesta(sin(frase))).then(function (r2) {
-          return (r2 && r2.alcance !== false) ? r2 : noSe(null);
+        return Promise.resolve(respuesta(sin(frase))).then(function (r3) {
+          return (r3 && r3.alcance !== false) ? r3 : noSe(null);
         });
       });
     });

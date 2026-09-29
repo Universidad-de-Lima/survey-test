@@ -23,7 +23,8 @@ require(path.join(raiz, 'shared/js/utils/formatters.js'));
 require(path.join(raiz, 'shared/js/portal/portal-preguntas.js'));
 
 // Respuesta simulada del traductor (se cambia en cada prueba).
-let consultaSimulada = { dato: 'satisfaccion', periodo: '2026-1', entidad: 'Psicología', orden: '' };
+// Respuesta simulada del formulario (se cambia en cada prueba).
+let consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
 const llamadasExternas = [];
 global.fetch = function (url, opciones) {
   // Las direcciones externas (el registro de preguntas) no se piden de verdad:
@@ -93,6 +94,18 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   cruceAlumnos = await P.responder('De los alumnos de Economía, ¿cuántos están satisfechos con su perfil de egreso?');
   cruceSinFiltro = await P.responder('¿Cuál es la satisfacción con la Universidad de Lima en 2026-1?');
 
+  // El formulario con contexto y menu: el caso del usuario (Economia) y dos fallos.
+  // Las dos preguntas de fallo son las que YA se sabe que no alcanzan a las reglas: la
+  // familia de conteos responde "cuantos alumnos..." con el total del periodo aunque no
+  // reconozca la carrera, asi que aqui no sirve para probar el formulario.
+  consultaSimulada = { se_puede: true, operacion: 'porcentaje', periodo: '', filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }], pregunta_objetivo: 'Situación laboral', valores_objetivo: ['Trabajador dependiente', 'Trabajador independiente', 'Prácticas profesionales', 'Prácticas pre - profesionales'], entidad: '', orden: '', motivo: '' };
+  const formEconomia = await P.responderConIA('¿qué porcentaje de graduados de la carrera de economía trabajan?');
+  consultaSimulada = { se_puede: true, operacion: 'contar', periodo: '', filtros: [{ pregunta: 'Carrera', valores: ['Carrera Inexistente'] }], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: '' };
+  const formRaro = await P.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
+  consultaSimulada = { se_puede: false, operacion: 'ninguna', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: 'Eso no está en las encuestas.' };
+  const formNo = await P.responderConIA('¿cómo estará el clima mañana?');
+  consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
+
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
 
@@ -160,6 +173,35 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(fuentes(cruceSinFiltro), 'resumenes.json', 'la fuente de siempre');
   });
 
+  test('el formulario con el menú responde el cruce de Economía que trabajan (14 de 14)', () => {
+    assertTrue(formEconomia.alcance !== false, 'debe responder');
+    assertIncludes(texto(formEconomia), '14', 'los graduados de Economía');
+    assertIncludes(texto(formEconomia), '100', 'el porcentaje');
+    assertIncludes(texto(formEconomia), 'Trabajador dependiente', 'los valores contados');
+    assertIncludes(fuentes(formEconomia), 'respuestas.json', 'la cita de la tabla');
+  });
+
+  test('si el formulario nombra una opción que no existe, se avisa y no se cuenta', () => {
+    assertTrue(formRaro.alcance === false, 'no debe responder de más');
+    assertIncludes(texto(formRaro), 'No encontré', 'debe decir que no la encontró');
+  });
+
+  test('si el formulario dice que no se puede, se respeta el motivo', () => {
+    assertTrue(formNo.alcance === false, 'queda fuera de alcance');
+    assertIncludes(texto(formNo), 'no está en las encuestas', 'el motivo');
+  });
+
+  test('el mensaje que se manda lleva el contexto y el menú del período', () => {
+    const envios = llamadasExternas.filter(function (c) { return String(c.url).indexOf('/interpretar') !== -1; });
+    const envio = envios.filter(function (c) { return String(c.opciones.body).indexOf('economía trabajan') !== -1; })[0];
+    assertTrue(!!envio, 'debe existir el envío de la pregunta de Economía');
+    const cuerpo = String(envio.opciones.body);
+    assertIncludes(cuerpo, 'Portal de resultados', 'el contexto del proyecto');
+    assertIncludes(cuerpo, '## Menú — Graduados Pregrado 2026', 'el menú del período de graduados');
+    assertIncludes(cuerpo, 'se pide como: trabajan', 'las palabras coloquiales');
+    assertIncludes(cuerpo, 'Trabajador dependiente', 'las opciones reales');
+  });
+
   test('toda respuesta dentro de alcance cita un archivo JSON', () => {
     [nps2026, respuestas2026, comparacion, npsIngenieria].forEach(function (r) {
       assertIncludes(fuentes(r), '.json', 'fuente citada');
@@ -180,12 +222,12 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     // La IA traduce una pregunta que las palabras clave NO reconocen.
     const conIA = await P2.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
     // Y cuando el traductor dice que no es de las encuestas, no se responde.
-    consultaSimulada = { dato: 'ninguna', periodo: '', entidad: '', orden: '' };
+    consultaSimulada = { se_puede: false, operacion: 'ninguna', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: '', orden: '', motivo: '' };
     const noEsDeEncuestas = await P2.responderConIA('¿cómo estará el clima mañana?');
     // Y si inventa un nombre que no está en los datos, se avisa.
-    consultaSimulada = { dato: 'nps', periodo: '2026-1', entidad: 'Carrera Inexistente', orden: '' };
+    consultaSimulada = { se_puede: true, operacion: 'nps', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Carrera Inexistente', orden: '', motivo: '' };
     const entidadRara = await P2.responderConIA('quiero saber el resultado de la Carrera Inexistente');
-    consultaSimulada = { dato: 'satisfaccion', periodo: '2026-1', entidad: 'Psicología', orden: '' };
+    consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
 
     test('la IA que traduce hace que el motor responda con los datos', () => {
       assertIncludes(texto(conIA), 'Psicología', 'la carrera traducida');
