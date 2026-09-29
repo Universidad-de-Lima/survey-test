@@ -22,6 +22,7 @@ window.SurveyPortalPreguntas = (function () {
   var CATALOGO = null;   // periodos con sus JSON chicos
   var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
   var SENT = null;       // sentimiento.json (grande: se lee solo si hace falta)
+  var TABLA = null;      // respuestas.json (grande: se lee solo si hace falta)
   var FRECUENTES = [];   // preguntas mas consultadas (vienen del registro)
 
   // ---------- utilidades ----------
@@ -36,6 +37,12 @@ window.SurveyPortalPreguntas = (function () {
     return String(texto == null ? '' : texto).toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
+  // Igual que sin(), pero sin la s final de cada palabra: asi "no disponibles para
+  // trabajar" (como lo escribe la gente) encuentra "No disponible para trabajar" (la opcion).
+  function sinS(texto) {
+    return sin(texto).replace(/s\b/g, '');
+  }
+
 
   // Numeros como en el resto del proyecto: sin separador de miles, coma decimal.
   function n(valor) {
@@ -402,7 +409,9 @@ window.SurveyPortalPreguntas = (function () {
       return conSentimiento(t);
     }
 
-    return noSe(null);
+    // 10) Cruces entre dos preguntas: un filtro (una opcion de la tabla) y una pregunta objetivo.
+    //     Lo resuelve la tabla de respuestas; si no es un cruce, el aviso de siempre.
+    return cruceConTabla(t).then(function (r) { return r || noSe(null); });
   }
 
   function noSe(motivo) {
@@ -491,6 +500,136 @@ window.SurveyPortalPreguntas = (function () {
     return leer(p.base + 'sentimiento.json').catch(function () { return null; }).then(function (s) {
       SENT[p.nivel + p.periodo] = s;
       return s;
+    });
+  }
+
+  // ---------- cruces: filtrar con una pregunta y contar otra (tabla de respuestas) ----------
+  // La tabla (respuestas.json) es una fila por respuesta con un numero por pregunta; es lo
+  // unico que permite contestar cruces, que por definicion no se pueden precalcular.
+  var ESCALA_SAT = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
+
+  // Nombres con los que la gente pide una pregunta que el ETL nombra distinto.
+  var ALIAS_PREGUNTA = [
+    ['perfil de egreso', 'perfil del egreso de la carrera'],
+    ['perfil del egreso', 'perfil del egreso de la carrera'],
+    ['satisfaccion con la universidad', 'la universidad de lima'],
+    ['satisfaccion con ulima', 'la universidad de lima'],
+    ['satisfecho con la universidad', 'la universidad de lima'],
+    ['recomiendas', 'recomiendas la universidad de lima'],
+    ['recomendaria', 'recomiendas la universidad de lima'],
+    ['situacion laboral', 'situacion laboral'],
+    ['situacion de trabajo', 'situacion laboral'],
+    ['tiempo laboral', 'tiempo laboral'],
+    ['tiempo dedicado a tu trabajo', 'tiempo laboral']
+  ];
+
+  function cargarTabla(p) {
+    if (TABLA && TABLA[p.nivel + p.periodo]) return Promise.resolve(TABLA[p.nivel + p.periodo]);
+    TABLA = TABLA || {};
+    return leer(p.base + 'respuestas.json').catch(function () { return null; }).then(function (x) {
+      TABLA[p.nivel + p.periodo] = x;
+      return x;
+    });
+  }
+
+  // Las opciones de la tabla que aparecen en la pregunta (cada una es un filtro).
+  function opcionesQueAparecen(tabla, t) {
+    var res = [];
+    (tabla.cabeceras || []).forEach(function (c) {
+      var elegidas = [];
+      (tabla.opciones[c] || []).forEach(function (o) {
+        var x = sin(o);
+        if (!x || x.length < 4 || x === sin('(sin respuesta)')) return;
+        if (sinS(t).indexOf(sinS(x)) !== -1) elegidas.push(o);
+      });
+      if (elegidas.length) res.push({ pregunta: c, opciones: elegidas });
+    });
+    return res;
+  }
+
+  // La pregunta que se quiere contar: la nombrada en la pregunta, o la que se pide con un alias.
+  function objetivoDelCruce(tabla, t, filtros) {
+    var esFiltro = function (c) {
+      return filtros.some(function (f) { return f.pregunta === c; });
+    };
+    var mejor = null;
+    (tabla.cabeceras || []).forEach(function (c) {
+      if (esFiltro(c)) return;
+      var x = sin(c);
+      if (x.length >= 5 && sinS(t).indexOf(sinS(x)) !== -1 && (!mejor || x.length > sin(mejor).length)) mejor = c;
+    });
+    if (mejor) return mejor;
+    for (var k = 0; k < ALIAS_PREGUNTA.length; k++) {
+      if (sinS(t).indexOf(sinS(ALIAS_PREGUNTA[k][0])) === -1) continue;
+      var buscada = ALIAS_PREGUNTA[k][1];
+      var hallada = (tabla.cabeceras || []).filter(function (c) {
+        return sin(c) === buscada && !esFiltro(c);
+      })[0];
+      if (hallada) return hallada;
+    }
+    return null;
+  }
+
+  function contarEnTabla(tabla, sub, pregunta, opciones) {
+    var i = tabla.cabeceras.indexOf(pregunta);
+    var mapa = {};
+    (tabla.opciones[pregunta] || []).forEach(function (o, k) { mapa[o] = k; });
+    var ids = opciones.filter(function (o) { return o in mapa; }).map(function (o) { return mapa[o]; });
+    return sub.filter(function (f) { return ids.indexOf(f[i]) !== -1; }).length;
+  }
+
+  // Devuelve la respuesta del cruce, o null si no es un cruce (siguen las demas familias).
+  function cruceConTabla(t) {
+    var p = periodoDeLaPregunta(t, '1.0');
+    if (!p) return Promise.resolve(null);
+    return cargarTabla(p).then(function (tabla) {
+      if (!tabla || !tabla.cabeceras || !tabla.filas) return null;
+      var filtros = opcionesQueAparecen(tabla, t);
+      if (!filtros.length) return null;
+      var objetivo = objetivoDelCruce(tabla, t, filtros);
+      if (!objetivo) return null;
+      var sub = tabla.filas.filter(function (f) {
+        return filtros.every(function (fl) {
+          var i = tabla.cabeceras.indexOf(fl.pregunta);
+          return fl.opciones.some(function (o) {
+            return (tabla.opciones[fl.pregunta] || []).indexOf(o) === f[i];
+          });
+        });
+      });
+      var filtroTexto = filtros.map(function (fl) {
+        return fl.pregunta + ' = ' + fl.opciones.join(' o ');
+      }).join('; ');
+      if (!sub.length) {
+        return noSe('Con ese filtro (' + filtroTexto + ') no hay respuestas en ' + p.nombre + ' ' + p.periodo + '.');
+      }
+      var lineaFiltro = 'Filtro: ' + filtroTexto + ' -> ' + n(sub.length) + ' respuestas de ' + n(tabla.respuestas) + '.';
+      var escala = ESCALA_SAT.filter(function (x) {
+        return (tabla.opciones[objetivo] || []).indexOf(x) !== -1;
+      });
+      if (escala.length >= 5) {
+        var c3 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 3));
+        var c2 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 2));
+        var cSat = contarEnTabla(tabla, sub, objetivo, ['Satisfecho']);
+        return {
+          titulo: 'Cruce: ' + objetivo + ' — ' + filtroTexto,
+          lineas: [lineaFiltro,
+                   'Tres mejores (totalmente satisfecho, muy satisfecho, satisfecho): ' + n(c3) +
+                     ' de ' + n(sub.length) + ' (' + pct(100 * c3 / sub.length) + ').',
+                   'Dos mejores (totalmente satisfecho, muy satisfecho): ' + n(c2) +
+                     ' (' + pct(100 * c2 / sub.length) + '). "Satisfecho" exacto: ' + n(cSat) + '.'],
+          fuentes: [fuente(p, 'respuestas.json')]
+        };
+      }
+      var conteo = (tabla.opciones[objetivo] || []).map(function (o) {
+        return { o: o, c: contarEnTabla(tabla, sub, objetivo, [o]) };
+      }).filter(function (x) { return x.c > 0; }).sort(function (a, b) { return b.c - a.c; });
+      return {
+        titulo: 'Cruce: ' + objetivo + ' — ' + filtroTexto,
+        lineas: [lineaFiltro].concat(conteo.slice(0, 6).map(function (x) {
+          return x.o + ': ' + n(x.c) + ' (' + pct(100 * x.c / sub.length) + ')';
+        })),
+        fuentes: [fuente(p, 'respuestas.json')]
+      };
     });
   }
 

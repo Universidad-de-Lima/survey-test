@@ -75,6 +75,7 @@ function assertIncludes(texto, trozo, msg) {
 const P = window.SurveyPortalPreguntas;
 let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
 let porAnio, porCarrera, enTotal, alumnos20261;
+let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
 
 (async function () {
   nps2026 = await P.responder('¿Cuál es el NPS de 2026-1?');
@@ -87,6 +88,10 @@ let porAnio, porCarrera, enTotal, alumnos20261;
   npsIngenieria = await P.responder('¿Cuál es el NPS de Ingeniería de Sistemas?');
   hora = await P.responder('¿Qué hora es?');
   clima = await P.responder('¿Cómo estará el clima mañana?');
+  cruceGraduados = await P.responder('De los graduados que están en búsqueda de empleo o no disponibles para trabajar, ¿cuántos están satisfechos con su perfil de egreso?');
+  cruceTiempo = await P.responder('De los graduados que trabajan a tiempo completo, ¿cuál es su satisfacción con la Universidad de Lima?');
+  cruceAlumnos = await P.responder('De los alumnos de Economía, ¿cuántos están satisfechos con su perfil de egreso?');
+  cruceSinFiltro = await P.responder('¿Cuál es la satisfacción con la Universidad de Lima en 2026-1?');
 
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
@@ -125,6 +130,34 @@ let porAnio, porCarrera, enTotal, alumnos20261;
 
   test('el clima no se responde', () => {
     assertTrue(clima.alcance === false, 'debe quedar fuera de alcance');
+  });
+
+  test('cruce: graduados sin trabajo -> su perfil de egreso (76 personas, 70 satisfechas)', () => {
+    assertTrue(cruceGraduados.alcance !== false, 'debe responder');
+    assertIncludes(texto(cruceGraduados), '76', 'el filtro (búsqueda de empleo + no disponible)');
+    assertIncludes(texto(cruceGraduados), '70', 'los tres mejores');
+    assertIncludes(texto(cruceGraduados), '92,11', 'el porcentaje');
+    assertIncludes(fuentes(cruceGraduados), 'respuestas.json', 'la cita de la tabla');
+  });
+
+  test('cruce: graduados a tiempo completo -> satisfacción con la Universidad (297, 295)', () => {
+    assertTrue(cruceTiempo.alcance !== false, 'debe responder');
+    assertIncludes(texto(cruceTiempo), '297', 'los que trabajan a tiempo completo');
+    assertIncludes(texto(cruceTiempo), '295', 'los tres mejores');
+    assertIncludes(texto(cruceTiempo), '99,33', 'el porcentaje');
+  });
+
+  test('cruce: alumnos de Economía -> perfil de egreso (232, 198)', () => {
+    assertTrue(cruceAlumnos.alcance !== false, 'debe responder');
+    assertIncludes(texto(cruceAlumnos), '232', 'los de Economía');
+    assertIncludes(texto(cruceAlumnos), '198', 'los tres mejores');
+    assertIncludes(texto(cruceAlumnos), '85,34', 'el porcentaje');
+    assertIncludes(fuentes(cruceAlumnos), 'respuestas.json', 'la cita de la tabla');
+  });
+
+  test('sin filtro no es un cruce: la pregunta normal sigue respondiéndose igual', () => {
+    assertTrue(cruceSinFiltro.alcance !== false, 'debe responder');
+    assertIncludes(fuentes(cruceSinFiltro), 'resumenes.json', 'la fuente de siempre');
   });
 
   test('toda respuesta dentro de alcance cita un archivo JSON', () => {
