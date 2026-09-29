@@ -560,6 +560,9 @@ window.SurveyPortalPreguntas = (function () {
       (tabla.opciones[c] || []).forEach(function (o) {
         var x = sin(o);
         if (!x || x.length < 4 || x === sin('(sin respuesta)')) return;
+        // Los niveles de la escala miden el objetivo, no filtran: "satisfechos" en la
+        // pregunta no es la opcion "Satisfecho".
+        if (ESCALA_SAT.indexOf(o) !== -1) return;
         if (sinS(t).indexOf(sinS(x)) !== -1) elegidas.push(o);
       });
       if (elegidas.length) res.push({ pregunta: c, opciones: elegidas });
@@ -626,7 +629,9 @@ window.SurveyPortalPreguntas = (function () {
       var escala = ESCALA_SAT.filter(function (x) {
         return (tabla.opciones[objetivo] || []).indexOf(x) !== -1;
       });
-      if (escala.length >= 5) {
+      // Basta con tres niveles para tratarla como escala de satisfaccion (la pregunta de la
+      // Universidad de Lima tiene cuatro: no incluye "totalmente insatisfecho").
+      if (escala.length >= 3) {
         var c3 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 3));
         var c2 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 2));
         var cSat = contarEnTabla(tabla, sub, objetivo, ['Satisfecho']);
