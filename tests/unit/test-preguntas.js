@@ -313,6 +313,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertEqual(huerfanas.join(', '), '', 'claves que ya no son preguntas publicadas');
     assertTrue(Array.isArray(ctx.que_es) && ctx.que_es.length > 0, 'falta que_es');
     assertTrue(Array.isArray(ctx.reglas) && ctx.reglas.length > 0, 'falta reglas');
+    assertTrue(Array.isArray(ctx.equivalencias) && ctx.equivalencias.length > 0, 'falta equivalencias');
     Object.keys(ctx.palabras_coloquiales).forEach(function (c) {
       assertTrue(ctx.palabras_coloquiales[c].length > 0, 'la lista de ' + c + ' no puede estar vacia');
     });

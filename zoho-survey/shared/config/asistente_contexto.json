@@ -18,6 +18,10 @@
     "Cada respuesta cita el archivo del que salio.",
     "Lo que no este en los datos (la hora, el clima, otra universidad) no se responde."
   ],
+  "equivalencias": [
+    "En Graduados, \"trabajan\" cuenta las respuestas de Situacion laboral: Trabajador dependiente, Trabajador independiente, Practicas profesionales o Practicas pre - profesionales. No cuentan En busqueda de empleo ni No disponible para trabajar.",
+    "En Graduados, la satisfaccion general (o \"con la universidad\") es la pregunta La Universidad de Lima; la satisfaccion \"con la carrera\" es la pregunta La carrera."
+  ],
   "palabras_coloquiales": {
     "Recomiendas la Universidad de Lima": ["recomiendas", "recomendarias", "nps"],
     "Carrera": ["carrera", "alumnos de", "egresados de"],

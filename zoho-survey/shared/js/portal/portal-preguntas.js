@@ -687,7 +687,7 @@ window.SurveyPortalPreguntas = (function () {
   function textoDeContexto(ctx) {
     if (!ctx) return '';
     var partes = [];
-    [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'], ['reglas', 'Reglas']].forEach(function (par) {
+    [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'], ['reglas', 'Reglas'], ['equivalencias', 'Equivalencias']].forEach(function (par) {
       var lista = ctx[par[0]];
       if (lista && lista.length) {
         partes.push('## ' + par[1] + '\n' + lista.map(function (x) { return '- ' + x; }).join('\n'));
