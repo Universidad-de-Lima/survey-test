@@ -141,14 +141,11 @@ El ETL genera archivos en `zoho-survey/students/{level}/{period}/`:
 En `json/` (consumidos por frontend):
 1. `dashboard_data.json` (v2.0) — KPIs ejecutivos, hallazgos, distribuciones NPS/CSAT.
 2. `dimensiones.json` — agregados por facultad/carrera/ciclo/categoria/dimension.
-3. `ids.json` — conteos por facultad/carrera/ciclo.
-4. `nps_ciclo_carrera.json` — NPS por carrera y ciclo.
-5. `csat_ciclo_carrera.json` — CSAT por carrera y ciclo.
 6. `filtros.json` (v2.0) — opciones de filtros en cascada.
 7. `sentimiento.json` (v3.0) — analisis cualitativo completo (consumido por frontend).
 8. `nps_carrera.json` (legacy) — NPS por carrera (fallback para encuestas sin ciclo).
 9. `csat_carrera.json` (legacy) — CSAT por carrera (fallback para encuestas sin ciclo).
-10. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
+5. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
     que apuntan a las opciones de cada pregunta, más el `id` y la `fecha` de cada una. Es lo que
     permite responder consultas filtrando y contando, incluidos los cruces entre preguntas.
     No incluye el texto libre (vive en `sentimiento.json`).

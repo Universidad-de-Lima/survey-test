@@ -250,9 +250,7 @@ def main() -> None:
             jsons_existen = all(
                 (ruta_salida / f"{j}.json").exists()
                 for j in ["dashboard_data", "filtros", "dimensiones",
-                          "nps_carrera", "nps_ciclo_carrera",
-                          "csat_carrera", "csat_ciclo_carrera",
-                          "sentimiento", "ids"]
+                          "resumenes", "sentimiento"]
         # fragmentos_nps.json y dataset_cualitativo.json se escriben en intermediate/
         # y no se verifican en el shortcut de idempotencia (son intermedios del ETL).
             )
@@ -390,8 +388,6 @@ def main() -> None:
 
         # NPS Carrera (Fase 11: delegado a _calcular_nps_carrera)
         nps_carrera = calc_nps_carrera(df_nps, nps_col)
-        with open(ruta_salida / "nps_carrera.json", "w", encoding="utf-8") as f:
-            json.dump(nps_carrera, f, ensure_ascii=False, indent=2)
 
         # NPS Ciclo Carrera
         nps_ciclo_carrera: List[Dict[str, any]] = []
@@ -409,13 +405,9 @@ def main() -> None:
                     "detractores": d,
                     "score": calc_nps(p, pa, d)
                 })
-        with open(ruta_salida / "nps_ciclo_carrera.json", "w", encoding="utf-8") as f:
-            json.dump(nps_ciclo_carrera, f, ensure_ascii=False)
 
         # CSAT Carrera (Fase 11: delegado a _calcular_csat_carrera)
         csat_carrera = calc_csat_carrera(df, csat_col, RESPUESTAS_TEXTO) if csat_col else []
-        with open(ruta_salida / "csat_carrera.json", "w", encoding="utf-8") as f:
-            json.dump(csat_carrera, f, ensure_ascii=False, indent=2)
 
                 # CSAT Ciclo Carrera
         csat_ciclo_carrera: List[Dict[str, any]] = []
@@ -429,8 +421,6 @@ def main() -> None:
                 total = t3b + row["Insatisfecho"] + row["Totalmente insatisfecho"]
                 row["score"] = calc_csat(t3b, total)
                 csat_ciclo_carrera.append(row)
-        with open(ruta_salida / "csat_ciclo_carrera.json", "w", encoding="utf-8") as f:
-            json.dump(csat_ciclo_carrera, f, ensure_ascii=False)
 
         # Dimensiones
         rows: List[Dict[str, any]] = []
@@ -482,8 +472,6 @@ def main() -> None:
                 "ciclo": cic,
                 "total": int(len(sub))
             })
-        with open(ruta_salida / "ids.json", "w", encoding="utf-8") as f:
-            json.dump(ids_conteo, f, ensure_ascii=False, indent=2)
 
         # Agrupamiento NPS etapas (inicial, intermedio, avanzado)
         etapas: Dict[str, Dict[str, int]] = {}
@@ -576,6 +564,17 @@ def main() -> None:
             "nombre_encuesta": _sanitizar_nombre_csv(csv_file.name),
             "fecha_generacion": pd.Timestamp.now().strftime("%Y-%m-%d")
         }
+        # Un solo archivo con los cinco resumenes que antes iban por separado
+        # (ids, nps_carrera, csat_carrera, nps_ciclo_carrera, csat_ciclo_carrera).
+        with open(ruta_salida / "resumenes.json", "w", encoding="utf-8") as f:
+            json.dump({
+                "version": "1.0",
+                "ids": ids_conteo,
+                "nps_carrera": nps_carrera,
+                "csat_carrera": csat_carrera,
+                "nps_ciclo_carrera": nps_ciclo_carrera,
+                "csat_ciclo_carrera": csat_ciclo_carrera,
+            }, f, ensure_ascii=False, indent=2)
         with open(ruta_salida / "dashboard_data.json", "w", encoding="utf-8") as f:
             json.dump(dashboard_data, f, ensure_ascii=False, indent=2)
 

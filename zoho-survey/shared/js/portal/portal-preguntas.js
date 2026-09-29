@@ -10,8 +10,8 @@ window.SurveyPortalPreguntas = (function () {
 
   var FASE_NIVEL = { '1.0': 'students/undergraduate', '1.2': 'students/graduate' };
   var FASE_NOMBRE = { '1.0': 'Estudiantes Pregrado', '1.2': 'Graduados Pregrado' };
-  var ARCHIVOS = ['dashboard_data', 'nps_carrera', 'csat_carrera', 'nps_ciclo_carrera',
-                  'csat_ciclo_carrera', 'filtros', 'ids'];
+  // Los cinco resumenes del periodo llegan juntos en resumenes.json.
+  var ARCHIVOS = ['dashboard_data', 'resumenes', 'filtros'];
 
   // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
   var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
@@ -72,11 +72,14 @@ window.SurveyPortalPreguntas = (function () {
     return Promise.all(ARCHIVOS.map(function (a) {
       return leer(base + a + '.json').catch(function () { return null; });
     })).then(function (r) {
+      var res = r[1] || {};
       return {
         fase: fase, nivel: FASE_NIVEL[fase], nombre: FASE_NOMBRE[fase], periodo: periodo,
         base: base,
-        dash: r[0], npsCarrera: r[1] || [], csatCarrera: r[2] || [],
-        npsCiclo: r[3] || [], csatCiclo: r[4] || [], filtros: r[5] || {}, ids: r[6] || []
+        dash: r[0], resumenes: res,
+        npsCarrera: res.nps_carrera || [], csatCarrera: res.csat_carrera || [],
+        npsCiclo: res.nps_ciclo_carrera || [], csatCiclo: res.csat_ciclo_carrera || [],
+        filtros: r[2] || {}, ids: res.ids || []
       };
     });
   }
@@ -189,7 +192,7 @@ window.SurveyPortalPreguntas = (function () {
           return {
             titulo: 'Alumnos encuestados de ' + car,
             lineas: [p.nombre + ' ' + p.periodo + ': ' + n(total) + ' respuestas de ' + car + '.'],
-            fuentes: [fuente(p, 'ids.json')]
+            fuentes: [fuente(p, 'resumenes.json (ids)')]
           };
         }
       }
@@ -275,7 +278,7 @@ window.SurveyPortalPreguntas = (function () {
           lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fila.score) + ' (promotores ' + n(fila.promotores) +
                    ', pasivos ' + n(fila.pasivos) + ', detractores ' + n(fila.detractores) + ').' +
                    (filaCsat ? ' Satisfacción: ' + pct(filaCsat.score) + '.' : '')],
-          fuentes: [fuente(p3, 'nps_carrera.json y csat_carrera.json')]
+          fuentes: [fuente(p3, 'resumenes.json (NPS y CSAT por carrera)')]
         };
       }
 
@@ -288,7 +291,7 @@ window.SurveyPortalPreguntas = (function () {
         return {
           titulo: 'NPS de las carreras de ' + facultad,
           lineas: suyas.map(function (x) { return x.carrera + ': NPS ' + n(x.score); }),
-          fuentes: [fuente(p3, 'nps_carrera.json')]
+          fuentes: [fuente(p3, 'resumenes.json (NPS por carrera)')]
         };
       }
 
@@ -299,7 +302,7 @@ window.SurveyPortalPreguntas = (function () {
           titulo: 'NPS del ' + ciclo,
           lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fc.score) + ' (promotores ' + n(fc.promotores) +
                    ', pasivos ' + n(fc.pasivos) + ', detractores ' + n(fc.detractores) + ').'],
-          fuentes: [fuente(p3, 'nps_ciclo_carrera.json')]
+          fuentes: [fuente(p3, 'resumenes.json (NPS por ciclo y carrera)')]
         };
       }
 
@@ -314,7 +317,7 @@ window.SurveyPortalPreguntas = (function () {
         return {
           titulo: 'NPS por ' + campo + ' (' + (esMejor ? 'más alto' : 'más bajo') + ')',
           lineas: top.map(function (x) { return x[campo] + ': ' + n(x.score); }),
-          fuentes: [fuente(p3, porCiclo ? 'nps_ciclo_carrera.json' : 'nps_carrera.json')]
+          fuentes: [fuente(p3, porCiclo ? 'resumenes.json (NPS por ciclo y carrera)' : 'resumenes.json (NPS por carrera)')]
         };
       }
 
@@ -354,7 +357,7 @@ window.SurveyPortalPreguntas = (function () {
                    n(f2['Totalmente satisfecho']) + ', muy satisfecho ' + n(f2['Muy satisfecho']) +
                    ', satisfecho ' + n(f2['Satisfecho']) + ', insatisfecho ' + n(f2['Insatisfecho']) +
                    ', totalmente insatisfecho ' + n(f2['Totalmente insatisfecho']) + ').'],
-          fuentes: [fuente(p4, 'csat_carrera.json')]
+          fuentes: [fuente(p4, 'resumenes.json (CSAT por carrera)')]
         };
       }
       // El detalle por nivel no viene en dashboard_data: se suma de csat_carrera.json,
@@ -372,7 +375,7 @@ window.SurveyPortalPreguntas = (function () {
                  'Totalmente satisfecho ' + n(suma[niveles[0]]) + ', muy satisfecho ' + n(suma[niveles[1]]) +
                  ', satisfecho ' + n(suma[niveles[2]]) + ', insatisfecho ' + n(suma[niveles[3]]) +
                  ', totalmente insatisfecho ' + n(suma[niveles[4]]) + ' (suma de las carreras: ' + n(totalSuma) + ').'],
-        fuentes: [fuente(p4, 'dashboard_data.json y csat_carrera.json')]
+        fuentes: [fuente(p4, 'dashboard_data.json y resumenes.json (CSAT por carrera)')]
       };
     }
 

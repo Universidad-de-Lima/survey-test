@@ -115,7 +115,7 @@ let porAnio, porCarrera, enTotal, alumnos20261;
 
   test('una carrera concreta devuelve su NPS y su satisfacción', () => {
     assertIncludes(texto(npsIngenieria), '68,34', 'NPS de Ingeniería de Sistemas');
-    assertIncludes(fuentes(npsIngenieria), 'nps_carrera.json', 'fuente por carrera');
+    assertIncludes(fuentes(npsIngenieria), 'resumenes.json (NPS por carrera)', 'fuente por carrera');
   });
 
   test('la hora no se responde', () => {
@@ -157,7 +157,7 @@ let porAnio, porCarrera, enTotal, alumnos20261;
     test('la IA que traduce hace que el motor responda con los datos', () => {
       assertIncludes(texto(conIA), 'Psicología', 'la carrera traducida');
       assertIncludes(texto(conIA), '97,22', 'satisfacción de Psicología');
-      assertIncludes(fuentes(conIA), 'csat_carrera.json', 'la respuesta cita su archivo');
+      assertIncludes(fuentes(conIA), 'resumenes.json (CSAT por carrera)', 'la respuesta cita su archivo');
     });
 
     test('si la pregunta no es de las encuestas, la IA tampoco responde', () => {
@@ -184,7 +184,7 @@ let porAnio, porCarrera, enTotal, alumnos20261;
     test('"cuántos alumnos respondieron de Psicología" usa el total de esa carrera', () => {
       assertIncludes(texto(porCarrera), 'Psicología', 'la carrera pedida');
       assertIncludes(texto(porCarrera), '431', 'respuestas de Psicología');
-      assertIncludes(fuentes(porCarrera), 'ids.json', 'fuente por carrera');
+      assertIncludes(fuentes(porCarrera), 'resumenes.json (ids)', 'fuente por carrera');
     });
 
     test('"en total" muestra todos los períodos publicados', () => {

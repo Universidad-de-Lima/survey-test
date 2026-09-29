@@ -97,21 +97,17 @@ El pipeline genera hasta 11 archivos por periodo en `zoho-survey/students/{level
 | --- | --- | --- | --- | --- | --- |
 | `dashboard_data.json` | `json/` | object | `"2.0"` | requerido | `dashboard_data.schema.json` |
 | `dimensiones.json` | `json/` | array | implicita | requerido | `dimensiones.schema.json` |
-| `ids.json` | `json/` | array | implicita | requerido | `ids.schema.json` |
-| `nps_ciclo_carrera.json` | `json/` | array | implicita | requerido | `nps_ciclo_carrera.schema.json` |
-| `csat_ciclo_carrera.json` | `json/` | array | implicita | requerido | `csat_ciclo_carrera.schema.json` |
 | `filtros.json` | `json/` | object | `"2.0"` | requerido | `filtros.schema.json` |
+| `resumenes.json` | `json/` | objeto | implicita | requerido | 5 schemas (uno por parte) |
 | `sentimiento.json` | `json/` | object | `"3.0"` | requerido | `sentimiento.schema.json` |
 | `fragmentos_nps.json` | `intermediate/` | array | implicita | intermedio ETL | sin schema formal |
 | `dataset_cualitativo.json` | `intermediate/` | object | implicita | intermedio ETL | `dataset_cualitativo.schema.json` |
-| `nps_carrera.json` | `json/` | array | implicita | legacy opcional | sin schema formal |
-| `csat_carrera.json` | `json/` | array | implicita | legacy opcional | sin schema formal |
 
 > **Nota sobre `fragmentos_nps.json` y `dataset_cualitativo.json`:** Son archivos intermedios del ETL consumidos internamente por `build_json.py` para producir `sentimiento.json`. El frontend no los consume directamente. `dataset_cualitativo.json` tiene schema formal (`dataset_cualitativo.schema.json`, validación manual opcional); `fragmentos_nps.json` no tiene schema formal porque es un dato de trabajo sin consumidores externos.
 
 > **Umbral fail-closed de calidad (C-1):** `metadata` incluye `fallos_api`, `intentos_api` y `tasa_fallos_api`. Si `tasa_fallos_api` supera `IA_CUALITATIVO_MAX_FALLOS_API_PCT` (default 20%, con muestra mínima de 10 intentos), el ETL **aborta** y no escribe `sentimiento.json` para ese periodo: los indicadores cualitativos no son representativos y no deben publicarse.
 
-Los archivos legacy (`nps_carrera.json`, `csat_carrera.json`) se validan solo si existen; el validador emite advertencia. El frontend los carga como fallback síncrono solo en encuestas sin ciclos (`has_ciclo=false`, ej. graduados).
+Los cinco resúmenes llegan juntos en `resumenes.json` y cada parte se valida contra su schema; ya no hay archivos legacy por período.
 
 ## Convencion de claves NPS
 
@@ -285,34 +281,34 @@ Claves requeridas:
 
 Invariante: `facultad_carrera` debe mapear TODAS las facultades listadas en `facultades`.
 
-## `ids.json`
+## `resumenes.json`
 
-Schema: `zoho-survey/scripts/schemas/ids.schema.json`.
+Un solo archivo por período con los cinco resúmenes que antes iban sueltos: `ids` (conteo de
+respuestas por facultad, carrera y ciclo), `nps_carrera`, `csat_carrera`, `nps_ciclo_carrera` y
+`csat_ciclo_carrera`.
 
-Cada fila incluye:
+```json
+{
+  "version": "1.0",
+  "ids": [ ... ],
+  "nps_carrera": [ ... ],
+  "csat_carrera": [ ... ],
+  "nps_ciclo_carrera": [ ... ],
+  "csat_ciclo_carrera": [ ... ]
+}
+```
 
-- `facultad`
-- `carrera`
-- `ciclo`
-- `total` (clave canónica; `count` se acepta como legacy en el validador pero el ETL siempre produce `total`)
+**Cada parte conserva su contrato formal**: el validador valida `ids` contra `ids.schema.json` y
+cada tabla NPS/CSAT contra su schema (`nps_carrera.schema.json`, `csat_carrera.schema.json`,
+`nps_ciclo_carrera.schema.json`, `csat_ciclo_carrera.schema.json`). Los cinco schemas se mantienen;
+lo que desaparece son los cinco archivos.
 
-Invariante: la suma total de `total` debe ser mayor a 0.
+**Invariantes:** las cinco partes son obligatorias y no pueden estar vacías; `ids` además cumple las
+reglas de `validate_id_rows_invariants`.
 
-## `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`
-
-Schemas: `nps_ciclo_carrera.schema.json`, `csat_ciclo_carrera.schema.json`.
-
-Cada fila requiere `facultad`, `carrera` y `ciclo`.
-
-NPS requiere (minúsculas, canónicas):
-
-- `promotores`, `pasivos`, `detractores`, `score` (opcional)
-
-CSAT requiere (capitalizadas, catálogo Zoho):
-
-- `Totalmente satisfecho`, `Muy satisfecho`, `Satisfecho`, `Insatisfecho`, `Totalmente insatisfecho`
-- `No utilizo`, `No conozco` (opcionales)
-- `score` (CSAT score calculado)
+**Por qué existe:** los tres cargadores del sitio (`dashboard.js`, `portal/portal-data.js` y
+`portal/portal-preguntas.js`) pedían los cinco archivos por separado, seis peticiones por período
+para datos que siempre se usan juntos. Ahora piden uno y lo reparten en memoria.
 
 ## `sentimiento.json`
 
@@ -373,7 +369,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## Invariantes de negocio (no expresables en JSON Schema)
 
-- La suma de `total` en `ids.json` debe ser mayor a 0.
+- La suma de `total` en la parte `ids` de `resumenes.json` debe ser mayor a 0.
 - `filtros.facultad_carrera` debe cubrir todas las facultades listadas en `filtros.facultades`.
 - `dimensiones.json` debe contener al menos una fila con `total > 0`.
 - `periodos.json` debe tener exactamente un item con `isNew: true`.
@@ -386,7 +382,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## Deuda Tecnica De Contratos
 
-- `nps_carrera.json` y `csat_carrera.json` siguen como legacy (fallback de carga síncrona en encuestas sin ciclos).
+- Los cinco resúmenes del período viven en `resumenes.json`; los cargadores piden un archivo en vez de cinco.
 - `fragmentos_nps.json` y `dataset_cualitativo.json` no tienen schema formal porque son intermedios del ETL, no contratos públicos.
 - Solo algunos objetos tienen version explicita (`"2.0"`, `"3.0"`); los arrays mantienen version implicita.
 - El frontend acepta ambos casings para NPS por compatibilidad backward; los nuevos periodos siempre se generan en minúsculas.
@@ -546,21 +542,16 @@ El pipeline genera hasta 11 archivos por periodo en `zoho-survey/students/{level
 | --- | --- | --- | --- | --- | --- |
 | `dashboard_data.json` | `json/` | object | `"2.0"` | requerido | `dashboard_data.schema.json` |
 | `dimensiones.json` | `json/` | array | implicita | requerido | `dimensiones.schema.json` |
-| `ids.json` | `json/` | array | implicita | requerido | `ids.schema.json` |
-| `nps_ciclo_carrera.json` | `json/` | array | implicita | requerido | `nps_ciclo_carrera.schema.json` |
-| `csat_ciclo_carrera.json` | `json/` | array | implicita | requerido | `csat_ciclo_carrera.schema.json` |
 | `filtros.json` | `json/` | object | `"2.0"` | requerido | `filtros.schema.json` |
 | `sentimiento.json` | `json/` | object | `"3.0"` | requerido | `sentimiento.schema.json` |
 | `fragmentos_nps.json` | `intermediate/` | array | implicita | intermedio ETL | sin schema formal |
 | `dataset_cualitativo.json` | `intermediate/` | object | implicita | intermedio ETL | `dataset_cualitativo.schema.json` |
-| `nps_carrera.json` | `json/` | array | implicita | legacy opcional | sin schema formal |
-| `csat_carrera.json` | `json/` | array | implicita | legacy opcional | sin schema formal |
 
 > **Nota sobre `fragmentos_nps.json` y `dataset_cualitativo.json`:** Son archivos intermedios del ETL consumidos internamente por `build_json.py` para producir `sentimiento.json`. El frontend no los consume directamente. `dataset_cualitativo.json` tiene schema formal (`dataset_cualitativo.schema.json`, validación manual opcional); `fragmentos_nps.json` no tiene schema formal porque es un dato de trabajo sin consumidores externos.
 
 > **Umbral fail-closed de calidad (C-1):** `metadata` incluye `fallos_api`, `intentos_api` y `tasa_fallos_api`. Si `tasa_fallos_api` supera `IA_CUALITATIVO_MAX_FALLOS_API_PCT` (default 20%, con muestra mínima de 10 intentos), el ETL **aborta** y no escribe `sentimiento.json` para ese periodo: los indicadores cualitativos no son representativos y no deben publicarse.
 
-Los archivos legacy (`nps_carrera.json`, `csat_carrera.json`) se validan solo si existen; el validador emite advertencia. El frontend los carga como fallback síncrono solo en encuestas sin ciclos (`has_ciclo=false`, ej. graduados).
+Los cinco resúmenes llegan juntos en `resumenes.json` y cada parte se valida contra su schema; ya no hay archivos legacy por período.
 
 ## Convencion de claves NPS
 
@@ -731,35 +722,6 @@ Claves requeridas:
 
 Invariante: `facultad_carrera` debe mapear TODAS las facultades listadas en `facultades`.
 
-## `ids.json`
-
-Schema: `zoho-survey/scripts/schemas/ids.schema.json`.
-
-Cada fila incluye:
-
-- `facultad`
-- `carrera`
-- `ciclo`
-- `total` (clave canónica; `count` se acepta como legacy en el validador pero el ETL siempre produce `total`)
-
-Invariante: la suma total de `total` debe ser mayor a 0.
-
-## `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json`
-
-Schemas: `nps_ciclo_carrera.schema.json`, `csat_ciclo_carrera.schema.json`.
-
-Cada fila requiere `facultad`, `carrera` y `ciclo`.
-
-NPS requiere (minúsculas, canónicas):
-
-- `promotores`, `pasivos`, `detractores`, `score` (opcional)
-
-CSAT requiere (capitalizadas, catálogo Zoho):
-
-- `Totalmente satisfecho`, `Muy satisfecho`, `Satisfecho`, `Insatisfecho`, `Totalmente insatisfecho`
-- `No utilizo`, `No conozco` (opcionales)
-- `score` (CSAT score calculado)
-
 ## `sentimiento.json`
 
 Schema: `zoho-survey/scripts/schemas/sentimiento.schema.json`.
@@ -819,7 +781,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## Invariantes de negocio (no expresables en JSON Schema)
 
-- La suma de `total` en `ids.json` debe ser mayor a 0.
+- La suma de `total` en la parte `ids` de `resumenes.json` debe ser mayor a 0.
 - `filtros.facultad_carrera` debe cubrir todas las facultades listadas en `filtros.facultades`.
 - `dimensiones.json` debe contener al menos una fila con `total > 0`.
 - `periodos.json` debe tener exactamente un item con `isNew: true`.
@@ -832,7 +794,7 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## Deuda Tecnica De Contratos
 
-- `nps_carrera.json` y `csat_carrera.json` siguen como legacy (fallback de carga síncrona en encuestas sin ciclos).
+- Los cinco resúmenes del período viven en `resumenes.json`; los cargadores piden un archivo en vez de cinco.
 - `fragmentos_nps.json` y `dataset_cualitativo.json` no tienen schema formal porque son intermedios del ETL, no contratos públicos.
 - Solo algunos objetos tienen version explicita (`"2.0"`, `"3.0"`); los arrays mantienen version implicita.
 - El frontend acepta ambos casings para NPS por compatibilidad backward; los nuevos periodos siempre se generan en minúsculas.

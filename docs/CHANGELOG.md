@@ -8,6 +8,13 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
+## 2026-09-29 — Los cinco resúmenes del período pasan a un solo archivo (`resumenes.json`)
+
+- **Qué cambia.** `ids.json`, `nps_carrera.json`, `csat_carrera.json`, `nps_ciclo_carrera.json` y `csat_ciclo_carrera.json` se unifican en `resumenes.json`, con la misma información bajo las claves `ids`, `nps_carrera`, `csat_carrera`, `nps_ciclo_carrera` y `csat_ciclo_carrera`. Cada período pasa de 9 archivos a 5.
+- **Qué NO cambia.** Ni un número ni un dibujo: cada parte se valida contra su schema de siempre (los cinco schemas se mantienen) y los tres cargadores reparten el contenido en memoria con los mismos nombres internos, así que el resto del dashboard y del portal no se toca.
+- **Verificación.** La comparación del aspecto dio 100,0 % de elementos y figuras idénticas en las cuatro páginas reales (portal 595/145, Alumnos 2026-1 1825/203, Alumnos 2025-2 1165/161, Graduados 1978/294) y los números publicados siguen iguales.
+- **Por qué se hizo.** Los cinco archivos se usaban siempre juntos y sumaban seis peticiones por período.
+
 ## 2026-09-29 — Se retiran tres campos de `sentimiento.json` (la barra de visibilidad estuvo a punto de caer)
 
 - **Lo que se buscaba.** Dejar de publicar campos que ningún módulo parecía leer: candidatos `b2b`, `no_utilizo` y `no_conozco` en `dimensiones.json`, y `por_carrera`, `por_ciclo` y `distribucion_intensidad` en `sentimiento.json`.

@@ -120,12 +120,9 @@ const SurveyDashboard = (() => {
       filtros: 'filtros',
       dimensiones: 'dimensiones',
     };
+    // Los cinco resumenes del periodo llegan juntos en resumenes.json.
     const optionalEndpoints = {
-      ids: 'ids',
-      npsCicloCarrera: 'nps_ciclo_carrera',
-      csatCicloCarrera: 'csat_ciclo_carrera',
-      npsCarrera: 'nps_carrera',
-      csatCarrera: 'csat_carrera',
+      resumenes: 'resumenes',
       sentimiento: 'sentimiento',
     };
 
@@ -159,6 +156,15 @@ const SurveyDashboard = (() => {
       optionalKeys.forEach((key, index) => {
         cache[key] = optionalResults[index];
       });
+
+      // Se reparten los cinco resumenes en la misma forma que tenian como archivos sueltos:
+      // asi el resto del dashboard no cambia (cache.ids, cache.npsCarrera, ...).
+      const resumenes = cache.resumenes || {};
+      cache.ids = resumenes.ids || null;
+      cache.npsCarrera = resumenes.nps_carrera || null;
+      cache.csatCarrera = resumenes.csat_carrera || null;
+      cache.npsCicloCarrera = resumenes.nps_ciclo_carrera || null;
+      cache.csatCicloCarrera = resumenes.csat_ciclo_carrera || null;
 
       csatScoreGlobal = cache.dashboard.resumen.csat.score;
       return true;

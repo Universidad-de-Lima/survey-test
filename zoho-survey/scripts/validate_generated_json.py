@@ -49,9 +49,6 @@ SCHEMA_BY_FILE: Dict[str, str] = {
     "filtros.json": "filtros.schema.json",
     "sentimiento.json": "sentimiento.schema.json",
     "dimensiones.json": "dimensiones.schema.json",
-    "ids.json": "ids.schema.json",
-    "nps_ciclo_carrera.json": "nps_ciclo_carrera.schema.json",
-    "csat_ciclo_carrera.json": "csat_ciclo_carrera.schema.json",
     "respuestas.json": "respuestas.schema.json",
 }
 
@@ -59,17 +56,18 @@ SCHEMA_BY_FILE: Dict[str, str] = {
 REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "dashboard_data.json": dict(type=dict, non_empty=True),
     "dimensiones.json": dict(type=list, non_empty=True),
-    "ids.json": dict(type=list, non_empty=True),
-    "nps_ciclo_carrera.json": dict(type=list, non_empty=True),
-    "csat_ciclo_carrera.json": dict(type=list, non_empty=True),
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
+    "resumenes.json": dict(type=dict, non_empty=True),
 }
 
-# Archivos legacy: validados si existen, pero su ausencia no genera error.
-LEGACY_PERIOD_FILES: Dict[str, Dict[str, any]] = {
-    "nps_carrera.json": dict(type=list, non_empty=True),
-    "csat_carrera.json": dict(type=list, non_empty=True),
+# Partes del archivo unificado resumenes.json: cada una conserva su schema formal.
+PARTES_RESUMENES: Dict[str, str] = {
+    "ids": "ids.schema.json",
+    "nps_carrera": "nps_carrera.schema.json",
+    "csat_carrera": "csat_carrera.schema.json",
+    "nps_ciclo_carrera": "nps_ciclo_carrera.schema.json",
+    "csat_ciclo_carrera": "csat_ciclo_carrera.schema.json",
 }
 
 # Derivar llaves de respuestas del catalogo central
@@ -220,6 +218,20 @@ def validate_respuestas_invariants(value: dict, filename: str) -> None:
             raise ValueError(f"{filename}: '{campo}' tiene {len(value[campo])} valores y hay {len(filas)} filas")
 
 
+def validate_resumenes_invariants(value: dict, filename: str, json_path: Path) -> None:
+    """resumenes.json junta los cinco resumenes del periodo (ids y los NPS/CSAT por carrera y por
+    ciclo). No agrega contratos: cada parte se valida contra su propio schema formal."""
+    for parte, schema in PARTES_RESUMENES.items():
+        if parte not in value:
+            raise ValueError(f"{filename}: falta la parte '{parte}'")
+        if not value[parte]:
+            raise ValueError(f"{filename}: la parte '{parte}' esta vacia")
+        problemas = validate_with_schema(value[parte], schema, json_path)
+        if problemas:
+            raise ValueError(f"{filename} ({parte}): " + "; ".join(problemas))
+    validate_id_rows_invariants(value["ids"], f"{filename} (ids)")
+
+
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:
     """Invariante: la suma total debe ser > 0."""
     total = 0
@@ -304,8 +316,8 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
         validate_filtros_invariants(value)
     elif filename == "dimensiones.json":
         validate_dimensiones_invariants(value)
-    elif filename == "ids.json":
-        validate_id_rows_invariants(value, filename)
+    elif filename == "resumenes.json":
+        validate_resumenes_invariants(value, filename, json_path)
     elif filename == "sentimiento.json":
         validate_sentimiento_invariants(value)
     elif filename == "dashboard_data.json":
@@ -419,18 +431,6 @@ def validate_period(period_dir: Path) -> Tuple[List[str], List[str]]:
             errors.extend(schema_errors)
         except ValueError as exc:
             errors.append(f"{path}: {exc}")
-
-    for filename, spec in LEGACY_PERIOD_FILES.items():
-        path = json_dir / filename
-        if not path.exists():
-            continue
-        try:
-            value = load_json(path)
-            validate_shape(value, spec["type"], spec["non_empty"])
-        except ValueError as exc:
-            errors.append(f"{path}: archivo legado invalido: {exc}")
-        else:
-            warnings.append(f"{path}: archivo legado/deprecado; no debe ser contrato obligatorio")
 
     return errors, warnings
 

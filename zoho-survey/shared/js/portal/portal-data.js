@@ -226,29 +226,18 @@
         fetch(basePath + 'sentimiento.json', { cache: 'no-store' }).then(r => r.json()).catch(() => null)
       ]);
 
-      const [npsCarreraRes, csatCarreraRes, npsCicloCarreraRes, csatCicloCarreraRes] = await Promise.allSettled([
-        fetch(basePath + 'nps_carrera.json').then(r => r.json()),
-        fetch(basePath + 'csat_carrera.json').then(r => r.json()),
-        fetch(basePath + 'nps_ciclo_carrera.json').then(r => r.json()),
-        fetch(basePath + 'csat_ciclo_carrera.json').then(r => r.json())
+      // Los cinco resumenes llegan juntos; si el archivo no esta, el portal degrada igual que antes.
+      const resumenesRes = await Promise.allSettled([
+        fetch(basePath + 'resumenes.json', { cache: 'no-store' }).then(r => r.json())
       ]);
+      const resumenes = resumenesRes[0].status === 'fulfilled' ? (resumenesRes[0].value || {}) : {};
+      const npsCarrera = resumenes.nps_carrera || [];
+      const csatCarrera = resumenes.csat_carrera || [];
+      const npsCicloCarrera = resumenes.nps_ciclo_carrera || [];
+      const csatCicloCarrera = resumenes.csat_ciclo_carrera || [];
 
-      const npsCarrera = npsCarreraRes.status === 'fulfilled' ? npsCarreraRes.value : [];
-      const csatCarrera = csatCarreraRes.status === 'fulfilled' ? csatCarreraRes.value : [];
-      const npsCicloCarrera = npsCicloCarreraRes.status === 'fulfilled' ? npsCicloCarreraRes.value : [];
-      const csatCicloCarrera = csatCicloCarreraRes.status === 'fulfilled' ? csatCicloCarreraRes.value : [];
-
-      if (npsCarreraRes.status === 'rejected') {
-        console.warn('[portal] nps_carrera.json no disponible (' + cacheKey + '):', npsCarreraRes.reason);
-      }
-      if (csatCarreraRes.status === 'rejected') {
-        console.warn('[portal] csat_carrera.json no disponible (' + cacheKey + '):', csatCarreraRes.reason);
-      }
-      if (npsCicloCarreraRes.status === 'rejected') {
-        console.warn('[portal] nps_ciclo_carrera.json no disponible (' + cacheKey + '):', npsCicloCarreraRes.reason);
-      }
-      if (csatCicloCarreraRes.status === 'rejected') {
-        console.warn('[portal] csat_ciclo_carrera.json no disponible (' + cacheKey + '):', csatCicloCarreraRes.reason);
+      if (resumenesRes[0].status === 'rejected') {
+        console.warn('[portal] resumenes.json no disponible (' + cacheKey + '):', resumenesRes[0].reason);
       }
 
       const surveyData = normalizeData({ dashboard, filtros, dimensiones, sentimiento, npsCarrera, csatCarrera, npsCicloCarrera, csatCicloCarrera });
