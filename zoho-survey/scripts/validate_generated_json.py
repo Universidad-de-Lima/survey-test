@@ -62,11 +62,14 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
 }
 
 # Partes del archivo unificado resumenes.json: cada una conserva su schema formal.
+# Partes que se derivan de otras y por eso se comprueba ademas que cuadren (ver validate_resumenes_invariants).
+
 # Estas dos partes pueden venir vacias: las encuestas sin ciclos escolares no las llenan.
 PARTES_QUE_PUEDEN_IR_VACIAS: Set[str] = {"nps_ciclo_carrera", "csat_ciclo_carrera"}
 
 PARTES_RESUMENES: Dict[str, str] = {
     "ids": "ids.schema.json",
+    "dimensiones": "dimensiones_agregadas.schema.json",
     "nps_carrera": "nps_carrera.schema.json",
     "csat_carrera": "csat_carrera.schema.json",
     "nps_ciclo_carrera": "nps_ciclo_carrera.schema.json",
@@ -235,6 +238,31 @@ def validate_resumenes_invariants(value: dict, filename: str, json_path: Path) -
         if problemas:
             raise ValueError(f"{filename} ({parte}): " + "; ".join(problemas))
     validate_id_rows_invariants(value["ids"], f"{filename} (ids)")
+
+    # El agregado por dimension tiene que cuadrar con las filas publicadas en dimensiones.json:
+    # es un re-conteo, asi que cualquier desvio es un error del ETL.
+    dim_path = json_path.parent / "dimensiones.json"
+    if dim_path.exists():
+        esperado: dict = {}
+        for fila in load_json(dim_path):
+            llave = (fila.get("categoria"), fila.get("dimension"))
+            e = esperado.setdefault(llave, {"total": 0, "no_utilizo": 0, "no_conozco": 0})
+            for nivel in ("Totalmente satisfecho", "Muy satisfecho", "Satisfecho",
+                          "Insatisfecho", "Totalmente insatisfecho"):
+                e[nivel] = e.get(nivel, 0) + fila.get(nivel, 0)
+            e["total"] += fila.get("total", 0)
+            e["no_utilizo"] += fila.get("no_utilizo", 0)
+            e["no_conozco"] += fila.get("no_conozco", 0)
+        for agregado in value.get("dimensiones", []):
+            llave = (agregado.get("categoria"), agregado.get("dimension"))
+            if llave not in esperado:
+                raise ValueError(f"{filename} (dimensiones): '{agregado.get('dimension')}' no figura en dimensiones.json")
+            if agregado.get("total") != esperado[llave]["total"]:
+                raise ValueError(
+                    f"{filename} (dimensiones): '{agregado.get('dimension')}' suma {esperado[llave]['total']} "
+                    f"en dimensiones.json y publica {agregado.get('total')}")
+            if agregado.get("no_utilizo") != esperado[llave]["no_utilizo"] or agregado.get("no_conozco") != esperado[llave]["no_conozco"]:
+                raise ValueError(f"{filename} (dimensiones): los conteos de visibilidad de '{agregado.get('dimension')}' no cuadran")
 
 
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:

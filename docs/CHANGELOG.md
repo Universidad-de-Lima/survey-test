@@ -8,6 +8,13 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
+## 2026-09-29 — Fase 5, campo 1: el agregado por dimensión lo calcula el proceso, no el navegador
+
+- **Qué se movió.** El radar y las tablas de satisfacción y de visibilidad sumaban las filas de `dimensiones.json` por su cuenta, con la misma fórmula escrita en cuatro archivos (`dashboard.js`, `radar-chart.js`, `portal-radar.js`, `portal-survey.js`). Ahora esa suma la hace el ETL y viaja en `resumenes.json`, en la parte `dimensiones`, con los tres recuentos (top-3, top-2 y promedio ponderado) y los tres porcentajes de la barra de visibilidad.
+- **Por qué ahí.** No se agregó ningún archivo: `resumenes.json` ya lo cargan las dos familias de páginas, y meter el agregado ahí evita el riesgo de sumar dos veces (que es lo que pasaría con filas extra dentro de `dimensiones.json`).
+- **Sin redondear a propósito.** Los tres porcentajes van con toda su precisión, porque la pantalla redondea al final: así el número que se ve es idéntico al de antes.
+- **Invariante nueva.** El validador comprueba que cada fila del agregado cuadre exactamente con la suma de las filas de `dimensiones.json` de esa categoría y dimensión, y que ninguna dimensión del agregado sea inventada.
+
 ## 2026-09-29 — Auditoría de documentación tras las tres reducciones
 
 - **Qué se revisó.** Que ningún documento mencione archivos que ya no existen, que los cinco archivos publicados por período estén en `CONTRACTS.md` y que los conteos de pruebas sean los reales.

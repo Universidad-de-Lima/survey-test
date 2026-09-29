@@ -564,12 +564,44 @@ def main() -> None:
             "nombre_encuesta": _sanitizar_nombre_csv(csv_file.name),
             "fecha_generacion": pd.Timestamp.now().strftime("%Y-%m-%d")
         }
+        # Agregado por dimension (todas las facultades, carreras y ciclos juntos). Es lo que
+        # dibujan el radar y las tablas de visibilidad y de satisfaccion; antes lo sumaba el
+        # navegador, con la misma formula repetida en cuatro archivos.
+        _niveles = RESPUESTAS_TEXTO[:5]
+        _agg: dict = {}
+        for _r in rows:
+            _k = (_r["categoria"], _r["dimension"])
+            _a = _agg.setdefault(_k, {
+                "categoria": _r["categoria"], "dimension": _r["dimension"],
+                **{n: 0 for n in _niveles}, "no_utilizo": 0, "no_conozco": 0,
+                "total": 0, "encuestas": 0,
+            })
+            for _n in _niveles:
+                _a[_n] += _r[_n]
+            _a["no_utilizo"] += _r["no_utilizo"]
+            _a["no_conozco"] += _r["no_conozco"]
+            _a["total"] += _r["total"]
+            _a["encuestas"] += _r["total"]
+
+        for _a in _agg.values():
+            _tot = _a["total"]
+            _vis = _a["no_conozco"] + _a["no_utilizo"] + _tot
+            _a["t3b_pct"] = (_a[_niveles[0]] + _a[_niveles[1]] + _a[_niveles[2]]) / _tot * 100 if _tot else 0
+            _a["top2box_pct"] = (_a[_niveles[0]] + _a[_niveles[1]]) / _tot * 100 if _tot else 0
+            _a["ponderado_pct"] = ((5 * _a[_niveles[0]] + 4 * _a[_niveles[1]] + 3 * _a[_niveles[2]]
+                                    + 2 * _a[_niveles[3]] + 1 * _a[_niveles[4]]) / _tot) / 5 * 100 if _tot else 0
+            _a["pct_no_conozco"] = _a["no_conozco"] / _vis * 100 if _vis else 0
+            _a["pct_no_utilizo"] = _a["no_utilizo"] / _vis * 100 if _vis else 0
+            _a["pct_conoce"] = _tot / _vis * 100 if _vis else 0
+        dimensiones_agregadas = sorted(_agg.values(), key=lambda _x: _x["dimension"])
+
         # Un solo archivo con los cinco resumenes que antes iban por separado
         # (ids, nps_carrera, csat_carrera, nps_ciclo_carrera, csat_ciclo_carrera).
         with open(ruta_salida / "resumenes.json", "w", encoding="utf-8") as f:
             json.dump({
                 "version": "1.0",
                 "ids": ids_conteo,
+                "dimensiones": dimensiones_agregadas,
                 "nps_carrera": nps_carrera,
                 "csat_carrera": csat_carrera,
                 "nps_ciclo_carrera": nps_ciclo_carrera,
