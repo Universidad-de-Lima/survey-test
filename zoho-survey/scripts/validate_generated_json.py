@@ -53,6 +53,7 @@ SCHEMA_BY_FILE: Dict[str, str] = {
     "nps_ciclo_carrera.json": "nps_ciclo_carrera.schema.json",
     "csat_ciclo_carrera.json": "csat_ciclo_carrera.schema.json",
     "conteos.json": "conteos.schema.json",
+    "respuestas.json": "respuestas.schema.json",
 }
 
 # Archivos obligatorios por periodo (shape minimo; el schema formal vive en SCHEMA_BY_FILE).
@@ -221,6 +222,37 @@ def validate_conteos_invariants(value: dict, filename: str) -> None:
             raise ValueError(f"{filename}: la pregunta '{nombre}' no figura en el catalogo")
 
 
+def validate_respuestas_invariants(value: dict, filename: str) -> None:
+    """Invariantes de respuestas.json: cada fila tiene un numero por pregunta, cada numero
+    cae dentro de las opciones de esa pregunta, y el ID y la fecha acompanan a las filas."""
+    cabeceras = value.get("cabeceras")
+    opciones = value.get("opciones")
+    filas = value.get("filas")
+    if not isinstance(cabeceras, list) or not cabeceras:
+        raise ValueError(f"{filename}: no trae cabeceras")
+    if not isinstance(opciones, dict) or set(opciones) != set(cabeceras):
+        raise ValueError(f"{filename}: las opciones no corresponden exactamente a las cabeceras")
+    if not isinstance(filas, list) or not filas:
+        raise ValueError(f"{filename}: no trae filas")
+    if value.get("respuestas") != len(filas):
+        raise ValueError(f"{filename}: 'respuestas' ({value.get('respuestas')}) no coincide con las filas ({len(filas)})")
+    for nombre, lista in opciones.items():
+        if not lista:
+            raise ValueError(f"{filename}: la pregunta '{nombre}' no tiene opciones")
+    for i, fila in enumerate(filas):
+        if len(fila) != len(cabeceras):
+            raise ValueError(f"{filename}: la fila {i} tiene {len(fila)} valores y hay {len(cabeceras)} preguntas")
+        for j, indice in enumerate(fila):
+            if not isinstance(indice, int) or not 0 <= indice < len(opciones[cabeceras[j]]):
+                raise ValueError(
+                    f"{filename}: la fila {i} apunta a la opcion {indice} de '{cabeceras[j]}', "
+                    f"que tiene {len(opciones[cabeceras[j]])} opciones"
+                )
+    for campo in ("ids", "fechas"):
+        if campo in value and len(value[campo]) != len(filas):
+            raise ValueError(f"{filename}: '{campo}' tiene {len(value[campo])} valores y hay {len(filas)} filas")
+
+
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:
     """Invariante: la suma total debe ser > 0."""
     total = 0
@@ -313,6 +345,8 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
         validate_dashboard_csat_extended(value)
     elif filename == "conteos.json":
         validate_conteos_invariants(value, filename)
+    elif filename == "respuestas.json":
+        validate_respuestas_invariants(value, filename)
 
     return value, schema_errors
 
