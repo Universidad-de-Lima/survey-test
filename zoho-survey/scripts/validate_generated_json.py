@@ -62,6 +62,9 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
 }
 
 # Partes del archivo unificado resumenes.json: cada una conserva su schema formal.
+# Estas dos partes pueden venir vacias: las encuestas sin ciclos escolares no las llenan.
+PARTES_QUE_PUEDEN_IR_VACIAS: Set[str] = {"nps_ciclo_carrera", "csat_ciclo_carrera"}
+
 PARTES_RESUMENES: Dict[str, str] = {
     "ids": "ids.schema.json",
     "nps_carrera": "nps_carrera.schema.json",
@@ -225,7 +228,9 @@ def validate_resumenes_invariants(value: dict, filename: str, json_path: Path) -
         if parte not in value:
             raise ValueError(f"{filename}: falta la parte '{parte}'")
         if not value[parte]:
-            raise ValueError(f"{filename}: la parte '{parte}' esta vacia")
+            if parte not in PARTES_QUE_PUEDEN_IR_VACIAS:
+                raise ValueError(f"{filename}: la parte '{parte}' esta vacia")
+            continue
         problemas = validate_with_schema(value[parte], schema, json_path)
         if problemas:
             raise ValueError(f"{filename} ({parte}): " + "; ".join(problemas))
@@ -317,7 +322,7 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
     elif filename == "dimensiones.json":
         validate_dimensiones_invariants(value)
     elif filename == "resumenes.json":
-        validate_resumenes_invariants(value, filename, json_path)
+        validate_resumenes_invariants(value, filename, path)
     elif filename == "sentimiento.json":
         validate_sentimiento_invariants(value)
     elif filename == "dashboard_data.json":
@@ -419,10 +424,6 @@ def validate_period(period_dir: Path) -> Tuple[List[str], List[str]]:
             pass
 
     required = dict(REQUIRED_PERIOD_FILES)
-    if not has_ciclo:
-        # Si no hay ciclos escolares, estos archivos pueden estar vacios
-        required["nps_ciclo_carrera.json"] = dict(type=list, non_empty=False)
-        required["csat_ciclo_carrera.json"] = dict(type=list, non_empty=False)
 
     for filename, spec in required.items():
         path = json_dir / filename
