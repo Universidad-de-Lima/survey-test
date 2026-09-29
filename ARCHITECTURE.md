@@ -63,6 +63,7 @@ survey-test/
 │   ├── index.html           # Portal v5.0 publicado en GitHub Pages (multi-fase).
 │   ├── health.html          # Pagina de health check de contratos JSON por periodo.
 │   ├── shared/              # Recursos compartidos (CSS, JS, imagenes).
+│   │   ├── config/          # Contexto del asistente del portal (asistente_contexto.json).
 │   │   ├── css/             # Capas CSS (tokens, reset, layout, components, sections, loader) + portal/.
 │   │   └── js/              # Modulos JS IIFE expuestos en window.Survey* + portal/.
 │   ├── template/            # Plantilla HTML para dashboards de periodo.
@@ -86,6 +87,7 @@ Para mayor detalle de responsabilidades:
 | `zoho-survey/scripts/lib/` | Biblioteca de utilidades modularizadas del ETL (13 modulos activos). |
 | `zoho-survey/scripts/schemas/` | JSON Schemas Draft-07 (fuente formal de tipos). |
 | `zoho-survey/shared/js/` | Modulos compartidos del portal y dashboard (IIFE). |
+| `zoho-survey/shared/config/` | Contexto del asistente 1.9 (que es el proyecto, datos y reglas) que se envia a `/api/interpretar`. |
 | `zoho-survey/shared/css/` | Capas CSS modulares e imports del dashboard. |
 | `zoho-survey/template/` | Template base HTML para la generacion automatica de periodos. |
 | `zoho-survey/students/` | Dashboards y datos JSON generados de estudiantes. |
@@ -335,14 +337,15 @@ Reglas que sostienen el orden:
 
 `shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON publicados** de cada periodo. El motor reconoce el dato pedido, el periodo, la carrera, la facultad o el ciclo, y devuelve el numero real.
 
-Si las palabras de la pregunta no alcanzan, el portal pide una **traduccion** a la funcion `/api/interpretar` (proyecto survey-tracker, cadena de modelos gratuitos de NVIDIA): esa funcion devuelve unicamente `{dato, periodo, entidad, orden}` y el motor de datos vuelve a responder. **El modelo no calcula ni redacta cifras**: solo dice que se pregunta, de modo que el numero siempre sale del JSON. Si el modelo nombra una carrera o facultad que no existe en los datos, el portal lo dice.
+Si las palabras de la pregunta no alcanzan, el portal arma un mensaje con **tres piezas** — el contexto del proyecto (`zoho-survey/shared/config/asistente_contexto.json`: que es el proyecto, como estan los datos y las reglas), el **menu del periodo** (las preguntas con sus opciones y las palabras con que la gente las pide, armado en vivo desde `respuestas.json`) y la pregunta — y lo envia a la funcion `/api/interpretar` (proyecto survey-tracker, cadena de modelos gratuitos de NVIDIA). La funcion devuelve **un formulario lleno** (`{se_puede, operacion, periodo, filtros, pregunta_objetivo, valores_objetivo, entidad, orden, motivo}`) con nombres copiados del menu; el portal **valida cada nombre contra los datos publicados** (si no existe, lo dice) y hace las cuentas sobre `respuestas.json`: **el modelo no calcula ni redacta cifras**, solo elige nombres.
 
 Reglas del modulo:
 
 1. **Nada se inventa y nada sale de fuera de las encuestas.** Si el dato no esta en los JSON, responde que solo contesta sobre las encuestas (hora, clima, noticias y cualquier tema ajeno quedan fuera por definicion).
 2. **Toda respuesta cita su archivo** ("Fuente: Periodo — archivo.json"), para poder comprobarla.
-3. Los archivos grandes (`dimensiones.json`, `sentimiento.json`) se leen **solo si la pregunta los pide**.
+3. Los archivos grandes (`dimensiones.json`, `sentimiento.json`, `respuestas.json`) se leen **solo si la pregunta los pide**.
 4. La pantalla vive en el item 1.9 del portal y su estilo esta en `shared/css/portal/components.css` (clases `.preguntas*`).
+5. Un nombre pegado a un "de" ("la carrera de Economia") no cuenta como tema: esas preguntas las resuelve el formulario.
 
 Se comprueba con `tests/unit/test-preguntas.js` (jsdom, lee los JSON del repositorio).
 

@@ -495,3 +495,14 @@ build_json.py procesa las 7 categorias (no solo pregrado/graduados). Por nivel i
   (clasificar_categoria_dimension). El schema de dimensiones.json no exige enum de
   categoria, por lo que cualquier etiqueta es valida.
 
+## Contrato de `/api/interpretar` (asistente del portal)
+
+Solo lo consume `zoho-survey/shared/js/portal/portal-preguntas.js`; no forma parte de los JSON por periodo.
+
+Peticion (POST): `{ pregunta (<=300), contexto (<=6000), menu (<=16000) }`.
+
+Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunta_objetivo, valores_objetivo[], entidad, orden, motivo } }`.
+
+- `operacion`: `contar | porcentaje | cruce | nps | satisfaccion | carreras | facultades | ciclos | dimensiones | comentarios | temas | comparacion | fechas | periodos | ninguna`.
+- `filtros`: `[{ pregunta, valores[] }]` con nombres exactos del menu; `pregunta_objetivo` y `valores_objetivo` igual.
+- Invariante: la funcion **no calcula cifras**; el portal valida cada nombre contra los datos publicados (si no existe, lo dice) y cuenta sobre `respuestas.json`. Error: 502 si ningun modelo responde.

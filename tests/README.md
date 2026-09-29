@@ -26,8 +26,8 @@ tests/
     ├── test-sentiment-view.js  # SurveySentimentView API surface (9 tests)
     ├── test-filter-controller.js  # SurveyFilterController (16 tests)
     ├── test-insights-ia.js     # Insights IA (4 tests)
-    ├── test-portal-data.js     # Capa de datos del portal: periodos reales, mapeo ítem→carpeta y fases con datos (14 tests, TestFramework)
-    └── test-dom.js             # Tests con jsdom (33 tests, dialecto propio)
+    ├── test-portal-data.js     # Capa de datos del portal: periodos reales, mapeo ítem→carpeta y fases con datos (19 tests, TestFramework)
+    └── test-dom.js             # Tests con jsdom (32 tests, dialecto propio)
 ```
 
 ## Agregar Un Test
@@ -78,9 +78,9 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | Archivo | Tests reales | Módulo bajo prueba |
 | --- | --- | --- |
 | `test-dom.js` | 32 | `SurveyFormatters`, `SurveySanitizer`, `SurveyDomHelpers`, `SurveyTooltip` (con DOM real) |
-| `test-preguntas.js` | 19 | `SurveyPortalPreguntas` (asistente del ítem 1.9, con los JSON publicados) |
+| `test-preguntas.js` | 29 | `SurveyPortalPreguntas` (asistente del ítem 1.9, con los JSON publicados) |
 
-### Total: 108 tests TestFramework (94 base + 14 de `test-portal-data.js`) + 51 tests con jsdom (32 de `test-dom.js` + 19 de `test-preguntas.js`), según lo que reporta el flujo de pruebas
+### Total: 113 tests TestFramework (94 base + 19 de `test-portal-data.js`) + 61 tests con jsdom (32 de `test-dom.js` + 29 de `test-preguntas.js`), según lo que reporta el flujo de pruebas
 
 > **Historial:** un snapshot previo de auditoría reportaba `test-sanitizer.js` vacío y
 > `test-sentiment-view.js` ausente; ambos fueron verificados y restaurados/implementados

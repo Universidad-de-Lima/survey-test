@@ -2,6 +2,12 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-29 — El asistente del portal entiende con contexto y menú
+
+- **Qué pasaba.** El portal mandaba la pregunta sola a `/api/interpretar` y esa función devolvía cuatro campos (`dato`, `periodo`, `entidad`, `orden`) sin saber qué preguntas existen; el portal volvía a adivinar con reglas. Preguntas como «¿qué porcentaje de graduados de la carrera de economía trabajan?» terminaban respondiendo sobre la satisfacción de «La carrera».
+- **Qué se hizo.** La función ahora recibe `{pregunta, contexto, menu}` y devuelve un formulario con nombres exactos del menú; el portal valida cada nombre contra los datos publicados y cuenta sobre `respuestas.json`. Nuevo `zoho-survey/shared/config/asistente_contexto.json` (qué es el proyecto, cómo están los datos y las reglas; editable sin tocar código). Además se corrigió la causa raíz del caso reportado: el cruce de reglas ya no toma un nombre pegado a un «de» («la carrera de Economía») como objetivo. El modelo sigue sin calcular ni redactar cifras.
+- **Pruebas.** Asistente 1.9 en jsdom 23 → 29; `interpretar` (vitest) 9 → 10. Conteos de `tests/README.md` y `AGENTS.md` corregidos y verificados contra el run (113 TestFramework, 61 jsdom —32+29—, 313 Python).
+
 ## 2026-09-29 — `respuestas.json` deja de ser un contrato obligatorio (el proceso nunca lo generaba)
 
 - **Qué pasaba.** El validador exigía `respuestas.json` en los tres períodos, pero `build_json.py` importaba el generador y **no lo llamaba nunca**. El archivo solo existía en el repositorio porque se había confirmado a mano, así que cualquier corrida del ETL terminaba en rojo, y el atajo de idempotencia (que lo contaba entre los archivos a revisar) no podía cumplirse nunca.
