@@ -167,8 +167,28 @@ window.SurveyPortalPreguntas = (function () {
     return mejor;
   }
 
-  // ---------- respuestas ----------
+  // Un cruce se reconoce por su forma: empieza con "de los/de las..." y nombra una pregunta
+  // que la gente pide con sus propias palabras (perfil de egreso, satisfaccion con la
+  // universidad...). Si no es un cruce, o si la tabla no lo puede resolver, siguen las
+  // familias de siempre: esto nunca quita respuestas, solo agrega.
+  function esPosibleCruce(t) {
+    var marcador = t.indexOf('de los ') !== -1 || t.indexOf('de las ') !== -1 ||
+                   t.indexOf('de quienes ') !== -1 || t.indexOf('de los que') !== -1;
+    if (!marcador) return false;
+    return ALIAS_PREGUNTA.some(function (par) {
+      return sinS(t).indexOf(sinS(par[0])) !== -1;
+    });
+  }
+
   function respuesta(t) {
+    if (esPosibleCruce(t)) {
+      return cruceConTabla(t).then(function (r) { return r || respuestaBase(t); });
+    }
+    return respuestaBase(t);
+  }
+
+  // ---------- respuestas ----------
+  function respuestaBase(t) {
     var trae = function (l) { return t.indexOf(l) !== -1; };
 
     // 1) Que hay publicado
