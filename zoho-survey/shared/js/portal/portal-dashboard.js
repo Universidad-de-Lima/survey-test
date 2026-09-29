@@ -89,7 +89,7 @@
       '</div>' +
       '<span class="ring-nom">' + esc2(phase.name) + '</span>' +
       '<span class="ring-per">' + detalle + '</span>' +
-      '<span class="ring-satisf"><span class="ring-barra"><i style="--w:' + csatPct + '%; --c:' + colorCsat +
+      '<span class="ring-satisf"><span class="ring-barra"><i class="ring-relleno" style="--w:' + csatPct + '%; --c:' + colorCsat +
         '"></i></span><span class="ring-satisf-texto" style="--c:' + colorCsat + '">' + csatTexto + '</span></span>' +
       tendenciaDe(medicion) +
     '</div>';

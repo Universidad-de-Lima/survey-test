@@ -88,6 +88,30 @@ class TestCssLimpio(unittest.TestCase):
         self.assertEqual({}, repetidas,
                          'el mismo estilo esta escrito en dos hojas: moverlo a shared/css/common.css')
 
+    def test_dato_en_linea_con_clase_que_lo_usa(self):
+        """Un `style="--w:..."` sin la clase que la consume deja el dibujo invisible.
+
+        Paso el 2026-09-29: la barra de satisfaccion de los anillos del Dashboard seguia
+        llevando --w y --c en linea, pero habia perdido su clase en el pase a CSS, asi que
+        se dibujaba transparente y solo se veia el carril gris.
+        """
+        clases = set()
+        for hoja in HOJAS:
+            for selector, cuerpo in _reglas(hoja.read_text(encoding='utf-8')):
+                if 'var(--w)' in cuerpo:
+                    clases.update(re.findall(r'\.([A-Za-z0-9_-]+)', selector))
+        faltan = []
+        for fuente in FUENTES:
+            lineas = fuente.read_text(encoding='utf-8').splitlines()
+            for n, linea in enumerate(lineas):
+                if '--w:' not in linea or linea.strip().startswith(('//', '*', '/*')):
+                    continue
+                ventana = ' '.join(lineas[max(0, n - 2):n + 1])
+                usadas = [c for grupo in re.findall(r'class="([^"]*)"', ventana) for c in grupo.split()]
+                if not (set(usadas) & clases):
+                    faltan.append(f'{fuente.name}:{n + 1} -> {linea.strip()[:70]}')
+        self.assertEqual([], faltan, 'elementos con --w sin una clase que la consuma')
+
     def test_sin_tokens_muertos(self):
         hoja = (RAIZ / 'shared' / 'css' / 'tokens.css').read_text(encoding='utf-8')
         definidos = re.findall(r'(--[a-z][\w-]*)\s*:', hoja)
