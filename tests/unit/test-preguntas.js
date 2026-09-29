@@ -170,7 +170,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     const html = P.render();
     assertIncludes(html, 'preguntasForm', 'formulario');
     assertIncludes(html, 'preguntasTexto', 'campo de texto');
-    assertIncludes(html, 'preguntas-sugerencia', 'preguntas sugeridas');
+    assertTrue(!html.includes('data-pregunta'), 'la caja arranca sin preguntas ya escritas');
   });
 
   await (async function () {

@@ -753,16 +753,6 @@ window.SurveyPortalPreguntas = (function () {
   }
 
   // ---------- pantalla del item 1.9 ----------
-  var SUGERENCIAS = [
-    '¿Cuántas respuestas tenemos en 2026-1?',
-    '¿Cuál es el NPS de 2026-1?',
-    '¿Qué carreras tienen el NPS más bajo?',
-    '¿Cuál es la satisfacción de Psicología?',
-    '¿Cómo cambió el NPS de 2025-2 a 2026-1?',
-    '¿Qué dimensiones están mejor evaluadas?',
-    '¿Cuántos comentarios hay y cómo se reparten?',
-    '¿Qué temas son los más comentados?'
-  ];
 
   function render() {
     return '<div class="preguntas">' +
@@ -777,19 +767,13 @@ window.SurveyPortalPreguntas = (function () {
       '<form class="preguntas-form" id="preguntasForm">' +
         '<label class="preguntas-etiqueta" for="preguntasTexto">Escribe tu pregunta</label>' +
         '<div class="preguntas-fila">' +
-          '<input class="preguntas-campo" id="preguntasTexto" type="text" autocomplete="off" ' +
-          'placeholder="Ejemplo: ¿cuál es el NPS de Ingeniería en 2026-1?">' +
+          '<input class="preguntas-campo" id="preguntasTexto" type="text" autocomplete="off">' +
           '<button class="preguntas-boton" type="submit">Preguntar</button>' +
         '</div>' +
       '</form>' +
       '<div class="preguntas-frecuentes" id="preguntasFrecuentes" hidden>' +
         '<p class="preguntas-etiqueta">Las más preguntadas</p>' +
         '<div class="preguntas-sugerencias" id="preguntasMasUsadas"></div>' +
-      '</div>' +
-      '<div class="preguntas-sugerencias" id="preguntasSugerencias">' +
-        SUGERENCIAS.map(function (s) {
-          return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(s) + '">' + esc(s) + '</button>';
-        }).join('') +
       '</div>' +
       '<div class="preguntas-respuestas" id="preguntasRespuestas"></div>' +
       '</div>';
@@ -856,12 +840,6 @@ window.SurveyPortalPreguntas = (function () {
         if (campo) campo.value = '';
       });
     }
-    var sug = document.getElementById('preguntasSugerencias');
-    if (sug) {
-      sug.querySelectorAll('.preguntas-sugerencia').forEach(function (b) {
-        b.addEventListener('click', function () { preguntar(b.getAttribute('data-pregunta')); });
-      });
-    }
   }
 
   function iniciar() {
@@ -882,7 +860,6 @@ window.SurveyPortalPreguntas = (function () {
     cargarFrecuentes: cargarFrecuentes,
     frecuentes: function () { return FRECUENTES; },
     render: render,
-    sugerencias: SUGERENCIAS,
     catalogo: function () { return CATALOGO; }
   };
 })();
