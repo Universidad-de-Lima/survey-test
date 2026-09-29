@@ -11,7 +11,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 ## 2026-09-29 — Auditoría de documentación tras las tres reducciones
 
 - **Qué se revisó.** Que ningún documento mencione archivos que ya no existen, que los cinco archivos publicados por período estén en `CONTRACTS.md` y que los conteos de pruebas sean los reales.
-- **Lo que se corrigió.** `ARCHITECTURE.md` tenía cuatro menciones a `nps_carrera.json` y `csat_carrera.json` (ahora apuntan a las partes de `resumenes.json`). `tests/README.md` y `AGENTS.md` no contaban las 19 pruebas del asistente del ítem 1.9: ahora dicen 160 pruebas de JavaScript y 312 de Python.
+- **Lo que se corrigió.** `ARCHITECTURE.md` tenía cuatro menciones a `nps_carrera.json` y `csat_carrera.json` (ahora apuntan a las partes de `resumenes.json`). `tests/README.md` y `AGENTS.md` no contaban las 19 pruebas del asistente del ítem 1.9: ahora dicen 32 pruebas de DOM (el dato real, no 33) + 19 del asistente, y 312 de Python.
 - **Lo que quedó bien sin tocar.** `CONTRACTS.md` documenta los cinco archivos publicados; los archivos retirados solo se mencionan en este registro, donde se explica su retiro.
 - **Hallazgo pendiente (no se tocó).** `CONTRACTS.md` contiene el documento dos veces y las dos copias **no** son iguales (23 176 y 20 977 caracteres). Unificarlas es una decisión aparte: hay que leerlas y ver qué le falta a cada una.
 
