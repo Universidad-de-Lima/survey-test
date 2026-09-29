@@ -52,7 +52,6 @@ SCHEMA_BY_FILE: Dict[str, str] = {
     "ids.json": "ids.schema.json",
     "nps_ciclo_carrera.json": "nps_ciclo_carrera.schema.json",
     "csat_ciclo_carrera.json": "csat_ciclo_carrera.schema.json",
-    "conteos.json": "conteos.schema.json",
     "respuestas.json": "respuestas.schema.json",
 }
 
@@ -65,7 +64,6 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "csat_ciclo_carrera.json": dict(type=list, non_empty=True),
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
-    "conteos.json": dict(type=dict, non_empty=True),
     "respuestas.json": dict(type=dict, non_empty=True),
 }
 
@@ -192,68 +190,6 @@ def validate_dimensiones_invariants(value: List[dict]) -> None:
         raise ValueError("dimensiones.json no contiene filas validas con total > 0")
 
 
-def validate_conteos_invariants(value: dict, filename: str) -> None:
-    """Invariantes: cada corte cuadra con su total, las opciones no pasan el total de
-    respuestas, y toda pregunta contada figura en el catalogo."""
-    preguntas = value.get("preguntas")
-    if not isinstance(preguntas, list):
-        raise ValueError(f"{filename}: 'preguntas' debe ser una lista")
-    # Ojo: una encuesta cuyas preguntas ya estan todas publicadas (Pregrado) deja esta
-    # lista vacia a proposito. Lo que no puede faltar es el catalogo.
-    if not value.get("catalogo"):
-        raise ValueError(f"{filename}: no trae catalogo de preguntas")
-    catalogo = {c.get("pregunta") for c in value.get("catalogo", [])}
-    for pregunta in preguntas:
-        nombre = str(pregunta.get("pregunta"))
-        total = pregunta.get("total", 0)
-        if not isinstance(total, int):
-            raise ValueError(f"{filename}: '{nombre}' no trae total numerico")
-        suma = sum(o.get("total", 0) for o in pregunta.get("por_opcion", []))
-        if suma > total:
-            raise ValueError(f"{filename}: '{nombre}' suma {suma} en sus opciones y su total es {total}")
-        for opcion in pregunta.get("por_opcion", []):
-            for corte in ("por_carrera", "por_facultad", "por_ciclo"):
-                if corte in opcion:
-                    parcial = sum(opcion[corte].values())
-                    if parcial != opcion.get("total", 0):
-                        raise ValueError(
-                            f"{filename}: la opcion '{opcion.get('opcion')}' de '{nombre}' suma "
-                            f"{parcial} en {corte} y su total es {opcion.get('total')}")
-        if nombre not in catalogo:
-            raise ValueError(f"{filename}: la pregunta '{nombre}' no figura en el catalogo")
-
-
-def validate_respuestas_invariants(value: dict, filename: str) -> None:
-    """Invariantes de respuestas.json: cada fila tiene un numero por pregunta, cada numero
-    cae dentro de las opciones de esa pregunta, y el ID y la fecha acompanan a las filas."""
-    cabeceras = value.get("cabeceras")
-    opciones = value.get("opciones")
-    filas = value.get("filas")
-    if not isinstance(cabeceras, list) or not cabeceras:
-        raise ValueError(f"{filename}: no trae cabeceras")
-    if not isinstance(opciones, dict) or set(opciones) != set(cabeceras):
-        raise ValueError(f"{filename}: las opciones no corresponden exactamente a las cabeceras")
-    if not isinstance(filas, list) or not filas:
-        raise ValueError(f"{filename}: no trae filas")
-    if value.get("respuestas") != len(filas):
-        raise ValueError(f"{filename}: 'respuestas' ({value.get('respuestas')}) no coincide con las filas ({len(filas)})")
-    for nombre, lista in opciones.items():
-        if not lista:
-            raise ValueError(f"{filename}: la pregunta '{nombre}' no tiene opciones")
-    for i, fila in enumerate(filas):
-        if len(fila) != len(cabeceras):
-            raise ValueError(f"{filename}: la fila {i} tiene {len(fila)} valores y hay {len(cabeceras)} preguntas")
-        for j, indice in enumerate(fila):
-            if not isinstance(indice, int) or not 0 <= indice < len(opciones[cabeceras[j]]):
-                raise ValueError(
-                    f"{filename}: la fila {i} apunta a la opcion {indice} de '{cabeceras[j]}', "
-                    f"que tiene {len(opciones[cabeceras[j]])} opciones"
-                )
-    for campo in ("ids", "fechas"):
-        if campo in value and len(value[campo]) != len(filas):
-            raise ValueError(f"{filename}: '{campo}' tiene {len(value[campo])} valores y hay {len(filas)} filas")
-
-
 def validate_id_rows_invariants(value: List[dict], filename: str) -> None:
     """Invariante: la suma total debe ser > 0."""
     total = 0
@@ -344,8 +280,6 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
         validate_sentimiento_invariants(value)
     elif filename == "dashboard_data.json":
         validate_dashboard_csat_extended(value)
-    elif filename == "conteos.json":
-        validate_conteos_invariants(value, filename)
     elif filename == "respuestas.json":
         validate_respuestas_invariants(value, filename)
 

@@ -132,7 +132,7 @@ comentarios NUEVOS. Para forzar reprocesamiento, borrar el `sentimiento.json` de
 
 ### Optimizacion: deteccion de cambios por hash
 
-`build_json.py` implementa una optimizacion de skip: antes de procesar un CSV, calcula su hash SHA256 y lo compara con `.csv_hash` (guardado en el directorio de salida del periodo). Si el CSV no cambio desde el ultimo build Y todos los JSONs ya existen (incluido `conteos.json`), se salta el reprocesamiento completo. Esto ahorra tiempo de CPU, llamadas a los motores IA (costos), y reescritura de archivos identicos. La huella es versionada (`ETL_OUTPUT_VERSION` + hash) para forzar reproceso controlado cuando cambian reglas internas.
+`build_json.py` implementa una optimizacion de skip: antes de procesar un CSV, calcula su hash SHA256 y lo compara con `.csv_hash` (guardado en el directorio de salida del periodo). Si el CSV no cambio desde el ultimo build Y todos los JSONs ya existen , se salta el reprocesamiento completo. Esto ahorra tiempo de CPU, llamadas a los motores IA (costos), y reescritura de archivos identicos. La huella es versionada (`ETL_OUTPUT_VERSION` + hash) para forzar reproceso controlado cuando cambian reglas internas.
 
 ### Outputs generados por periodo
 
@@ -148,12 +148,7 @@ En `json/` (consumidos por frontend):
 7. `sentimiento.json` (v3.0) — analisis cualitativo completo (consumido por frontend).
 8. `nps_carrera.json` (legacy) — NPS por carrera (fallback para encuestas sin ciclo).
 9. `csat_carrera.json` (legacy) — CSAT por carrera (fallback para encuestas sin ciclo).
-10. `conteos.json` — conteos por pregunta de perfil (con `sin_respuesta` y cada opción partida
-    por carrera, facultad y ciclo), catálogo de preguntas (qué preguntas hay y en qué archivo vive
-    el conteo de cada una) y empleabilidad global, por carrera y por facultad. Alimenta al asistente
-    del ítem 1.9. No repite lo que ya publican `dimensiones.json`, `nps_*.json`, `csat_*.json`,
-    `ids.json` ni `sentimiento.json`.
-11. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
+10. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
     que apuntan a las opciones de cada pregunta, más el `id` y la `fecha` de cada una. Es lo que
     permite responder consultas filtrando y contando, incluidos los cruces entre preguntas.
     No incluye el texto libre (vive en `sentimiento.json`).

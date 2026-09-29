@@ -20,7 +20,6 @@ from typing import Dict, List, Set
 # las variables llegan por entorno (Secrets). No se lee ningun archivo .env.
 
 # Importar configuración, métricas, nlp e io_helpers modularizados
-from lib.conteos import construir_conteos
 from lib.tabla_respuestas import construir_tabla
 from lib.config import (
     COLUMN_RENAME_PREGRADO,
@@ -253,7 +252,7 @@ def main() -> None:
                 for j in ["dashboard_data", "filtros", "dimensiones",
                           "nps_carrera", "nps_ciclo_carrera",
                           "csat_carrera", "csat_ciclo_carrera",
-                          "sentimiento", "ids", "conteos", "respuestas"]
+                          "sentimiento", "ids", "respuestas"]
         # fragmentos_nps.json y dataset_cualitativo.json se escriben en intermediate/
         # y no se verifican en el shortcut de idempotencia (son intermedios del ETL).
             )
@@ -480,23 +479,6 @@ def main() -> None:
             })
         with open(ruta_salida / "ids.json", "w", encoding="utf-8") as f:
             json.dump(ids_conteo, f, ensure_ascii=False, indent=2)
-
-        # Conteos por pregunta (todas las respuestas) + catalogo de preguntas: dice que
-        # preguntas existen y en que archivo vive el conteo de cada una. Alimenta al
-        # asistente del item 1.9 del portal (ver CONTRACTS.md y lib/conteos.py).
-        with open(ruta_salida / "conteos.json", "w", encoding="utf-8") as f:
-            json.dump(
-                construir_conteos(df, nivel, categoria_dim, tiene_ciclo,
-                                  nps_col=nps_col, csat_col=csat_col),
-                f, ensure_ascii=False, indent=2
-            )
-
-        # Tabla de respuestas: una fila por respuesta, con numeros en vez de texto, mas
-        # el ID y la fecha. Es lo que permite responder cualquier consulta filtrando y
-        # contando (incluidos los cruces entre preguntas). Ver CONTRACTS.md.
-        with open(ruta_salida / "respuestas.json", "w", encoding="utf-8") as f:
-            json.dump(construir_tabla(df, nivel, periodo),
-                      f, ensure_ascii=False, separators=(",", ":"))
 
         # Agrupamiento NPS etapas (inicial, intermedio, avanzado)
         etapas: Dict[str, Dict[str, int]] = {}

@@ -2,6 +2,13 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-29 — Se retira `conteos.json` (ningún visual lo leía)
+
+- **Qué era.** Un archivo por período con los conteos de las preguntas de perfil, la empleabilidad por carrera y un catálogo de preguntas. Se agregó el 2026-09-28.
+- **Por qué se retira.** Ninguna página ni módulo lo leía. Su catálogo de preguntas está en las cabeceras de `respuestas.json`, sus conteos de perfil salen de esa misma tabla, y su empleabilidad ya estaba en `dashboard_data.json` (`resumen.empleabilidad`). Mantenerlo era un dato de más y un contrato más que cuidar.
+- **Qué se borró.** El archivo en los tres períodos, el módulo `zoho-survey/scripts/lib/conteos.py`, sus 7 pruebas, su schema, sus entradas en el validador y su escritura en el ETL (incluida su mención en el atajo de idempotencia).
+- **Verificación.** Los números publicados quedaron idénticos (3998/61,31/96,97 · 4239/72,61/97,85 · 598/85,62/99,00) y la foto del aspecto de las cinco páginas dio 100,0 % de elementos idénticos, con las mismas figuras (portal 595/145, Alumnos 2026-1 1825/203, Alumnos 2025-2 1165/161, Graduados 1978/294).
+
 ## 2026-09-29 — La tabla de respuestas del período (base del asistente 1.9)
 
 - **Qué se agrega.** Un archivo nuevo por período, `respuestas.json`: **una fila por respuesta**, con un número por pregunta que apunta a su opción (así el texto va una sola vez y el archivo pesa poco), más el `id` y la `fecha` de cada respuesta. Es la "hoja" con la que el asistente del ítem 1.9 podrá responder filtrando y contando, incluidos los cruces entre preguntas que hoy no se pueden ("de los que trabajan a tiempo completo, cuántos están satisfechos con su perfil de egreso").
