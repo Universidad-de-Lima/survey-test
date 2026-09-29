@@ -8,6 +8,13 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
+## 2026-09-29 — El proceso publica la tabla de respuestas del asistente (ítem 1.9)
+
+- **Qué faltaba.** El módulo `lib/tabla_respuestas.py` estaba escrito y probado, pero `build_json.py` importaba `construir_tabla` y **no la llamaba**: la tabla solo existía si alguien la confirmaba a mano, así que cada corrida del ETL terminaba en rojo y el asistente no tenía con qué responder cruces.
+- **Qué se hizo.** El ETL la genera y publica como `respuestas.json` en cada período, y el atajo de idempotencia la revisa como a los demás. Quedó además como archivo **obligatorio** del validador, después de comprobar que existe en los tres períodos.
+- **Qué trae.** Una fila por respuesta (3998 / 4239 / 598, iguales al dashboard), 33 preguntas en Pregrado y 48 en Graduados, con las opciones declaradas una sola vez, el identificador de cada respuesta y su fecha. Fuera quedan el comentario abierto (viaja en `sentimiento.json`), el estado del webhook y lo que supere 50 valores distintos (texto libre). Sin datos personales.
+- **Para qué.** Es lo que permite contestar cruces del tipo «de los que trabajan a tiempo completo, cuántos están satisfechos», que no se pueden precalcular.
+
 ## 2026-09-29 — Fase 5: se midió qué puede salir del navegador (y se revirtió un intento)
 
 - **Lo que se intentó.** Publicar en `resumenes.json` un agregado por dimensión (la suma de todas las facultades, carreras y ciclos) para que el radar y las tablas dejaran de sumarlo. El proceso lo generó correcto: **0 filas descuadradas y desvío 0,00** frente a las filas de `dimensiones.json`, en los tres períodos.

@@ -59,6 +59,7 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
     "resumenes.json": dict(type=dict, non_empty=True),
+    "respuestas.json": dict(type=dict, non_empty=True),
 }
 
 # Partes del archivo unificado resumenes.json: cada una conserva su schema formal.

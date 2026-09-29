@@ -375,15 +375,41 @@ Campos opcionales adicionales en comentarios (producidos por el ETL):
 
 ## `respuestas.json`
 
-**Estado: la tabla existe como módulo probado, pero el proceso todavía no la publica.** El
-generador (`zoho-survey/scripts/lib/tabla_respuestas.py`, con sus pruebas) está listo; lo que falta
-es que el ETL lo llame. Hoy ninguna página ni módulo lee este archivo, así que **no es un contrato
-obligatorio**: si el archivo aparece, se valida con `respuestas.schema.json`; si no está, el
-validador no lo reclama.
+**La tabla de respuestas del período: una fila por respuesta, con números en vez de texto.** Es la
+hoja que usa el asistente del ítem 1.9 para filtrar y contar: permite contestar cruces entre dos o
+más preguntas, que por definición no se pueden precalcular.
 
-Su futuro depende del ítem 1.9: es la pieza que le permitiría responder preguntas que no se pueden
-precalcular. Si el ítem se retira, la tabla y su módulo se retiran con él.
+```json
+{
+  "version": "1.0",
+  "nivel": "undergraduate",
+  "periodo": "2026-1",
+  "respuestas": 4239,
+  "cabeceras": ["Carrera", "Ciclo", "..."],
+  "opciones": { "Carrera": ["Administración", "..."], "Ciclo": ["1", "..."] },
+  "filas": [[0, 3, 1, ...], [1, 3, 0, ...]],
+  "ids": ["...", "..."],
+  "fechas": ["2026-04-16", "..."],
+  "excluidas": [{ "pregunta": "Comentario NPS", "motivo": "no es una pregunta" }]
+}
+```
 
+- **`cabeceras`**: las preguntas que se pueden filtrar, en orden. Cada una tiene sus opciones en
+  `opciones` (una sola vez para todas las filas) y un `(sin respuesta)` al inicio cuando la pregunta
+  se puede dejar en blanco (los saltos de la encuesta se cuentan, no se esconden).
+- **`filas`**: un número por pregunta y por respuesta; ese número apunta a la opción. Una fila por
+  respuesta, en el mismo orden que `ids` y `fechas`.
+- **`ids`** enlaza cada fila con el análisis de los comentarios (`sentimiento.json` lleva el mismo
+  identificador); **`fechas`** permite contar por día o por semana.
+- **`excluidas`** deja constancia de lo que no entró y por qué: texto libre (más de 50 valores
+  distintos), el comentario abierto, el estado del webhook y los campos que viajan aparte.
+
+**Sin datos personales**: no hay nombre, correo, documento ni código de alumno; tampoco el texto de
+la pregunta abierta, que vive en `sentimiento.json` ya analizado.
+
+**Invariantes** (`validate_respuestas_invariants`): `respuestas` coincide con el número de filas; cada
+fila tiene un valor por pregunta; cada valor apunta a una opción existente de esa pregunta; `ids` y
+`fechas`, si están, tienen el mismo largo que las filas.
 ## Responsabilidades Por Capa
 
 | Capa | Responsabilidad |

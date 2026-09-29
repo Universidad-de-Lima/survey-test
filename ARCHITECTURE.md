@@ -161,7 +161,7 @@ En `json/` (consumidos por frontend):
 7. `sentimiento.json` (v3.0) — analisis cualitativo completo (consumido por frontend).
 8. `resumenes.json (parte nps_carrera)` (legacy) — NPS por carrera (fallback para encuestas sin ciclo).
 9. `resumenes.json (parte csat_carrera)` (legacy) — CSAT por carrera (fallback para encuestas sin ciclo).
-5. `respuestas.json` — la tabla de respuestas del período: una fila por respuesta, con números
+5. `respuestas.json` — la tabla de respuestas del período (una fila por respuesta, con números): la usa el asistente del ítem 1.9 para filtrar y contar.
     que apuntan a las opciones de cada pregunta, más el `id` y la `fecha` de cada una. Es lo que
     permite responder consultas filtrando y contando, incluidos los cruces entre preguntas.
     No incluye el texto libre (vive en `sentimiento.json`).
