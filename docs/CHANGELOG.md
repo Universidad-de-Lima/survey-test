@@ -8,12 +8,12 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
 - **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
 
-## 2026-09-29 — Fase 5, campo 1: el agregado por dimensión lo calcula el proceso, no el navegador
+## 2026-09-29 — Fase 5: se midió qué puede salir del navegador (y se revirtió un intento)
 
-- **Qué se movió.** El radar y las tablas de satisfacción y de visibilidad sumaban las filas de `dimensiones.json` por su cuenta, con la misma fórmula escrita en cuatro archivos (`dashboard.js`, `radar-chart.js`, `portal-radar.js`, `portal-survey.js`). Ahora esa suma la hace el ETL y viaja en `resumenes.json`, en la parte `dimensiones`, con los tres recuentos (top-3, top-2 y promedio ponderado) y los tres porcentajes de la barra de visibilidad.
-- **Por qué ahí.** No se agregó ningún archivo: `resumenes.json` ya lo cargan las dos familias de páginas, y meter el agregado ahí evita el riesgo de sumar dos veces (que es lo que pasaría con filas extra dentro de `dimensiones.json`).
-- **Sin redondear a propósito.** Los tres porcentajes van con toda su precisión, porque la pantalla redondea al final: así el número que se ve es idéntico al de antes.
-- **Invariante nueva.** El validador comprueba que cada fila del agregado cuadre exactamente con la suma de las filas de `dimensiones.json` de esa categoría y dimensión, y que ninguna dimensión del agregado sea inventada.
+- **Lo que se intentó.** Publicar en `resumenes.json` un agregado por dimensión (la suma de todas las facultades, carreras y ciclos) para que el radar y las tablas dejaran de sumarlo. El proceso lo generó correcto: **0 filas descuadradas y desvío 0,00** frente a las filas de `dimensiones.json`, en los tres períodos.
+- **Por qué se revirtió.** El radar y las tablas agrupan filas **ya filtradas** por la persona (facultad, carrera, ciclo). El agregado solo sirve a la vista sin filtros y usarlo obligaba a un camino extra en el código para mostrar exactamente los mismos números: la sobreingeniería que el usuario rechaza, y dejaba en los JSON un dato sin consumidor.
+- **Lo que queda medido.** De las 96 líneas que hoy calculan algo en `shared/js/`: 40 son formato, 4 son geometría de los dibujos (el ángulo del radar, el ancho de una barra) y 52 son agregaciones sobre los filtros elegidos. Las dos primeras se quedan; la tercera **no se puede precalcular** por definición.
+- **Conclusión.** La regla «el HTML no calcula» se cumple para todo lo que no depende de un filtro; lo que depende de él es inherente a una pantalla que reacciona a lo que la persona elige. No se movió ningún número visible.
 
 ## 2026-09-29 — Auditoría de documentación tras las tres reducciones
 

@@ -326,27 +326,6 @@ reglas de `validate_id_rows_invariants`.
 `portal/portal-preguntas.js`) pedían los cinco archivos por separado, seis peticiones por período
 para datos que siempre se usan juntos. Ahora piden uno y lo reparten en memoria.
 
-### La parte `dimensiones`
-
-`resumenes.json` incluye además `dimensiones`: el **agregado por dimensión** sumando todas las
-facultades, carreras y ciclos. Es un re-conteo de `dimensiones.json` y trae lo que dibujan el radar y
-las tablas:
-
-- `categoria`, `dimension`
-- los cinco conteos de la escala (`Totalmente satisfecho` … `Totalmente insatisfecho`), en capitalizadas
-- `no_utilizo`, `no_conozco`, `total`, `encuestas`
-- `t3b_pct` (top-3-box), `top2box_pct` (top-2-box), `ponderado_pct` (promedio ponderado 5-4-3-2-1)
-- `pct_no_conozco`, `pct_no_utilizo`, `pct_conoce` (los tres segmentos de la barra de visibilidad)
-
-Los tres porcentajes del recuento van **sin redondear**, a propósito: la pantalla redondea al final, y
-así el número que se ve es idéntico al que el navegador calculaba antes. El `t3b_pct` de
-`dimensiones.json`, en cambio, sí va redondeado a dos decimales: hay que respetar cada uno.
-
-**Invariante:** cada fila del agregado tiene que sumar exactamente lo mismo que las filas de
-`dimensiones.json` de esa categoría y esa dimensión (`total`, `no_utilizo`, `no_conozco`), y cada
-dimensión del agregado tiene que existir en `dimensiones.json`. Lo comprueba
-`validate_resumenes_invariants`.
-
 ## `sentimiento.json`
 
 Schema: `zoho-survey/scripts/schemas/sentimiento.schema.json`.
