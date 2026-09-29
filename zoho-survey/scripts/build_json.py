@@ -250,7 +250,7 @@ def main() -> None:
             jsons_existen = all(
                 (ruta_salida / f"{j}.json").exists()
                 for j in ["dashboard_data", "filtros", "dimensiones",
-                          "resumenes", "sentimiento"]
+                          "resumenes", "sentimiento", "respuestas"]
         # fragmentos_nps.json y dataset_cualitativo.json se escriben en intermediate/
         # y no se verifican en el shortcut de idempotencia (son intermedios del ETL).
             )
@@ -575,6 +575,14 @@ def main() -> None:
                 "nps_ciclo_carrera": nps_ciclo_carrera,
                 "csat_ciclo_carrera": csat_ciclo_carrera,
             }, f, ensure_ascii=False, indent=2)
+
+        # La tabla de respuestas que usa el asistente del item 1.9: una fila por respuesta,
+        # con un numero por pregunta en vez del texto. Es lo que le permite filtrar y contar
+        # cruces que no se pueden precalcular ("de los que trabajan a tiempo completo, cuantos
+        # estan satisfechos con la Universidad de Lima").
+        with open(ruta_salida / "respuestas.json", "w", encoding="utf-8") as f:
+            json.dump(construir_tabla(df, nivel, periodo), f, ensure_ascii=False, indent=2)
+
         with open(ruta_salida / "dashboard_data.json", "w", encoding="utf-8") as f:
             json.dump(dashboard_data, f, ensure_ascii=False, indent=2)
 
