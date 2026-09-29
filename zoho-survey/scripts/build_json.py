@@ -252,7 +252,7 @@ def main() -> None:
                 for j in ["dashboard_data", "filtros", "dimensiones",
                           "nps_carrera", "nps_ciclo_carrera",
                           "csat_carrera", "csat_ciclo_carrera",
-                          "sentimiento", "ids", "respuestas"]
+                          "sentimiento", "ids"]
         # fragmentos_nps.json y dataset_cualitativo.json se escriben en intermediate/
         # y no se verifican en el shortcut de idempotencia (son intermedios del ETL).
             )

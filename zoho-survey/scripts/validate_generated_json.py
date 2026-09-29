@@ -64,7 +64,6 @@ REQUIRED_PERIOD_FILES: Dict[str, Dict[str, any]] = {
     "csat_ciclo_carrera.json": dict(type=list, non_empty=True),
     "filtros.json": dict(type=dict, non_empty=True),
     "sentimiento.json": dict(type=dict, non_empty=True),
-    "respuestas.json": dict(type=dict, non_empty=True),
 }
 
 # Archivos legacy: validados si existen, pero su ausencia no genera error.

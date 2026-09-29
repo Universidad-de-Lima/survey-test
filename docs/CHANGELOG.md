@@ -2,6 +2,12 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-29 — `respuestas.json` deja de ser un contrato obligatorio (el proceso nunca lo generaba)
+
+- **Qué pasaba.** El validador exigía `respuestas.json` en los tres períodos, pero `build_json.py` importaba el generador y **no lo llamaba nunca**. El archivo solo existía en el repositorio porque se había confirmado a mano, así que cualquier corrida del ETL terminaba en rojo, y el atajo de idempotencia (que lo contaba entre los archivos a revisar) no podía cumplirse nunca.
+- **Qué se hizo.** Se quitó de los archivos obligatorios del validador y de la lista del atajo. Si el archivo aparece, se sigue validando contra su schema.
+- **Qué sigue pendiente.** El módulo `lib/tabla_respuestas.py` y sus pruebas se quedan (están verdes). Su futuro depende del ítem 1.9: si el asistente se retira, se retiran con él.
+
 ## 2026-09-29 — Se dejan de publicar seis campos que ningún módulo leía
 
 - **Qué se quita.** De `dimensiones.json`: `b2b`, `no_utilizo` y `no_conozco`. De `sentimiento.json`: `por_carrera`, `por_ciclo` y `distribucion_intensidad` (y el cálculo que la alimentaba).
