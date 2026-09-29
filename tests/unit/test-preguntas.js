@@ -115,7 +115,7 @@ let porAnio, porCarrera, enTotal, alumnos20261;
 
   test('una carrera concreta devuelve su NPS y su satisfacción', () => {
     assertIncludes(texto(npsIngenieria), '68,34', 'NPS de Ingeniería de Sistemas');
-    assertIncludes(fuentes(npsIngenieria), 'resumenes.json (NPS por carrera)', 'fuente por carrera');
+    assertIncludes(fuentes(npsIngenieria), 'resumenes.json (NPS y CSAT por carrera)', 'fuente por carrera');
   });
 
   test('la hora no se responde', () => {
