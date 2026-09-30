@@ -148,6 +148,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const textoCuadro = leer('.preguntas-cuadro');
   const textoResumen = Array.from(document.querySelectorAll('.preguntas-resultado')).map(function (e) { return e.textContent; }).join(' | ');
   const hayListaEnCruce = !!document.querySelector('.preguntas-lista');
+  const cuantasBarras = document.querySelectorAll('.preguntas-cuadro .survey-bar').length;
 
   // Una respuesta de lista (varios periodos) sigue siendo lista, sin resultado destacado.
   consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
@@ -164,8 +165,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(nps2026), '4239', 'respuestas del periodo');
   });
 
-  test('la respuesta del NPS dice de qué archivo salió', () => {
-    assertIncludes(fuentes(nps2026), 'dashboard_data.json', 'fuente del NPS');
+  test('la respuesta del NPS dice de qué encuesta salió', () => {
+    assertIncludes(fuentes(nps2026), 'Fuente: ', 'fuente del NPS');
     assertIncludes(fuentes(nps2026), '2026-1', 'periodo de la fuente');
   });
 
@@ -183,7 +184,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
 
   test('una carrera concreta devuelve su NPS y su satisfacción', () => {
     assertIncludes(texto(npsIngenieria), '68,34', 'NPS de Ingeniería de Sistemas');
-    assertIncludes(fuentes(npsIngenieria), 'resumenes.json (NPS y CSAT por carrera)', 'fuente por carrera');
+    assertIncludes(fuentes(npsIngenieria), 'NPS y CSAT por carrera', 'fuente por carrera');
   });
 
   test('la hora no se responde', () => {
@@ -216,7 +217,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(cruceAlumnos), '232', 'los de Economía');
     assertIncludes(texto(cruceAlumnos), '198', 'los tres mejores');
     assertIncludes(texto(cruceAlumnos), '85,34', 'el porcentaje');
-    assertIncludes(fuentes(cruceAlumnos), 'la encuesta del periodo', 'la cita de la encuesta');
+    assertIncludes(fuentes(cruceAlumnos), 'Estudiantes Pregrado 2026-1', 'la cita de la encuesta');
   });
 
   test('sin filtro no es un cruce: la pregunta normal sigue respondiéndose igual', () => {
@@ -298,8 +299,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(textoCuadro, 'Prácticas profesionales', 'cada valor, con su barra');
     assertIncludes(textoCuadro, 'Tiempo dedicado al trabajo (de los 8 que trabajan)', 'el reparto por tiempo de trabajo');
     assertIncludes(textoCuadro, 'Tiempo completo', 'los que trabajan a tiempo completo');
-    const barras = Array.from(document.querySelectorAll('.preguntas-cuadro .survey-bar'));
-    assertTrue(barras.length === 6, 'una barra por valor (4 de la dimensión + 2 del tiempo)');
+    assertTrue(cuantasBarras === 6, 'una barra por valor (4 de la dimensión + 2 del tiempo)');
   });
 
   test('una respuesta de lista sigue siendo lista (sin resultado destacado)', () => {
@@ -378,7 +378,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     test('"cuántos alumnos respondieron de Psicología" usa el total de esa carrera', () => {
       assertIncludes(texto(porCarrera), 'Psicología', 'la carrera pedida');
       assertIncludes(texto(porCarrera), '431', 'respuestas de Psicología');
-      assertIncludes(fuentes(porCarrera), 'resumenes.json (ids)', 'fuente por carrera');
+      assertIncludes(fuentes(porCarrera), 'ids', 'fuente por carrera');
     });
 
     test('"en total" muestra todos los períodos publicados', () => {

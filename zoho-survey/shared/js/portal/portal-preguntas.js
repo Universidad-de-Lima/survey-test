@@ -212,7 +212,7 @@ window.SurveyPortalPreguntas = (function () {
           return p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas, ' +
             'NPS ' + n(p.dash.resumen.nps.score) + ', satisfaccion ' + pct(p.dash.resumen.csat.score);
         }),
-        fuentes: ['Fuente: dashboard_data.json de cada periodo publicado']
+        fuentes: ['Fuente: las encuestas de cada período publicado']
       };
     }
 
@@ -297,7 +297,7 @@ window.SurveyPortalPreguntas = (function () {
                    'Satisfacción: ' + pct(viejo.dash.resumen.csat.score) + ' → ' + pct(nuevo.dash.resumen.csat.score) +
                    ' (' + (dCsat >= 0 ? '+' : '') + pct(Math.abs(dCsat)).replace(' %', ' puntos') + ').',
                    'Respuestas: ' + n(viejo.dash.resumen.encuestas) + ' → ' + n(nuevo.dash.resumen.encuestas) + '.'],
-          fuentes: ['Fuente: dashboard_data.json de ' + viejo.periodo + ' y de ' + nuevo.periodo]
+          fuentes: ['Fuente: ' + nuevo.nombre + ' ' + viejo.periodo + ' y ' + nuevo.periodo]
         };
       }
     }
