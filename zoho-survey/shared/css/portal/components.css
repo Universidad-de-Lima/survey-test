@@ -595,14 +595,7 @@
   gap: var(--space-lg);
 }
 
-.preguntas-respuesta {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-}
-
-.preguntas-respuesta.fuera-de-alcance {
+.fuera-de-alcance .preguntas-burbuja-respuesta {
   border-style: dashed;
 }
 
