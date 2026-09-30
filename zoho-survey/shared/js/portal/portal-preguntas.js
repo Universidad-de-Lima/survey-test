@@ -894,10 +894,17 @@ window.SurveyPortalPreguntas = (function () {
         var tabla = cargados[0];
         var ctx = cargados[1];
         if (!tabla || !tabla.cabeceras) return null;
-        return interpretarConIA(texto, textoDeContexto(ctx), construirMenu(p, tabla, ctx))
+        var contexto = textoDeContexto(ctx);
+        var menu = construirMenu(p, tabla, ctx);
+        // Si el interprete no responde (los modelos gratuitos tienen momentos malos), se
+        // intenta una vez mas; si tampoco, se avisa que fue el servicio, no los datos.
+        return interpretarConIA(texto, contexto, menu)
+          .then(function (f) { return f || interpretarConIA(texto, contexto, menu); })
           .then(function (f) { return { p: p, tabla: tabla, f: f }; });
       }).then(function (x) {
-        if (!x || !x.f) return noSe(null);
+        if (!x || !x.f) {
+          return noSe('No pude consultar al intérprete en este momento. Vuelve a intentarlo en unos segundos.');
+        }
         var f = x.f;
         if (f.se_puede === false || f.operacion === 'ninguna') {
           return noSe(f.motivo ? String(f.motivo) : null);
@@ -957,21 +964,45 @@ window.SurveyPortalPreguntas = (function () {
     contenedor.insertBefore(bloque, contenedor.firstChild);
   }
 
+  // La respuesta puede tardar (la cadena gratuita de modelos): la pantalla avisa en el acto
+  // y el aviso se quita cuando llega la respuesta.
+  function avisoDeEspera(caja) {
+    var bloque = document.createElement('div');
+    bloque.className = 'preguntas-respuesta preguntas-espera';
+    bloque.innerHTML = '<p class="preguntas-respuesta-titulo">Consultando…</p>' +
+      '<ul class="preguntas-lista"><li>Buscando en los datos publicados. Puede tardar un par de minutos.</li></ul>';
+    caja.insertBefore(bloque, caja.firstChild);
+  }
+
+  function quitarAviso(caja) {
+    if (!caja) return;
+    var avisos = caja.querySelectorAll('.preguntas-espera');
+    for (var i = 0; i < avisos.length; i++) avisos[i].parentNode.removeChild(avisos[i]);
+  }
+
   function preguntar(texto) {
     var caja = document.getElementById('preguntasRespuestas');
     if (!caja || !String(texto || '').trim()) return Promise.resolve(null);
     var t = sin(texto);
+    avisoDeEspera(caja);
     return cargar().then(function () {
       return respuesta(t);
     }).then(function (r0) {
       return (r0 && r0.alcance !== false) ? r0 : responderConIA(texto);
     }).then(function (r) {
-      pintar(caja, r);
+      // La respuesta se pinta en la caja que esta EN PANTALLA: si la persona se movio a
+      // otra seccion mientras esperaba, la caja vieja ya no existe y la respuesta se
+      // perderia (por eso se busca de nuevo aqui).
+      var viva = document.getElementById('preguntasRespuestas') || caja;
+      quitarAviso(viva);
+      pintar(viva, r);
       registrar(texto, (r && r.titulo) || '');
       actualizarContadorDeUso((r && r.titulo) || '');
       return r;
     }).catch(function () {
-      pintar(caja, noSe('No se pudieron leer los datos publicados en este momento.'));
+      var viva = document.getElementById('preguntasRespuestas') || caja;
+      quitarAviso(viva);
+      pintar(viva, noSe('No se pudieron leer los datos publicados en este momento.'));
       return null;
     });
   }

@@ -26,12 +26,18 @@ require(path.join(raiz, 'shared/js/portal/portal-preguntas.js'));
 // Respuesta simulada del formulario (se cambia en cada prueba).
 let consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
 const llamadasExternas = [];
+// Cuantas veces debe fallar /interpretar antes de responder (para probar el reintento).
+let fallosInterpretar = 0;
 global.fetch = function (url, opciones) {
   // Las direcciones externas (el registro de preguntas) no se piden de verdad:
   // se anotan y se responde lo que se quiera comprobar.
   if (/^https?:\/\//.test(String(url))) {
     llamadasExternas.push({ url: String(url), opciones: opciones || {} });
     if (String(url).indexOf('/interpretar') !== -1) {
+      if (fallosInterpretar > 0) {
+        fallosInterpretar -= 1;
+        return Promise.resolve({ ok: false, json: function () { return Promise.resolve(null); } });
+      }
       return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ consulta: consultaSimulada }); } });
     }
     if (String(url).indexOf('/preguntas') !== -1 && !(opciones && opciones.method === 'POST')) {
@@ -110,6 +116,23 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
   // Las reglas ya NO responden la pregunta de Economia: la resuelve el formulario.
   const reglasEconomia = await P.responder('¿qué porcentaje de graduados de la carrera de economía trabajan?');
+
+  // Aviso de espera + la respuesta llega a la caja que esta EN PANTALLA (aunque se navegue).
+  document.body.innerHTML = P.render();
+  const enVuelo = P.preguntar('¿Cuál es el NPS de 2026-1?');
+  const cajaEnVuelo = document.getElementById('preguntasRespuestas');
+  const avisoAlPreguntar = cajaEnVuelo ? cajaEnVuelo.textContent : '';
+  document.body.innerHTML = P.render(); // se "navega" a otra pantalla y se vuelve mientras espera
+  const respuestaEnVuelo = await enVuelo;
+  const cajaViva = document.getElementById('preguntasRespuestas');
+  const textoCajaViva = cajaViva ? cajaViva.textContent : '';
+
+  // Reintento del interprete: falla una vez (responde igual) y falla dos (aviso propio).
+  fallosInterpretar = 1;
+  const reintento = await P.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
+  fallosInterpretar = 2;
+  const sinInterprete = await P.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
+  fallosInterpretar = 0;
 
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
@@ -207,6 +230,25 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('la pregunta de Economía ya no la responde el cruce de reglas (la resuelve el formulario)', () => {
     assertTrue(reglasEconomia.alcance === false, 'las reglas no deben responderla');
     assertTrue(texto(reglasEconomia).indexOf('La carrera') === -1, 'no debe hablar de "La carrera"');
+  });
+
+  test('mientras espera, la pantalla avisa "Consultando…" en el acto', () => {
+    assertIncludes(avisoAlPreguntar, 'Consultando', 'aviso inmediato');
+  });
+
+  test('la respuesta llega a la caja que está en pantalla (aunque se navegue mientras espera)', () => {
+    assertIncludes(textoCajaViva, '72,61', 'el NPS respondido');
+    assertTrue(textoCajaViva.indexOf('Consultando') === -1, 'el aviso de espera se quita al responder');
+  });
+
+  test('si el intérprete falla una vez, reintenta y responde igual', () => {
+    assertTrue(reintento.alcance !== false, 'debe responder tras el reintento');
+    assertIncludes(texto(reintento), 'Psicología', 'la carrera traducida');
+  });
+
+  test('si el intérprete no responde ni al reintento, el aviso es propio (no el genérico)', () => {
+    assertTrue(sinInterprete.alcance === false, 'queda fuera de alcance');
+    assertIncludes(texto(sinInterprete), 'No pude consultar al intérprete', 'aviso propio del servicio');
   });
 
   test('el mensaje que se manda lleva el contexto y el menú del período', () => {
