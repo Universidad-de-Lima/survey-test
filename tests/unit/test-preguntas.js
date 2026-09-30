@@ -159,7 +159,14 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const hayListaTotal = !!document.querySelector('.preguntas-lista');
   const hayResultadoTotal = !!document.querySelector('.preguntas-resultado');
 
-  const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
+  const texto = (r) => [
+    (r.lineas || []).join(' | '),
+    r.titulo || '',
+    r.cuadro ? (r.cuadro.tarjetas || []).map(function (t) { return t.rotulo + ' ' + t.valor; }).join(' | ') : '',
+    r.cuadro ? (r.cuadro.graficos || []).map(function (g) {
+      return g.filas.map(function (f) { return f.valor + ': ' + f.cuenta; }).join(' | ');
+    }).join(' | ') : ''
+  ].join(' ');
   const fuentes = (r) => (r.fuentes || []).join(' ');
 
   test('el NPS de 2026-1 sale del dato publicado', () => {

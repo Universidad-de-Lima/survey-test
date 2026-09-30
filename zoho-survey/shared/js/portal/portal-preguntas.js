@@ -658,7 +658,7 @@ window.SurveyPortalPreguntas = (function () {
    * su linea con colores. Si se cuenta la situacion laboral, agrega el tiempo de trabajo.
    */
   function cuadroDeConteo(tabla, sub, objetivo, valores, filtros, filtroTexto) {
-    var cuadro = {
+    var partes = {
       tarjetas: [
         { rotulo: 'Encuestados', valor: n(tabla.respuestas) },
         {
@@ -682,7 +682,7 @@ window.SurveyPortalPreguntas = (function () {
         return esTrabajoFormal(tabla.opciones['Situación laboral'][f[iSit]]);
       });
       if (trabajan.length) {
-        cuadro.graficos.push({
+        partes.graficos.push({
           titulo: 'Tiempo dedicado al trabajo (de los ' + n(trabajan.length) + ' que trabajan)',
           base: trabajan.length,
           filas: (tabla.opciones['Tiempo laboral'] || [])
@@ -696,7 +696,7 @@ window.SurveyPortalPreguntas = (function () {
         });
       }
     }
-    return cuadro;
+    return cuadro(partes.tarjetas, partes.graficos);
   }
 
   function contarEnTabla(tabla, sub, pregunta, opciones) {
