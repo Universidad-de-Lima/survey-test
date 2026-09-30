@@ -126,8 +126,9 @@ const P = window.SurveyPortalPreguntas;
   // 3. Fuera de alcance: lo que no está en los datos.
   planSimulado = { se_puede: false, periodos: [], preguntas: [], filtros: [], motivo: 'No hay datos de clima en las encuestas.' };
   const fuera = await P.preguntar('¿Cómo estará el clima mañana?');
-  const pintadoFuera = caja ? caja.textContent : '';
-  const claseFuera = caja ? caja.querySelector('.preguntas-respuesta').className : '';
+  const cajaFuera = caja ? caja.querySelector('.preguntas-respuesta') : null;
+  const pintadoFuera = cajaFuera ? cajaFuera.textContent : '';
+  const claseFuera = cajaFuera ? cajaFuera.className : '';
 
   // 4. Una cifra que no está en los datos: no se muestra.
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Carrera'], filtros: [], motivo: '' };
@@ -219,7 +220,8 @@ const P = window.SurveyPortalPreguntas;
   });
 
   test('cada pregunta se manda al servicio con su contexto y su menú', function () {
-    assertTrue(planes.length >= 4, 'las preguntas pasan por el plan');
+    const planes = peticiones.filter(function (x) { return x.cuerpo.paso === 'plan'; });
+    assertTrue(planes.length >= 5, 'las preguntas pasan por el plan');
     planes.forEach(function (p) {
       assertIncludes(p.cuerpo.menu, '## Menú —', 'el plan viaja con el menú');
       assertIncludes(p.cuerpo.contexto, 'Contexto del asistente');

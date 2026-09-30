@@ -200,7 +200,7 @@ window.SurveyPortalPreguntas = (function () {
     return pedirAlServicio({
       paso: PASO_PLAN,
       pregunta: String(texto).slice(0, 300),
-      contexto: String(contexto || '').slice(0, 6000),
+      contexto: String(contexto || '').slice(0, 8000),
       menu: String(menu || '').slice(0, 40000)
     }).then(function (d) { return (d && d.plan) ? d.plan : null; });
   }
@@ -340,6 +340,25 @@ window.SurveyPortalPreguntas = (function () {
     };
   }
 
+  var ESCALA_SATISFACCION = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
+
+  /** La satisfacción de un grupo con una pregunta de escala: los tres mejores niveles. */
+  function satisfaccionDe(tabla, filas, campo) {
+    var ops = tabla.opciones[campo] || [];
+    var i = (tabla.cabeceras || []).indexOf(campo);
+    if (i === -1 || !ESCALA_SATISFACCION.some(function (nivel) { return ops.indexOf(nivel) !== -1; })) return null;
+    var cuenta = {}, conRespuesta = 0;
+    filas.forEach(function (f) {
+      var v = ops[f[i]];
+      if (!v || v === '(sin respuesta)') return;
+      conRespuesta += 1;
+      cuenta[v] = (cuenta[v] || 0) + 1;
+    });
+    if (!conRespuesta) return null;
+    var bien = ESCALA_SATISFACCION.slice(0, 3).reduce(function (total, nivel) { return total + (cuenta[nivel] || 0); }, 0);
+    return { bien: bien, total: conRespuesta, pct: Math.round((bien / conRespuesta) * 10000) / 100 };
+  }
+
   /** El bloque del reparto de una pregunta: cuantas respuestas hay de cada opcion. */
   function bloqueDeReparto(p, tabla, pregunta, filtros) {
     var campo = nombrePublicado(tabla, pregunta);
@@ -353,11 +372,20 @@ window.SurveyPortalPreguntas = (function () {
     }).filter(function (x) { return x.valor && x.valor !== '(sin respuesta)' && x.cuenta > 0; })
       .sort(function (a, b) { return b.cuenta - a.cuenta; });
     if (!conteo.length) return null;
+    var extra = [];
+    var rr = p.dash && p.dash.resumen && p.dash.resumen.csat;
+    if (campo === 'La Universidad de Lima' && rr) {
+      extra.push('- Satisfacción del período: ' + pct(rr.score) + ' (la cifra que usa el portal).');
+    }
+    var sat = satisfaccionDe(tabla, filas, campo);
+    if (sat) {
+      extra.push('- Los tres mejores niveles: ' + n(sat.bien) + ' de ' + n(sat.total) + ' (' + pct(sat.pct) + ').');
+    }
     return {
       titulo: campo + (filtros.length ? ' (' + textoDeFiltros(filtros) + ')' : '') + ' en ' + etiquetaDe(p),
       lineas: ['- Total: ' + n(filas.length) + ' respuestas.'].concat(conteo.map(function (x) {
         return '- ' + x.valor + ': ' + n(x.cuenta) + ' (' + pct(filas.length ? 100 * x.cuenta / filas.length : 0) + ').';
-      }))
+      })).concat(extra)
     };
   }
 
@@ -404,9 +432,9 @@ window.SurveyPortalPreguntas = (function () {
       var tablas = cargados[0];
       var ctx = cargados[1];
       if (!tablas.length) return { aviso: 'No se pudieron leer los datos publicados.' };
-      var contexto = textoDeContexto(ctx);
+      // La conversación reciente va primero: si algo se recorta, que no sea esto.
       var reciente = conversacionReciente();
-      if (reciente) contexto += '\n\n' + reciente;
+      var contexto = reciente ? reciente + '\n\n' + textoDeContexto(ctx) : textoDeContexto(ctx);
       var menu = tablas.map(function (x) { return construirMenu(x.p, x.tabla); }).join('\n\n');
       return planificar(texto, contexto, menu).then(function (plan) {
         if (!plan) {
