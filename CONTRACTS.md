@@ -69,6 +69,137 @@ Ejemplos válidos: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.cs
 
 #
 
+## Cuestionarios (preguntas del formulario)
+
+Las preguntas de cada encuesta, con su orden, son las cabeceras de `CABECERAS_POR_NIVEL`
+(`zoho-survey/scripts/zoho_a_csv.py`), y su nombre corto publicado está en `COLUMN_RENAME_PREGRADO`
+y `COLUMN_RENAME_GRADUADO` (`zoho-survey/scripts/lib/config.py`). Esta sección documenta lo que no
+está en el código: las **secciones** del formulario, el **texto** de cada pregunta, sus **opciones**
+y los **saltos**.
+
+Fuente: los cuestionarios exportados de Zoho Survey. Los PDF no se versionan en el repositorio.
+
+### Pregrado — ESTUDIANTIL + PREGRADO (2025-2 y 2026-1)
+
+Mismo cuestionario en los dos períodos: las 33 preguntas coinciden en nombre y orden (comprobado).
+
+| Sección | Pregunta del formulario | Columna publicada | Opciones en los datos* |
+| --- | --- | --- | --- |
+| DATOS PERSONALES | Carrera | `Carrera` | Administración, Arquitectura, Comunicación, Contabilidad y Finanzas, Derecho, Economía, … (14 valores) |
+|  | Ciclo | `Ciclo` | 10° Ciclo, 11° Ciclo, 12° Ciclo, 1° Ciclo, 2° Ciclo, 3° Ciclo, 4° Ciclo, 5° Ciclo, 6° Ciclo, 7° Ciclo, 8° Ciclo, 9° Ciclo |
+| SERVICIOS ACADÉMICOS | Perfil del egreso de la carrera | `Perfil del egreso de la carrera` | (sin respuesta), Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Plan curricular y perfil de egreso | `Plan curricular y perfil de egreso` | (sin respuesta), Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Cursos del programa y contenidos | `Cursos del programa y contenidos` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Calidad de la enseñanza en la carrera | `Calidad de la enseñanza en la carrera` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Claridad de los recursos académicos | `Claridad de los recursos académicos` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Evaluación del aprendizaje | `Evaluación del aprendizaje` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Intercambio estudiantil | `Intercambio estudiantil` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| SERVICIOS AL ESTUDIANTE | Información sobre el récord académico | `Información sobre el récord académico` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Material bibliográfico en la biblioteca | `Material bibliográfico en la biblioteca` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Atención del personal administrativo | `Atención del personal administrativo` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Procedimientos administrativos | `Procedimientos administrativos` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Ayuda financiera | `Ayuda financiera` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Servicio médico y su infraestructura | `Servicio médico y su infraestructura` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Servicio de atención psicopedagógica | `Servicio de atención psicopedagógica` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Talleres de actividades artísticas y culturales | `Talleres de actividades artísticas y culturales` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Actividades deportivas | `Actividades deportivas` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| RECURSOS E INFRAESTRUCTURA | Aulas de clase | `Aulas de clase` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Ambientes y salas para estudio | `Ambientes y salas para estudio` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Equipamiento tecnológico en laboratorios | `Equipamiento tecnológico en laboratorios` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Condiciones ambientales en laboratorios | `Condiciones ambientales en laboratorios` | (sin respuesta), Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| TECNOLOGÍAS DE INFORMACIÓN | Software especializado empleado en la carrera | `Software especializado empleado en la carrera` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Portal web de la Universidad (Mi Ulima) | `Portal web de la Universidad (Mi Ulima)` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Aula virtual | `Aula virtual` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Conexión Wi-Fi en el campus | `Conexión Wi-Fi en el campus` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Soporte técnico del sistema informático | `Soporte técnico del sistema informático` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| SATISFACCIÓN GLOBAL | Empleabilidad, vinculación y ALUMNI | `Empleabilidad, vinculación y ALUMNI` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Calidad de la formación académica | `Calidad de la formación académica` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | La carrera | `La carrera` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | La Universidad de Lima | `La Universidad de Lima` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Recomiendas la Universidad de Lima | `Recomiendas la Universidad de Lima` | 0, 10, 2, 3, 4, 5, 6, 7, 8, 9 |
+
+> \* Las opciones listadas son las que **aparecieron** en el período, no siempre el catálogo completo:
+> `Carrera` trae 12 valores en 2025-2 y 14 en 2026-1, y `Claridad de los recursos académicos` trae 1 valor
+> en 2025-2 (las demás opciones quedaron sin respuesta en ese período).
+
+Notas de Pregrado:
+
+- La sección SATISFACCIÓN GLOBAL incluye `Calidad de la formación académica` (en Graduados esa misma
+  pregunta va en SERVICIOS ACADÉMICOS).
+- Pregrado **no** tiene las secciones PLANA DOCENTE ni DESARROLLO PROFESIONAL, ni la pregunta
+  `Exigencia académica` (sí las tiene Graduados).
+
+### Graduados — GRADUADOS + PREGRADO (2026)
+
+48 preguntas = las 33 de Pregrado (todas, sin faltar ninguna) + 15 propias (comprobado).
+
+| Sección | Pregunta del formulario | Columna publicada | Opciones en los datos* |
+| --- | --- | --- | --- |
+| DATOS PERSONALES | Carrera | `Carrera` | Administración, Arquitectura, Comunicación, Contabilidad y Finanzas, Derecho, Economía, Ingeniería Ambiental, Ingeniería Civil, Ingeniería Industrial, Ingeniería de Sistemas, Negocios Internacionales, Psicología |
+|  | Situación laboral | `Situación laboral` | En búsqueda de empleo, No disponible para trabajar, Prácticas pre - profesionales, Prácticas profesionales, Trabajador dependiente, Trabajador independiente |
+|  | Tiempo laboral | `Tiempo laboral` | (sin respuesta), Tiempo completo, Tiempo parcial |
+| SERVICIOS ACADÉMICOS | Perfil del egreso de la carrera | `Perfil del egreso de la carrera` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Plan curricular y perfil de egreso | `Plan curricular y perfil de egreso` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Cursos del programa y contenidos | `Cursos del programa y contenidos` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Calidad de la enseñanza en la carrera | `Calidad de la enseñanza en la carrera` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Claridad de los recursos académicos | `Claridad de los recursos académicos` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Calidad de la formación académica | `Calidad de la formación académica` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Exigencia académica | `Exigencia académica` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Evaluación del aprendizaje | `Evaluación del aprendizaje` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Intercambio estudiantil | `Intercambio estudiantil` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| PLANA DOCENTE | Transmisión de conocimientos | `Transmisión de conocimientos` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Transmisión de experiencias | `Transmisión de experiencias` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Metodologías | `Metodologías` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Conocimientos actualizados | `Conocimientos actualizados` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Compromiso | `Compromiso` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Retroalimentación | `Retroalimentación` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Disponibilidad para asesorías | `Disponibilidad para asesorías` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Cumplimiento de normas y programas | `Cumplimiento de normas y programas` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+| DESARROLLO PROFESIONAL | Habilidades para trabajar en equipo | `Habilidades para trabajar en equipo` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Habilidades de comunicación | `Habilidades de comunicación` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Habilidades para aportar nuevas ideas | `Habilidades para aportar nuevas ideas` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Mejora en perspectivas de empleo | `Mejora en perspectivas de empleo` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| SERVICIOS AL ESTUDIANTE | Información sobre el récord académico | `Información sobre el récord académico` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Material bibliográfico en la biblioteca | `Material bibliográfico en la biblioteca` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Atención del personal administrativo | `Atención del personal administrativo` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Procedimientos administrativos | `Procedimientos administrativos` | (sin respuesta), Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Ayuda financiera | `Ayuda financiera` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Servicio médico y su infraestructura | `Servicio médico y su infraestructura` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Servicio de atención psicopedagógica | `Servicio de atención psicopedagógica` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Talleres de actividades artísticas y culturales | `Talleres de actividades artísticas y culturales` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Actividades deportivas | `Actividades deportivas` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Empleabilidad, vinculación y ALUMNI | `Empleabilidad, vinculación y ALUMNI` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| RECURSOS E INFRAESTRUCTURA | Aulas de clase | `Aulas de clase` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Ambientes y salas para estudio | `Ambientes y salas para estudio` | Insatisfecho, Muy satisfecho, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Equipamiento tecnológico en laboratorios | `Equipamiento tecnológico en laboratorios` | (sin respuesta), Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Condiciones ambientales en laboratorios | `Condiciones ambientales en laboratorios` | (sin respuesta), Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+| TECNOLOGÍAS DE INFORMACIÓN | Software especializado empleado en la carrera | `Software especializado empleado en la carrera` | (sin respuesta), Insatisfecho, Muy satisfecho, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Portal web de la Universidad (Mi Ulima) | `Portal web de la Universidad (Mi Ulima)` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Aula virtual | `Aula virtual` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Conexión Wi-Fi en el campus | `Conexión Wi-Fi en el campus` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+|  | Soporte técnico del sistema informático | `Soporte técnico del sistema informático` | Insatisfecho, Muy satisfecho, No conozco, No utilizo, Satisfecho, Totalmente insatisfecho, Totalmente satisfecho |
+| SATISFACCIÓN GLOBAL | La carrera | `La carrera` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | La Universidad de Lima | `La Universidad de Lima` | Insatisfecho, Muy satisfecho, Satisfecho, Totalmente satisfecho |
+|  | Recomiendas la Universidad de Lima | `Recomiendas la Universidad de Lima` | 10, 3, 4, 5, 6, 7, 8, 9 |
+
+Las 15 propias de Graduados: `Situación laboral`, `Tiempo laboral`, `Exigencia académica`,
+las 8 de la sección PLANA DOCENTE y las 4 de DESARROLLO PROFESIONAL.
+
+### Saltos y preguntas anidadas
+
+| Pregunta o caso | Cómo se comporta | Comprobación |
+| --- | --- | --- |
+| ¿Cuál es el tiempo dedicado a tu trabajo? | Solo se les pregunta a quienes trabajan (`Trabajador dependiente` o `Trabajador independiente`) | 598 respuestas: 322 trabajan y las 276 restantes quedaron en blanco |
+| El perfil de egreso de tu carrera | La pregunta y su columna son una sola, pero el **texto del perfil cambia según la carrera** (14 bloques en el formulario) | El formulario trae un bloque por carrera, todos bajo el encabezado "Sabiendo que el perfil de egreso es:" |
+| No utilizo / No conozco | Solo existen como opción en algunas preguntas | Pregrado 2026-1: 15 columnas con `No utilizo` y 15 con `No conozco`; Graduados 2026: 13 y 11 |
+| ¿Qué ciclo es el que cursas? | Solo en Pregrado (12 ciclos) | En Graduados la columna `Ciclo` existe con un solo valor: no es pregunta del formulario |
+
+### Columnas que no son preguntas
+
+`Facultad` (Pregrado y Graduados) y `Ciclo` en Graduados no salen del formulario: las deriva el ETL.
+El comentario libre (columna `Comentario NPS` del ETL, máximo 100 caracteres) no se publica en
+`respuestas.json`: se analiza y aparece en `sentimiento.json` (`comentarios`).
+
 ## Headers críticos (por nivel)
 
 Obligatorias siempre: `ID de respuesta`, `Net Promoter Score (de un total de 10)`, `La Universidad de Lima`.
@@ -500,6 +631,10 @@ build_json.py procesa las 7 categorias (no solo pregrado/graduados). Por nivel i
 Solo lo consume `zoho-survey/shared/js/portal/portal-preguntas.js`; no forma parte de los JSON por periodo.
 
 Peticion (POST): `{ pregunta (<=300), contexto (<=6000), menu (<=16000) }`.
+
+`contexto` viaja armado desde `zoho-survey/shared/config/asistente_contexto.json` con cinco
+secciones: *Qué es*, *Cómo están los datos*, *Cómo está organizado el cuestionario*, *Reglas* y
+*Equivalencias*.
 
 Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunta_objetivo, valores_objetivo[], entidad, orden, motivo } }`.
 

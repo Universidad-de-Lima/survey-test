@@ -299,6 +299,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(cuerpo, '## Menú — Graduados Pregrado 2026', 'el menú del período de graduados');
     assertIncludes(cuerpo, 'se pide como: trabajan', 'las palabras coloquiales');
     assertIncludes(cuerpo, 'Trabajador dependiente', 'las opciones reales');
+    assertIncludes(cuerpo, 'Cómo está organizado el cuestionario', 'la estructura del cuestionario');
+    assertIncludes(cuerpo, 'plana docente y desarrollo profesional solo en Graduados', 'las secciones propias de Graduados');
   });
 
   test('toda respuesta dentro de alcance cita un archivo JSON', () => {

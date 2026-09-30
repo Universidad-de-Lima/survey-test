@@ -12,6 +12,13 @@
   "Los demas archivos del periodo (resumen, filtros, dimensiones, comentarios) ya vienen calculados; el asistente los cita, no los recalcula.",
   "Todo es anonimo: no hay nombres, correos ni telefonos."
  ],
+ "como_esta_organizado": [
+  "El cuestionario va por secciones: datos personales, servicios académicos (plana docente y desarrollo profesional solo en Graduados), servicios al estudiante, recursos e infraestructura, tecnologías de información y satisfacción global.",
+  "Las preguntas de satisfacción usan la escala: Totalmente satisfecho, Muy satisfecho, Satisfecho, Insatisfecho, Totalmente insatisfecho; algunas agregan No utilizo y No conozco.",
+  "El perfil de egreso se pregunta una sola vez, pero el texto que ve cada persona cambia según su carrera: sigue siendo la misma pregunta.",
+  "El tiempo dedicado al trabajo solo se pregunta a quienes trabajan (Trabajador dependiente o Trabajador independiente); los demás lo dejan en blanco.",
+  "Pregrado no tiene plana docente ni desarrollo profesional; Graduados sí."
+ ],
  "reglas": [
   "Solo se responde con los datos publicados; nada inventado.",
   "Las cifras las calcula la pagina, nunca el modelo.",

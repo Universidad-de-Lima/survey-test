@@ -2,6 +2,13 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — Los cuestionarios quedan documentados y el asistente recibe su estructura
+
+- **Qué cambió.** `CONTRACTS.md` tiene una sección nueva, **Cuestionarios (preguntas del formulario)**: las secciones de cada encuesta, la pregunta del formulario con su columna publicada y sus opciones, los saltos y las preguntas anidadas. Además, el contexto que el portal manda al modelo (ítem 1.9) incluye ahora la sección **Cómo está organizado el cuestionario**.
+- **De dónde salió.** De los cuestionarios exportados de Zoho Survey (Pregrado 2025-2 y 2026-1; Graduados 2026). Los PDF no se versionan: el texto vive en `CONTRACTS.md` y las cabeceras siguen en `zoho_a_csv.py` / `lib/config.py`.
+- **Lo que se comprobó en los datos.** El "tiempo dedicado al trabajo" solo se les pregunta a quienes trabajan (598 respuestas: 322 trabajan y 276 quedaron en blanco); el texto del perfil de egreso cambia según la carrera, pero es una sola pregunta; `Facultad` (y `Ciclo` en Graduados) no son preguntas del formulario: las deriva el ETL.
+- **Costo.** El texto que se manda al modelo pasa de 1 621 a 2 444 caracteres (el límite es 6 000).
+
 ## 2026-09-30 — La respuesta del asistente muestra la pregunta
 
 - **Qué cambió.** Cada bloque de respuesta empieza ahora con la **pregunta** tal como se escribió, sigue la etiqueta «Respuesta:», el dato y —cuando la respuesta es un cruce o una sola línea— el **resultado aparte y en negrita**. La fuente conserva su archivo (`Fuente: Graduados Pregrado 2026 — respuestas.json`), como pide la regla de verificabilidad.
