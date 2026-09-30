@@ -567,28 +567,6 @@
   opacity: 0.9;
 }
 
-.preguntas-sugerencias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.preguntas-sugerencia {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--muted);
-  color: var(--foreground);
-  font-size: var(--text-md);
-  line-height: 18px;
-  cursor: pointer;
-  text-align: left;
-}
-
-.preguntas-sugerencia:hover {
-  border-color: var(--primary);
-}
-
 .preguntas-respuestas {
   display: flex;
   flex-direction: column;
@@ -605,51 +583,6 @@
   font-weight: var(--font-bold);
   color: var(--foreground);
   margin-bottom: var(--space-sm);
-}
-
-.preguntas-cuadro {
-  margin-top: var(--space-lg);
-  padding: var(--space-md);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--card);
-}
-
-.preguntas-cuadro-titulo {
-  margin: var(--space-lg) 0 var(--space-sm);
-  font-size: var(--text-md);
-  line-height: 18px;
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-.preguntas-leyenda {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-lg);
-  margin: var(--space-sm) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.preguntas-leyenda-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-md);
-  line-height: 18px;
-  color: var(--gray-600);
-}
-
-.preguntas-punto {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.preguntas-cuadro .csat-segment {
-  color: var(--t, var(--white));
 }
 
 .preguntas-burbuja-pregunta {
@@ -679,12 +612,6 @@
   background: var(--muted);
 }
 
-.preguntas-contexto {
-  font-size: var(--text-lg);
-  line-height: 21px;
-  color: var(--gray-600);
-}
-
 .preguntas-resultado {
   margin: var(--space-sm) 0 0;
   font-size: var(--text-xl);
@@ -706,22 +633,4 @@
   font-size: var(--text-md);
   line-height: 18px;
   color: var(--gray-600);
-}
-
-.preguntas-frecuentes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.preguntas-veces {
-  display: inline-block;
-  margin-left: var(--space-xs);
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-size: var(--text-sm);
-  line-height: 17px;
-  font-weight: var(--font-medium);
 }

@@ -3,7 +3,7 @@
    Responde SOLO con lo que esta en los JSON publicados de las encuestas.
    Si un dato no esta en esos JSON, lo dice y no improvisa: no hay respuestas
    sobre hora, clima, noticias ni nada que no venga de las encuestas.
-   Cada respuesta dice de que archivo salio.
+   Cada respuesta cita la encuesta de la que salio.
    ============================================================ */
 window.SurveyPortalPreguntas = (function () {
   'use strict';
@@ -13,18 +13,14 @@ window.SurveyPortalPreguntas = (function () {
   // Los cinco resumenes del periodo llegan juntos en resumenes.json.
   var ARCHIVOS = ['dashboard_data', 'resumenes', 'filtros'];
 
-  // Registro de preguntas y conteo de las mas frecuentes (funcion en Vercel).
-  var REGISTRO_URL = 'https://qr-smoky-theta.vercel.app/api/preguntas';
-  // Traduce la pregunta a una consulta ordenada cuando las palabras no alcanzan.
-  // No responde: solo dice que dato se pide (ver survey-tracker/apps/backend/api/interpretar.js).
-  var INTERPRETE_URL = 'https://qr-smoky-theta.vercel.app/api/interpretar';;
+  // Primero dice qué datos hay que leer; después redacta con ellos.
+  // No calcula ni inventa (ver survey-tracker/apps/backend/api/interpretar.js).
+  var INTERPRETE_URL = 'https://qr-smoky-theta.vercel.app/api/interpretar';
 
   var CATALOGO = null;   // periodos con sus JSON chicos
-  var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
-  var SENT = null;       // sentimiento.json (grande: se lee solo si hace falta)
-  var TABLA = null;      // respuestas.json (grande: se lee solo si hace falta)
+  var TABLAS = {};       // respuestas.json por periodo (grande: se lee solo si hace falta)
+  var CONTEXTO = null;   // el contexto del asistente (que es, como estan los datos, reglas)
   var MEMORIA = [];      // los ultimos turnos (pregunta y respuesta), para entender "y del 2025?"
-  var FRECUENTES = [];   // preguntas mas consultadas (vienen del registro)
 
   // ---------- utilidades ----------
   function esc(t) {
@@ -121,944 +117,323 @@ window.SurveyPortalPreguntas = (function () {
   function deFase(fase) { return (CATALOGO || []).filter(function (p) { return p.fase === fase; }); }
   function dePeriodo(periodo) { return (CATALOGO || []).filter(function (p) { return p.periodo === periodo; }); }
 
-  function mencionaPeriodo(t) {
-    // Se busca el periodo mas largo que aparezca en la pregunta: asi "2026-1" gana a "2026".
-    var m = (CATALOGO || []).filter(function (p) { return t.indexOf(sin(p.periodo)) !== -1; })
-      .sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
-    return m.length ? m[0] : null;
-  }
-
-  function mencionados(t) {
-    return (CATALOGO || []).filter(function (p) { return t.indexOf(sin(p.periodo)) !== -1; });
-  }
-
-  // Un periodo escrito completo ("2026-1") manda; si solo dice el anio ("2026"),
-  // la respuesta abarca todos los periodos publicados de ese anio.
-  function periodoExplicito(t) {
-    var largos = (CATALOGO || []).filter(function (p) {
-      return sin(p.periodo).indexOf('-') !== -1 && t.indexOf(sin(p.periodo)) !== -1;
-    }).sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
-    return largos.length ? largos[0] : null;
-  }
-
-  function anioMencionado(t) {
-    var m = String(t).match(/(^|[^0-9])(20[0-9]{2})([^0-9]|$)/);
-    return m ? m[2] : null;
-  }
-
-  function periodosDelAnio(t) {
-    var anio = anioMencionado(t);
-    if (!anio) return [];
-    return (CATALOGO || []).filter(function (p) { return sin(p.periodo).indexOf(anio) === 0; });
-  }
-
-  function faseMencionada(t) {
-    if (t.indexOf('graduad') !== -1) return '1.2';
-    if (t.indexOf('pregrado') !== -1 || t.indexOf('estudiante') !== -1) return '1.0';
-    return null;
-  }
-
-  function periodoDeLaPregunta(t, fasePorDefecto) {
-    return periodoExplicito(t) || mencionaPeriodo(t) || ultimo(faseMencionada(t) || fasePorDefecto || '1.0');
-  }
-
-  function ultimo(fase) {
-    var l = deFase(fase);
-    return l.length ? l[0] : null;   // periodos.json viene del mas nuevo al mas viejo
+  /** El nombre con el que se conoce una encuesta: "Estudiantes Pregrado 2026-1". */
+  function etiquetaDe(p) {
+    return p.nombre + ' ' + p.periodo;
   }
 
   /** La cita de una respuesta: la encuesta (y, si hace falta, de qué parte habla). */
   function fuente(p, detalle) {
-    return 'Fuente: ' + p.nombre + ' ' + p.periodo + (detalle ? ' — ' + detalle : '');
+    return 'Fuente: ' + etiquetaDe(p) + (detalle ? ' — ' + detalle : '');
   }
 
-  function buscaNombre(t, lista) {
-    var mejor = null;
-    (lista || []).forEach(function (nombre) {
-      var x = sin(nombre);
-      if (t.indexOf(x) !== -1 && (!mejor || x.length > sin(mejor).length)) mejor = nombre;
-    });
-    return mejor;
-  }
-
-  // Un cruce se reconoce por su forma: empieza con "de los/de las..." y nombra una pregunta
-  // que la gente pide con sus propias palabras (perfil de egreso, satisfaccion con la
-  // universidad...). Si no es un cruce, o si la tabla no lo puede resolver, siguen las
-  // familias de siempre: esto nunca quita respuestas, solo agrega.
-  function esPosibleCruce(t) {
-    var marcador = t.indexOf('de los ') !== -1 || t.indexOf('de las ') !== -1 ||
-                   t.indexOf('de quienes ') !== -1 || t.indexOf('de los que') !== -1;
-    if (!marcador) return false;
-    return ALIAS_PREGUNTA.some(function (par) {
-      return sinS(t).indexOf(sinS(par[0])) !== -1;
-    });
-  }
-
-  function respuesta(t) {
-    if (esPosibleCruce(t)) {
-      return cruceConTabla(t).then(function (r) { return r || respuestaBase(t); });
-    }
-    return respuestaBase(t);
-  }
-
-  // ---------- respuestas ----------
-  function respuestaBase(t) {
-    var trae = function (l) { return t.indexOf(l) !== -1; };
-
-    // 1) Que hay publicado
-    if (trae('qué datos') || trae('qué información') || trae('qué periodos') || trae('qué encuestas hay')) {
-      return {
-        titulo: 'Datos publicados',
-        lineas: (CATALOGO || []).map(function (p) {
-          return p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas, ' +
-            'NPS ' + n(p.dash.resumen.nps.score) + ', satisfaccion ' + pct(p.dash.resumen.csat.score);
-        }),
-        fuentes: ['Fuente: las encuestas de cada período publicado']
-      };
-    }
-
-    // Las preguntas que piden una LISTA de valores ("qué carreras se encuestaron en 2025") no son un
-    // conteo del total: las resuelve el interprete con la operacion "listar".
-    var pideLista = trae('que carreras') || trae('cuales carreras') || trae('lista de carreras') ||
-      trae('que facultades') || trae('cuales facultades') || trae('lista de facultades') ||
-      trae('que ciclos') || trae('cuales ciclos');
-
-    // 2) Cuantas respuestas / cuantos alumnos o estudiantes se encuestaron
-    if (!pideLista && (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') ||
-        trae('participaron') || trae('se encuest') || trae('fueron encuest') || trae('encuestados') ||
-        trae('cuantos alumnos') || trae('cuantas alumnas') || trae('cuantos estudiantes') ||
-        trae('cuanta gente') || trae('cuantas personas') || trae('tamano de la muestra') || trae('muestra'))) {
-      var p = periodoDeLaPregunta(t, '1.0');
-
-      // Si la pregunta nombra una carrera, se responde con el total de esa carrera.
-      var car = buscaNombre(t, p.filtros && p.filtros.carreras);
-      if (car) {
-        var filaI = (p.ids || []).filter(function (x) { return x.carrera === car; });
-        var total = filaI.reduce(function (a, x) { return a + (Number(x.total) || 0); }, 0);
-        if (total) {
-          return {
-            titulo: 'Alumnos encuestados de ' + car,
-            lineas: [p.nombre + ' ' + p.periodo + ': ' + n(total) + ' respuestas de ' + car + '.'],
-            fuentes: [fuente(p, 'ids')]
-          };
-        }
-      }
-
-      // Si la pregunta habla de un anio (2026, 2025...), se muestran todos los periodos de ese anio.
-      var delAnio = periodosDelAnio(t);
-      if (!periodoExplicito(t) && delAnio.length) {
-        return {
-          titulo: 'Alumnos encuestados en ' + anioMencionado(t),
-          lineas: delAnio.map(function (x) {
-            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
-          }),
-          fuentes: delAnio.map(function (x) { return fuente(x); })
-        };
-      }
-
-      if (trae('total') || trae('en general') || trae('todos los periodos') || trae('todas las encuestas')) {
-        return {
-          titulo: 'Respuestas recibidas (todos los periodos publicados)',
-          lineas: (CATALOGO || []).map(function (x) {
-            return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
-          }),
-          fuentes: (CATALOGO || []).map(function (x) { return fuente(x); })
-        };
-      }
-
-      return {
-        titulo: 'Respuestas recibidas',
-        lineas: [p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas.'],
-        fuentes: [fuente(p)]
-      };
-    }
-
-    // 3) Fechas del levantamiento
-    if (trae('cuando') || trae('fecha') || trae('desde') || trae('dias')) {
-      var p2 = periodoDeLaPregunta(t, '1.0');
-      var r = p2.dash.resumen;
-      return {
-        titulo: 'Período de levantamiento',
-        lineas: [p2.nombre + ' ' + p2.periodo + ': del ' + r.fecha_inicio + ' al ' + r.fecha_fin +
-                 ' (' + n(r.dias) + ' dias, ' + n(r.dias_recoleccion) + ' dias de recoleccion).'],
-        fuentes: [fuente(p2)]
-      };
-    }
-
-    // 3) Comparacion entre periodos (va antes que NPS y CSAT: la pregunta puede nombrar los dos)
-    // Solo compara si nombra dos periodos, o si usa una palabra de comparacion.
-    var dichos = mencionados(t);
-    if (dichos.length >= 2 || trae('compar') || trae('diferencia') || trae('evolucion') ||
-        trae('cambio') || trae('cambia') || trae('subio') || trae('bajo el nps')) {
-      var enPregunta = mencionados(t).sort(function (a, b) { return sin(b.periodo).length - sin(a.periodo).length; });
-      var grupo = enPregunta.length >= 2 ? enPregunta.filter(function (p) { return p.fase === enPregunta[0].fase; })
-                                         : deFase('1.0');
-      if (grupo.length >= 2) {
-        var nuevo = grupo[0], viejo = grupo[grupo.length - 1];
-        var dNps = Math.round((nuevo.dash.resumen.nps.score - viejo.dash.resumen.nps.score) * 100) / 100;
-        var dCsat = Math.round((nuevo.dash.resumen.csat.score - viejo.dash.resumen.csat.score) * 100) / 100;
-        return {
-          titulo: 'Comparación ' + viejo.periodo + ' → ' + nuevo.periodo + ' (' + nuevo.nombre + ')',
-          lineas: ['NPS: ' + n(viejo.dash.resumen.nps.score) + ' → ' + n(nuevo.dash.resumen.nps.score) +
-                   ' (' + (dNps >= 0 ? '+' : '') + n(dNps) + ').',
-                   'Satisfacción: ' + pct(viejo.dash.resumen.csat.score) + ' → ' + pct(nuevo.dash.resumen.csat.score) +
-                   ' (' + (dCsat >= 0 ? '+' : '') + pct(Math.abs(dCsat)).replace(' %', ' puntos') + ').',
-                   'Respuestas: ' + n(viejo.dash.resumen.encuestas) + ' → ' + n(nuevo.dash.resumen.encuestas) + '.'],
-          fuentes: ['Fuente: ' + nuevo.nombre + ' ' + viejo.periodo + ' y ' + nuevo.periodo]
-        };
-      }
-    }
-
-    // 4) NPS: global, por carrera o por ciclo
-    if (trae('nps')) {
-      var p3 = periodoDeLaPregunta(t, '1.0');
-      var carrera = buscaNombre(t, p3.filtros && p3.filtros.carreras);
-      var facultad = buscaNombre(t, p3.filtros && p3.filtros.facultades);
-      var ciclo = buscaNombre(t, p3.filtros && p3.filtros.ciclos);
-
-      if (carrera) {
-        var fila = (p3.npsCarrera || []).filter(function (x) { return x.carrera === carrera; })[0];
-        var filaCsat = (p3.csatCarrera || []).filter(function (x) { return x.carrera === carrera; })[0];
-        if (!fila) return noSe('No hay NPS publicado para la carrera "' + carrera + '".');
-        return {
-          titulo: 'NPS de ' + carrera,
-          lineas: [filaCsat ? 'Satisfacción: ' + pct(filaCsat.score) + '.' : ''],
-          cuadro: cuadro(
-            [{ rotulo: 'NPS', valor: n(fila.score) }, { rotulo: 'Respuestas', valor: n(fila.promotores + fila.pasivos + fila.detractores) }],
-            [{ titulo: 'Reparto del NPS de ' + carrera, base: fila.promotores + fila.pasivos + fila.detractores, filas: [
-              { valor: 'Promotores (9-10)', cuenta: fila.promotores },
-              { valor: 'Pasivos (7-8)', cuenta: fila.pasivos },
-              { valor: 'Detractores (0-6)', cuenta: fila.detractores }] }]),
-          fuentes: [fuente(p3, 'NPS y CSAT por carrera')]
-        };
-      }
-
-      if (facultad) {
-        var suyas = (p3.npsCarrera || []).filter(function (x) { return sin(x.facultad || '') === sin(facultad); });
-        if (!suyas.length) {
-          var nombres = (p3.filtros && p3.filtros.facultad_carrera && p3.filtros.facultad_carrera[facultad]) || [];
-          suyas = (p3.npsCarrera || []).filter(function (x) { return nombres.indexOf(x.carrera) !== -1; });
-        }
-        return {
-          titulo: 'NPS de las carreras de ' + facultad,
-          lineas: suyas.map(function (x) { return x.carrera + ': NPS ' + n(x.score); }),
-          fuentes: [fuente(p3, 'NPS por carrera')]
-        };
-      }
-
-      if (ciclo) {
-        var fc = (p3.npsCiclo || []).filter(function (x) { return x.ciclo === ciclo; })[0];
-        if (!fc) return noSe('No hay NPS publicado para el ' + ciclo + '.');
-        return {
-          titulo: 'NPS del ' + ciclo,
-          lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fc.score) + ' (promotores ' + n(fc.promotores) +
-                   ', pasivos ' + n(fc.pasivos) + ', detractores ' + n(fc.detractores) + ').'],
-          fuentes: [fuente(p3, 'NPS por ciclo y carrera')]
-        };
-      }
-
-      if (trae('mejor') || trae('mayor') || trae('mas alto') || trae('peor') || trae('menor') || trae('mas bajo') || trae('ranking')) {
-        var esMejor = !(trae('peor') || trae('menor') || trae('mas bajo'));
-        var porCiclo = trae('ciclo');
-        var lista = porCiclo ? (p3.npsCiclo || []) : (p3.npsCarrera || []);
-        var campo = porCiclo ? 'ciclo' : 'carrera';
-        var orden = lista.slice().sort(function (a, b) { return b.score - a.score; });
-        if (!orden.length) return noSe('No hay NPS publicado por ' + campo + ' en ese periodo.');
-        var top = esMejor ? orden.slice(0, 3) : orden.slice(-3).reverse();
-        return {
-          titulo: 'NPS por ' + campo + ' (' + (esMejor ? 'más alto' : 'más bajo') + ')',
-          lineas: top.map(function (x) { return x[campo] + ': ' + n(x.score); }),
-          fuentes: [fuente(p3, porCiclo ? 'resumenes.json (NPS por ciclo y carrera)' : 'resumenes.json (NPS por carrera)')]
-        };
-      }
-
-      var delAnioNps = periodosDelAnio(t);
-      if (!periodoExplicito(t) && delAnioNps.length) {
-        return {
-          titulo: 'NPS de ' + anioMencionado(t),
-          lineas: delAnioNps.map(function (x) {
-            return x.nombre + ' ' + x.periodo + ': NPS ' + n(x.dash.resumen.nps.score) +
-              ' (' + n(x.dash.resumen.encuestas) + ' respuestas).';
-          }),
-          fuentes: delAnioNps.map(function (x) { return fuente(x); })
-        };
-      }
-
-      var rr = p3.dash.resumen.nps;
-      return {
-        titulo: 'NPS ' + p3.nombre + ' ' + p3.periodo,
-        lineas: ['Clasificación: ' + p3.dash.hallazgos.nps_tipo + '.'],
-        cuadro: cuadro(
-          [{ rotulo: 'Encuestados', valor: n(rr.total) }, { rotulo: 'NPS', valor: n(rr.score) }],
-          [{ titulo: 'Reparto del NPS', base: rr.total, filas: [
-            { valor: 'Promotores (9-10)', cuenta: rr.promotores },
-            { valor: 'Pasivos (7-8)', cuenta: rr.pasivos },
-            { valor: 'Detractores (0-6)', cuenta: rr.detractores }] }]),
-        fuentes: [fuente(p3)]
-      };
-    }
-
-    // 5) Satisfaccion (CSAT)
-    if (trae('satisfaccion') || trae('csat') || trae('satisfechos') || trae('insatisfechos')) {
-      var p4 = periodoDeLaPregunta(t, '1.0');
-      var c = p4.dash.resumen.csat;
-      var nombreCar = buscaNombre(t, p4.filtros && p4.filtros.carreras);
-      if (nombreCar) {
-        var f2 = (p4.csatCarrera || []).filter(function (x) { return x.carrera === nombreCar; })[0];
-        if (!f2) return noSe('No hay satisfacción publicada para la carrera "' + nombreCar + '".');
-        return {
-          titulo: 'Satisfacción de ' + nombreCar,
-          lineas: [p4.nombre + ' ' + p4.periodo + ': ' + pct(f2.score) + ' (totalmente satisfecho ' +
-                   n(f2['Totalmente satisfecho']) + ', muy satisfecho ' + n(f2['Muy satisfecho']) +
-                   ', satisfecho ' + n(f2['Satisfecho']) + ', insatisfecho ' + n(f2['Insatisfecho']) +
-                   ', totalmente insatisfecho ' + n(f2['Totalmente insatisfecho']) + ').'],
-          fuentes: [fuente(p4, 'CSAT por carrera')]
-        };
-      }
-      // El detalle por nivel no viene en dashboard_data: se suma de csat_carrera.json,
-      // que es la misma fuente que usa el dashboard para su grafico de distribucion.
-      var niveles = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
-      var suma = {};
-      niveles.forEach(function (k) { suma[k] = 0; });
-      (p4.csatCarrera || []).forEach(function (x) {
-        niveles.forEach(function (k) { suma[k] += Number(x[k]) || 0; });
-      });
-      var totalSuma = niveles.reduce(function (a, k) { return a + suma[k]; }, 0);
-      return {
-        titulo: 'Satisfacción ' + p4.nombre + ' ' + p4.periodo,
-        lineas: ['Satisfacción: ' + pct(c.score) + ' (sobre ' + n(c.total) + ' respuestas).',
-                 'Totalmente satisfecho ' + n(suma[niveles[0]]) + ', muy satisfecho ' + n(suma[niveles[1]]) +
-                 ', satisfecho ' + n(suma[niveles[2]]) + ', insatisfecho ' + n(suma[niveles[3]]) +
-                 ', totalmente insatisfecho ' + n(suma[niveles[4]]) + ' (suma de las carreras: ' + n(totalSuma) + ').'],
-        fuentes: [fuente(p4, 'CSAT por carrera')]
-      };
-    }
-
-    // 7) Cuantas carreras o facultades
-    if (trae('cuantas carreras') || trae('cuantas facultades')) {
-      var p5 = periodoDeLaPregunta(t, '1.0');
-      var f3 = p5.filtros || {};
-      return {
-        titulo: 'Carreras y facultades',
-        lineas: [p5.nombre + ' ' + p5.periodo + ': ' + n((f3.carreras || []).length) + ' carreras y ' +
-                 n((f3.facultades || []).length) + ' facultades.'],
-        fuentes: [fuente(p5)]
-      };
-    }
-
-    // 8) Dimensiones (Top 3 Box) — se leen solo si la pregunta las pide
-    if (trae('dimension') || trae('top 3') || trae('t3b') || trae('aspecto')) {
-      return conDimensiones(t);
-    }
-
-    // 9) Comentarios y sentimiento
-    if (trae('comentario') || trae('sentimiento') || trae('positivo') || trae('negativo') ||
-        trae('topico') || trae('tema') || trae('opinion')) {
-      return conSentimiento(t);
-    }
-
-    // 10) Cruces entre dos preguntas: un filtro (una opcion de la tabla) y una pregunta objetivo.
-    //     Lo resuelve la tabla de respuestas; si no es un cruce, el aviso de siempre.
-    return cruceConTabla(t).then(function (r) { return r || noSe(null); });
-  }
-
-  function noSe(motivo) {
-    return {
-      alcance: false,
-      titulo: 'No puedo responder eso',
-      lineas: [motivo || ('Solo respondo con los datos de las encuestas publicadas: NPS, satisfacción, ' +
-               'carreras, ciclos, dimensiones, comentarios y períodos.')],
-      fuentes: []
-    };
-  }
-
-  function conDimensiones(t) {
-    var p = periodoDeLaPregunta(t, '1.0');
-    return cargarDimensiones(p).then(function (filas) {
-      if (!filas.length) return noSe('No hay dimensiones publicadas para ese periodo.');
-      var porDim = {};
-      filas.forEach(function (x) {
-        var k = x.dimension;
-        if (!k) return;
-        if (!porDim[k]) porDim[k] = { dimension: k, t3b: 0, total: 0, categoria: x.categoria };
-        porDim[k].t3b += Number(x.t3b) || 0;
-        porDim[k].total += Number(x.total) || 0;
-      });
-      var lista = Object.keys(porDim).map(function (k) {
-        var d = porDim[k];
-        return { dimension: d.dimension, categoria: d.categoria, pct: d.total ? 100 * d.t3b / d.total : null };
-      }).sort(function (a, b) { return b.pct - a.pct; });
-      var pedida = buscaNombre(t, lista.map(function (x) { return x.dimension; }));
-      if (pedida) {
-        var una = lista.filter(function (x) { return x.dimension === pedida; })[0];
-        return {
-          titulo: 'Dimensión: ' + una.dimension,
-          lineas: ['Top 3 Box: ' + pct(una.pct) + ' (categoria ' + una.categoria + ').'],
-          fuentes: [fuente(p)]
-        };
-      }
-      var esMejor = !(t.indexOf('peor') !== -1 || t.indexOf('menor') !== -1 || t.indexOf('más bajo') !== -1);
-      var top = esMejor ? lista.slice(0, 5) : lista.slice(-5).reverse();
-      return {
-        titulo: 'Dimensiones por Top 3 Box (' + (esMejor ? 'mejor evaluadas' : 'peor evaluadas') + ')',
-        lineas: top.map(function (x) { return x.dimension + ': ' + pct(x.pct) + ' (' + x.categoria + ')'; }),
-        fuentes: [fuente(p)]
-      };
-    });
-  }
-
-  function conSentimiento(t) {
-    var p = periodoDeLaPregunta(t, '1.0');
-    return cargarSentimiento(p).then(function (s) {
-      if (!s || !s.resumen) return noSe('No hay comentarios publicados para ese periodo.');
-      var r = s.resumen;
-      var d = r.distribucion_sentimiento || {};
-      if (t.indexOf('topico') !== -1 || t.indexOf('tema') !== -1) {
-        var tops = (s.topicos || []).slice().sort(function (a, b) { return b.total_comentarios - a.total_comentarios; }).slice(0, 5);
-        return {
-          titulo: 'Temas más comentados',
-          lineas: tops.map(function (x) {
-            return x.topico + ': ' + n(x.total_comentarios) + ' comentarios (positivos ' + n(x.positivos) +
-              ', negativos ' + n(x.negativos) + ', neutros ' + n(x.neutros) + ').';
-          }),
-          fuentes: [fuente(p)]
-        };
-      }
-      return {
-        titulo: 'Comentarios de ' + p.nombre + ' ' + p.periodo,
-        lineas: ['Respuestas con comentario: ' + n(r.total_con_comentario) + '; analizados: ' + n(r.total_analizados) + '.',
-                 'Sentimiento: positivos ' + n(d.positivo) + ', neutros ' + n(d.neutro) + ', negativos ' + n(d.negativo) + '.'],
-        fuentes: [fuente(p)]
-      };
-    });
-  }
-
-  function cargarDimensiones(p) {
-    if (DIMS && DIMS[p.nivel + p.periodo]) return Promise.resolve(DIMS[p.nivel + p.periodo]);
-    DIMS = DIMS || {};
-    return leer(p.base + 'dimensiones.json').catch(function () { return []; }).then(function (f) {
-      DIMS[p.nivel + p.periodo] = f || [];
-      return DIMS[p.nivel + p.periodo];
-    });
-  }
-
-  function cargarSentimiento(p) {
-    if (SENT && SENT[p.nivel + p.periodo]) return Promise.resolve(SENT[p.nivel + p.periodo]);
-    SENT = SENT || {};
-    return leer(p.base + 'sentimiento.json').catch(function () { return null; }).then(function (s) {
-      SENT[p.nivel + p.periodo] = s;
-      return s;
-    });
-  }
-
-  // ---------- cruces: filtrar con una pregunta y contar otra (tabla de respuestas) ----------
-  // La tabla (respuestas.json) es una fila por respuesta con un numero por pregunta; es lo
-  // unico que permite contestar cruces, que por definicion no se pueden precalcular.
-  var ESCALA_SAT = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
-
-  // Nombres con los que la gente pide una pregunta que el ETL nombra distinto.
-  var ALIAS_PREGUNTA = [
-    ['perfil de egreso', 'perfil del egreso de la carrera'],
-    ['perfil del egreso', 'perfil del egreso de la carrera'],
-    ['satisfaccion con la universidad', 'la universidad de lima'],
-    ['satisfaccion con ulima', 'la universidad de lima'],
-    ['satisfecho con la universidad', 'la universidad de lima'],
-    ['recomiendas', 'recomiendas la universidad de lima'],
-    ['recomendaria', 'recomiendas la universidad de lima'],
-    ['situacion laboral', 'situacion laboral'],
-    ['situacion de trabajo', 'situacion laboral'],
-    ['tiempo laboral', 'tiempo laboral'],
-    ['tiempo dedicado a tu trabajo', 'tiempo laboral']
-  ];
-
+  /** Lee respuestas.json de un periodo (grande: solo cuando hace falta) y lo deja en memoria. */
   function cargarTabla(p) {
-    if (TABLA && TABLA[p.nivel + p.periodo]) return Promise.resolve(TABLA[p.nivel + p.periodo]);
-    TABLA = TABLA || {};
-    return leer(p.base + 'respuestas.json').catch(function () { return null; }).then(function (x) {
-      TABLA[p.nivel + p.periodo] = x;
-      return x;
-    });
-  }
-
-  // Las opciones de la tabla que aparecen en la pregunta (cada una es un filtro).
-  function opcionesQueAparecen(tabla, t) {
-    var res = [];
-    (tabla.cabeceras || []).forEach(function (c) {
-      var elegidas = [];
-      (tabla.opciones[c] || []).forEach(function (o) {
-        var x = sin(o);
-        if (!x || x.length < 4 || x === sin('(sin respuesta)')) return;
-        // Los niveles de la escala miden el objetivo, no filtran: "satisfechos" en la
-        // pregunta no es la opcion "Satisfecho".
-        if (ESCALA_SAT.indexOf(o) !== -1) return;
-        if (sinS(t).indexOf(sinS(x)) !== -1) elegidas.push(o);
-      });
-      if (elegidas.length) res.push({ pregunta: c, opciones: elegidas });
-    });
-    return res;
-  }
-
-  // La pregunta que se quiere contar: la nombrada en la pregunta, o la que se pide con un alias.
-  function objetivoDelCruce(tabla, t, filtros) {
-    var esFiltro = function (c) {
-      return filtros.some(function (f) { return f.pregunta === c; });
-    };
-    var mejor = null;
-    (tabla.cabeceras || []).forEach(function (c) {
-      if (esFiltro(c)) return;
-      var x = sin(c);
-      if (x.length >= 5 && sinS(t).indexOf(sinS(x)) !== -1 && !nombreComoCalificador(t, c) &&
-          (!mejor || x.length > sin(mejor).length)) mejor = c;
-    });
-    if (mejor) return mejor;
-    for (var k = 0; k < ALIAS_PREGUNTA.length; k++) {
-      if (sinS(t).indexOf(sinS(ALIAS_PREGUNTA[k][0])) === -1) continue;
-      var buscada = ALIAS_PREGUNTA[k][1];
-      var hallada = (tabla.cabeceras || []).filter(function (c) {
-        return sin(c) === buscada && !esFiltro(c);
-      })[0];
-      if (hallada) return hallada;
-    }
-    return null;
-  }
-
-  /** Un valor de la situación laboral que es trabajo formal (regla de negocio, en la configuración). */
-  function esTrabajoFormal(valor) {
-    var cfg = window.SURVEY_CONFIG || {};
-    var trabajo = cfg.VALORES_TRABAJO || ['Trabajador dependiente', 'Trabajador independiente'];
-    return trabajo.indexOf(valor) !== -1;
-  }
-
-  /** Una lectura de la cuenta: "57,14 % considerando Trabajador dependiente / Trabajador independiente." */
-  function lecturaDeConteo(valores, cuenta, denom) {
-    return pct(denom ? 100 * cuenta / denom : 0) + ' considerando ' + valores.join(' / ') + '.';
-  }
-
-  /** Un renglon del grafico: el valor, su cuenta y su parte del total. */
-  function renglon(valor, cuenta, base) {
-    return {
-      valor: valor,
-      cuenta: n(cuenta),
-      pct: pct(base ? 100 * cuenta / base : 0),
-      ancho: base ? Math.round(1000 * cuenta / base) / 10 : 0
-    };
-  }
-
-  /**
-   * El cuadro que acompaña a una respuesta: tarjetas arriba y uno o mas graficos (cada uno una
-   * linea con colores). Lo llena la pagina con numeros publicados; el modelo nunca calcula.
-   */
-  function cuadro(tarjetas, graficos) {
-    return {
-      tarjetas: tarjetas,
-      graficos: (graficos || []).map(function (g) {
-        return {
-          titulo: g.titulo,
-          filas: (g.filas || []).map(function (f) { return renglon(f.valor, f.cuenta, f.base || g.base); })
-        };
-      })
-    };
-  }
-
-  /**
-   * El cuadro de un conteo: las tarjetas (encuestados y el grupo) y, por cada pregunta contada,
-   * su linea con colores. Si se cuenta la situacion laboral, agrega el tiempo de trabajo.
-   */
-  function cuadroDeConteo(tabla, sub, objetivo, valores, filtros, filtroTexto) {
-    var partes = {
-      tarjetas: [
-        { rotulo: 'Encuestados', valor: n(tabla.respuestas) },
-        {
-          rotulo: (filtros.length === 1 && filtros[0].opciones.length === 1)
-            ? 'De ' + filtros[0].opciones[0]
-            : 'Cumplen el filtro',
-          valor: n(sub.length)
-        }
-      ],
-      graficos: [{
-        titulo: objetivo,
-        base: sub.length,
-        filas: valores.map(function (v) { return { valor: v, cuenta: contarEnTabla(tabla, sub, objetivo, [v]) }; })
-      }]
-    };
-    var cabeceras = tabla.cabeceras || [];
-    var iSit = cabeceras.indexOf('Situación laboral');
-    var iTie = cabeceras.indexOf('Tiempo laboral');
-    if (objetivo === 'Situación laboral' && iSit !== -1 && iTie !== -1) {
-      var trabajan = sub.filter(function (f) {
-        return esTrabajoFormal(tabla.opciones['Situación laboral'][f[iSit]]);
-      });
-      if (trabajan.length) {
-        partes.graficos.push({
-          titulo: 'Tiempo dedicado al trabajo (de los ' + n(trabajan.length) + ' que trabajan)',
-          base: trabajan.length,
-          filas: (tabla.opciones['Tiempo laboral'] || [])
-            .filter(function (o) { return o && o.indexOf('sin respuesta') === -1; })
-            .map(function (o) {
-              return {
-                valor: o,
-                cuenta: trabajan.filter(function (f) { return tabla.opciones['Tiempo laboral'][f[iTie]] === o; }).length
-              };
-            })
-        });
-      }
-    }
-    return cuadro(partes.tarjetas, partes.graficos);
-  }
-
-  function contarEnTabla(tabla, sub, pregunta, opciones) {
-    var i = tabla.cabeceras.indexOf(pregunta);
-    var mapa = {};
-    (tabla.opciones[pregunta] || []).forEach(function (o, k) { mapa[o] = k; });
-    var ids = opciones.filter(function (o) { return o in mapa; }).map(function (o) { return mapa[o]; });
-    return sub.filter(function (f) { return ids.indexOf(f[i]) !== -1; }).length;
-  }
-
-  // Devuelve la respuesta del cruce, o null si no es un cruce (siguen las demas familias).
-  function cruceConTabla(t) {
-    var p = periodoDeLaPregunta(t, '1.0');
-    if (!p) return Promise.resolve(null);
-    return cargarTabla(p).then(function (tabla) {
-      if (!tabla || !tabla.cabeceras || !tabla.filas) return null;
-      var filtros = opcionesQueAparecen(tabla, t);
-      if (!filtros.length) return null;
-      var objetivo = objetivoDelCruce(tabla, t, filtros);
-      if (!objetivo) return null;
-      var sub = tabla.filas.filter(function (f) {
-        return filtros.every(function (fl) {
-          var i = tabla.cabeceras.indexOf(fl.pregunta);
-          return fl.opciones.some(function (o) {
-            return (tabla.opciones[fl.pregunta] || []).indexOf(o) === f[i];
-          });
-        });
-      });
-      var filtroTexto = filtros.map(function (fl) {
-        return fl.pregunta + ' = ' + fl.opciones.join(' o ');
-      }).join('; ');
-      if (!sub.length) {
-        return noSe('Con ese filtro (' + filtroTexto + ') no hay respuestas en ' + p.nombre + ' ' + p.periodo + '.');
-      }
-      var lineaFiltro = 'Filtro: ' + filtroTexto + ' -> ' + n(sub.length) + ' respuestas de ' + n(tabla.respuestas) + '.';
-      var escala = ESCALA_SAT.filter(function (x) {
-        return (tabla.opciones[objetivo] || []).indexOf(x) !== -1;
-      });
-      // Basta con tres niveles para tratarla como escala de satisfaccion (la pregunta de la
-      // Universidad de Lima tiene cuatro: no incluye "totalmente insatisfecho").
-      if (escala.length >= 3) {
-        var c3 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 3));
-        var c2 = contarEnTabla(tabla, sub, objetivo, escala.slice(0, 2));
-        var cSat = contarEnTabla(tabla, sub, objetivo, ['Satisfecho']);
-        return {
-          titulo: 'Cruce: ' + objetivo + ' — ' + filtroTexto,
-          lineas: [lineaFiltro,
-                   'Tres mejores (totalmente satisfecho, muy satisfecho, satisfecho): ' + n(c3) +
-                     ' de ' + n(sub.length) + ' (' + pct(100 * c3 / sub.length) + ').',
-                   'Dos mejores (totalmente satisfecho, muy satisfecho): ' + n(c2) +
-                     ' (' + pct(100 * c2 / sub.length) + '). "Satisfecho" exacto: ' + n(cSat) + '.'],
-          fuentes: [fuente(p)]
-        };
-      }
-      var conteo = (tabla.opciones[objetivo] || []).map(function (o) {
-        return { o: o, c: contarEnTabla(tabla, sub, objetivo, [o]) };
-      }).filter(function (x) { return x.c > 0; }).sort(function (a, b) { return b.c - a.c; });
-      return {
-        titulo: 'Cruce: ' + objetivo + ' — ' + filtroTexto,
-        lineas: [lineaFiltro].concat(conteo.slice(0, 6).map(function (x) {
-          return x.o + ': ' + n(x.c) + ' (' + pct(100 * x.c / sub.length) + ')';
-        })),
-        fuentes: [fuente(p)]
-      };
-    });
-  }
-
-  // ---------- contexto del asistente (documento base) y menu del periodo ----------
-  var CONTEXTO = null;   // asistente_contexto.json (chico: se lee una vez por carga)
-
-  function cargarContexto() {
-    if (CONTEXTO) return Promise.resolve(CONTEXTO);
-    return leer('shared/config/asistente_contexto.json').catch(function () { return null; }).then(function (x) {
-      CONTEXTO = x || {};
-      return CONTEXTO;
-    });
-  }
-
-  // El texto que viaja como contexto: solo las secciones de prosa (las palabras
-  // coloquiales ya van dentro del menu).
-  function textoDeContexto(ctx) {
-    if (!ctx) return '';
-    var partes = [];
-    [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'],
-     ['como_esta_organizado', 'Cómo está organizado el cuestionario'],
-     ['reglas', 'Reglas'], ['equivalencias', 'Equivalencias']].forEach(function (par) {
-      var lista = ctx[par[0]];
-      if (lista && lista.length) {
-        partes.push('## ' + par[1] + '\n' + lista.map(function (x) { return '- ' + x; }).join('\n'));
-      }
-    });
-    return partes.join('\n\n');
-  }
-
-  function etiquetaDe(p) { return p.nombre + ' ' + p.periodo; }
-
-  // El menu del periodo: que preguntas hay, con que palabras se piden y que opciones
-  // tienen. Es lo unico que el modelo puede elegir.
-  function construirMenu(p, tabla, ctx) {
-    var palabras = (ctx && ctx.palabras_coloquiales) || {};
-    var lineas = ['## Menú — ' + etiquetaDe(p) + ' (' + n(tabla.respuestas) + ' respuestas, ' +
-                  tabla.cabeceras.length + ' preguntas)'];
-    tabla.cabeceras.forEach(function (c) {
-      var ops = (tabla.opciones[c] || []).filter(function (o) { return sin(o) !== sin('(sin respuesta)'); });
-      var coloq = palabras[c] || [];
-      lineas.push('- ' + c + (coloq.length ? ' (se pide como: ' + coloq.join(', ') + ')' : '') +
-                  ' -> ' + ops.join(' · '));
-    });
-    return lineas.join('\n');
-  }
-
-  // Ejecuta el formulario sobre la tabla: valida cada nombre contra lo publicado y
-  // cuenta. Devuelve la respuesta, o {problema: motivo} si algun nombre no existe.
-  function ejecutarFormulario(p, tabla, f) {
-    var cab = tabla.cabeceras || [];
-    function exacto(nombre) {
-      var x = sin(nombre);
-      var halladas = cab.filter(function (c) { return sin(c) === x; });
-      return halladas.length ? halladas[0] : null;
-    }
-    function valoresDe(pregunta, lista) {
-      var ops = tabla.opciones[pregunta] || [];
-      var malos = (lista || []).filter(function (v) {
-        return !ops.some(function (o) { return sin(o) === sin(v); });
-      });
-      if (malos.length) return { problema: 'No encontré estas opciones en "' + pregunta + '": ' + malos.join(', ') + '.' };
-      return { valores: (lista || []).map(function (v) {
-        return ops.filter(function (o) { return sin(o) === sin(v); })[0];
-      }) };
-    }
-    var filtros = [];
-    var listaFiltros = f.filtros || [];
-    for (var i = 0; i < listaFiltros.length; i++) {
-      var pregunta = exacto(listaFiltros[i].pregunta);
-      if (!pregunta) return { problema: 'No encontré la pregunta "' + listaFiltros[i].pregunta + '" en las encuestas publicadas.' };
-      var v = valoresDe(pregunta, listaFiltros[i].valores);
-      if (v.problema) return v;
-      filtros.push({ pregunta: pregunta, opciones: v.valores });
-    }
-    var sub = tabla.filas.filter(function (fila) {
-      return filtros.every(function (cada) {
-        var idx = cab.indexOf(cada.pregunta);
-        return cada.opciones.some(function (o) {
-          return (tabla.opciones[cada.pregunta] || []).indexOf(o) === fila[idx];
-        });
-      });
-    });
-    var filtroTexto = filtros.map(function (cada) {
-      return cada.pregunta + ' = ' + cada.opciones.join(' o ');
-    }).join('; ');
-    var denom = sub.length;
-    var cabecera = (filtroTexto ? 'Filtro: ' + filtroTexto + ' -> ' : 'Total: ') +
-                   n(denom) + ' respuestas de ' + n(tabla.respuestas) + '.';
-
-    if (f.pregunta_objetivo) {
-      var objetivo = exacto(f.pregunta_objetivo);
-      if (!objetivo) return { problema: 'No encontré la pregunta "' + f.pregunta_objetivo + '" en las encuestas publicadas.' };
-      var vo = valoresDe(objetivo, f.valores_objetivo);
-      if (vo.problema) return vo;
-      // "listar" sin valores = todos los valores publicados de esa pregunta (qué carreras hay).
-      if (f.operacion === 'listar' && !vo.valores.length) {
-        vo.valores = (tabla.opciones[objetivo] || []).filter(function (o) {
-          return o && sin(o) !== sin('(sin respuesta)');
-        });
-      }
-      if (!vo.valores.length) return { problema: 'No se indicó qué valores contar de "' + objetivo + '".' };
-      if (f.operacion === 'listar') {
-        var conDatos = vo.valores.map(function (v) {
-          return { valor: v, cuenta: contarEnTabla(tabla, sub, objetivo, [v]) };
-        }).filter(function (x) { return x.cuenta > 0; }).sort(function (a, b) { return b.cuenta - a.cuenta; });
-        return {
-          titulo: objetivo + ' en ' + p.periodo + (filtroTexto ? ' — ' + filtroTexto : ''),
-          lineas: ['En total: ' + n(denom) + ' respuestas.'].concat(conDatos.map(function (x) {
-            return x.valor + ': ' + n(x.cuenta) + ' respuestas.';
-          })),
-          cuadro: conDatos.length <= 6
-            ? cuadro(
-                [{ rotulo: 'Encuestados', valor: n(tabla.respuestas) }, { rotulo: 'Con datos', valor: n(denom) }],
-                [{ titulo: objetivo, base: denom, filas: conDatos }])
-            : null,
-          fuentes: [fuente(p, 'ids')]
-        };
-      }
-      var cuenta = contarEnTabla(tabla, sub, objetivo, vo.valores);
-      var lecturas = [lecturaDeConteo(vo.valores, cuenta, denom)];
-      // "trabajan" admite dos lecturas cuando el grupo mezcla trabajo con prácticas: se dan
-      // las dos, y es una regla de la página (el modelo no cuenta nada).
-      var soloTrabajo = vo.valores.filter(esTrabajoFormal);
-      if (soloTrabajo.length && soloTrabajo.length < vo.valores.length) {
-        lecturas.push(lecturaDeConteo(soloTrabajo, contarEnTabla(tabla, sub, objetivo, soloTrabajo), denom));
-      }
-      return {
-        titulo: 'Cruce: ' + objetivo + ' — ' + (filtroTexto || 'todas las respuestas'),
-        lineas: lecturas,
-        cuadro: cuadroDeConteo(tabla, sub, objetivo, vo.valores, filtros, filtroTexto),
-        fuentes: [fuente(p, 'Cruce: ' + objetivo + (filtroTexto ? ' — Filtro: ' + filtroTexto : ''))]
-      };
-    }
-    if (!filtros.length) return null;   // no hay nada que contar
-    // El modelo a veces expresa la cuenta como un filtro mas ("y que su situacion laboral
-    // sea trabajador o practicas"): se informa el grupo sin ese ultimo filtro y el
-    // porcentaje que lo cumple, para no perder la lectura "de los N, cuantos".
-    var ultimo = filtros[filtros.length - 1];
-    var grupo = filtros.slice(0, -1);
-    var subGrupo = tabla.filas.filter(function (fila) {
-      return grupo.every(function (cada) {
-        var idx = cab.indexOf(cada.pregunta);
-        return cada.opciones.some(function (o) {
-          return (tabla.opciones[cada.pregunta] || []).indexOf(o) === fila[idx];
-        });
-      });
-    });
-    var lineaGrupo = grupo.length
-      ? 'De los ' + n(subGrupo.length) + ' con ' + grupo.map(function (cada) {
-          return cada.pregunta + ' = ' + cada.opciones.join(' o ');
-        }).join('; ') + ', cumplen ' + ultimo.pregunta + ' = ' + ultimo.opciones.join(' o ') +
-        ': ' + n(denom) + ' (' + pct(subGrupo.length ? 100 * denom / subGrupo.length : 0) + ').'
-      : 'Cumplen ' + ultimo.pregunta + ' = ' + ultimo.opciones.join(' o ') + ': ' + n(denom) +
-        ' de ' + n(tabla.respuestas) + ' (' + pct(tabla.respuestas ? 100 * denom / tabla.respuestas : 0) + ').';
-    return {
-      titulo: 'Cruce: ' + filtroTexto,
-      lineas: [cabecera, lineaGrupo],
-      fuentes: [fuente(p)]
-    };
-  }
-
-  // ---------- registro de preguntas y mas frecuentes ----------
-  // Se manda la pregunta tal cual (el servidor le quita correos, telefonos y
-  // numeros largos antes de guardarla). Si el registro falla, la respuesta al
-  // usuario no se ve afectada: se ignora en silencio.
-  function registrar(texto, intencion) {
-    if (!texto || !String(texto).trim()) return Promise.resolve(null);
-    return fetch(REGISTRO_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pregunta: String(texto).slice(0, 160), intencion: intencion || '' })
+    if (TABLAS[p.periodo]) return Promise.resolve(TABLAS[p.periodo]);
+    return leer(p.base + 'respuestas.json').then(function (r) {
+      if (r && r.cabeceras) TABLAS[p.periodo] = r;
+      return TABLAS[p.periodo] || null;
     }).catch(function () { return null; });
   }
 
-  function cargarFrecuentes() {
-    return fetch(REGISTRO_URL, { cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { FRECUENTES = (d && d.frecuentes) || []; return FRECUENTES; })
-      .catch(function () { FRECUENTES = []; return FRECUENTES; });
+  /** El contexto del asistente (el mismo para todas las preguntas). */
+  function cargarContexto() {
+    if (CONTEXTO) return Promise.resolve(CONTEXTO);
+    return leer('shared/config/asistente_contexto.json').then(function (c) {
+      CONTEXTO = c || {};
+      return CONTEXTO;
+    }).catch(function () { CONTEXTO = {}; return CONTEXTO; });
   }
 
-  // ---------- IA que entiende la pregunta (solo traduce) ----------
-  // Cada dato que devuelve el traductor se convierte en una frase que el motor de datos
-  // ya sabe leer: asi los numeros siguen saliendo de los JSON y no del modelo.
-  var FRASE_DEL_DATO = {
-    nps: 'nps',
-    satisfaccion: 'satisfaccion',
-    respuestas: 'cuantos alumnos se encuestaron',
-    carreras: 'cuantas carreras',
-    facultades: 'cuantas facultades',
-    ciclos: 'nps por ciclo',
-    dimensiones: 'dimensiones',
-    comentarios: 'comentarios',
-    temas: 'temas mas comentados',
-    comparacion: 'comparar periodos',
-    fechas: 'cuando fue el levantamiento',
-    periodos: 'que datos hay'
-  };
+  /** El contexto como texto, tal como viaja al modelo. */
+  function textoDeContexto(c) {
+    var partes = [];
+    [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'],
+      ['como_esta_organizado', 'Cómo está organizado el cuestionario'], ['reglas', 'Reglas'],
+      ['equivalencias', 'Equivalencias'], ['palabras_coloquiales', 'Cómo se pregunta por las cosas']]
+      .forEach(function (par) {
+        var v = c && c[par[0]];
+        if (!v) return;
+        if (Array.isArray(v)) {
+          partes.push('## ' + par[1] + '\n' + v.map(function (x) { return '- ' + x; }).join('\n'));
+        } else if (typeof v === 'object') {
+          partes.push('## ' + par[1] + '\n' + Object.keys(v).map(function (k) {
+            return '- ' + k + ' → se pide como: ' + (Array.isArray(v[k]) ? v[k].join(', ') : v[k]);
+          }).join('\n'));
+        } else {
+          partes.push('## ' + par[1] + '\n' + v);
+        }
+      });
+    return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 6000);
+  }
 
-  // Manda la pregunta con el contexto y el menu; el modelo devuelve el formulario
-  // (nunca cifras: los numeros los saca la pagina de los JSON publicados).
-  function interpretarConIA(texto, contexto, menu) {
+  /** El menú de un periodo: sus preguntas y las opciones publicadas. Sin cifras. */
+  function construirMenu(p, tabla) {
+    var cab = (tabla && tabla.cabeceras) || [];
+    var ops = (tabla && tabla.opciones) || {};
+    var lineas = ['## Menú — ' + etiquetaDe(p)];
+    cab.forEach(function (q) {
+      var valores = (ops[q] || []).filter(function (o) { return o && o !== '(sin respuesta)'; });
+      lineas.push('- ' + q + (valores.length ? ': ' + valores.slice(0, 40).join(' | ') : ''));
+    });
+    return lineas.join('\n').slice(0, 12000);
+  }
+
+  // ---------- los datos: el portal los busca, el modelo los redacta ----------
+
+  var PASO_PLAN = 'plan';
+  var PASO_RESPUESTA = 'respuesta';
+  var LIMITE_BLOQUES = 20000;
+  var GRUPOS = ['Carrera', 'Facultad', 'Ciclo'];
+
+  /** Una llamada al servicio: el plan (qué leer) o la redacción (con los datos). */
+  function pedirAlServicio(cuerpo) {
     return fetch(INTERPRETE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pregunta: String(texto).slice(0, 300),
-        contexto: String(contexto || '').slice(0, 6000),
-        menu: String(menu || '').slice(0, 40000)
-      })
-    }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { return (d && d.consulta) ? d.consulta : null; })
-      .catch(function () { return null; });
+      body: JSON.stringify(cuerpo)
+    }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   }
 
-  function fraseDeConsulta(c) {
-    var base = FRASE_DEL_DATO[c.dato];
-    if (!base) return null;
-    var partes = [base];
-    if (c.periodo) partes.push(c.periodo);
-    if (c.entidad) partes.push(c.entidad);
-    if (c.orden) partes.push(c.orden);
-    return partes.join(' ');
+  /** Paso 1: que datos hay que leer para responder la pregunta. */
+  function planificar(texto, contexto, menu) {
+    return pedirAlServicio({
+      paso: PASO_PLAN,
+      pregunta: String(texto).slice(0, 300),
+      contexto: String(contexto || '').slice(0, 6000),
+      menu: String(menu || '').slice(0, 40000)
+    }).then(function (d) { return (d && d.plan) ? d.plan : null; });
   }
 
-  // El nombre que devolvio el traductor tiene que existir en los datos publicados:
-  // si no existe, se dice; no se responde de mas.
-  function entidadConocida(nombre) {
-    if (!nombre) return true;
-    var p = periodoDeLaPregunta('', '1.0');
-    var listas = [].concat(
-      (p.filtros && p.filtros.carreras) || [],
-      (p.filtros && p.filtros.facultades) || [],
-      (p.filtros && p.filtros.ciclos) || [],
-      Object.keys((p.filtros && p.filtros.facultad_carrera) || {})
-    );
-    return !!buscaNombre(sin(nombre), listas);
+  /** Paso 2: la redaccion, con los datos que el portal encontro. */
+  function redactar(texto, bloques) {
+    return pedirAlServicio({
+      paso: PASO_RESPUESTA,
+      pregunta: String(texto).slice(0, 300),
+      bloques: String(bloques || '').slice(0, LIMITE_BLOQUES)
+    }).then(function (d) { return (d && d.respuesta) ? d.respuesta : null; });
   }
 
-  // Responde: primero con las palabras conocidas; si no alcanzan, con la IA; y si tampoco,
-  // el aviso de siempre. En ningun caso el numero sale del modelo.
-  // Responde: primero las palabras conocidas; si no alcanzan, el contexto + el menu
-  // del periodo + la IA; y lo que devuelve se valida contra los datos publicados
-  // antes de responder. En ningun caso el numero sale del modelo.
-  function responderConIA(texto) {
-    return cargar().then(function () {
-      return Promise.resolve(respuesta(sin(texto)));
-    }).then(function (r) {
-      if (r && r.alcance !== false) return r;
+  /** Los numeros que aparecen en un texto (para comprobarlos contra los datos). */
+  function numerosDe(texto) {
+    return String(texto).match(/\d+(?:[.,]\d+)?/g) || [];
+  }
 
-      var p = periodoDeLaPregunta(sin(texto), '1.0');
-      if (!p || !p.base) return noSe(null);
-      // Se manda el menu de TODOS los periodos publicados y, si hay, la conversacion reciente:
-      // asi una pregunta como "y del 2025?" se resuelve contra lo ultimo que se pregunto.
-      return Promise.all([cargarTodasLasTablas(), cargarContexto()]).then(function (cargados) {
-        var tablas = cargados[0];
-        var ctx = cargados[1];
-        if (!tablas.length) return null;
-        var detectado = tablas.filter(function (x) { return x.p.base === p.base; })[0] || tablas[0];
-        var contexto = textoDeContexto(ctx);
-        var reciente = conversacionReciente();
-        if (reciente) contexto += '\n\n' + reciente;
-        var menu = tablas.map(function (x) { return construirMenu(x.p, x.tabla, ctx); }).join('\n\n');
-        // Si el interprete no responde (los modelos gratuitos tienen momentos malos), se
-        // intenta una vez mas; si tampoco, se avisa que fue el servicio, no los datos.
-        return interpretarConIA(texto, contexto, menu)
-          .then(function (f) { return f || interpretarConIA(texto, contexto, menu); })
-          .then(function (f) { return { tablas: tablas, p: detectado.p, tabla: detectado.tabla, f: f }; });
-      }).then(function (x) {
-        if (!x || !x.f) {
-          return noSe('No pude consultar al intérprete en este momento. Vuelve a intentarlo en unos segundos.');
+  /** La linea de la fuente, leida de la respuesta del modelo. */
+  function fuenteDelTexto(texto) {
+    var m = String(texto).match(/^\s*Fuente:\s*(.+)$/im);
+    return m ? m[1].trim() : '';
+  }
+
+  /** El texto sin la linea de la fuente (lo que se comprueba y lo que se muestra). */
+  function sinFuente(texto) {
+    return String(texto).replace(/^\s*Fuente:.*$/im, '').trim();
+  }
+
+  /** ¿Todo lo que dice la respuesta esta en los datos? (los numeros, uno por uno). */
+  function respuestaSostenida(texto, bloques) {
+    var datos = String(bloques);
+    return numerosDe(sinFuente(texto)).every(function (num) {
+      return datos.indexOf(num) !== -1 || datos.indexOf(num.replace('.', ',')) !== -1;
+    });
+  }
+
+  /** La columna publicada que corresponde a un nombre pedido (exacto o parecido). */
+  function nombrePublicado(tabla, pregunta) {
+    var cab = tabla.cabeceras || [];
+    var x = sin(pregunta);
+    var exacta = cab.filter(function (c) { return sin(c) === x; })[0];
+    if (exacta) return exacta;
+    var parecidas = cab.filter(function (c) { return sin(c).indexOf(x) !== -1 || x.indexOf(sin(c)) !== -1; });
+    return parecidas.length === 1 ? parecidas[0] : null;
+  }
+
+  /** Las filas que cumplen los filtros pedidos (los nombres se validan contra lo publicado). */
+  function aplicarFiltros(tabla, filas, filtros) {
+    return (filtros || []).reduce(function (acc, f) {
+      var cab = tabla.cabeceras || [];
+      var i = cab.indexOf(nombrePublicado(tabla, f.pregunta) || '');
+      if (i === -1) return acc;
+      var ops = tabla.opciones[nombrePublicado(tabla, f.pregunta)] || [];
+      var ids = (f.valores || []).map(function (v) {
+        return ops.filter(function (o) { return sin(o) === sin(v); })[0];
+      }).filter(Boolean).map(function (o) { return ops.indexOf(o); });
+      if (!ids.length) return acc;
+      return acc.filter(function (fila) { return ids.indexOf(fila[i]) !== -1; });
+    }, filas);
+  }
+
+  function textoDeFiltros(filtros) {
+    return (filtros || []).map(function (f) { return f.pregunta + ' = ' + (f.valores || []).join(' o '); }).join('; ');
+  }
+
+  /** Cuenta y mide un grupo de filas: respuestas, NPS y satisfaccion (los tres mejores niveles). */
+  function medir(tabla, filas) {
+    var cab = tabla.cabeceras || [];
+    var iNps = cab.indexOf('Recomiendas la Universidad de Lima');
+    var iSat = cab.indexOf('La Universidad de Lima');
+    var buenos = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho'];
+    var prom = 0, pas = 0, det = 0, conNps = 0, conSat = 0, bien = 0;
+    filas.forEach(function (f) {
+      if (iNps !== -1) {
+        var v = Number((tabla.opciones[cab[iNps]] || [])[f[iNps]]);
+        if (!isNaN(v)) { conNps += 1; if (v >= 9) prom += 1; else if (v >= 7) pas += 1; else det += 1; }
+      }
+      if (iSat !== -1) {
+        var s = (tabla.opciones[cab[iSat]] || [])[f[iSat]];
+        if (s && s !== '(sin respuesta)') { conSat += 1; if (buenos.indexOf(s) !== -1) bien += 1; }
+      }
+    });
+    return {
+      respuestas: filas.length,
+      nps: conNps ? Math.round(((prom - det) / conNps) * 10000) / 100 : null,
+      promotores: prom, pasivos: pas, detractores: det,
+      satisfaccion: conSat ? Math.round((bien / conSat) * 10000) / 100 : null
+    };
+  }
+
+  /** Un renglon de un grupo: "Psicologia: 316 respuestas, NPS 71,2, satisfaccion 96,5 %." */
+  function renglonDeGrupo(nombre, m) {
+    var partes = [nombre + ': ' + n(m.respuestas) + ' respuestas'];
+    if (m.nps !== null && m.nps !== undefined) partes.push('NPS ' + n(m.nps));
+    if (m.satisfaccion !== null && m.satisfaccion !== undefined) partes.push('satisfaccion ' + pct(m.satisfaccion));
+    return '- ' + partes.join(', ') + '.';
+  }
+
+  /** El bloque de un grupo (Carrera, Facultad, Ciclo): cuantas respuestas y sus numeros. */
+  function bloqueDeGrupo(p, tabla, pregunta, filtros) {
+    var campo = nombrePublicado(tabla, pregunta);
+    if (!campo) return null;
+    var cab = tabla.cabeceras || [];
+    var i = cab.indexOf(campo);
+    var filas = aplicarFiltros(tabla, tabla.filas, filtros);
+    var valores = (tabla.opciones[campo] || []).filter(function (o) { return o && o !== '(sin respuesta)'; });
+    var lineas = valores.map(function (v) {
+      var suyas = filas.filter(function (f) { return (tabla.opciones[campo] || [])[f[i]] === v; });
+      return suyas.length ? renglonDeGrupo(v, medir(tabla, suyas)) : null;
+    }).filter(Boolean);
+    if (!lineas.length) return null;
+    return {
+      titulo: campo + (filtros.length ? ' (' + textoDeFiltros(filtros) + ')' : '') + ' en ' + etiquetaDe(p),
+      lineas: ['- Total: ' + n(filas.length) + ' respuestas.'].concat(lineas)
+    };
+  }
+
+  /** El bloque del NPS del periodo. */
+  function bloqueDeNps(p) {
+    var rr = p.dash && p.dash.resumen && p.dash.resumen.nps;
+    if (!rr) return null;
+    return {
+      titulo: 'NPS en ' + etiquetaDe(p),
+      lineas: ['- NPS ' + n(rr.score) + ' sobre ' + n(rr.total) + ' respuestas (promotores ' + n(rr.promotores) +
+               ', pasivos ' + n(rr.pasivos) + ', detractores ' + n(rr.detractores) + ').']
+    };
+  }
+
+  /** El bloque de la satisfaccion general del periodo. */
+  function bloqueDeSatisfaccion(p) {
+    var c = p.dash && p.dash.resumen && p.dash.resumen.csat;
+    if (!c) return null;
+    return {
+      titulo: 'Satisfaccion en ' + etiquetaDe(p),
+      lineas: ['- ' + pct(c.score) + ' de satisfaccion (los tres mejores niveles: ' + n(c.t3b) + ' de ' + n(c.total) + ' respuestas).']
+    };
+  }
+
+  /** El bloque del reparto de una pregunta: cuantas respuestas hay de cada opcion. */
+  function bloqueDeReparto(p, tabla, pregunta, filtros) {
+    var campo = nombrePublicado(tabla, pregunta);
+    if (!campo) return null;
+    var cab = tabla.cabeceras || [];
+    var i = cab.indexOf(campo);
+    var filas = aplicarFiltros(tabla, tabla.filas, filtros);
+    var ops = tabla.opciones[campo] || [];
+    var conteo = ops.map(function (o, k) {
+      return { valor: o, cuenta: filas.filter(function (f) { return f[i] === k; }).length };
+    }).filter(function (x) { return x.valor && x.valor !== '(sin respuesta)' && x.cuenta > 0; })
+      .sort(function (a, b) { return b.cuenta - a.cuenta; });
+    if (!conteo.length) return null;
+    return {
+      titulo: campo + (filtros.length ? ' (' + textoDeFiltros(filtros) + ')' : '') + ' en ' + etiquetaDe(p),
+      lineas: ['- Total: ' + n(filas.length) + ' respuestas.'].concat(conteo.map(function (x) {
+        return '- ' + x.valor + ': ' + n(x.cuenta) + ' (' + pct(filas.length ? 100 * x.cuenta / filas.length : 0) + ').';
+      }))
+    };
+  }
+
+  /** El bloque que corresponde a una pregunta pedida. */
+  function bloqueDeUna(p, tabla, pregunta, filtros) {
+    if (!pregunta) return null;
+    var x = sin(pregunta);
+    if (GRUPOS.some(function (g) { return sin(g) === x; })) return bloqueDeGrupo(p, tabla, pregunta, filtros);
+    if (x.indexOf('recomiendas') !== -1 || x.indexOf('nps') !== -1) return bloqueDeNps(p);
+    if (x.indexOf('universidad de lima') !== -1 && !nombrePublicado(tabla, pregunta)) return bloqueDeSatisfaccion(p);
+    return bloqueDeReparto(p, tabla, pregunta, filtros);
+  }
+
+  /**
+   * Los datos que pidio el plan, sacados de los JSON publicados. Devuelve el texto que se le
+   * manda al modelo para redactar y las encuestas de las que salio.
+   */
+  function bloquesDe(plan, tablas) {
+    var partes = [];
+    var fuentes = [];
+    (plan.periodos || []).forEach(function (dicho) {
+      var x = tablas.filter(function (y) {
+        return sin(etiquetaDe(y.p)) === sin(dicho) || sin(y.p.periodo) === sin(dicho) ||
+          sin(etiquetaDe(y.p)).indexOf(sin(dicho)) !== -1;
+      })[0];
+      if (!x) return;
+      if (fuentes.indexOf(etiquetaDe(x.p)) === -1) fuentes.push(etiquetaDe(x.p));
+      var pedidas = (plan.preguntas || []).slice();
+      if (!pedidas.length) pedidas = ['Carrera'];
+      pedidas.forEach(function (preg) {
+        var b = bloqueDeUna(x.p, x.tabla, preg, plan.filtros || []);
+        if (b) partes.push('## Datos — ' + etiquetaDe(x.p) + '\n### ' + b.titulo + '\n' + b.lineas.join('\n'));
+      });
+    });
+    return { texto: partes.join('\n\n').slice(0, LIMITE_BLOQUES), fuentes: fuentes };
+  }
+
+  /**
+   * Responde: pide el plan, busca los datos publicados, deja que el modelo redacte con ellos y
+   * comprueba que cada cifra escrita este en los datos. El modelo nunca calcula ni inventa.
+   */
+  function responderPregunta(texto) {
+    return Promise.all([cargarTodasLasTablas(), cargarContexto()]).then(function (cargados) {
+      var tablas = cargados[0];
+      var ctx = cargados[1];
+      if (!tablas.length) return { aviso: 'No se pudieron leer los datos publicados.' };
+      var contexto = textoDeContexto(ctx);
+      var reciente = conversacionReciente();
+      if (reciente) contexto += '\n\n' + reciente;
+      var menu = tablas.map(function (x) { return construirMenu(x.p, x.tabla); }).join('\n\n');
+      return planificar(texto, contexto, menu).then(function (plan) {
+        if (!plan) {
+          return { aviso: 'No pude consultar al intérprete en este momento. Vuelve a intentarlo en unos segundos.' };
         }
-        var f = x.f;
-        if (f.se_puede === false || f.operacion === 'ninguna') {
-          return noSe(f.motivo ? String(f.motivo) : null);
+        if (plan.se_puede === false) {
+          return { aviso: plan.motivo || 'Solo respondo con los datos de las encuestas publicadas.' };
         }
-        // El formulario puede referirse a otro periodo (por ejemplo 2025-2): se cuenta sobre el suyo.
-        var destino = periodoDelFormulario(x.tablas, x.p, f.periodo);
-        if (f.pregunta_objetivo || (f.filtros || []).length) {
-          var r2 = ejecutarFormulario(destino.p, destino.tabla, f);
-          if (r2 && r2.problema) return noSe(r2.problema);
-          if (r2) return r2;
+        var datos = bloquesDe(plan, tablas);
+        if (!datos.texto) {
+          return { aviso: 'No encontre esos datos entre los publicados.' };
         }
-        if (f.entidad && !entidadConocida(f.entidad)) {
-          return noSe('No encontre "' + f.entidad + '" entre las carreras, facultades o ciclos publicados.');
-        }
-        var frase = fraseDeConsulta({ dato: f.operacion, entidad: f.entidad || '', orden: f.orden || '' });
-        if (!frase) return noSe(null);
-        return Promise.resolve(respuesta(sin(frase))).then(function (r3) {
-          return (r3 && r3.alcance !== false) ? r3 : noSe(null);
+        return redactar(texto, datos.texto).then(function (escrito) {
+          if (!escrito) {
+            return { aviso: 'No pude redactar la respuesta en este momento. Vuelve a intentarlo.' };
+          }
+          if (!respuestaSostenida(escrito, datos.texto)) {
+            return {
+              aviso: 'Preferí no responder: la respuesta traía cifras que no estan en los datos publicados.',
+              datos: datos.texto
+            };
+          }
+          return {
+            texto: sinFuente(escrito),
+            fuente: 'Fuente: ' + ((fuenteDelTexto(escrito) || datos.fuentes.join(' y '))),
+            datos: datos.texto
+          };
         });
       });
     });
@@ -1070,11 +445,10 @@ window.SurveyPortalPreguntas = (function () {
     return '<div class="preguntas">' +
       '<div class="preguntas-aviso">' +
         '<p class="preguntas-aviso-titulo">Responde solo con los datos de las encuestas</p>' +
-        '<p class="preguntas-aviso-texto">Todo lo que sale aquí viene de los JSON publicados de cada periodo ' +
-        '(NPS, satisfacción, carreras, ciclos, dimensiones y comentarios), y cada respuesta dice de qué archivo ' +
+        '<p class="preguntas-aviso-texto">Todo lo que sale aquí viene de los JSON publicados de cada período ' +
+        '(NPS, satisfacción, carreras, ciclos, dimensiones y comentarios) y cada respuesta dice de qué encuesta ' +
         'salió. Si la pregunta no se puede responder con esos datos —por ejemplo la hora, el clima o cualquier ' +
-        'tema ajeno a las encuestas— lo digo, no la invento. Las preguntas se guardan de forma anónima, sin correos ' +
-        'ni números, para saber cuáles se consultan más.</p>' +
+        'tema ajeno a las encuestas— lo digo, no la invento.</p>' +
       '</div>' +
       '<form class="preguntas-form" id="preguntasForm">' +
         '<label class="preguntas-etiqueta" for="preguntasTexto">Escribe tu pregunta</label>' +
@@ -1083,87 +457,23 @@ window.SurveyPortalPreguntas = (function () {
           '<button class="preguntas-boton" type="submit">Preguntar</button>' +
         '</div>' +
       '</form>' +
-      '<div class="preguntas-frecuentes" id="preguntasFrecuentes" hidden>' +
-        '<p class="preguntas-etiqueta">Las más preguntadas</p>' +
-        '<div class="preguntas-sugerencias" id="preguntasMasUsadas"></div>' +
-      '</div>' +
       '<div class="preguntas-respuestas" id="preguntasRespuestas"></div>' +
       '</div>';
   }
 
-  /**
-   * Pinta una respuesta. Arriba va la pregunta (asi cada bloque se explica solo), luego la
-   * etiqueta "Respuesta:" y el dato. Cuando la respuesta es un cruce o tiene una sola linea,
-   * esa linea se muestra como resultado (separada); si son varias de una lista, queda la lista.
-   */
-  /**
-   * El cuadro que acompaña a un conteo: dos tarjetas (los encuestados del periodo y el grupo
-   * contado) y, por cada pregunta contada, una linea con colores —un tramo por valor— con su
-   * leyenda. Reusa la tarjeta y la barra de distribucion del portal.
-   */
-  function cuadroEnHtml(cuadro) {
-    var cfg = window.SURVEY_CONFIG || {};
-    var colores = cfg.COLORES_DISTRIBUCION || [
-      { color: 'var(--gray-800)', texto: 'var(--white)' },
-      { color: 'var(--gray-500)', texto: 'var(--white)' },
-      { color: 'var(--gray-300)', texto: 'var(--gray-900)' }
-    ];
-    function tarjetas(lista) {
-      return '<div class="survey-kpi-grid">' + lista.map(function (t) {
-        return '<div class="survey-kpi" style="--kpi-color: var(--gray-700)">' +
-          '<div class="survey-kpi-body">' +
-          '<p class="survey-kpi-value">' + esc(t.valor) + '</p>' +
-          '<p class="survey-kpi-label">' + esc(t.rotulo) + '</p>' +
-          '</div></div>';
-      }).join('') + '</div>';
-    }
-    function grafico(g) {
-      var segmentos = '', leyenda = '';
-      g.filas.forEach(function (f, i) {
-        var tono = colores[i % colores.length];
-        if (f.ancho > 0) {
-          segmentos += '<div class="csat-segment csat-var" style="--w:' + f.ancho + '%; --c:' + tono.color + '; --t:' + tono.texto + '" data-label="' + esc(f.valor) + '" data-value="' + esc(f.cuenta) + '"><span class="csat-label">' + (f.ancho >= 12 ? esc(f.pct) : '') + '</span></div>';
-        }
-        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto" style="background:' + tono.color + '"></span>' +
-          esc(f.valor) + ': ' + esc(f.cuenta) + '</li>';
-      });
-      return '<p class="preguntas-cuadro-titulo">' + esc(g.titulo) + '</p>' +
-        '<div class="csat-bar-row">' + segmentos + '</div>' +
-        '<ul class="preguntas-leyenda">' + leyenda + '</ul>';
-    }
-    return '<div class="preguntas-cuadro">' +
-      (cuadro.tarjetas && cuadro.tarjetas.length ? tarjetas(cuadro.tarjetas) : '') +
-      (cuadro.graficos || []).map(grafico).join('') +
-      '</div>';
-  }
-
+  /** Pinta la respuesta: la pregunta en la burbuja de la derecha y el texto a la izquierda. */
   function pintar(contenedor, r, pregunta) {
     var bloque = document.createElement('div');
-    bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
+    bloque.className = 'preguntas-respuesta' + ((r && r.aviso) ? ' fuera-de-alcance' : '');
     var html = '';
     if (pregunta) {
       html += '<p class="preguntas-burbuja-pregunta"><span>' + esc(pregunta) + '</span></p>';
     }
     html += '<div class="preguntas-burbuja-respuesta">';
-    if (!r.cuadro && r.titulo) {
-      html += '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
+    html += '<p class="preguntas-resultado">' + esc((r && (r.texto || r.aviso)) || '').replace(/\n/g, '<br>') + '</p>';
+    if (r && r.fuente && !r.aviso) {
+      html += '<p class="preguntas-fuente">' + esc(r.fuente) + '</p>';
     }
-    var lineas = (r.lineas || []).slice();
-    var esCruce = /^Cruce:/.test(r.titulo || '');
-    if (r.alcance !== false && lineas.length && (r.cuadro || esCruce || lineas.length === 1)) {
-      // En un conteo con cuadro todas las lineas son el resultado; en los demas cruces la
-      // primera linea es el filtro (contexto) y lo que sigue, el resultado.
-      if (esCruce && !r.cuadro && lineas.length > 1) {
-        html += '<p class="preguntas-contexto">' + esc(lineas.shift()) + '</p>';
-      }
-      lineas.forEach(function (l) { html += '<p class="preguntas-resultado">' + esc(l) + '</p>'; });
-    } else {
-      html += '<ul class="preguntas-lista">';
-      lineas.forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
-      html += '</ul>';
-    }
-    if (r.cuadro) html += cuadroEnHtml(r.cuadro);
-    (r.fuentes || []).forEach(function (f) { html += '<p class="preguntas-fuente">' + esc(f) + '</p>'; });
     html += '</div>';
     bloque.innerHTML = html;
     contenedor.insertBefore(bloque, contenedor.firstChild);
@@ -1185,11 +495,13 @@ window.SurveyPortalPreguntas = (function () {
     for (var i = 0; i < avisos.length; i++) avisos[i].parentNode.removeChild(avisos[i]);
   }
 
-  /** Guarda el turno para que la proxima pregunta pueda referirse a el ("y del 2025?"). */
+  /** Guarda el turno para que la próxima pregunta pueda referirse a él ("y del 2025?"). */
   function recordar(texto, r) {
-    if (!r) return;
-    var resumen = [r.titulo || ''].concat((r.lineas || []).slice(0, 2)).join(' · ');
-    MEMORIA.unshift({ pregunta: String(texto).trim().slice(0, 120), respuesta: String(resumen).slice(0, 220) });
+    if (!r || (!r.texto && !r.aviso)) return;
+    MEMORIA.unshift({
+      pregunta: String(texto).trim().slice(0, 160),
+      respuesta: String(r.texto || r.aviso).slice(0, 300)
+    });
     MEMORIA = MEMORIA.slice(0, 2);
   }
 
@@ -1214,64 +526,25 @@ window.SurveyPortalPreguntas = (function () {
     }).then(function (x) { return x.filter(Boolean); });
   }
 
-  /** El periodo al que se refiere el formulario (puede ser otro distinto del detectado). */
-  function periodoDelFormulario(tablas, detectado, dicho) {
-    var buscado = sin(String(dicho || ''));
-    var hallado = buscado && tablas.filter(function (x) {
-      return sin(etiquetaDe(x.p)) === buscado || sin(x.p.periodo) === buscado ||
-        sin(etiquetaDe(x.p)).indexOf(buscado) !== -1;
-    })[0];
-    if (hallado) return hallado;
-    return tablas.filter(function (x) { return x.p.base === detectado.base; })[0] || tablas[0];
-  }
-
+  /** Responde una pregunta: busca los datos publicados y pinta lo que el modelo redacte. */
   function preguntar(texto) {
     var caja = document.getElementById('preguntasRespuestas');
     if (!caja || !String(texto || '').trim()) return Promise.resolve(null);
-    var t = sin(texto);
     avisoDeEspera(caja);
-    return cargar().then(function () {
-      return respuesta(t);
-    }).then(function (r0) {
-      return (r0 && r0.alcance !== false) ? r0 : responderConIA(texto);
-    }).then(function (r) {
-      // La respuesta se pinta en la caja que esta EN PANTALLA: si la persona se movio a
-      // otra seccion mientras esperaba, la caja vieja ya no existe y la respuesta se
-      // perderia (por eso se busca de nuevo aqui).
+    return responderPregunta(String(texto).trim()).then(function (r) {
+      // La respuesta se pinta en la caja que está EN PANTALLA: si la persona se movió a otra
+      // sección mientras esperaba, la caja vieja ya no existe y la respuesta se perdería.
       var viva = document.getElementById('preguntasRespuestas') || caja;
       quitarAviso(viva);
       pintar(viva, r, texto);
       recordar(texto, r);
-      registrar(texto, (r && r.titulo) || '');
-      actualizarContadorDeUso((r && r.titulo) || '');
       return r;
     }).catch(function () {
       var viva = document.getElementById('preguntasRespuestas') || caja;
       quitarAviso(viva);
-      pintar(viva, noSe('No se pudieron leer los datos publicados en este momento.'), texto);
+      pintar(viva, { aviso: 'No se pudieron leer los datos publicados en este momento.' }, texto);
       return null;
     });
-  }
-
-  // Deja a la vista las preguntas mas consultadas por todos.
-  function pintarFrecuentes() {
-    var caja = document.getElementById('preguntasMasUsadas');
-    var bloque = document.getElementById('preguntasFrecuentes');
-    if (!caja || !bloque) return;
-    if (!FRECUENTES.length) { bloque.hidden = true; return; }
-    caja.innerHTML = FRECUENTES.slice(0, 6).map(function (f) {
-      return '<button type="button" class="preguntas-sugerencia" data-pregunta="' + esc(f.texto) + '">' +
-        esc(f.texto) + ' <span class="preguntas-veces">' + esc(String(f.veces)) + '</span></button>';
-    }).join('');
-    bloque.hidden = false;
-    caja.querySelectorAll('.preguntas-sugerencia').forEach(function (b) {
-      b.addEventListener('click', function () { preguntar(b.getAttribute('data-pregunta')); });
-    });
-  }
-
-  function actualizarContadorDeUso(titulo) {
-    if (!titulo) return;
-    setTimeout(function () { cargarFrecuentes().then(pintarFrecuentes); }, 1500);
   }
 
   function enganchar() {
@@ -1287,23 +560,25 @@ window.SurveyPortalPreguntas = (function () {
   }
 
   function iniciar() {
-    return cargar().then(function () {
-      enganchar();
-      return cargarFrecuentes().then(pintarFrecuentes);
-    });
+    return cargar().then(enganchar);
   }
 
   return {
     cargar: cargar,
-    preguntar: preguntar,
-    responder: function (texto) { return cargar().then(function () { return respuesta(sin(texto)); }); },
     iniciar: iniciar,
-    responderConIA: responderConIA,
-    interpretarConIA: interpretarConIA,
-    registrar: registrar,
-    cargarFrecuentes: cargarFrecuentes,
-    frecuentes: function () { return FRECUENTES; },
     render: render,
+    preguntar: preguntar,
+    responderPregunta: responderPregunta,
+    planificar: planificar,
+    redactar: redactar,
+    bloquesDe: bloquesDe,
+    respuestaSostenida: respuestaSostenida,
+    medir: medir,
+    construirMenu: construirMenu,
+    textoDeContexto: textoDeContexto,
+    recordar: recordar,
+    conversacionReciente: conversacionReciente,
+    cargarTodasLasTablas: cargarTodasLasTablas,
     catalogo: function () { return CATALOGO; }
   };
 })();

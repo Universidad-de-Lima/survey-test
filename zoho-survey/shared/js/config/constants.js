@@ -49,23 +49,6 @@ window.SURVEY_CONFIG = {
   CSAT_WEIGHTS: [5, 4, 3, 2, 1],
   CSAT_SCALE_MAX: 5,
 
-  // ── Asistente (ítem 1.9): escala de grises de las líneas de distribución ──
-  // Un tono por valor (de oscuro a claro, se repiten si hay más valores) y el color del
-  // texto que va dentro del tramo, para que se lea en cada tono.
-  COLORES_DISTRIBUCION: [
-    { color: 'var(--gray-800)', texto: 'var(--white)' },
-    { color: 'var(--gray-500)', texto: 'var(--white)' },
-    { color: 'var(--gray-300)', texto: 'var(--gray-900)' },
-    { color: 'var(--gray-200)', texto: 'var(--gray-900)' },
-    { color: 'var(--gray-100)', texto: 'var(--gray-900)' },
-  ],
-
-  // ── Asistente (ítem 1.9): lecturas de "trabajan" ──
-  // El trabajo formal y las prácticas no son lo mismo: con estos dos grupos el asistente da
-  // las dos lecturas (con prácticas / solo trabajo) sin que el modelo cuente nada.
-  VALORES_TRABAJO: ['Trabajador dependiente', 'Trabajador independiente'],
-  VALORES_PRACTICA: ['Prácticas profesionales', 'Prácticas pre - profesionales'],
-
   // ── Placeholder texts ──
   FACULTAD_PLACEHOLDER: 'Todas las unidades académicas',
   FACULTAD_PLACEHOLDER_PROG: 'Todas las unidades académicas',
