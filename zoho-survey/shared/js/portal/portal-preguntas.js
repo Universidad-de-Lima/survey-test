@@ -953,12 +953,32 @@ window.SurveyPortalPreguntas = (function () {
       '</div>';
   }
 
-  function pintar(contenedor, r) {
+  /**
+   * Pinta una respuesta. Arriba va la pregunta (asi cada bloque se explica solo), luego la
+   * etiqueta "Respuesta:" y el dato. Cuando la respuesta es un cruce o tiene una sola linea,
+   * esa linea se muestra como resultado (separada); si son varias de una lista, queda la lista.
+   */
+  function pintar(contenedor, r, pregunta) {
     var bloque = document.createElement('div');
     bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
-    var html = '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p><ul class="preguntas-lista">';
-    (r.lineas || []).forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
-    html += '</ul>';
+    var html = '';
+    if (pregunta) {
+      html += '<p class="preguntas-rotulo">Pregunta: ' + esc(pregunta) + '</p>';
+    }
+    html += '<p class="preguntas-rotulo preguntas-rotulo-respuesta">Respuesta:</p>' +
+      '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
+    var lineas = (r.lineas || []).slice();
+    var esCruce = /^Cruce:/.test(r.titulo || '');
+    if (r.alcance !== false && lineas.length && (esCruce || lineas.length === 1)) {
+      if (lineas.length > 1) {
+        html += '<p class="preguntas-contexto">' + esc(lineas.shift()) + '</p>';
+      }
+      lineas.forEach(function (l) { html += '<p class="preguntas-resultado">' + esc(l) + '</p>'; });
+    } else {
+      html += '<ul class="preguntas-lista">';
+      lineas.forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
+      html += '</ul>';
+    }
     (r.fuentes || []).forEach(function (f) { html += '<p class="preguntas-fuente">' + esc(f) + '</p>'; });
     bloque.innerHTML = html;
     contenedor.insertBefore(bloque, contenedor.firstChild);
@@ -995,14 +1015,14 @@ window.SurveyPortalPreguntas = (function () {
       // perderia (por eso se busca de nuevo aqui).
       var viva = document.getElementById('preguntasRespuestas') || caja;
       quitarAviso(viva);
-      pintar(viva, r);
+      pintar(viva, r, texto);
       registrar(texto, (r && r.titulo) || '');
       actualizarContadorDeUso((r && r.titulo) || '');
       return r;
     }).catch(function () {
       var viva = document.getElementById('preguntasRespuestas') || caja;
       quitarAviso(viva);
-      pintar(viva, noSe('No se pudieron leer los datos publicados en este momento.'));
+      pintar(viva, noSe('No se pudieron leer los datos publicados en este momento.'), texto);
       return null;
     });
   }

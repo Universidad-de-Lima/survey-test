@@ -2,6 +2,13 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — La respuesta del asistente muestra la pregunta
+
+- **Qué cambió.** Cada bloque de respuesta empieza ahora con la **pregunta** tal como se escribió, sigue la etiqueta «Respuesta:», el dato y —cuando la respuesta es un cruce o una sola línea— el **resultado aparte y en negrita**. La fuente conserva su archivo (`Fuente: Graduados Pregrado 2026 — respuestas.json`), como pide la regla de verificabilidad.
+- **Por qué.** Antes los bloques se apilaban sin decir qué se había preguntado; ahora cada uno se explica solo, y el número (que es lo que se viene a buscar) resalta.
+- **Detalle.** Las respuestas que son listas (varios períodos, rankings) siguen mostrándose como lista: solo se destaca el resultado cuando hay un número único.
+- **Pruebas:** asistente 1.9 en jsdom 34 → **37**.
+
 ## 2026-09-30 — El contador de cupo se retira (no coincidía con AI Studio)
 
 - **Qué se probó.** Se agregó un contador propio de las preguntas que se envían a Google (15 por minuto y 500 por día, con corte en hora del Pacífico), un endpoint `/api/cuota` para consultarlo y una fila con el cupo dentro del aviso de espera del ítem 1.9.

@@ -134,6 +134,25 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const sinInterprete = await P.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
   fallosInterpretar = 0;
 
+  // Forma del bloque de respuesta: pregunta arriba, etiqueta, dato y resultado separado.
+  consultaSimulada = { se_puede: true, operacion: 'porcentaje', periodo: '', filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }], pregunta_objetivo: 'Situación laboral', valores_objetivo: ['Trabajador dependiente', 'Trabajador independiente', 'Prácticas profesionales', 'Prácticas pre - profesionales'], entidad: '', orden: '', motivo: '' };
+  document.body.innerHTML = P.render();
+  await P.preguntar('¿qué porcentaje de graduados de la carrera de economía trabajan?');
+  const leer = (sel) => { const e = document.querySelector(sel); return e ? e.textContent : ''; };
+  const textoRotulo = leer('.preguntas-rotulo');
+  const textoDato = leer('.preguntas-respuesta-titulo');
+  const textoContexto = leer('.preguntas-contexto');
+  const textoResultado = leer('.preguntas-resultado');
+  const textoFuente = leer('.preguntas-fuente');
+  const hayListaEnCruce = !!document.querySelector('.preguntas-lista');
+
+  // Una respuesta de lista (varios periodos) sigue siendo lista, sin resultado destacado.
+  consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
+  document.body.innerHTML = P.render();
+  await P.preguntar('¿Cuántos se encuestaron en total?');
+  const hayListaTotal = !!document.querySelector('.preguntas-lista');
+  const hayResultadoTotal = !!document.querySelector('.preguntas-resultado');
+
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
 
@@ -249,6 +268,24 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('si el intérprete no responde ni al reintento, el aviso es propio (no el genérico)', () => {
     assertTrue(sinInterprete.alcance === false, 'queda fuera de alcance');
     assertIncludes(texto(sinInterprete), 'No pude consultar al intérprete', 'aviso propio del servicio');
+  });
+
+  test('el bloque muestra la pregunta, la etiqueta y el dato', () => {
+    assertIncludes(textoRotulo, 'Pregunta:', 'la etiqueta de la pregunta');
+    assertIncludes(textoRotulo, 'economía', 'la pregunta tal como se escribió');
+    assertIncludes(textoDato, 'Cruce: Situación laboral', 'el dato');
+  });
+
+  test('el filtro queda como contexto y el resultado separado, con su archivo', () => {
+    assertIncludes(textoContexto, 'Filtro: Carrera = Economía', 'el filtro');
+    assertIncludes(textoResultado, 'de 14', 'el resultado');
+    assertIncludes(textoFuente, 'respuestas.json', 'la fuente conserva el archivo');
+    assertTrue(hayListaEnCruce === false, 'el cruce no usa lista: el resultado va aparte');
+  });
+
+  test('una respuesta de lista sigue siendo lista (sin resultado destacado)', () => {
+    assertTrue(hayListaTotal === true, 'debe quedar la lista de periodos');
+    assertTrue(hayResultadoTotal === false, 'no debe haber un resultado destacado');
   });
 
   test('el mensaje que se manda lleva el contexto y el menú del período', () => {
