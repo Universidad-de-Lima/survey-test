@@ -634,10 +634,11 @@ window.SurveyPortalPreguntas = (function () {
       };
     }
     var cuadro = {
-      resumen: 'De ' + n(tabla.respuestas) + ' encuestados, ' + n(sub.length) +
-        ((filtros.length === 1 && filtros[0].opciones.length === 1)
-          ? ' son de ' + filtros[0].opciones[0] + '.'
-          : ' cumplen el filtro (' + (filtroTexto || 'todas las respuestas') + ').'),
+      encuestados: n(tabla.respuestas),
+      grupo: (filtros.length === 1 && filtros[0].opciones.length === 1)
+        ? 'De ' + filtros[0].opciones[0]
+        : 'Cumplen el filtro',
+      grupoCuenta: n(sub.length),
       dimension: objetivo,
       filas: valores.map(function (v) { return renglon(v, contarEnTabla(tabla, sub, objetivo, [v]), sub.length); })
     };
@@ -1024,26 +1025,36 @@ window.SurveyPortalPreguntas = (function () {
    * esa linea se muestra como resultado (separada); si son varias de una lista, queda la lista.
    */
   /**
-   * El cuadro que acompaña a un conteo: una frase con el total y el grupo, y una linea con
-   * colores (un tramo por valor, con su leyenda). Reusa los colores del proyecto.
+   * El cuadro que acompaña a un conteo: dos tarjetas (los encuestados del periodo y el grupo
+   * contado) y, por cada pregunta contada, una linea con colores —un tramo por valor— con su
+   * leyenda. Reusa la tarjeta y la barra de distribucion del portal.
    */
   function cuadroEnHtml(cuadro) {
+    var cfg = window.SURVEY_CONFIG || {};
+    var colores = cfg.COLORES_DISTRIBUCION || ['var(--teal)', 'var(--emerald)', 'var(--amber)', 'var(--rose)', 'var(--gray-400)'];
+    function tarjeta(rotulo, valor) {
+      return '<div class="survey-kpi" style="--kpi-color: var(--teal)">' +
+        '<div class="survey-kpi-body">' +
+        '<p class="survey-kpi-value">' + esc(valor) + '</p>' +
+        '<p class="survey-kpi-label">' + esc(rotulo) + '</p>' +
+        '</div></div>';
+    }
     function lineaConColores(titulo, filas) {
       var segmentos = '', leyenda = '';
       filas.forEach(function (f, i) {
-        var color = 'preguntas-seg-' + (i % 5 + 1);
+        var color = colores[i % colores.length];
         if (f.ancho > 0) {
-          segmentos += '<span class="preguntas-segmento ' + color + '" style="width:' + f.ancho + '%"></span>';
+          segmentos += '<div class="csat-segment csat-var" style="--w:' + f.ancho + '%; --c:' + color + '" data-label="' + esc(f.valor) + '" data-value="' + esc(f.cuenta) + '"><span class="csat-label">' + (f.ancho >= 12 ? esc(f.pct) : '') + '</span></div>';
         }
-        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto ' + color + '"></span>' +
+        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto" style="background:' + color + '"></span>' +
           esc(f.valor) + ': ' + esc(f.cuenta) + '</li>';
       });
       return '<p class="preguntas-cuadro-titulo">' + esc(titulo) + '</p>' +
-        '<div class="preguntas-linea-color">' + segmentos + '</div>' +
+        '<div class="csat-bar-row">' + segmentos + '</div>' +
         '<ul class="preguntas-leyenda">' + leyenda + '</ul>';
     }
     return '<div class="preguntas-cuadro">' +
-      '<p class="preguntas-cuadro-linea">' + esc(cuadro.resumen) + '</p>' +
+      '<div class="survey-kpi-grid">' + tarjeta('Encuestados', cuadro.encuestados) + tarjeta(cuadro.grupo, cuadro.grupoCuenta) + '</div>' +
       lineaConColores(cuadro.dimension, cuadro.filas) +
       (cuadro.tiempo ? lineaConColores(cuadro.tiempo.titulo, cuadro.tiempo.filas) : '') +
       '</div>';

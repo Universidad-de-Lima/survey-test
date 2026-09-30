@@ -49,6 +49,10 @@ window.SURVEY_CONFIG = {
   CSAT_WEIGHTS: [5, 4, 3, 2, 1],
   CSAT_SCALE_MAX: 5,
 
+  // ── Asistente (ítem 1.9): colores de las líneas de distribución ──
+  // Un color por valor, tomados de los tokens del proyecto (se repiten si hay más valores).
+  COLORES_DISTRIBUCION: ['var(--teal)', 'var(--emerald)', 'var(--amber)', 'var(--rose)', 'var(--gray-400)'],
+
   // ── Asistente (ítem 1.9): lecturas de "trabajan" ──
   // El trabajo formal y las prácticas no son lo mismo: con estos dos grupos el asistente da
   // las dos lecturas (con prácticas / solo trabajo) sin que el modelo cuente nada.

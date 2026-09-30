@@ -622,38 +622,14 @@
 
 .preguntas-cuadro {
   margin-top: var(--space-lg);
-  padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--card);
-}
-
-.preguntas-cuadro-linea {
-  font-size: var(--text-md);
-  line-height: 18px;
-  color: var(--gray-600);
 }
 
 .preguntas-cuadro-titulo {
-  margin: var(--space-md) 0 var(--space-sm);
+  margin: var(--space-lg) 0 var(--space-sm);
   font-size: var(--text-md);
   line-height: 18px;
   font-weight: var(--font-semibold);
   color: var(--foreground);
-}
-
-.preguntas-linea-color {
-  display: flex;
-  height: 14px;
-  margin-top: var(--space-xs);
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--gray-100);
-}
-
-.preguntas-segmento {
-  display: block;
-  height: 100%;
 }
 
 .preguntas-leyenda {
@@ -679,26 +655,6 @@
   height: 10px;
   border-radius: 999px;
   flex-shrink: 0;
-}
-
-.preguntas-seg-1 {
-  background: var(--teal);
-}
-
-.preguntas-seg-2 {
-  background: var(--emerald);
-}
-
-.preguntas-seg-3 {
-  background: var(--amber);
-}
-
-.preguntas-seg-4 {
-  background: var(--rose);
-}
-
-.preguntas-seg-5 {
-  background: var(--gray-400);
 }
 
 .preguntas-pregunta {

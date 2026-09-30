@@ -148,7 +148,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const textoCuadro = leer('.preguntas-cuadro');
   const textoResumen = Array.from(document.querySelectorAll('.preguntas-resultado')).map(function (e) { return e.textContent; }).join(' | ');
   const hayListaEnCruce = !!document.querySelector('.preguntas-lista');
-  const cuantosSegmentos = document.querySelectorAll('.preguntas-linea-color .preguntas-segmento').length;
+  const cuantosSegmentos = document.querySelectorAll('.preguntas-cuadro .csat-bar-row .csat-segment').length;
+  const tarjetasDelCuadro = Array.from(document.querySelectorAll('.preguntas-cuadro .survey-kpi')).map(function (t) { return t.textContent; });
   const cuantaLeyenda = document.querySelectorAll('.preguntas-leyenda-item').length;
 
   // Una respuesta de lista (varios periodos) sigue siendo lista, sin resultado destacado.
@@ -295,7 +296,11 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('el conteo da las dos lecturas de "trabajan" y el cuadro con los números', () => {
     assertIncludes(textoResultado, '100 % considerando', 'todo lo que trabaja, con prácticas');
     assertIncludes(textoResumen, '57,14 % considerando Trabajador dependiente / Trabajador independiente.', 'solo el trabajo formal');
-    assertIncludes(textoCuadro, 'De 598 encuestados, 14 son de Economía.', 'el total y el grupo, en una frase');
+    assertTrue(tarjetasDelCuadro.length === 2, 'dos tarjetas: encuestados y grupo');
+    assertIncludes(tarjetasDelCuadro.join(' | '), 'Encuestados', 'la tarjeta del total del periodo');
+    assertIncludes(tarjetasDelCuadro.join(' | '), '598', 'el total de encuestados');
+    assertIncludes(tarjetasDelCuadro.join(' | '), 'De Economía', 'la tarjeta del grupo');
+    assertIncludes(tarjetasDelCuadro.join(' | '), '14', 'el tamaño del grupo');
     assertIncludes(textoCuadro, 'Situación laboral', 'la dimensión contada');
     assertIncludes(textoCuadro, 'Prácticas profesionales: 6', 'cada valor, en la leyenda');
     assertIncludes(textoCuadro, 'Tiempo dedicado al trabajo (de los 8 que trabajan)', 'el reparto por tiempo de trabajo');
