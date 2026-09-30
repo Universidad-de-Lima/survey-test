@@ -2,6 +2,14 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — La respuesta de un conteo: dos lecturas, barras y fuente sin archivo
+
+- **Qué cambió.** Cuando la respuesta es un conteo (por ejemplo, las 14 respuestas de Economía), el bloque muestra ahora: las **lecturas del porcentaje** ("100 % considerando <los cuatro valores>." y, si el grupo mezcla trabajo con prácticas, "57,14 % considerando <solo trabajo formal>."), un **cuadro con barras** —Encuestados, el grupo, la dimensión con un renglón por valor y, si se cuenta la situación laboral, el reparto por tiempo de trabajo de quienes trabajan— y la **fuente sin el nombre del archivo**: `Fuente: Graduados Pregrado 2026 — Cruce: Situación laboral — Filtro: Carrera = Economía`.
+- **Por qué.** El número resalta, se ve de dónde sale y las barras ya son las del proyecto (`.survey-bar-row`).
+- **Cómo se calcula.** Las dos lecturas son una **regla de la página** (`constants.js`: `VALORES_TRABAJO` / `VALORES_PRACTICA`), no del modelo: el modelo sigue sin contar nada.
+- **Regla reescrita.** "Toda respuesta cita su archivo" pasa a "**toda respuesta cita su fuente**" (la encuesta o encuestas a las que pertenece).
+- **Pruebas:** asistente 1.9 en jsdom 37 → **38**.
+
 ## 2026-09-30 — Los cuestionarios quedan documentados y el asistente recibe su estructura
 
 - **Qué cambió.** `CONTRACTS.md` tiene una sección nueva, **Cuestionarios (preguntas del formulario)**: las secciones de cada encuesta, la pregunta del formulario con su columna publicada y sus opciones, los saltos y las preguntas anidadas. Además, el contexto que el portal manda al modelo (ítem 1.9) incluye ahora la sección **Cómo está organizado el cuestionario**.
@@ -11,7 +19,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 
 ## 2026-09-30 — La respuesta del asistente muestra la pregunta
 
-- **Qué cambió.** Cada bloque de respuesta empieza ahora con la **pregunta** tal como se escribió, sigue la etiqueta «Respuesta:», el dato y —cuando la respuesta es un cruce o una sola línea— el **resultado aparte y en negrita**. La fuente conserva su archivo (`Fuente: Graduados Pregrado 2026 — respuestas.json`), como pide la regla de verificabilidad.
+- **Qué cambió.** Cada bloque de respuesta empieza ahora con la **pregunta** tal como se escribió, sigue la etiqueta «Respuesta:», el dato y —cuando la respuesta es un cruce o una sola línea— el **resultado aparte y en negrita**. La fuente citaba el archivo (`Fuente: Graduados Pregrado 2026 — respuestas.json`); más tarde el mismo día se quitó el nombre del archivo (ver la entrada de abajo).
 - **Por qué.** Antes los bloques se apilaban sin decir qué se había preguntado; ahora cada uno se explica solo, y el número (que es lo que se viene a buscar) resalta.
 - **Detalle.** Las respuestas que son listas (varios períodos, rankings) siguen mostrándose como lista: solo se destaca el resultado cuando hay un número único.
 - **Estilo de la pregunta.** Va dentro de un recuadro redondeado, con el mismo aspecto que las sugerencias del bloque (elegido entre cinco variantes).

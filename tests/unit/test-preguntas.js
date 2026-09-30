@@ -145,6 +145,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const textoContexto = leer('.preguntas-contexto');
   const textoResultado = leer('.preguntas-resultado');
   const textoFuente = leer('.preguntas-fuente');
+  const textoCuadro = leer('.preguntas-cuadro');
+  const textoResumen = Array.from(document.querySelectorAll('.preguntas-resultado')).map(function (e) { return e.textContent; }).join(' | ');
   const hayListaEnCruce = !!document.querySelector('.preguntas-lista');
 
   // Una respuesta de lista (varios periodos) sigue siendo lista, sin resultado destacado.
@@ -198,7 +200,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(cruceGraduados), '76', 'el filtro (búsqueda de empleo + no disponible)');
     assertIncludes(texto(cruceGraduados), '70', 'los tres mejores');
     assertIncludes(texto(cruceGraduados), '92,11', 'el porcentaje');
-    assertIncludes(fuentes(cruceGraduados), 'respuestas.json', 'la cita de la tabla');
+    assertIncludes(fuentes(cruceGraduados), 'Graduados Pregrado 2026', 'la cita de la encuesta');
+    assertTrue(!fuentes(cruceGraduados).includes('.json'), 'ya no se cita el archivo');
   });
 
   test('cruce: graduados a tiempo completo -> satisfacción con la Universidad (297, 295)', () => {
@@ -213,12 +216,12 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(cruceAlumnos), '232', 'los de Economía');
     assertIncludes(texto(cruceAlumnos), '198', 'los tres mejores');
     assertIncludes(texto(cruceAlumnos), '85,34', 'el porcentaje');
-    assertIncludes(fuentes(cruceAlumnos), 'respuestas.json', 'la cita de la tabla');
+    assertIncludes(fuentes(cruceAlumnos), 'la encuesta del periodo', 'la cita de la encuesta');
   });
 
   test('sin filtro no es un cruce: la pregunta normal sigue respondiéndose igual', () => {
     assertTrue(cruceSinFiltro.alcance !== false, 'debe responder');
-    assertIncludes(fuentes(cruceSinFiltro), 'resumenes.json', 'la fuente de siempre');
+    assertIncludes(fuentes(cruceSinFiltro), 'Fuente: ', 'la fuente de siempre');
   });
 
   test('el formulario con el menú responde el cruce de Economía que trabajan (14 de 14)', () => {
@@ -226,7 +229,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(formEconomia), '14', 'los graduados de Economía');
     assertIncludes(texto(formEconomia), '100', 'el porcentaje');
     assertIncludes(texto(formEconomia), 'Trabajador dependiente', 'los valores contados');
-    assertIncludes(fuentes(formEconomia), 'respuestas.json', 'la cita de la tabla');
+    assertIncludes(fuentes(formEconomia), 'Graduados Pregrado 2026', 'la cita de la encuesta');
   });
 
   test('si el formulario nombra una opción que no existe, se avisa y no se cuenta', () => {
@@ -244,7 +247,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(formFiltros), '14', 'el grupo y la cuenta');
     assertIncludes(texto(formFiltros), '100', 'el porcentaje');
     assertIncludes(texto(formFiltros), 'Carrera = Economía', 'el grupo');
-    assertIncludes(fuentes(formFiltros), 'respuestas.json', 'la cita de la tabla');
+    assertIncludes(fuentes(formFiltros), 'Fuente: ', 'la cita de la encuesta');
   });
 
   test('la pregunta de Economía ya no la responde el cruce de reglas (la resuelve el formulario)', () => {
@@ -279,10 +282,24 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   });
 
   test('el filtro queda como contexto y el resultado separado, con su archivo', () => {
-    assertIncludes(textoContexto, 'Filtro: Carrera = Economía', 'el filtro');
-    assertIncludes(textoResultado, 'de 14', 'el resultado');
-    assertIncludes(textoFuente, 'respuestas.json', 'la fuente conserva el archivo');
+    assertIncludes(textoFuente, 'Filtro: Carrera = Economía', 'el filtro, dentro de la fuente');
+    assertIncludes(textoFuente, 'Graduados Pregrado 2026', 'la encuesta');
+    assertTrue(!textoFuente.includes('.json'), 'la fuente ya no lleva el archivo');
+    assertIncludes(textoResultado, '100 % considerando', 'la primera lectura');
     assertTrue(hayListaEnCruce === false, 'el cruce no usa lista: el resultado va aparte');
+  });
+
+  test('el conteo da las dos lecturas de "trabajan" y el cuadro con los números', () => {
+    assertIncludes(textoResultado, '100 % considerando', 'todo lo que trabaja, con prácticas');
+    assertIncludes(textoResumen, '57,14 % considerando Trabajador dependiente / Trabajador independiente.', 'solo el trabajo formal');
+    assertIncludes(textoCuadro, 'Encuestados: 598', 'los encuestados del periodo');
+    assertIncludes(textoCuadro, 'De Economía: 14', 'el grupo filtrado');
+    assertIncludes(textoCuadro, 'Dimensión: Situación laboral', 'la dimensión contada');
+    assertIncludes(textoCuadro, 'Prácticas profesionales', 'cada valor, con su barra');
+    assertIncludes(textoCuadro, 'Tiempo dedicado al trabajo (de los 8 que trabajan)', 'el reparto por tiempo de trabajo');
+    assertIncludes(textoCuadro, 'Tiempo completo', 'los que trabajan a tiempo completo');
+    const barras = Array.from(document.querySelectorAll('.preguntas-cuadro .survey-bar'));
+    assertTrue(barras.length === 6, 'una barra por valor (4 de la dimensión + 2 del tiempo)');
   });
 
   test('una respuesta de lista sigue siendo lista (sin resultado destacado)', () => {
@@ -303,9 +320,10 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(cuerpo, 'plana docente y desarrollo profesional solo en Graduados', 'las secciones propias de Graduados');
   });
 
-  test('toda respuesta dentro de alcance cita un archivo JSON', () => {
+  test('toda respuesta dentro de alcance cita su encuesta (y ningún archivo)', () => {
     [nps2026, respuestas2026, comparacion, npsIngenieria].forEach(function (r) {
-      assertIncludes(fuentes(r), '.json', 'fuente citada');
+      assertIncludes(fuentes(r), 'Fuente: ', 'fuente citada');
+      assertTrue(!fuentes(r).includes('.json'), 'sin nombre de archivo');
     });
   });
 
@@ -333,7 +351,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     test('la IA que traduce hace que el motor responda con los datos', () => {
       assertIncludes(texto(conIA), 'Psicología', 'la carrera traducida');
       assertIncludes(texto(conIA), '97,22', 'satisfacción de Psicología');
-      assertIncludes(fuentes(conIA), 'resumenes.json (CSAT por carrera)', 'la respuesta cita su archivo');
+      assertIncludes(fuentes(conIA), 'CSAT por carrera', 'la respuesta cita su fuente');
     });
 
     test('si la pregunta no es de las encuestas, la IA tampoco responde', () => {

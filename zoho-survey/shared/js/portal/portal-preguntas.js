@@ -166,8 +166,9 @@ window.SurveyPortalPreguntas = (function () {
     return l.length ? l[0] : null;   // periodos.json viene del mas nuevo al mas viejo
   }
 
-  function fuente(p, archivo) {
-    return 'Fuente: ' + p.nombre + ' ' + p.periodo + ' — ' + archivo;
+  /** La cita de una respuesta: la encuesta (y, si hace falta, de qué parte habla). */
+  function fuente(p, detalle) {
+    return 'Fuente: ' + p.nombre + ' ' + p.periodo + (detalle ? ' — ' + detalle : '');
   }
 
   function buscaNombre(t, lista) {
@@ -231,7 +232,7 @@ window.SurveyPortalPreguntas = (function () {
           return {
             titulo: 'Alumnos encuestados de ' + car,
             lineas: [p.nombre + ' ' + p.periodo + ': ' + n(total) + ' respuestas de ' + car + '.'],
-            fuentes: [fuente(p, 'resumenes.json (ids)')]
+            fuentes: [fuente(p, 'ids')]
           };
         }
       }
@@ -244,7 +245,7 @@ window.SurveyPortalPreguntas = (function () {
           lineas: delAnio.map(function (x) {
             return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
           }),
-          fuentes: delAnio.map(function (x) { return fuente(x, 'dashboard_data.json'); })
+          fuentes: delAnio.map(function (x) { return fuente(x); })
         };
       }
 
@@ -254,14 +255,14 @@ window.SurveyPortalPreguntas = (function () {
           lineas: (CATALOGO || []).map(function (x) {
             return x.nombre + ' ' + x.periodo + ': ' + n(x.dash.resumen.encuestas) + ' respuestas.';
           }),
-          fuentes: (CATALOGO || []).map(function (x) { return fuente(x, 'dashboard_data.json'); })
+          fuentes: (CATALOGO || []).map(function (x) { return fuente(x); })
         };
       }
 
       return {
         titulo: 'Respuestas recibidas',
         lineas: [p.nombre + ' ' + p.periodo + ': ' + n(p.dash.resumen.encuestas) + ' respuestas.'],
-        fuentes: [fuente(p, 'dashboard_data.json')]
+        fuentes: [fuente(p)]
       };
     }
 
@@ -273,7 +274,7 @@ window.SurveyPortalPreguntas = (function () {
         titulo: 'Período de levantamiento',
         lineas: [p2.nombre + ' ' + p2.periodo + ': del ' + r.fecha_inicio + ' al ' + r.fecha_fin +
                  ' (' + n(r.dias) + ' dias, ' + n(r.dias_recoleccion) + ' dias de recoleccion).'],
-        fuentes: [fuente(p2, 'dashboard_data.json')]
+        fuentes: [fuente(p2)]
       };
     }
 
@@ -317,7 +318,7 @@ window.SurveyPortalPreguntas = (function () {
           lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fila.score) + ' (promotores ' + n(fila.promotores) +
                    ', pasivos ' + n(fila.pasivos) + ', detractores ' + n(fila.detractores) + ').' +
                    (filaCsat ? ' Satisfacción: ' + pct(filaCsat.score) + '.' : '')],
-          fuentes: [fuente(p3, 'resumenes.json (NPS y CSAT por carrera)')]
+          fuentes: [fuente(p3, 'NPS y CSAT por carrera')]
         };
       }
 
@@ -330,7 +331,7 @@ window.SurveyPortalPreguntas = (function () {
         return {
           titulo: 'NPS de las carreras de ' + facultad,
           lineas: suyas.map(function (x) { return x.carrera + ': NPS ' + n(x.score); }),
-          fuentes: [fuente(p3, 'resumenes.json (NPS por carrera)')]
+          fuentes: [fuente(p3, 'NPS por carrera')]
         };
       }
 
@@ -341,7 +342,7 @@ window.SurveyPortalPreguntas = (function () {
           titulo: 'NPS del ' + ciclo,
           lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fc.score) + ' (promotores ' + n(fc.promotores) +
                    ', pasivos ' + n(fc.pasivos) + ', detractores ' + n(fc.detractores) + ').'],
-          fuentes: [fuente(p3, 'resumenes.json (NPS por ciclo y carrera)')]
+          fuentes: [fuente(p3, 'NPS por ciclo y carrera')]
         };
       }
 
@@ -368,7 +369,7 @@ window.SurveyPortalPreguntas = (function () {
             return x.nombre + ' ' + x.periodo + ': NPS ' + n(x.dash.resumen.nps.score) +
               ' (' + n(x.dash.resumen.encuestas) + ' respuestas).';
           }),
-          fuentes: delAnioNps.map(function (x) { return fuente(x, 'dashboard_data.json'); })
+          fuentes: delAnioNps.map(function (x) { return fuente(x); })
         };
       }
 
@@ -378,7 +379,7 @@ window.SurveyPortalPreguntas = (function () {
         lineas: ['NPS ' + n(rr.score) + ' (promotores ' + n(rr.promotores) + ', pasivos ' + n(rr.pasivos) +
                  ', detractores ' + n(rr.detractores) + ', sobre ' + n(rr.total) + ' respuestas).',
                  'Clasificación: ' + p3.dash.hallazgos.nps_tipo + '.'],
-        fuentes: [fuente(p3, 'dashboard_data.json')]
+        fuentes: [fuente(p3)]
       };
     }
 
@@ -396,7 +397,7 @@ window.SurveyPortalPreguntas = (function () {
                    n(f2['Totalmente satisfecho']) + ', muy satisfecho ' + n(f2['Muy satisfecho']) +
                    ', satisfecho ' + n(f2['Satisfecho']) + ', insatisfecho ' + n(f2['Insatisfecho']) +
                    ', totalmente insatisfecho ' + n(f2['Totalmente insatisfecho']) + ').'],
-          fuentes: [fuente(p4, 'resumenes.json (CSAT por carrera)')]
+          fuentes: [fuente(p4, 'CSAT por carrera')]
         };
       }
       // El detalle por nivel no viene en dashboard_data: se suma de csat_carrera.json,
@@ -414,7 +415,7 @@ window.SurveyPortalPreguntas = (function () {
                  'Totalmente satisfecho ' + n(suma[niveles[0]]) + ', muy satisfecho ' + n(suma[niveles[1]]) +
                  ', satisfecho ' + n(suma[niveles[2]]) + ', insatisfecho ' + n(suma[niveles[3]]) +
                  ', totalmente insatisfecho ' + n(suma[niveles[4]]) + ' (suma de las carreras: ' + n(totalSuma) + ').'],
-        fuentes: [fuente(p4, 'dashboard_data.json y resumenes.json (CSAT por carrera)')]
+        fuentes: [fuente(p4, 'CSAT por carrera')]
       };
     }
 
@@ -426,7 +427,7 @@ window.SurveyPortalPreguntas = (function () {
         titulo: 'Carreras y facultades',
         lineas: [p5.nombre + ' ' + p5.periodo + ': ' + n((f3.carreras || []).length) + ' carreras y ' +
                  n((f3.facultades || []).length) + ' facultades.'],
-        fuentes: [fuente(p5, 'filtros.json')]
+        fuentes: [fuente(p5)]
       };
     }
 
@@ -478,7 +479,7 @@ window.SurveyPortalPreguntas = (function () {
         return {
           titulo: 'Dimensión: ' + una.dimension,
           lineas: ['Top 3 Box: ' + pct(una.pct) + ' (categoria ' + una.categoria + ').'],
-          fuentes: [fuente(p, 'dimensiones.json')]
+          fuentes: [fuente(p)]
         };
       }
       var esMejor = !(t.indexOf('peor') !== -1 || t.indexOf('menor') !== -1 || t.indexOf('más bajo') !== -1);
@@ -486,7 +487,7 @@ window.SurveyPortalPreguntas = (function () {
       return {
         titulo: 'Dimensiones por Top 3 Box (' + (esMejor ? 'mejor evaluadas' : 'peor evaluadas') + ')',
         lineas: top.map(function (x) { return x.dimension + ': ' + pct(x.pct) + ' (' + x.categoria + ')'; }),
-        fuentes: [fuente(p, 'dimensiones.json')]
+        fuentes: [fuente(p)]
       };
     });
   }
@@ -505,14 +506,14 @@ window.SurveyPortalPreguntas = (function () {
             return x.topico + ': ' + n(x.total_comentarios) + ' comentarios (positivos ' + n(x.positivos) +
               ', negativos ' + n(x.negativos) + ', neutros ' + n(x.neutros) + ').';
           }),
-          fuentes: [fuente(p, 'sentimiento.json')]
+          fuentes: [fuente(p)]
         };
       }
       return {
         titulo: 'Comentarios de ' + p.nombre + ' ' + p.periodo,
         lineas: ['Respuestas con comentario: ' + n(r.total_con_comentario) + '; analizados: ' + n(r.total_analizados) + '.',
                  'Sentimiento: positivos ' + n(d.positivo) + ', neutros ' + n(d.neutro) + ', negativos ' + n(d.negativo) + '.'],
-        fuentes: [fuente(p, 'sentimiento.json')]
+        fuentes: [fuente(p)]
       };
     });
   }
@@ -606,6 +607,63 @@ window.SurveyPortalPreguntas = (function () {
     return null;
   }
 
+  /** Un valor de la situación laboral que es trabajo formal (regla de negocio, en la configuración). */
+  function esTrabajoFormal(valor) {
+    var cfg = window.SURVEY_CONFIG || {};
+    var trabajo = cfg.VALORES_TRABAJO || ['Trabajador dependiente', 'Trabajador independiente'];
+    return trabajo.indexOf(valor) !== -1;
+  }
+
+  /** Una lectura de la cuenta: "57,14 % considerando Trabajador dependiente / Trabajador independiente." */
+  function lecturaDeConteo(valores, cuenta, denom) {
+    return pct(denom ? 100 * cuenta / denom : 0) + ' considerando ' + valores.join(' / ') + '.';
+  }
+
+  /**
+   * Cuadro que acompaña a una respuesta de conteo: encuestados, el grupo, la dimensión y un
+   * renglón por valor (con su barra). Si se cuenta la situación laboral y los datos traen el
+   * tiempo de trabajo, agrega su reparto entre quienes trabajan.
+   */
+  function cuadroDeConteo(tabla, sub, objetivo, valores, filtros, filtroTexto) {
+    function renglon(valor, cuenta, base) {
+      return {
+        valor: valor,
+        cuenta: n(cuenta),
+        pct: pct(base ? 100 * cuenta / base : 0),
+        ancho: base ? Math.round(1000 * cuenta / base) / 10 : 0
+      };
+    }
+    var cuadro = {
+      encuestados: n(tabla.respuestas),
+      grupo: (filtros.length === 1 && filtros[0].opciones.length === 1)
+        ? 'De ' + filtros[0].opciones[0]
+        : (filtroTexto ? 'Con el filtro: ' + filtroTexto : 'Todos'),
+      grupoCuenta: n(sub.length),
+      dimension: objetivo,
+      filas: valores.map(function (v) { return renglon(v, contarEnTabla(tabla, sub, objetivo, [v]), sub.length); })
+    };
+    var cabeceras = tabla.cabeceras || [];
+    var iSit = cabeceras.indexOf('Situación laboral');
+    var iTie = cabeceras.indexOf('Tiempo laboral');
+    if (objetivo === 'Situación laboral' && iSit !== -1 && iTie !== -1) {
+      var trabajan = sub.filter(function (f) {
+        return esTrabajoFormal(tabla.opciones['Situación laboral'][f[iSit]]);
+      });
+      if (trabajan.length) {
+        cuadro.tiempo = {
+          titulo: 'Tiempo dedicado al trabajo (de los ' + n(trabajan.length) + ' que trabajan)',
+          filas: (tabla.opciones['Tiempo laboral'] || [])
+            .filter(function (o) { return o && o.indexOf('sin respuesta') === -1; })
+            .map(function (o) {
+              var c = trabajan.filter(function (f) { return tabla.opciones['Tiempo laboral'][f[iTie]] === o; }).length;
+              return renglon(o, c, trabajan.length);
+            })
+        };
+      }
+    }
+    return cuadro;
+  }
+
   function contarEnTabla(tabla, sub, pregunta, opciones) {
     var i = tabla.cabeceras.indexOf(pregunta);
     var mapa = {};
@@ -655,7 +713,7 @@ window.SurveyPortalPreguntas = (function () {
                      ' de ' + n(sub.length) + ' (' + pct(100 * c3 / sub.length) + ').',
                    'Dos mejores (totalmente satisfecho, muy satisfecho): ' + n(c2) +
                      ' (' + pct(100 * c2 / sub.length) + '). "Satisfecho" exacto: ' + n(cSat) + '.'],
-          fuentes: [fuente(p, 'respuestas.json')]
+          fuentes: [fuente(p)]
         };
       }
       var conteo = (tabla.opciones[objetivo] || []).map(function (o) {
@@ -666,7 +724,7 @@ window.SurveyPortalPreguntas = (function () {
         lineas: [lineaFiltro].concat(conteo.slice(0, 6).map(function (x) {
           return x.o + ': ' + n(x.c) + ' (' + pct(100 * x.c / sub.length) + ')';
         })),
-        fuentes: [fuente(p, 'respuestas.json')]
+        fuentes: [fuente(p)]
       };
     });
   }
@@ -765,12 +823,18 @@ window.SurveyPortalPreguntas = (function () {
       if (vo.problema) return vo;
       if (!vo.valores.length) return { problema: 'No se indicó qué valores contar de "' + objetivo + '".' };
       var cuenta = contarEnTabla(tabla, sub, objetivo, vo.valores);
+      var lecturas = [lecturaDeConteo(vo.valores, cuenta, denom)];
+      // "trabajan" admite dos lecturas cuando el grupo mezcla trabajo con prácticas: se dan
+      // las dos, y es una regla de la página (el modelo no cuenta nada).
+      var soloTrabajo = vo.valores.filter(esTrabajoFormal);
+      if (soloTrabajo.length && soloTrabajo.length < vo.valores.length) {
+        lecturas.push(lecturaDeConteo(soloTrabajo, contarEnTabla(tabla, sub, objetivo, soloTrabajo), denom));
+      }
       return {
         titulo: 'Cruce: ' + objetivo + ' — ' + (filtroTexto || 'todas las respuestas'),
-        lineas: [cabecera,
-                 vo.valores.join(' / ') + ': ' + n(cuenta) + ' de ' + n(denom) +
-                   ' (' + pct(denom ? 100 * cuenta / denom : 0) + ').'],
-        fuentes: [fuente(p, 'respuestas.json')]
+        lineas: lecturas,
+        cuadro: cuadroDeConteo(tabla, sub, objetivo, vo.valores, filtros, filtroTexto),
+        fuentes: [fuente(p, 'Cruce: ' + objetivo + (filtroTexto ? ' — Filtro: ' + filtroTexto : ''))]
       };
     }
     if (!filtros.length) return null;   // no hay nada que contar
@@ -797,7 +861,7 @@ window.SurveyPortalPreguntas = (function () {
     return {
       titulo: 'Cruce: ' + filtroTexto,
       lineas: [cabecera, lineaGrupo],
-      fuentes: [fuente(p, 'respuestas.json')]
+      fuentes: [fuente(p)]
     };
   }
 
@@ -960,6 +1024,26 @@ window.SurveyPortalPreguntas = (function () {
    * etiqueta "Respuesta:" y el dato. Cuando la respuesta es un cruce o tiene una sola linea,
    * esa linea se muestra como resultado (separada); si son varias de una lista, queda la lista.
    */
+  /** El cuadro de conteos: encuestados, el grupo, la dimension y un renglon por valor. */
+  function cuadroEnHtml(cuadro) {
+    function barras(titulo, filas) {
+      return '<p class="preguntas-cuadro-titulo">' + esc(titulo) + '</p>' +
+        filas.map(function (f) {
+          return '<div class="survey-bar-row">' +
+            '<span class="survey-bar-label">' + esc(f.valor) + '</span>' +
+            '<span class="survey-bar-wrap"><span class="survey-bar" style="--w:' + f.ancho + '%"></span></span>' +
+            '<span class="survey-bar-value">' + esc(f.cuenta) + '</span>' +
+            '</div>';
+        }).join('');
+    }
+    return '<div class="preguntas-cuadro">' +
+      '<p class="preguntas-cuadro-linea">Encuestados: ' + esc(cuadro.encuestados) + '</p>' +
+      '<p class="preguntas-cuadro-linea">' + esc(cuadro.grupo) + ': ' + esc(cuadro.grupoCuenta) + '</p>' +
+      barras('Dimensión: ' + cuadro.dimension, cuadro.filas) +
+      (cuadro.tiempo ? barras(cuadro.tiempo.titulo, cuadro.tiempo.filas) : '') +
+      '</div>';
+  }
+
   function pintar(contenedor, r, pregunta) {
     var bloque = document.createElement('div');
     bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
@@ -971,8 +1055,10 @@ window.SurveyPortalPreguntas = (function () {
       '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
     var lineas = (r.lineas || []).slice();
     var esCruce = /^Cruce:/.test(r.titulo || '');
-    if (r.alcance !== false && lineas.length && (esCruce || lineas.length === 1)) {
-      if (lineas.length > 1) {
+    if (r.alcance !== false && lineas.length && (r.cuadro || esCruce || lineas.length === 1)) {
+      // En un conteo con cuadro todas las lineas son el resultado; en los demas cruces la
+      // primera linea es el filtro (contexto) y lo que sigue, el resultado.
+      if (esCruce && !r.cuadro && lineas.length > 1) {
         html += '<p class="preguntas-contexto">' + esc(lineas.shift()) + '</p>';
       }
       lineas.forEach(function (l) { html += '<p class="preguntas-resultado">' + esc(l) + '</p>'; });
@@ -981,6 +1067,7 @@ window.SurveyPortalPreguntas = (function () {
       lineas.forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
       html += '</ul>';
     }
+    if (r.cuadro) html += cuadroEnHtml(r.cuadro);
     (r.fuentes || []).forEach(function (f) { html += '<p class="preguntas-fuente">' + esc(f) + '</p>'; });
     bloque.innerHTML = html;
     contenedor.insertBefore(bloque, contenedor.firstChild);

@@ -620,6 +620,37 @@
   color: var(--gray-600);
 }
 
+.preguntas-cuadro {
+  margin-top: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+
+.preguntas-cuadro-linea {
+  font-size: var(--text-md);
+  line-height: 18px;
+  color: var(--gray-600);
+}
+
+.preguntas-cuadro-titulo {
+  margin: var(--space-md) 0 var(--space-sm);
+  font-size: var(--text-md);
+  line-height: 18px;
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.preguntas-cuadro .survey-bar {
+  width: var(--w);
+  background: var(--teal);
+}
+
+.preguntas-cuadro .survey-bar-row:last-child {
+  margin-bottom: 0;
+}
+
 .preguntas-pregunta {
   display: inline-block;
   max-width: 100%;

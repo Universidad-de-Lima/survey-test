@@ -339,12 +339,12 @@ Reglas que sostienen el orden:
 
 Si las palabras de la pregunta no alcanzan, el portal arma un mensaje con **tres piezas** — el contexto del proyecto (`zoho-survey/shared/config/asistente_contexto.json`: qué es el proyecto, cómo están los datos, cómo está organizado el cuestionario, las reglas y las equivalencias), el **menu del periodo** (las preguntas con sus opciones y las palabras con que la gente las pide, armado en vivo desde `respuestas.json`) y la pregunta — y lo envia a la funcion `/api/interpretar` (proyecto survey-tracker; cadena: Google `gemini-3.5-flash-lite` y, de respaldo, NVIDIA). La funcion devuelve **un formulario lleno** (`{se_puede, operacion, periodo, filtros, pregunta_objetivo, valores_objetivo, entidad, orden, motivo}`) con nombres copiados del menu; el portal **valida cada nombre contra los datos publicados** (si no existe, lo dice) y hace las cuentas sobre `respuestas.json`: **el modelo no calcula ni redacta cifras**, solo elige nombres.
 
-Cada bloque de respuesta muestra la **pregunta** tal como se escribió (dentro de un recuadro redondeado, como las sugerencias), la etiqueta «Respuesta:» y —cuando el resultado es un número— el resultado aparte y en negrita; las respuestas que son listas (varios períodos, rankings) siguen como lista. La fuente cita siempre su archivo.
+Cada bloque de respuesta muestra la **pregunta** tal como se escribió (dentro de un recuadro redondeado, como las sugerencias), la etiqueta «Respuesta:» y —cuando el resultado es un número— el resultado aparte y en negrita; las respuestas que son listas (varios períodos, rankings) siguen como lista. La fuente cita la encuesta. En los conteos, el bloque agrega un **cuadro** con las barras del proyecto: encuestados, el grupo, la dimensión con sus valores (uno por renglón) y, cuando se cuenta la situación laboral, el reparto por tiempo de trabajo de quienes trabajan. Si el grupo mezcla trabajo con prácticas, se dan las **dos lecturas** ("100 % considerando …" y "57,14 % considerando …"): es una regla de la página, el modelo no cuenta nada.
 
 Reglas del modulo:
 
 1. **Nada se inventa y nada sale de fuera de las encuestas.** Si el dato no esta en los JSON, responde que solo contesta sobre las encuestas (hora, clima, noticias y cualquier tema ajeno quedan fuera por definicion).
-2. **Toda respuesta cita su archivo** ("Fuente: Periodo — archivo.json"), para poder comprobarla.
+2. **Toda respuesta cita su fuente**: la encuesta o encuestas a las que pertenece ("Fuente: Graduados Pregrado 2026"), para poder comprobarla. El nombre del archivo no se muestra.
 3. Los archivos grandes (`dimensiones.json`, `sentimiento.json`, `respuestas.json`) se leen **solo si la pregunta los pide**.
 4. La pantalla vive en el item 1.9 del portal y su estilo esta en `shared/css/portal/components.css` (clases `.preguntas*`).
 5. Un nombre pegado a un "de" ("la carrera de Economia") no cuenta como tema: esas preguntas las resuelve el formulario.
