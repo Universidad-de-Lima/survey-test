@@ -616,6 +616,10 @@
 
 .preguntas-cuadro {
   margin-top: var(--space-lg);
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
 }
 
 .preguntas-cuadro-titulo {
@@ -674,9 +678,12 @@
 }
 
 .preguntas-burbuja-respuesta {
+  display: inline-block;
+  max-width: 92%;
   padding: var(--space-md) var(--space-lg);
   border: 1px solid var(--border);
   border-radius: 14px 14px 14px 2px;
+  background: var(--muted);
 }
 
 .preguntas-contexto {
