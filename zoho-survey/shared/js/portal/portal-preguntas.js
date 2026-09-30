@@ -23,6 +23,7 @@ window.SurveyPortalPreguntas = (function () {
   var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
   var SENT = null;       // sentimiento.json (grande: se lee solo si hace falta)
   var TABLA = null;      // respuestas.json (grande: se lee solo si hace falta)
+  var MEMORIA = [];      // los ultimos turnos (pregunta y respuesta), para entender "y del 2025?"
   var FRECUENTES = [];   // preguntas mas consultadas (vienen del registro)
 
   // ---------- utilidades ----------
@@ -947,7 +948,7 @@ window.SurveyPortalPreguntas = (function () {
       body: JSON.stringify({
         pregunta: String(texto).slice(0, 300),
         contexto: String(contexto || '').slice(0, 6000),
-        menu: String(menu || '').slice(0, 16000)
+        menu: String(menu || '').slice(0, 40000)
       })
     }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { return (d && d.consulta) ? d.consulta : null; })
@@ -991,17 +992,22 @@ window.SurveyPortalPreguntas = (function () {
 
       var p = periodoDeLaPregunta(sin(texto), '1.0');
       if (!p || !p.base) return noSe(null);
-      return Promise.all([cargarTabla(p), cargarContexto()]).then(function (cargados) {
-        var tabla = cargados[0];
+      // Se manda el menu de TODOS los periodos publicados y, si hay, la conversacion reciente:
+      // asi una pregunta como "y del 2025?" se resuelve contra lo ultimo que se pregunto.
+      return Promise.all([cargarTodasLasTablas(), cargarContexto()]).then(function (cargados) {
+        var tablas = cargados[0];
         var ctx = cargados[1];
-        if (!tabla || !tabla.cabeceras) return null;
+        if (!tablas.length) return null;
+        var detectado = tablas.filter(function (x) { return x.p.base === p.base; })[0] || tablas[0];
         var contexto = textoDeContexto(ctx);
-        var menu = construirMenu(p, tabla, ctx);
+        var reciente = conversacionReciente();
+        if (reciente) contexto += '\n\n' + reciente;
+        var menu = tablas.map(function (x) { return construirMenu(x.p, x.tabla, ctx); }).join('\n\n');
         // Si el interprete no responde (los modelos gratuitos tienen momentos malos), se
         // intenta una vez mas; si tampoco, se avisa que fue el servicio, no los datos.
         return interpretarConIA(texto, contexto, menu)
           .then(function (f) { return f || interpretarConIA(texto, contexto, menu); })
-          .then(function (f) { return { p: p, tabla: tabla, f: f }; });
+          .then(function (f) { return { tablas: tablas, p: detectado.p, tabla: detectado.tabla, f: f }; });
       }).then(function (x) {
         if (!x || !x.f) {
           return noSe('No pude consultar al intérprete en este momento. Vuelve a intentarlo en unos segundos.');
@@ -1010,8 +1016,10 @@ window.SurveyPortalPreguntas = (function () {
         if (f.se_puede === false || f.operacion === 'ninguna') {
           return noSe(f.motivo ? String(f.motivo) : null);
         }
+        // El formulario puede referirse a otro periodo (por ejemplo 2025-2): se cuenta sobre el suyo.
+        var destino = periodoDelFormulario(x.tablas, x.p, f.periodo);
         if (f.pregunta_objetivo || (f.filtros || []).length) {
-          var r2 = ejecutarFormulario(x.p, x.tabla, f);
+          var r2 = ejecutarFormulario(destino.p, destino.tabla, f);
           if (r2 && r2.problema) return noSe(r2.problema);
           if (r2) return r2;
         }
@@ -1148,6 +1156,46 @@ window.SurveyPortalPreguntas = (function () {
     for (var i = 0; i < avisos.length; i++) avisos[i].parentNode.removeChild(avisos[i]);
   }
 
+  /** Guarda el turno para que la proxima pregunta pueda referirse a el ("y del 2025?"). */
+  function recordar(texto, r) {
+    if (!r) return;
+    var resumen = [r.titulo || ''].concat((r.lineas || []).slice(0, 2)).join(' · ');
+    MEMORIA.unshift({ pregunta: String(texto).trim().slice(0, 120), respuesta: String(resumen).slice(0, 220) });
+    MEMORIA = MEMORIA.slice(0, 2);
+  }
+
+  /** La conversacion reciente, tal como viaja al modelo (vacio si es la primera pregunta). */
+  function conversacionReciente() {
+    if (!MEMORIA.length) return '';
+    return '## Conversación reciente (para entender "y del…", "y en…", "y eso")\n' +
+      MEMORIA.map(function (m, i) {
+        return '- ' + (i === 0 ? 'Última' : 'Anterior') + ' pregunta: ' + m.pregunta +
+          '\n  Respuesta que se dio: ' + m.respuesta;
+      }).join('\n');
+  }
+
+  /** Las tablas de TODOS los periodos publicados: el menu va con todas, no con una. */
+  function cargarTodasLasTablas() {
+    return cargar().then(function () {
+      return Promise.all((CATALOGO || []).map(function (p) {
+        return cargarTabla(p).then(function (tabla) {
+          return (tabla && tabla.cabeceras) ? { p: p, tabla: tabla } : null;
+        });
+      }));
+    }).then(function (x) { return x.filter(Boolean); });
+  }
+
+  /** El periodo al que se refiere el formulario (puede ser otro distinto del detectado). */
+  function periodoDelFormulario(tablas, detectado, dicho) {
+    var buscado = sin(String(dicho || ''));
+    var hallado = buscado && tablas.filter(function (x) {
+      return sin(etiquetaDe(x.p)) === buscado || sin(x.p.periodo) === buscado ||
+        sin(etiquetaDe(x.p)).indexOf(buscado) !== -1;
+    })[0];
+    if (hallado) return hallado;
+    return tablas.filter(function (x) { return x.p.base === detectado.base; })[0] || tablas[0];
+  }
+
   function preguntar(texto) {
     var caja = document.getElementById('preguntasRespuestas');
     if (!caja || !String(texto || '').trim()) return Promise.resolve(null);
@@ -1164,6 +1212,7 @@ window.SurveyPortalPreguntas = (function () {
       var viva = document.getElementById('preguntasRespuestas') || caja;
       quitarAviso(viva);
       pintar(viva, r, texto);
+      recordar(texto, r);
       registrar(texto, (r && r.titulo) || '');
       actualizarContadorDeUso((r && r.titulo) || '');
       return r;

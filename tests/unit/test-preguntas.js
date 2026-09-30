@@ -332,6 +332,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(cuerpo, 'Trabajador dependiente', 'las opciones reales');
     assertIncludes(cuerpo, 'Cómo está organizado el cuestionario', 'la estructura del cuestionario');
     assertIncludes(cuerpo, 'plana docente y desarrollo profesional solo en Graduados', 'las secciones propias de Graduados');
+    assertIncludes(cuerpo, '## Menú — Estudiantes Pregrado 2025-2', 'el menú viaja con todos los períodos');
+    assertIncludes(cuerpo, 'Conversación reciente', 'y con lo último que se preguntó (para los seguimientos)');
   });
 
   test('toda respuesta dentro de alcance cita su encuesta (y ningún archivo)', () => {

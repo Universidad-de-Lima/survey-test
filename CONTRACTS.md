@@ -630,7 +630,11 @@ build_json.py procesa las 7 categorias (no solo pregrado/graduados). Por nivel i
 
 Solo lo consume `zoho-survey/shared/js/portal/portal-preguntas.js`; no forma parte de los JSON por periodo.
 
-Peticion (POST): `{ pregunta (<=300), contexto (<=6000), menu (<=16000) }`.
+Peticion (POST): `{ pregunta (<=300), contexto (<=6000), menu (<=40000) }`.
+
+El `menu` viaja con **todos los períodos publicados** (un bloque `## Menú — <encuesta> <período>` por
+cada uno) y `contexto` puede traer, al final, una sección **Conversación reciente** con los dos
+últimos turnos: asi una pregunta de seguimiento ("y del 2025?") se resuelve contra lo anterior.
 
 `contexto` viaja armado desde `zoho-survey/shared/config/asistente_contexto.json` con cinco
 secciones: *Qué es*, *Cómo están los datos*, *Cómo está organizado el cuestionario*, *Reglas* y
