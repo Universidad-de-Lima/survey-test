@@ -7,6 +7,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué cambió.** En un conteo: la línea de la respuesta va en un **recuadro, igual que la pregunta**; el título ("Cruce: …") ya no se repite arriba (vive en la fuente); los datos iniciales son **dos tarjetas** (los encuestados del período y el grupo contado: 598 y 14) hechas con la tarjeta del portal; y el gráfico es la **barra de distribución del proyecto** (una línea con un tramo de color por valor, con su leyenda y sus conteos) en vez de una barra por renglón, que no se entendía. Los ceros siguen nombrados en la leyenda y no llevan tramo.
 - **Por qué.** Se pidió algo legible de un vistazo y sin datos que confundan.
 - **Nota.** No hay gráfico circular en el proyecto: se reusa la barra de distribución (`csat-bar-row` / `csat-segment`) y los colores de los tokens (`COLORES_DISTRIBUCION` en `constants.js`).
+- **Ajuste de estilo (mismo día).** Las líneas de la respuesta van **sin negrita** y la barra usa **escala de grises** (`COLORES_DISTRIBUCION` en `constants.js`), con el color del texto de cada tramo para que el porcentaje se lea en cualquier tono.
 - **Pruebas:** asistente 1.9 en jsdom **38** (actualizadas al dibujo nuevo).
 
 ## 2026-09-30 — La respuesta de un conteo: dos lecturas, barras y fuente sin archivo

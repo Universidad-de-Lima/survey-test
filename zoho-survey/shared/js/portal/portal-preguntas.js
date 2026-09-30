@@ -1031,7 +1031,11 @@ window.SurveyPortalPreguntas = (function () {
    */
   function cuadroEnHtml(cuadro) {
     var cfg = window.SURVEY_CONFIG || {};
-    var colores = cfg.COLORES_DISTRIBUCION || ['var(--teal)', 'var(--emerald)', 'var(--amber)', 'var(--rose)', 'var(--gray-400)'];
+    var colores = cfg.COLORES_DISTRIBUCION || [
+      { color: 'var(--gray-800)', texto: 'var(--white)' },
+      { color: 'var(--gray-500)', texto: 'var(--white)' },
+      { color: 'var(--gray-300)', texto: 'var(--gray-900)' }
+    ];
     function tarjeta(rotulo, valor) {
       return '<div class="survey-kpi" style="--kpi-color: var(--teal)">' +
         '<div class="survey-kpi-body">' +
@@ -1042,11 +1046,11 @@ window.SurveyPortalPreguntas = (function () {
     function lineaConColores(titulo, filas) {
       var segmentos = '', leyenda = '';
       filas.forEach(function (f, i) {
-        var color = colores[i % colores.length];
+        var tono = colores[i % colores.length];
         if (f.ancho > 0) {
-          segmentos += '<div class="csat-segment csat-var" style="--w:' + f.ancho + '%; --c:' + color + '" data-label="' + esc(f.valor) + '" data-value="' + esc(f.cuenta) + '"><span class="csat-label">' + (f.ancho >= 12 ? esc(f.pct) : '') + '</span></div>';
+          segmentos += '<div class="csat-segment csat-var" style="--w:' + f.ancho + '%; --c:' + tono.color + '; --t:' + tono.texto + '" data-label="' + esc(f.valor) + '" data-value="' + esc(f.cuenta) + '"><span class="csat-label">' + (f.ancho >= 12 ? esc(f.pct) : '') + '</span></div>';
         }
-        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto" style="background:' + color + '"></span>' +
+        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto" style="background:' + tono.color + '"></span>' +
           esc(f.valor) + ': ' + esc(f.cuenta) + '</li>';
       });
       return '<p class="preguntas-cuadro-titulo">' + esc(titulo) + '</p>' +

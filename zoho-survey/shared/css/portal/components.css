@@ -657,6 +657,10 @@
   flex-shrink: 0;
 }
 
+.preguntas-cuadro .csat-segment {
+  color: var(--t, var(--white));
+}
+
 .preguntas-pregunta {
   display: inline-block;
   max-width: 100%;
@@ -693,7 +697,6 @@
   background: var(--muted);
   font-size: var(--text-xl);
   line-height: 20px;
-  font-weight: var(--font-bold);
   color: var(--foreground);
   text-align: left;
 }
