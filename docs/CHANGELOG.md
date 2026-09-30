@@ -2,15 +2,11 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
-## 2026-09-30 — El aviso del asistente muestra el cupo de preguntas
+## 2026-09-30 — Contador de cupo del intérprete (se conserva para consultarlo, fuera del aviso)
 
-- **Qué se hizo.** Mientras el asistente piensa, el aviso ya no dice solo "Consultando…": agrega el cupo usado, tal como pidió el usuario:
-  `(3 de 15 preguntas por minuto · 27 de 500 preguntas por día)`. Al 90 % del día suma "— queda poco cupo del día" y, agotado, avisa que responde con el modelo de respaldo.
-- **Cómo se cuenta.** `/api/interpretar` suma 1 en Firebase **solo cuando la pregunta se envía a Google** (las que resuelven las reglas de la página no gastan cupo y no se cuentan). El día y el minuto se cortan en **hora del Pacífico**, igual que Google.
-- **Endpoint nuevo:** `/api/cuota` (GET, solo lectura) devuelve `{usadoMinuto, limiteMinuto, usadoDia, limiteDia}`. Contrato en `CONTRACTS.md`.
-- **Sin datos de nadie:** se cuentan preguntas y nada más (ni texto, ni dirección IP).
-- **Si el contador no responde**, la página muestra el aviso como antes (sin la línea del cupo): nunca se rompe la pantalla.
-- **Pruebas:** asistente 1.9 en jsdom 34 → **38**; `interpretar` (vitest) 14 → **16**, más 5 pruebas del contador y 3 del endpoint nuevo.
+- **Qué se hizo.** El intérprete cuenta las preguntas que envía a Google (las que gastan el cupo del plan gratuito: 15 por minuto y 500 por día, por proyecto) y las expone en `/api/cuota` (GET, solo lectura). Cuenta **solo** las que van a Google: las que resuelven las reglas de la página no gastan cupo. El día y el minuto se cortan en **hora del Pacífico**, igual que Google. Sin datos de nadie: dos números.
+- **Qué se probó y se retiró.** Se mostró el cupo dentro del aviso de espera ("3 de 15 preguntas por minuto · 27 de 500 preguntas por día"); al verlo funcionando se decidió **quitarlo por no aportar valor**. El aviso volvió a su texto: "Consultando… / Buscando en los datos publicados. Puede tardar unos minutos."
+- **Pruebas:** `interpretar` (vitest) 14 → **16**, más 5 pruebas del contador y 3 del endpoint nuevo (`/api/cuota`).
 
 ## 2026-09-30 — El intérprete del asistente arranca con Gemini 3.5 Flash Lite
 

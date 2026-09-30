@@ -339,8 +339,6 @@ Reglas que sostienen el orden:
 
 Si las palabras de la pregunta no alcanzan, el portal arma un mensaje con **tres piezas** — el contexto del proyecto (`zoho-survey/shared/config/asistente_contexto.json`: que es el proyecto, como estan los datos y las reglas), el **menu del periodo** (las preguntas con sus opciones y las palabras con que la gente las pide, armado en vivo desde `respuestas.json`) y la pregunta — y lo envia a la funcion `/api/interpretar` (proyecto survey-tracker; cadena: Google `gemini-3.5-flash-lite` y, de respaldo, NVIDIA). La funcion devuelve **un formulario lleno** (`{se_puede, operacion, periodo, filtros, pregunta_objetivo, valores_objetivo, entidad, orden, motivo}`) con nombres copiados del menu; el portal **valida cada nombre contra los datos publicados** (si no existe, lo dice) y hace las cuentas sobre `respuestas.json`: **el modelo no calcula ni redacta cifras**, solo elige nombres.
 
-El aviso de espera muestra ademas el **cupo usado** (`/api/cuota`: cuantas preguntas van en el minuto, de 15, y en el dia, de 500; el contador vive en Firebase y solo suma las preguntas que se envian a Google).
-
 Reglas del modulo:
 
 1. **Nada se inventa y nada sale de fuera de las encuestas.** Si el dato no esta en los JSON, responde que solo contesta sobre las encuestas (hora, clima, noticias y cualquier tema ajeno quedan fuera por definicion).

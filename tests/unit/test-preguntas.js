@@ -28,11 +28,6 @@ let consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '',
 const llamadasExternas = [];
 // Cuantas veces debe fallar /interpretar antes de responder (para probar el reintento).
 let fallosInterpretar = 0;
-// Cupo simulado del contador y si el contador debe fallar (para probar el aviso).
-let cuotaSimulada = { usadoMinuto: 3, limiteMinuto: 15, usadoDia: 27, limiteDia: 500 };
-let cuotaFalla = false;
-// Retraso del interprete, para poder mirar el aviso de espera mientras esta en pantalla.
-let retrasoInterpretar = 0;
 global.fetch = function (url, opciones) {
   // Las direcciones externas (el registro de preguntas) no se piden de verdad:
   // se anotan y se responde lo que se quiera comprobar.
@@ -43,18 +38,7 @@ global.fetch = function (url, opciones) {
         fallosInterpretar -= 1;
         return Promise.resolve({ ok: false, json: function () { return Promise.resolve(null); } });
       }
-      if (retrasoInterpretar) {
-        return new Promise(function (ok) {
-          setTimeout(function () {
-            ok({ ok: true, json: function () { return Promise.resolve({ consulta: consultaSimulada }); } });
-          }, retrasoInterpretar);
-        });
-      }
       return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ consulta: consultaSimulada }); } });
-    }
-    if (String(url).indexOf('/api/cuota') !== -1) {
-      if (cuotaFalla) return Promise.resolve({ ok: false, json: function () { return Promise.resolve(null); } });
-      return Promise.resolve({ ok: true, json: function () { return Promise.resolve(cuotaSimulada); } });
     }
     if (String(url).indexOf('/preguntas') !== -1 && !(opciones && opciones.method === 'POST')) {
       return Promise.resolve({
@@ -149,31 +133,6 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   fallosInterpretar = 2;
   const sinInterprete = await P.responderConIA('¿qué tan contentos están los alumnos de Psicología?');
   fallosInterpretar = 0;
-
-  // El aviso de espera muestra el cupo (item 1.9). Se retrasa el interprete para poder
-  // mirar el aviso mientras esta en pantalla.
-  consultaSimulada = { se_puede: true, operacion: 'porcentaje', periodo: '', filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }], pregunta_objetivo: 'Situación laboral', valores_objetivo: ['Trabajador dependiente'], entidad: '', orden: '', motivo: '' };
-  retrasoInterpretar = 80;
-  document.body.innerHTML = P.render();
-  const enVueloConCupo = P.preguntar('¿qué porcentaje de graduados de la carrera de economía trabajan?');
-  await new Promise(function (ok) { setTimeout(ok, 30); });
-  const lineaConCupo = document.querySelector('.preguntas-cuota');
-  const textoConCupo = lineaConCupo ? lineaConCupo.textContent : '';
-  await enVueloConCupo;
-  const avisoSiguePintado = !!document.querySelector('.preguntas-cuota');
-
-  // Si el contador no responde, el aviso sale sin la linea del cupo.
-  cuotaFalla = true;
-  document.body.innerHTML = P.render();
-  const enVueloSinCupo = P.preguntar('¿qué porcentaje de graduados de la carrera de economía trabajan?');
-  await new Promise(function (ok) { setTimeout(ok, 30); });
-  const lineaSinCupo = document.querySelector('.preguntas-cuota');
-  const textoSinCupo = lineaSinCupo ? lineaSinCupo.textContent : '';
-  await enVueloSinCupo;
-  cuotaFalla = false;
-  retrasoInterpretar = 0;
-  // Se deja el formulario simulado como estaba: lo usan las pruebas que siguen.
-  consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
 
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
@@ -290,27 +249,6 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('si el intérprete no responde ni al reintento, el aviso es propio (no el genérico)', () => {
     assertTrue(sinInterprete.alcance === false, 'queda fuera de alcance');
     assertIncludes(texto(sinInterprete), 'No pude consultar al intérprete', 'aviso propio del servicio');
-  });
-
-  test('la frase del cupo dice cuántas preguntas van por minuto y por día', () => {
-    const frase = P.fraseDeCuota({ usadoMinuto: 3, limiteMinuto: 15, usadoDia: 27, limiteDia: 500 });
-
-    assertIncludes(frase, '(3 de 15 preguntas por minuto · 27 de 500 preguntas por día)', 'texto del cupo');
-  });
-
-  test('avisa cuando queda poco cupo y cuando se agotó', () => {
-    assertIncludes(P.fraseDeCuota({ usadoMinuto: 1, limiteMinuto: 15, usadoDia: 470, limiteDia: 500 }), 'queda poco cupo del día', 'cupo bajo');
-    assertIncludes(P.fraseDeCuota({ usadoMinuto: 15, limiteMinuto: 15, usadoDia: 500, limiteDia: 500 }), 'Cupo del día agotado', 'cupo agotado');
-  });
-
-  test('el aviso de espera muestra el cupo mientras se espera', () => {
-    assertIncludes(textoConCupo, '3 de 15 preguntas por minuto', 'cupo por minuto en el aviso');
-    assertIncludes(textoConCupo, '27 de 500 preguntas por día', 'cupo por día en el aviso');
-    assertTrue(avisoSiguePintado === false, 'cuando llega la respuesta el aviso se quita');
-  });
-
-  test('si el contador no responde, el aviso sale sin la línea del cupo', () => {
-    assertTrue(textoSinCupo === '', 'la línea del cupo queda vacía: ' + JSON.stringify(textoSinCupo));
   });
 
   test('el mensaje que se manda lleva el contexto y el menú del período', () => {
