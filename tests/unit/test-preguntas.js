@@ -139,8 +139,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   document.body.innerHTML = P.render();
   await P.preguntar('¿qué porcentaje de graduados de la carrera de economía trabajan?');
   const leer = (sel) => { const e = document.querySelector(sel); return e ? e.textContent : ''; };
-  const textoPregunta = leer('.preguntas-pregunta');
-  const textoRotulo = leer('.preguntas-rotulo');
+  const textoPregunta = leer('.preguntas-burbuja-pregunta');
+  const textoRespuesta = leer('.preguntas-burbuja-respuesta');
   const textoDato = leer('.preguntas-respuesta-titulo');
   const textoContexto = leer('.preguntas-contexto');
   const textoResultado = leer('.preguntas-resultado');
@@ -277,11 +277,11 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(sinInterprete), 'No pude consultar al intérprete', 'aviso propio del servicio');
   });
 
-  test('el bloque muestra la pregunta, la etiqueta y la respuesta', () => {
-    assertIncludes(textoPregunta, 'Pregunta:', 'la etiqueta de la pregunta');
-    assertIncludes(textoPregunta, 'economía', 'la pregunta tal como se escribió');
-    assertIncludes(textoRotulo, 'Respuesta:', 'la etiqueta de la respuesta');
-    assertIncludes(textoDato + textoResumen, 'considerando', 'la respuesta, con su recuadro');
+  test('el bloque muestra la pregunta y su respuesta, al estilo conversación', () => {
+    assertIncludes(textoPregunta, 'economía', 'la pregunta, tal como se escribió');
+    assertTrue(!textoPregunta.includes('Pregunta:'), 'sin el rótulo "Pregunta:" (la burbuja ya se entiende)');
+    assertTrue(!textoRespuesta.includes('Respuesta:'), 'sin el rótulo "Respuesta:" colgando fuera');
+    assertIncludes(textoRespuesta, 'considerando', 'la respuesta, dentro de su burbuja');
   });
 
   test('el filtro queda como contexto y el resultado separado, con su archivo', () => {

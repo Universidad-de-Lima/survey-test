@@ -8,6 +8,12 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Por qué.** Se pidió algo legible de un vistazo y sin datos que confundan.
 - **Nota.** No hay gráfico circular en el proyecto: se reusa la barra de distribución (`csat-bar-row` / `csat-segment`) y los colores de los tokens (`COLORES_DISTRIBUCION` en `constants.js`).
 - **Ajuste de estilo (mismo día).** Las líneas de la respuesta van **sin negrita** y la barra usa **escala de grises** (`COLORES_DISTRIBUCION` en `constants.js`), con el color del texto de cada tramo para que el porcentaje se lea en cualquier tono.
+
+## 2026-09-30 — El bloque de respuesta se lee como una conversación (formato D)
+
+- **Qué cambió.** La pregunta va en una **burbuja a la derecha** y la respuesta en un bloque al costado, con el gráfico dentro; se retiraron los rótulos «Pregunta:» y «Respuesta:» que quedaban fuera. Es el formato elegido entre cuatro ejemplos (buscador que responde, rótulo dentro, tarjetas y conversación).
+- **Y más respuestas grafican.** El cuadro ahora es genérico —`cuadro(tarjetas, graficos)`— así que además del conteo, el **NPS** (general y por carrera) dibuja su reparto (promotores, pasivos, detractores) con tarjetas de encuestados y NPS. Las demás respuestas siguen con sus líneas hasta el paso siguiente: que **el intérprete indique qué gráfico** le toca a cada respuesta (número, reparto, ranking o comparación).
+- **Pruebas:** asistente 1.9 en jsdom **38** (una renombrada y ajustada al formato nuevo).
 - **Pruebas:** asistente 1.9 en jsdom **38** (actualizadas al dibujo nuevo).
 
 ## 2026-09-30 — La respuesta de un conteo: dos lecturas, barras y fuente sin archivo

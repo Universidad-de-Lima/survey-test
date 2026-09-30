@@ -315,9 +315,13 @@ window.SurveyPortalPreguntas = (function () {
         if (!fila) return noSe('No hay NPS publicado para la carrera "' + carrera + '".');
         return {
           titulo: 'NPS de ' + carrera,
-          lineas: [p3.nombre + ' ' + p3.periodo + ': NPS ' + n(fila.score) + ' (promotores ' + n(fila.promotores) +
-                   ', pasivos ' + n(fila.pasivos) + ', detractores ' + n(fila.detractores) + ').' +
-                   (filaCsat ? ' Satisfacción: ' + pct(filaCsat.score) + '.' : '')],
+          lineas: [filaCsat ? 'Satisfacción: ' + pct(filaCsat.score) + '.' : ''],
+          cuadro: cuadro(
+            [{ rotulo: 'NPS', valor: n(fila.score) }, { rotulo: 'Respuestas', valor: n(fila.promotores + fila.pasivos + fila.detractores) }],
+            [{ titulo: 'Reparto del NPS de ' + carrera, base: fila.promotores + fila.pasivos + fila.detractores, filas: [
+              { valor: 'Promotores (9-10)', cuenta: fila.promotores },
+              { valor: 'Pasivos (7-8)', cuenta: fila.pasivos },
+              { valor: 'Detractores (0-6)', cuenta: fila.detractores }] }]),
           fuentes: [fuente(p3, 'NPS y CSAT por carrera')]
         };
       }
@@ -376,9 +380,13 @@ window.SurveyPortalPreguntas = (function () {
       var rr = p3.dash.resumen.nps;
       return {
         titulo: 'NPS ' + p3.nombre + ' ' + p3.periodo,
-        lineas: ['NPS ' + n(rr.score) + ' (promotores ' + n(rr.promotores) + ', pasivos ' + n(rr.pasivos) +
-                 ', detractores ' + n(rr.detractores) + ', sobre ' + n(rr.total) + ' respuestas).',
-                 'Clasificación: ' + p3.dash.hallazgos.nps_tipo + '.'],
+        lineas: ['Clasificación: ' + p3.dash.hallazgos.nps_tipo + '.'],
+        cuadro: cuadro(
+          [{ rotulo: 'Encuestados', valor: n(rr.total) }, { rotulo: 'NPS', valor: n(rr.score) }],
+          [{ titulo: 'Reparto del NPS', base: rr.total, filas: [
+            { valor: 'Promotores (9-10)', cuenta: rr.promotores },
+            { valor: 'Pasivos (7-8)', cuenta: rr.pasivos },
+            { valor: 'Detractores (0-6)', cuenta: rr.detractores }] }]),
         fuentes: [fuente(p3)]
       };
     }
@@ -619,28 +627,52 @@ window.SurveyPortalPreguntas = (function () {
     return pct(denom ? 100 * cuenta / denom : 0) + ' considerando ' + valores.join(' / ') + '.';
   }
 
+  /** Un renglon del grafico: el valor, su cuenta y su parte del total. */
+  function renglon(valor, cuenta, base) {
+    return {
+      valor: valor,
+      cuenta: n(cuenta),
+      pct: pct(base ? 100 * cuenta / base : 0),
+      ancho: base ? Math.round(1000 * cuenta / base) / 10 : 0
+    };
+  }
+
   /**
-   * Cuadro que acompaña a una respuesta de conteo: encuestados, el grupo, la dimensión y un
-   * renglón por valor (con su barra). Si se cuenta la situación laboral y los datos traen el
-   * tiempo de trabajo, agrega su reparto entre quienes trabajan.
+   * El cuadro que acompaña a una respuesta: tarjetas arriba y uno o mas graficos (cada uno una
+   * linea con colores). Lo llena la pagina con numeros publicados; el modelo nunca calcula.
+   */
+  function cuadro(tarjetas, graficos) {
+    return {
+      tarjetas: tarjetas,
+      graficos: (graficos || []).map(function (g) {
+        return {
+          titulo: g.titulo,
+          filas: (g.filas || []).map(function (f) { return renglon(f.valor, f.cuenta, f.base || g.base); })
+        };
+      })
+    };
+  }
+
+  /**
+   * El cuadro de un conteo: las tarjetas (encuestados y el grupo) y, por cada pregunta contada,
+   * su linea con colores. Si se cuenta la situacion laboral, agrega el tiempo de trabajo.
    */
   function cuadroDeConteo(tabla, sub, objetivo, valores, filtros, filtroTexto) {
-    function renglon(valor, cuenta, base) {
-      return {
-        valor: valor,
-        cuenta: n(cuenta),
-        pct: pct(base ? 100 * cuenta / base : 0),
-        ancho: base ? Math.round(1000 * cuenta / base) / 10 : 0
-      };
-    }
     var cuadro = {
-      encuestados: n(tabla.respuestas),
-      grupo: (filtros.length === 1 && filtros[0].opciones.length === 1)
-        ? 'De ' + filtros[0].opciones[0]
-        : 'Cumplen el filtro',
-      grupoCuenta: n(sub.length),
-      dimension: objetivo,
-      filas: valores.map(function (v) { return renglon(v, contarEnTabla(tabla, sub, objetivo, [v]), sub.length); })
+      tarjetas: [
+        { rotulo: 'Encuestados', valor: n(tabla.respuestas) },
+        {
+          rotulo: (filtros.length === 1 && filtros[0].opciones.length === 1)
+            ? 'De ' + filtros[0].opciones[0]
+            : 'Cumplen el filtro',
+          valor: n(sub.length)
+        }
+      ],
+      graficos: [{
+        titulo: objetivo,
+        base: sub.length,
+        filas: valores.map(function (v) { return { valor: v, cuenta: contarEnTabla(tabla, sub, objetivo, [v]) }; })
+      }]
     };
     var cabeceras = tabla.cabeceras || [];
     var iSit = cabeceras.indexOf('Situación laboral');
@@ -650,15 +682,18 @@ window.SurveyPortalPreguntas = (function () {
         return esTrabajoFormal(tabla.opciones['Situación laboral'][f[iSit]]);
       });
       if (trabajan.length) {
-        cuadro.tiempo = {
+        cuadro.graficos.push({
           titulo: 'Tiempo dedicado al trabajo (de los ' + n(trabajan.length) + ' que trabajan)',
+          base: trabajan.length,
           filas: (tabla.opciones['Tiempo laboral'] || [])
             .filter(function (o) { return o && o.indexOf('sin respuesta') === -1; })
             .map(function (o) {
-              var c = trabajan.filter(function (f) { return tabla.opciones['Tiempo laboral'][f[iTie]] === o; }).length;
-              return renglon(o, c, trabajan.length);
+              return {
+                valor: o,
+                cuenta: trabajan.filter(function (f) { return tabla.opciones['Tiempo laboral'][f[iTie]] === o; }).length
+              };
             })
-        };
+        });
       }
     }
     return cuadro;
@@ -1036,16 +1071,18 @@ window.SurveyPortalPreguntas = (function () {
       { color: 'var(--gray-500)', texto: 'var(--white)' },
       { color: 'var(--gray-300)', texto: 'var(--gray-900)' }
     ];
-    function tarjeta(rotulo, valor) {
-      return '<div class="survey-kpi" style="--kpi-color: var(--teal)">' +
-        '<div class="survey-kpi-body">' +
-        '<p class="survey-kpi-value">' + esc(valor) + '</p>' +
-        '<p class="survey-kpi-label">' + esc(rotulo) + '</p>' +
-        '</div></div>';
+    function tarjetas(lista) {
+      return '<div class="survey-kpi-grid">' + lista.map(function (t) {
+        return '<div class="survey-kpi" style="--kpi-color: var(--gray-700)">' +
+          '<div class="survey-kpi-body">' +
+          '<p class="survey-kpi-value">' + esc(t.valor) + '</p>' +
+          '<p class="survey-kpi-label">' + esc(t.rotulo) + '</p>' +
+          '</div></div>';
+      }).join('') + '</div>';
     }
-    function lineaConColores(titulo, filas) {
+    function grafico(g) {
       var segmentos = '', leyenda = '';
-      filas.forEach(function (f, i) {
+      g.filas.forEach(function (f, i) {
         var tono = colores[i % colores.length];
         if (f.ancho > 0) {
           segmentos += '<div class="csat-segment csat-var" style="--w:' + f.ancho + '%; --c:' + tono.color + '; --t:' + tono.texto + '" data-label="' + esc(f.valor) + '" data-value="' + esc(f.cuenta) + '"><span class="csat-label">' + (f.ancho >= 12 ? esc(f.pct) : '') + '</span></div>';
@@ -1053,14 +1090,13 @@ window.SurveyPortalPreguntas = (function () {
         leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto" style="background:' + tono.color + '"></span>' +
           esc(f.valor) + ': ' + esc(f.cuenta) + '</li>';
       });
-      return '<p class="preguntas-cuadro-titulo">' + esc(titulo) + '</p>' +
+      return '<p class="preguntas-cuadro-titulo">' + esc(g.titulo) + '</p>' +
         '<div class="csat-bar-row">' + segmentos + '</div>' +
         '<ul class="preguntas-leyenda">' + leyenda + '</ul>';
     }
     return '<div class="preguntas-cuadro">' +
-      '<div class="survey-kpi-grid">' + tarjeta('Encuestados', cuadro.encuestados) + tarjeta(cuadro.grupo, cuadro.grupoCuenta) + '</div>' +
-      lineaConColores(cuadro.dimension, cuadro.filas) +
-      (cuadro.tiempo ? lineaConColores(cuadro.tiempo.titulo, cuadro.tiempo.filas) : '') +
+      (cuadro.tarjetas && cuadro.tarjetas.length ? tarjetas(cuadro.tarjetas) : '') +
+      (cuadro.graficos || []).map(grafico).join('') +
       '</div>';
   }
 
@@ -1069,10 +1105,10 @@ window.SurveyPortalPreguntas = (function () {
     bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
     var html = '';
     if (pregunta) {
-      html += '<p class="preguntas-pregunta">Pregunta: ' + esc(pregunta) + '</p>';
+      html += '<p class="preguntas-burbuja-pregunta"><span>' + esc(pregunta) + '</span></p>';
     }
-    html += '<p class="preguntas-rotulo preguntas-rotulo-respuesta">Respuesta:</p>';
-    if (!r.cuadro) {
+    html += '<div class="preguntas-burbuja-respuesta">';
+    if (!r.cuadro && r.titulo) {
       html += '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
     }
     var lineas = (r.lineas || []).slice();
@@ -1083,9 +1119,7 @@ window.SurveyPortalPreguntas = (function () {
       if (esCruce && !r.cuadro && lineas.length > 1) {
         html += '<p class="preguntas-contexto">' + esc(lineas.shift()) + '</p>';
       }
-      lineas.forEach(function (l) {
-        html += '<p class="preguntas-resultado"><span class="preguntas-resultado-dato">' + esc(l) + '</span></p>';
-      });
+      lineas.forEach(function (l) { html += '<p class="preguntas-resultado">' + esc(l) + '</p>'; });
     } else {
       html += '<ul class="preguntas-lista">';
       lineas.forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });
@@ -1093,6 +1127,7 @@ window.SurveyPortalPreguntas = (function () {
     }
     if (r.cuadro) html += cuadroEnHtml(r.cuadro);
     (r.fuentes || []).forEach(function (f) { html += '<p class="preguntas-fuente">' + esc(f) + '</p>'; });
+    html += '</div>';
     bloque.innerHTML = html;
     contenedor.insertBefore(bloque, contenedor.firstChild);
   }
