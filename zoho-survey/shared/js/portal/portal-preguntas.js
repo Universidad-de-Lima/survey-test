@@ -634,11 +634,10 @@ window.SurveyPortalPreguntas = (function () {
       };
     }
     var cuadro = {
-      encuestados: n(tabla.respuestas),
-      grupo: (filtros.length === 1 && filtros[0].opciones.length === 1)
-        ? 'De ' + filtros[0].opciones[0]
-        : (filtroTexto ? 'Con el filtro: ' + filtroTexto : 'Todos'),
-      grupoCuenta: n(sub.length),
+      resumen: 'De ' + n(tabla.respuestas) + ' encuestados, ' + n(sub.length) +
+        ((filtros.length === 1 && filtros[0].opciones.length === 1)
+          ? ' son de ' + filtros[0].opciones[0] + '.'
+          : ' cumplen el filtro (' + (filtroTexto || 'todas las respuestas') + ').'),
       dimension: objetivo,
       filas: valores.map(function (v) { return renglon(v, contarEnTabla(tabla, sub, objetivo, [v]), sub.length); })
     };
@@ -1024,23 +1023,29 @@ window.SurveyPortalPreguntas = (function () {
    * etiqueta "Respuesta:" y el dato. Cuando la respuesta es un cruce o tiene una sola linea,
    * esa linea se muestra como resultado (separada); si son varias de una lista, queda la lista.
    */
-  /** El cuadro de conteos: encuestados, el grupo, la dimension y un renglon por valor. */
+  /**
+   * El cuadro que acompaña a un conteo: una frase con el total y el grupo, y una linea con
+   * colores (un tramo por valor, con su leyenda). Reusa los colores del proyecto.
+   */
   function cuadroEnHtml(cuadro) {
-    function barras(titulo, filas) {
+    function lineaConColores(titulo, filas) {
+      var segmentos = '', leyenda = '';
+      filas.forEach(function (f, i) {
+        var color = 'preguntas-seg-' + (i % 5 + 1);
+        if (f.ancho > 0) {
+          segmentos += '<span class="preguntas-segmento ' + color + '" style="width:' + f.ancho + '%"></span>';
+        }
+        leyenda += '<li class="preguntas-leyenda-item"><span class="preguntas-punto ' + color + '"></span>' +
+          esc(f.valor) + ': ' + esc(f.cuenta) + '</li>';
+      });
       return '<p class="preguntas-cuadro-titulo">' + esc(titulo) + '</p>' +
-        filas.map(function (f) {
-          return '<div class="survey-bar-row">' +
-            '<span class="survey-bar-label">' + esc(f.valor) + '</span>' +
-            '<span class="survey-bar-wrap"><span class="survey-bar" style="--w:' + f.ancho + '%"></span></span>' +
-            '<span class="survey-bar-value">' + esc(f.cuenta) + '</span>' +
-            '</div>';
-        }).join('');
+        '<div class="preguntas-linea-color">' + segmentos + '</div>' +
+        '<ul class="preguntas-leyenda">' + leyenda + '</ul>';
     }
     return '<div class="preguntas-cuadro">' +
-      '<p class="preguntas-cuadro-linea">Encuestados: ' + esc(cuadro.encuestados) + '</p>' +
-      '<p class="preguntas-cuadro-linea">' + esc(cuadro.grupo) + ': ' + esc(cuadro.grupoCuenta) + '</p>' +
-      barras('Dimensión: ' + cuadro.dimension, cuadro.filas) +
-      (cuadro.tiempo ? barras(cuadro.tiempo.titulo, cuadro.tiempo.filas) : '') +
+      '<p class="preguntas-cuadro-linea">' + esc(cuadro.resumen) + '</p>' +
+      lineaConColores(cuadro.dimension, cuadro.filas) +
+      (cuadro.tiempo ? lineaConColores(cuadro.tiempo.titulo, cuadro.tiempo.filas) : '') +
       '</div>';
   }
 
@@ -1051,8 +1056,10 @@ window.SurveyPortalPreguntas = (function () {
     if (pregunta) {
       html += '<p class="preguntas-pregunta">Pregunta: ' + esc(pregunta) + '</p>';
     }
-    html += '<p class="preguntas-rotulo preguntas-rotulo-respuesta">Respuesta:</p>' +
-      '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
+    html += '<p class="preguntas-rotulo preguntas-rotulo-respuesta">Respuesta:</p>';
+    if (!r.cuadro) {
+      html += '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';
+    }
     var lineas = (r.lineas || []).slice();
     var esCruce = /^Cruce:/.test(r.titulo || '');
     if (r.alcance !== false && lineas.length && (r.cuadro || esCruce || lineas.length === 1)) {
@@ -1061,7 +1068,9 @@ window.SurveyPortalPreguntas = (function () {
       if (esCruce && !r.cuadro && lineas.length > 1) {
         html += '<p class="preguntas-contexto">' + esc(lineas.shift()) + '</p>';
       }
-      lineas.forEach(function (l) { html += '<p class="preguntas-resultado">' + esc(l) + '</p>'; });
+      lineas.forEach(function (l) {
+        html += '<p class="preguntas-resultado"><span class="preguntas-resultado-dato">' + esc(l) + '</span></p>';
+      });
     } else {
       html += '<ul class="preguntas-lista">';
       lineas.forEach(function (l) { html += '<li>' + esc(l) + '</li>'; });

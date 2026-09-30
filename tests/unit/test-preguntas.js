@@ -148,7 +148,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const textoCuadro = leer('.preguntas-cuadro');
   const textoResumen = Array.from(document.querySelectorAll('.preguntas-resultado')).map(function (e) { return e.textContent; }).join(' | ');
   const hayListaEnCruce = !!document.querySelector('.preguntas-lista');
-  const cuantasBarras = document.querySelectorAll('.preguntas-cuadro .survey-bar').length;
+  const cuantosSegmentos = document.querySelectorAll('.preguntas-linea-color .preguntas-segmento').length;
+  const cuantaLeyenda = document.querySelectorAll('.preguntas-leyenda-item').length;
 
   // Una respuesta de lista (varios periodos) sigue siendo lista, sin resultado destacado.
   consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
@@ -275,17 +276,18 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(texto(sinInterprete), 'No pude consultar al intérprete', 'aviso propio del servicio');
   });
 
-  test('el bloque muestra la pregunta, la etiqueta y el dato', () => {
+  test('el bloque muestra la pregunta, la etiqueta y la respuesta', () => {
     assertIncludes(textoPregunta, 'Pregunta:', 'la etiqueta de la pregunta');
     assertIncludes(textoPregunta, 'economía', 'la pregunta tal como se escribió');
     assertIncludes(textoRotulo, 'Respuesta:', 'la etiqueta de la respuesta');
-    assertIncludes(textoDato, 'Cruce: Situación laboral', 'el dato');
+    assertIncludes(textoDato + textoResumen, 'considerando', 'la respuesta, con su recuadro');
   });
 
   test('el filtro queda como contexto y el resultado separado, con su archivo', () => {
     assertIncludes(textoFuente, 'Filtro: Carrera = Economía', 'el filtro, dentro de la fuente');
     assertIncludes(textoFuente, 'Graduados Pregrado 2026', 'la encuesta');
     assertTrue(!textoFuente.includes('.json'), 'la fuente ya no lleva el archivo');
+    assertIncludes(textoFuente, 'Cruce: Situación laboral', 'el título del conteo, dentro de la fuente');
     assertIncludes(textoResultado, '100 % considerando', 'la primera lectura');
     assertTrue(hayListaEnCruce === false, 'el cruce no usa lista: el resultado va aparte');
   });
@@ -293,13 +295,13 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   test('el conteo da las dos lecturas de "trabajan" y el cuadro con los números', () => {
     assertIncludes(textoResultado, '100 % considerando', 'todo lo que trabaja, con prácticas');
     assertIncludes(textoResumen, '57,14 % considerando Trabajador dependiente / Trabajador independiente.', 'solo el trabajo formal');
-    assertIncludes(textoCuadro, 'Encuestados: 598', 'los encuestados del periodo');
-    assertIncludes(textoCuadro, 'De Economía: 14', 'el grupo filtrado');
-    assertIncludes(textoCuadro, 'Dimensión: Situación laboral', 'la dimensión contada');
-    assertIncludes(textoCuadro, 'Prácticas profesionales', 'cada valor, con su barra');
+    assertIncludes(textoCuadro, 'De 598 encuestados, 14 son de Economía.', 'el total y el grupo, en una frase');
+    assertIncludes(textoCuadro, 'Situación laboral', 'la dimensión contada');
+    assertIncludes(textoCuadro, 'Prácticas profesionales: 6', 'cada valor, en la leyenda');
     assertIncludes(textoCuadro, 'Tiempo dedicado al trabajo (de los 8 que trabajan)', 'el reparto por tiempo de trabajo');
-    assertIncludes(textoCuadro, 'Tiempo completo', 'los que trabajan a tiempo completo');
-    assertTrue(cuantasBarras === 6, 'una barra por valor (4 de la dimensión + 2 del tiempo)');
+    assertIncludes(textoCuadro, 'Tiempo completo: 8', 'los que trabajan a tiempo completo');
+    assertTrue(cuantosSegmentos === 3, 'un tramo por valor con datos (8, 6 y 8; los ceros no llevan tramo)');
+    assertTrue(cuantaLeyenda === 6, 'la leyenda nombra los seis valores, incluidos los ceros');
   });
 
   test('una respuesta de lista sigue siendo lista (sin resultado destacado)', () => {
