@@ -160,11 +160,13 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const hayResultadoTotal = !!document.querySelector('.preguntas-resultado');
 
   // Una segunda pregunta que pasa por la IA: el mensaje ya lleva la conversación anterior.
+  const stubPrevio = consultaSimulada;
   consultaSimulada = { se_puede: true, operacion: 'carreras', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: 'mejor', motivo: '' };
   document.body.innerHTML = P.render();
   await P.preguntar('¿y cuál es la mejor carrera por NPS?');
   const enviosIA = llamadasExternas.filter(function (c) { return String(c.url).indexOf('/interpretar') !== -1; });
   const cuerpoConMemoria = String(enviosIA[enviosIA.length - 1].opciones.body);
+  consultaSimulada = stubPrevio;
 
   const texto = (r) => [
     (r.lineas || []).join(' | '),
