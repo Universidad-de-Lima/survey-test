@@ -179,5 +179,5 @@ Si se modifica la estructura de cualquier JSON generado:
 6. **Trabajo sin commitear**: el repositorio puede tener cambios pendientes. Revisar `git status` antes de modificar.
 7. **`periodos.json` por nivel**: debe tener exactamente un item con `isNew: true`. El validador falla si no se cumple.
 8. **Tests Python se ejecutan en CI**: workflow `tests.yml` ejecuta unittest + JS tests + sintaxis en cada PR.
-9. **Tests JS**: suite JS 113 tests TestFramework (94 base + 19 de `test-portal-data.js`) + 70 tests con jsdom (32 de `test-dom.js` + 38 de `test-preguntas.js`) (fuente canonica: `tests/README.md`). Y 313 pruebas Python.
+9. **Tests JS**: suite JS 113 tests TestFramework (94 base + 19 de `test-portal-data.js`) + 71 tests con jsdom (32 de `test-dom.js` + 39 de `test-preguntas.js`) (fuente canonica: `tests/README.md`). Y 313 pruebas Python.
 10. **`SENTIMENT_CONFIDENCE_THRESHOLD` eliminado** (Fase 0): motor `sentiment_engine.py` eliminado v3.2.0; la constante zombie fue removida junto con sus tests. No existe en el codigo actual.

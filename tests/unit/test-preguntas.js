@@ -159,6 +159,13 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const hayListaTotal = !!document.querySelector('.preguntas-lista');
   const hayResultadoTotal = !!document.querySelector('.preguntas-resultado');
 
+  // Una segunda pregunta que pasa por la IA: el mensaje ya lleva la conversación anterior.
+  consultaSimulada = { se_puede: true, operacion: 'carreras', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: 'mejor', motivo: '' };
+  document.body.innerHTML = P.render();
+  await P.preguntar('¿y cuál es la mejor carrera por NPS?');
+  const enviosIA = llamadasExternas.filter(function (c) { return String(c.url).indexOf('/interpretar') !== -1; });
+  const cuerpoConMemoria = String(enviosIA[enviosIA.length - 1].opciones.body);
+
   const texto = (r) => [
     (r.lineas || []).join(' | '),
     r.titulo || '',
@@ -333,7 +340,11 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
     assertIncludes(cuerpo, 'Cómo está organizado el cuestionario', 'la estructura del cuestionario');
     assertIncludes(cuerpo, 'plana docente y desarrollo profesional solo en Graduados', 'las secciones propias de Graduados');
     assertIncludes(cuerpo, '## Menú — Estudiantes Pregrado 2025-2', 'el menú viaja con todos los períodos');
-    assertIncludes(cuerpo, 'Conversación reciente', 'y con lo último que se preguntó (para los seguimientos)');
+  });
+
+  test('la segunda pregunta lleva la conversación anterior (para los seguimientos)', () => {
+    assertIncludes(cuerpoConMemoria, 'Conversación reciente', 'lo último que se preguntó');
+    assertIncludes(cuerpoConMemoria, 'economía', 'la pregunta anterior, resumida');
   });
 
   test('toda respuesta dentro de alcance cita su encuesta (y ningún archivo)', () => {

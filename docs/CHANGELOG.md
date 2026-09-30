@@ -14,7 +14,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué fallaba.** Un seguimiento como "y del 2025?" no se podía responder: el mensaje al modelo llevaba el menú de **un solo período** (el detectado, casi siempre el más nuevo) y **nada de lo anterior**, así que no sabía a qué se refería ni qué había publicado el 2025.
 - **Qué cambió.** El portal manda ahora el **menú de todos los períodos publicados** (un bloque `## Menú — …` por cada uno) y agrega al contexto una sección **Conversación reciente** con los dos últimos turnos (pregunta y respuesta). El formulario que devuelve el modelo puede apuntar a **otro período** distinto del detectado, y la página cuenta sobre el suyo. En la función (`survey-tracker`), el tope del menú sube de 16 000 a 40 000 caracteres y una regla nueva le dice que complete los seguimientos con lo anterior.
 - **Medido antes del arreglo:** el segundo envío llevaba 6 586 caracteres de menú con **un solo bloque** (`## Menú — Estudiantes Pregrado 2026-1`) y sin conversación; el modelo respondía honestamente "no hay datos del período 2025 en el menú actual".
-- **Pruebas:** asistente 1.9 en jsdom **38** (la del mensaje ahora exige todos los períodos y la conversación).
+- **Pruebas:** asistente 1.9 en jsdom **38 → 39** (una nueva: la segunda pregunta lleva la conversación anterior).
 
 ## 2026-09-30 — El bloque de respuesta se lee como una conversación (formato D)
 
