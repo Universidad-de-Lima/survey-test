@@ -643,6 +643,7 @@
 }
 
 .preguntas-cuadro .survey-bar {
+  display: block;
   width: var(--w);
   background: var(--teal);
 }
