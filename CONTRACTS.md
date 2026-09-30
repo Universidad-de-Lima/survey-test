@@ -513,7 +513,7 @@ Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunt
 
 ## Contrato de `/api/cuota` (cupo del asistente)
 
-Solo lo consume `zoho-survey/shared/js/portal/portal-preguntas.js` (aviso de espera del item 1.9).
+No lo consume el portal: el aviso de espera ya no muestra el cupo. Sirve para consultar el contador a mano (por ejemplo `curl https://qr-smoky-theta.vercel.app/api/cuota`).
 
 Peticion: `GET` (sin parametros).
 
@@ -521,4 +521,4 @@ Respuesta 200: `{ "usadoMinuto": n, "limiteMinuto": 15, "usadoDia": n, "limiteDi
 
 - Cuenta **solo las preguntas enviadas a Google** (las que gastan el cupo del plan gratuito); se incrementa en `/api/interpretar`.
 - El dia y el minuto se cortan en **hora del Pacifico**, igual que Google.
-- Solo lectura y sin datos personales; si el contador no responde, la pagina muestra el aviso sin la linea del cupo.
+- Solo lectura y sin datos personales.
