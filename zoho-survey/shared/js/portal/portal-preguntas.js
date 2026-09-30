@@ -217,11 +217,17 @@ window.SurveyPortalPreguntas = (function () {
       };
     }
 
+    // Las preguntas que piden una LISTA de valores ("qué carreras se encuestaron en 2025") no son un
+    // conteo del total: las resuelve el interprete con la operacion "listar".
+    var pideLista = trae('que carreras') || trae('cuales carreras') || trae('lista de carreras') ||
+      trae('que facultades') || trae('cuales facultades') || trae('lista de facultades') ||
+      trae('que ciclos') || trae('cuales ciclos');
+
     // 2) Cuantas respuestas / cuantos alumnos o estudiantes se encuestaron
-    if (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') ||
+    if (!pideLista && (trae('cuantas respuestas') || trae('cuantos respondieron') || trae('cuantas encuestas') ||
         trae('participaron') || trae('se encuest') || trae('fueron encuest') || trae('encuestados') ||
         trae('cuantos alumnos') || trae('cuantas alumnas') || trae('cuantos estudiantes') ||
-        trae('cuanta gente') || trae('cuantas personas') || trae('tamano de la muestra') || trae('muestra')) {
+        trae('cuanta gente') || trae('cuantas personas') || trae('tamano de la muestra') || trae('muestra'))) {
       var p = periodoDeLaPregunta(t, '1.0');
 
       // Si la pregunta nombra una carrera, se responde con el total de esa carrera.
@@ -857,7 +863,30 @@ window.SurveyPortalPreguntas = (function () {
       if (!objetivo) return { problema: 'No encontré la pregunta "' + f.pregunta_objetivo + '" en las encuestas publicadas.' };
       var vo = valoresDe(objetivo, f.valores_objetivo);
       if (vo.problema) return vo;
+      // "listar" sin valores = todos los valores publicados de esa pregunta (qué carreras hay).
+      if (f.operacion === 'listar' && !vo.valores.length) {
+        vo.valores = (tabla.opciones[objetivo] || []).filter(function (o) {
+          return o && sin(o) !== sin('(sin respuesta)');
+        });
+      }
       if (!vo.valores.length) return { problema: 'No se indicó qué valores contar de "' + objetivo + '".' };
+      if (f.operacion === 'listar') {
+        var conDatos = vo.valores.map(function (v) {
+          return { valor: v, cuenta: contarEnTabla(tabla, sub, objetivo, [v]) };
+        }).filter(function (x) { return x.cuenta > 0; }).sort(function (a, b) { return b.cuenta - a.cuenta; });
+        return {
+          titulo: objetivo + ' en ' + p.periodo + (filtroTexto ? ' — ' + filtroTexto : ''),
+          lineas: ['En total: ' + n(denom) + ' respuestas.'].concat(conDatos.map(function (x) {
+            return x.valor + ': ' + n(x.cuenta) + ' respuestas.';
+          })),
+          cuadro: conDatos.length <= 6
+            ? cuadro(
+                [{ rotulo: 'Encuestados', valor: n(tabla.respuestas) }, { rotulo: 'Con datos', valor: n(denom) }],
+                [{ titulo: objetivo, base: denom, filas: conDatos }])
+            : null,
+          fuentes: [fuente(p, 'ids')]
+        };
+      }
       var cuenta = contarEnTabla(tabla, sub, objetivo, vo.valores);
       var lecturas = [lecturaDeConteo(vo.valores, cuenta, denom)];
       // "trabajan" admite dos lecturas cuando el grupo mezcla trabajo con prácticas: se dan

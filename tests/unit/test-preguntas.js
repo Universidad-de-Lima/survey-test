@@ -81,7 +81,7 @@ function assertIncludes(texto, trozo, msg) {
 
 const P = window.SurveyPortalPreguntas;
 let nps2026, respuestas2026, comparacion, hora, clima, npsIngenieria;
-let porAnio, porCarrera, enTotal, alumnos20261;
+let porAnio, porCarrera, carreras2025, enTotal, alumnos20261;
 let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
 
 (async function () {
@@ -167,6 +167,13 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   const enviosIA = llamadasExternas.filter(function (c) { return String(c.url).indexOf('/interpretar') !== -1; });
   const cuerpoConMemoria = String(enviosIA[enviosIA.length - 1].opciones.body);
   consultaSimulada = stubPrevio;
+
+  // "Qué carreras se encuestaron en 2025": lo resuelve el intérprete con "listar" y la página cuenta.
+  const stubLista = consultaSimulada;
+  consultaSimulada = { se_puede: true, operacion: 'listar', periodo: 'Estudiantes Pregrado 2025-2', filtros: [], pregunta_objetivo: 'Carrera', valores_objetivo: [], entidad: '', orden: '', motivo: '' };
+  document.body.innerHTML = P.render();
+  carreras2025 = await P.responderConIA('¿Qué carreras se encuestaron en el 2025?');
+  consultaSimulada = stubLista;
 
   const texto = (r) => [
     (r.lineas || []).join(' | '),
