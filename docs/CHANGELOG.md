@@ -2,11 +2,12 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
-## 2026-09-30 — Contador de cupo del intérprete (se conserva para consultarlo, fuera del aviso)
+## 2026-09-30 — El contador de cupo se retira (no coincidía con AI Studio)
 
-- **Qué se hizo.** El intérprete cuenta las preguntas que envía a Google (las que gastan el cupo del plan gratuito: 15 por minuto y 500 por día, por proyecto) y las expone en `/api/cuota` (GET, solo lectura). Cuenta **solo** las que van a Google: las que resuelven las reglas de la página no gastan cupo. El día y el minuto se cortan en **hora del Pacífico**, igual que Google. Sin datos de nadie: dos números.
-- **Qué se probó y se retiró.** Se mostró el cupo dentro del aviso de espera ("3 de 15 preguntas por minuto · 27 de 500 preguntas por día"); al verlo funcionando se decidió **quitarlo por no aportar valor**. El aviso volvió a su texto: "Consultando… / Buscando en los datos publicados. Puede tardar unos minutos."
-- **Pruebas:** `interpretar` (vitest) 14 → **16**, más 5 pruebas del contador y 3 del endpoint nuevo (`/api/cuota`).
+- **Qué se probó.** Se agregó un contador propio de las preguntas que se envían a Google (15 por minuto y 500 por día, con corte en hora del Pacífico), un endpoint `/api/cuota` para consultarlo y una fila con el cupo dentro del aviso de espera del ítem 1.9.
+- **Por qué se retira.** El número propio **no coincide con el de AI Studio** — Google cuenta además reintentos y cualquier otro uso del proyecto —, así que en vez de informar confundía. Se quitaron la fila del aviso, el contador, el endpoint y sus pruebas.
+- **Cómo se consulta el cupo ahora.** Directamente en **AI Studio → Límites de frecuencia**, que es la fuente real (15 solicitudes por minuto y 500 por día para `gemini-3.5-flash-lite`).
+- **El aviso de espera** queda con su texto de siempre: «Consultando… / Buscando en los datos publicados. Puede tardar unos minutos.»
 
 ## 2026-09-30 — El intérprete del asistente arranca con Gemini 3.5 Flash Lite
 

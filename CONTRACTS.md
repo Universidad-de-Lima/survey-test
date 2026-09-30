@@ -508,17 +508,3 @@ Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunt
 - Invariante: la funcion **no calcula cifras**; el portal valida cada nombre contra los datos publicados (si no existe, lo dice) y cuenta sobre `respuestas.json`. Error: 502 si ningun modelo responde.
 
 - Cadena de modelos de la funcion: **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY`; corte a los 20 s) y, si falla, **NVIDIA** (llave `NVIDIA_API_KEY`): `nvidia/nemotron-3.5-lightning-30b-a3b` -> `z-ai/glm-5.3-flash` -> `poolside/laguna-xs-2.1` (corte a los 90 s). Si falta una llave, ese proveedor se omite.
-
-- Cada pregunta que se envia a Google suma 1 al **contador de cupo** (`/api/cuota`); las que atiende NVIDIA no suman.
-
-## Contrato de `/api/cuota` (cupo del asistente)
-
-No lo consume el portal: el aviso de espera ya no muestra el cupo. Sirve para consultar el contador a mano (por ejemplo `curl https://qr-smoky-theta.vercel.app/api/cuota`).
-
-Peticion: `GET` (sin parametros).
-
-Respuesta 200: `{ "usadoMinuto": n, "limiteMinuto": 15, "usadoDia": n, "limiteDia": 500 }`.
-
-- Cuenta **solo las preguntas enviadas a Google** (las que gastan el cupo del plan gratuito); se incrementa en `/api/interpretar`.
-- El dia y el minuto se cortan en **hora del Pacifico**, igual que Google.
-- Solo lectura y sin datos personales.
