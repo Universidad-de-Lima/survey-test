@@ -2,6 +2,25 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — El asistente busca los datos y el modelo redacta (sin catálogo de operaciones)
+
+- **Qué pasaba.** El asistente elegía entre una lista cerrada de operaciones (`contar`, `porcentaje`,
+  `cruce`, `listar`…) y no veía ninguna cifra: cada forma nueva de preguntar exigía una regla nueva, y
+  preguntas como "compara la satisfacción de Psicología entre 2025-2 y 2026-1" terminaban en los totales de
+  la universidad.
+- **Qué cambió.** El servicio ahora atiende **dos pasos**: primero el modelo dice **qué datos hay que leer**
+  (períodos, preguntas y filtros, copiados del menú); después el portal **busca esos datos** en los JSON
+  publicados (bloques de pocos KB) y el modelo **redacta** la respuesta. El portal **comprueba que cada
+  cifra escrita esté en los datos** antes de mostrarla; si no, no la muestra.
+- **Lo que se retiró.** El catálogo de operaciones del portal (863 líneas del módulo), el registro anónimo
+  de preguntas y la lista de "las más preguntadas": la pantalla ya no registra nada.
+- **Verificación en la página publicada.** "Compara la satisfacción de Psicología entre 2025-2 y 2026-1"
+  devuelve 96,84 % → 97,22 % (los tres mejores niveles de Psicología en cada período) citando las dos
+  encuestas, en ~23 s; para eso el modelo pidió dos períodos, dos preguntas y el filtro `Carrera =
+  Psicología`, y el portal le mandó **1 175 caracteres** de datos.
+- **Pruebas:** asistente 1.9 en jsdom 40 → **16** (la suite se reescribió para el flujo nuevo, que tiene
+  menos piezas); `interpretar` (vitest) 14 → **17** (el plan, la redacción y el recorte del plan).
+
 ## 2026-09-30 — El conteo se lee de un vistazo: recuadros y una línea con colores
 
 - **Qué cambió.** En un conteo: la línea de la respuesta va en un **recuadro, igual que la pregunta**; el título ("Cruce: …") ya no se repite arriba (vive en la fuente); los datos iniciales son **dos tarjetas** (los encuestados del período y el grupo contado: 598 y 14) hechas con la tarjeta del portal; y el gráfico es la **barra de distribución del proyecto** (una línea con un tramo de color por valor, con su leyenda y sus conteos) en vez de una barra por renglón, que no se entendía. Los ceros siguen nombrados en la leyenda y no llevan tramo.

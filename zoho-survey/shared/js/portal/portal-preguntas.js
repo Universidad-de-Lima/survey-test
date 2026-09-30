@@ -374,7 +374,8 @@ window.SurveyPortalPreguntas = (function () {
     if (!conteo.length) return null;
     var extra = [];
     var rr = p.dash && p.dash.resumen && p.dash.resumen.csat;
-    if (campo === 'La Universidad de Lima' && rr) {
+    // La cifra del portal es la del período completo: solo vale decirlo cuando no hay filtro.
+    if (campo === 'La Universidad de Lima' && rr && !filtros.length) {
       extra.push('- Satisfacción del período: ' + pct(rr.score) + ' (la cifra que usa el portal).');
     }
     var sat = satisfaccionDe(tabla, filas, campo);

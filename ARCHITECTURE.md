@@ -335,46 +335,31 @@ Reglas que sostienen el orden:
 
 ### Item 1.9 — Asistente de preguntas
 
-`shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON publicados** de cada periodo. El motor reconoce el dato pedido, el periodo, la carrera, la facultad o el ciclo, y devuelve el numero real.
+`shared/js/portal/portal-preguntas.js` responde preguntas sobre las encuestas usando **solo los JSON
+publicados** de cada período. No hay catálogo de operaciones ni reglas por pregunta: el trabajo se reparte
+en dos pasos y una comprobación.
 
-Si las palabras de la pregunta no alcanzan, el portal arma un mensaje con **tres piezas** — el contexto del proyecto (`zoho-survey/shared/config/asistente_contexto.json`: qué es el proyecto, cómo están los datos, cómo está organizado el cuestionario, las reglas y las equivalencias; más, cuando ya hubo preguntas, una sección **Conversación reciente** con los dos últimos turnos), el **menú de todos los períodos publicados** (cada pregunta con sus opciones y las palabras con que la gente las pide, armado en vivo desde `respuestas.json`) y la pregunta — y lo envia a la funcion `/api/interpretar` (proyecto survey-tracker; cadena: Google `gemini-3.5-flash-lite` y, de respaldo, NVIDIA). La funcion devuelve **un formulario lleno** (`{se_puede, operacion, periodo, filtros, pregunta_objetivo, valores_objetivo, entidad, orden, motivo}`) con nombres copiados del menu; el portal **valida cada nombre contra los datos publicados** (si no existe, lo dice) y hace las cuentas sobre `respuestas.json`: **el modelo no calcula ni redacta cifras**, solo elige nombres.
+1. **El modelo dice qué leer.** El portal le manda el contexto del proyecto
+   (`zoho-survey/shared/config/asistente_contexto.json`), la conversación reciente y el **menú** de todas
+   las encuestas publicadas (preguntas y opciones, sin cifras) a `POST /api/interpretar` con
+   `paso: "plan"`; el servicio devuelve los períodos, las preguntas y los filtros que hacen falta.
+2. **El portal busca esos datos.** Con el plan, arma los bloques con lo publicado: el reparto de cada
+   pregunta y, cuando el plan pide un grupo, el NPS y la satisfacción de cada carrera, facultad o ciclo.
+   Los filtros se aplican sobre las filas de `respuestas.json`. Los bloques son de pocos KB, nunca la tabla
+   completa.
+3. **El modelo redacta** la respuesta en español con esos bloques y cita la encuesta de la que sale
+   (`Fuente: …`), y el portal **comprueba cada cifra**: si alguna no está en los datos enviados, no se
+   muestra y se avisa. Nada se inventa.
 
-El bloque se lee como una conversación: la pregunta va en una **burbuja** a la derecha y la respuesta en un bloque al costado (`.preguntas-burbuja-pregunta` / `.preguntas-burbuja-respuesta`), sin rótulos de «Pregunta:» ni «Respuesta:». Dentro de la respuesta, el **cuadro** lleva tarjetas (los números del período) y uno o más **gráficos**: hoy una línea con colores —un tramo por valor, con su leyenda— reusando la tarjeta (`survey-kpi`) y la barra de distribución (`csat-bar-row` / `csat-segment`) del portal. El cuadro lo llena la página con números publicados (`cuadro(tarjetas, graficos)`). Si el grupo mezcla trabajo con prácticas, se dan las **dos lecturas** ("100 % considerando …" y "57,14 % considerando …"): es una regla de la página, el modelo no cuenta nada.
+El bloque se lee como una conversación: la pregunta va en una **burbuja** a la derecha y la respuesta en
+otra, al costado (`.preguntas-burbuja-pregunta` y `.preguntas-burbuja-respuesta`), sin negritas y con la
+fuente en gris. No hay gráficos ni lista de "las más preguntadas", y **no se registra ninguna pregunta**.
 
-Reglas del modulo:
-
-1. **Nada se inventa y nada sale de fuera de las encuestas.** Si el dato no esta en los JSON, responde que solo contesta sobre las encuestas (hora, clima, noticias y cualquier tema ajeno quedan fuera por definicion).
-2. **Toda respuesta cita su fuente**: la encuesta o encuestas a las que pertenece ("Fuente: Graduados Pregrado 2026"), para poder comprobarla. El nombre del archivo no se muestra.
-3. Los archivos grandes (`dimensiones.json`, `sentimiento.json`, `respuestas.json`) se leen **solo si la pregunta los pide**.
-4. La pantalla vive en el item 1.9 del portal y su estilo esta en `shared/css/portal/components.css` (clases `.preguntas*`).
-5. Un nombre pegado a un "de" ("la carrera de Economia") no cuenta como tema: esas preguntas las resuelve el formulario.
-
-Se comprueba con `tests/unit/test-preguntas.js` (jsdom, lee los JSON del repositorio).
-
-## Patrones Arquitectonicos
-
-- **Datos precomputados**: el frontend consume JSON, no recalcula agregados que pertenecen al ETL.
-- **Separacion de datos y vista**: los JSON no deben depender del layout visual.
-- **Delegacion progresiva**: `dashboard.js` delega en modulos compartidos cuando existen; mantiene fallback inline para KPIs, distribuciones y tablas detalladas.
-- **Compatibilidad backward**: los contratos legacy se conservan cuando todavia hay consumidores (ej. `resumenes.json (parte nps_carrera)`/`resumenes.json (parte csat_carrera)` como fallback para encuestas sin ciclo).
-- **Degradacion controlada**: errores de carga JSON opcionales se tratan con `console.warn` sin romper toda la pagina. Endpoints criticos (`dashboard_data`, `filtros`, `dimensiones`) fallan rapido via `Promise.all`.
-- **Resolucion de dependencias en runtime**: los modulos IIFE referencian `window.Survey*` al momento de uso, no al de carga. Esto permite que el dashboard funcione aunque falten modulos opcionales.
-
-## Seguridad
-
-- Cualquier contenido externo usado en HTML debe pasar por `escapeHTML()` o `sanitizeHTML()`.
-- `sanitizeHTML()` permite solo una lista reducida de etiquetas necesarias para tooltips y textos enriquecidos: `br, strong, em, i, span, table, tr, td, th` (9 tags, sin atributos).
-- No introducir dependencias runtime para sanitizacion sin justificar el costo operacional.
-
-## Ingesta De Encuestas
-
-Tres caminos, sin credenciales en el navegador:
-
-1. **Webhook de Zoho Survey** (acumular): cada respuesta crea una incidencia; `zoho_inbox.yml` la normaliza, la **enmascara** y la guarda en `data/zoho_pendientes/<encuesta>.jsonl`. No corre el ETL. La incidencia se cierra al registrarse.
-2. **Release + `workflow_dispatch`** (procesar): el CSV se adjunta a un Release y se lanza *Build and Deploy Survey* con `release_tag`. El ETL corre en Actions.
-3. **Botón de refrescar del portal** (pedir el proceso): el botón llama a `POST /api/procesar-encuesta` en Vercel, que guarda la llave y dispara `repository_dispatch: procesar_datos` sobre *Build and Deploy Survey*, que convierte la bandeja en el CSV y ejecuta el ETL. El ETL sigue condicionado al gate de CSVs, así que un disparo sin CSV solo redespliega el sitio.
-
-El portal (`zoho-survey/index.html`) es **solo lectura**: no pide credenciales. Su botón de refrescar hace dos cosas: pide el proceso (camino 3) y vuelve a leer los datos publicados. La llave de GitHub vive en Vercel, nunca en el navegador.
+- Las preguntas de seguimiento ("¿y del 2025?") se resuelven con la conversación reciente, que viaja en el
+  contexto.
+- Lo que no está en los datos (la hora, el clima, otra universidad) se responde con un aviso corto.
+- El contrato del servicio y la cadena de modelos están en `CONTRACTS.md`.
+- Se comprueba con `tests/unit/test-preguntas.js` (jsdom, lee los JSON del repositorio).
 
 ### Flujo
 

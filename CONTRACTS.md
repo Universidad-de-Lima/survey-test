@@ -629,22 +629,28 @@ build_json.py procesa las 7 categorias (no solo pregrado/graduados). Por nivel i
 ## Contrato de `/api/interpretar` (asistente del portal)
 
 Solo lo consume `zoho-survey/shared/js/portal/portal-preguntas.js`; no forma parte de los JSON por periodo.
+Atiende **dos pasos**, según el campo `paso`:
 
-Peticion (POST): `{ pregunta (<=300), contexto (<=6000), menu (<=40000) }`.
+| `paso` | Qué manda el portal | Qué devuelve la funcion |
+| --- | --- | --- |
+| `plan` | `{ paso, pregunta (<=300), contexto (<=8000), menu (<=40000) }` | `{ plan: { se_puede, periodos[], preguntas[], filtros[{pregunta, valores[]}], motivo } }` |
+| `respuesta` | `{ paso, pregunta (<=300), bloques (<=20000) }` | `{ respuesta: "texto en español (<=1200)" }` |
 
-El `menu` viaja con **todos los períodos publicados** (un bloque `## Menú — <encuesta> <período>` por
-cada uno) y `contexto` puede traer, al final, una sección **Conversación reciente** con los dos
-últimos turnos: asi una pregunta de seguimiento ("y del 2025?") se resuelve contra lo anterior.
-
-`contexto` viaja armado desde `zoho-survey/shared/config/asistente_contexto.json` con cinco
-secciones: *Qué es*, *Cómo están los datos*, *Cómo está organizado el cuestionario*, *Reglas* y
-*Equivalencias*.
-
-Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunta_objetivo, valores_objetivo[], entidad, orden, motivo } }`.
-
-- `operacion`: `contar | porcentaje | cruce | listar | nps | satisfaccion | carreras | facultades | ciclos | dimensiones | comentarios | temas | comparacion | fechas | periodos | ninguna`.
-  - `listar` = "qué valores hay de una pregunta" (qué carreras se encuestaron): el portal cuenta **todos sus valores publicados** y responde la lista; `valores_objetivo` puede venir vacío (todos) o con los que se pidieron.
-- `filtros`: `[{ pregunta, valores[] }]` con nombres exactos del menu; `pregunta_objetivo` y `valores_objetivo` igual.
-- Invariante: la funcion **no calcula cifras**; el portal valida cada nombre contra los datos publicados (si no existe, lo dice) y cuenta sobre `respuestas.json`. Error: 502 si ningun modelo responde.
-
-- Cadena de modelos de la funcion: **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY`; corte a los 20 s) y, si falla, **NVIDIA** (llave `NVIDIA_API_KEY`): `nvidia/nemotron-3.5-lightning-30b-a3b` -> `z-ai/glm-5.3-flash` -> `poolside/laguna-xs-2.1` (corte a los 90 s). Si falta una llave, ese proveedor se omite.
+- **`plan`**: el modelo dice **que datos hay que leer**. `periodos`, `preguntas` y `filtros` se copian del
+  menu (nombres exactos); `se_puede: false` + `motivo` significa que la respuesta no esta en los datos.
+  No escribe cifras.
+- **`respuesta`**: el modelo **redacta** con los `bloques` que le manda el portal y cierra con una linea
+  `Fuente: …`. El portal descarta la respuesta si trae alguna cifra que no este en los bloques.
+- **`bloques`**: los arma el portal con los JSON publicados (repartos de una pregunta, NPS, satisfaccion,
+  los tres mejores niveles, y NPS y satisfaccion por carrera, facultad o ciclo). Son la unica fuente de las
+  cifras: **el modelo no calcula**.
+- **`menu`**: las preguntas publicadas con sus opciones, de **todos** los periodos; nunca lleva cifras.
+- **`contexto`**: sale de `zoho-survey/shared/config/asistente_contexto.json` (que es el proyecto, como estan
+  los datos, como esta organizado el cuestionario, reglas, equivalencias y palabras coloquiales); la
+  **conversacion reciente** viaja primero, para que ningun tope la recorte.
+- Errores: `400` si falta la pregunta (menos de 3 letras); `502` si ningun modelo responde.
+- Cadena de modelos: **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY`; corte a los 20 s) y, si
+  falla, **NVIDIA** (llave `NVIDIA_API_KEY`): `nvidia/nemotron-3.5-lightning-30b-a3b` -> `z-ai/glm-5.3-flash`
+  -> `poolside/laguna-xs-2.1` (corte a los 90 s). Si falta una llave, ese proveedor se omite.
+- El paso `formulario` (el catalogo de operaciones) sigue en la funcion mientras se retira; el portal ya no
+  lo usa.
