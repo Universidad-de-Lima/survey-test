@@ -2,6 +2,15 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — El intérprete del asistente arranca con Gemini 3.5 Flash Lite
+
+- **Qué pasaba.** La función `/api/interpretar` (Vercel) usaba solo modelos gratuitos de NVIDIA: medido con la pregunta real del portal, tardaba **90 962 ms** — el primer modelo se cortaba a los 90 segundos y recién el siguiente contestaba. Ese paso era el **99,7 %** del tiempo total de la consulta.
+- **Qué se hizo.** La cadena ahora empieza por **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY` en Vercel; medido: 983 / 1 644 / 1 808 ms y 3 de 3 formularios correctos) y conserva los modelos de NVIDIA como respaldo (`nvidia/nemotron-3.5-lightning-30b-a3b` → `z-ai/glm-5.3-flash` → `poolside/laguna-xs-2.1`). El primer intento corta a los 20 s (`INTERPRETAR_TIMEOUT_GOOGLE_MS`) y los de NVIDIA a los 90 s (`INTERPRETAR_TIMEOUT_MS`); si falta una llave, ese proveedor se salta en vez de fallar.
+- **Comparación medida antes de decidir** (misma pregunta y mismo menú): `Gemini 3.8/3.7/3.5 Flash` fallan por saturación (503) en todas las rondas; `Gemini 3.1 Flash Lite` (2,1-2,7 s) y `Mistral codestral-latest` (1,96 s) devuelven formularios equivocados (ponen la cuenta como filtro); `Gemma 4` responde 500; los modelos gratis de **OpenCode Zen** están bloqueados por el proveedor («el plan gratuito solo se puede usar desde dentro de OpenCode»), así que quedan fuera.
+- **Cupos del plan gratuito de Google** (proyecto `gen-lang-client-0581927016`, leído en AI Studio): 15 solicitudes/minuto, 250 000 tokens/minuto y 500 solicitudes/día para el 3.5 Flash Lite — **por proyecto**, no por llave.
+- **Documentación:** `CONTRACTS.md` (cadena de la función), `ARCHITECTURE.md` (ítem 1.9) y el `README.md` del proyecto survey-tracker (variables de entorno del asistente).
+- **Pruebas:** `interpretar` (vitest) 11 → **14** (Google primero, respaldo NVIDIA, corte por proveedor y lectura de la respuesta de cada uno).
+
 ## 2026-09-29 — El asistente del portal entiende con contexto y menú
 
 - **Qué pasaba.** El portal mandaba la pregunta sola a `/api/interpretar` y esa función devolvía cuatro campos (`dato`, `periodo`, `entidad`, `orden`) sin saber qué preguntas existen; el portal volvía a adivinar con reglas. Preguntas como «¿qué porcentaje de graduados de la carrera de economía trabajan?» terminaban respondiendo sobre la satisfacción de «La carrera».

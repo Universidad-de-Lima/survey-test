@@ -506,3 +506,5 @@ Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunt
 - `operacion`: `contar | porcentaje | cruce | nps | satisfaccion | carreras | facultades | ciclos | dimensiones | comentarios | temas | comparacion | fechas | periodos | ninguna`.
 - `filtros`: `[{ pregunta, valores[] }]` con nombres exactos del menu; `pregunta_objetivo` y `valores_objetivo` igual.
 - Invariante: la funcion **no calcula cifras**; el portal valida cada nombre contra los datos publicados (si no existe, lo dice) y cuenta sobre `respuestas.json`. Error: 502 si ningun modelo responde.
+
+- Cadena de modelos de la funcion: **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY`; corte a los 20 s) y, si falla, **NVIDIA** (llave `NVIDIA_API_KEY`): `nvidia/nemotron-3.5-lightning-30b-a3b` -> `z-ai/glm-5.3-flash` -> `poolside/laguna-xs-2.1` (corte a los 90 s). Si falta una llave, ese proveedor se omite.
