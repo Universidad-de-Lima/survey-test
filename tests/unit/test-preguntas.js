@@ -172,6 +172,8 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   await enVueloSinCupo;
   cuotaFalla = false;
   retrasoInterpretar = 0;
+  // Se deja el formulario simulado como estaba: lo usan las pruebas que siguen.
+  consultaSimulada = { se_puede: true, operacion: 'satisfaccion', periodo: '', filtros: [], pregunta_objetivo: '', valores_objetivo: [], entidad: 'Psicología', orden: '', motivo: '' };
 
   const texto = (r) => (r.lineas || []).join(' | ') + ' ' + (r.titulo || '');
   const fuentes = (r) => (r.fuentes || []).join(' ');
