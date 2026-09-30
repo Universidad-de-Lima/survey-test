@@ -18,6 +18,7 @@ window.SurveyPortalPreguntas = (function () {
   // Traduce la pregunta a una consulta ordenada cuando las palabras no alcanzan.
   // No responde: solo dice que dato se pide (ver survey-tracker/apps/backend/api/interpretar.js).
   var INTERPRETE_URL = 'https://qr-smoky-theta.vercel.app/api/interpretar';
+  var CUOTA_URL = 'https://qr-smoky-theta.vercel.app/api/cuota';
 
   var CATALOGO = null;   // periodos con sus JSON chicos
   var DIMS = null;       // dimensiones.json (grande: se lee solo si hace falta)
@@ -966,12 +967,45 @@ window.SurveyPortalPreguntas = (function () {
 
   // La respuesta puede tardar (la cadena gratuita de modelos): la pantalla avisa en el acto
   // y el aviso se quita cuando llega la respuesta.
+  // El aviso de espera: mientras el modelo piensa, muestra ademas el cupo usado
+  // (las preguntas que gastan el cupo gratuito del intérprete).
   function avisoDeEspera(caja) {
     var bloque = document.createElement('div');
     bloque.className = 'preguntas-respuesta preguntas-espera';
     bloque.innerHTML = '<p class="preguntas-respuesta-titulo">Consultando…</p>' +
-      '<ul class="preguntas-lista"><li>Buscando en los datos publicados. Puede tardar un par de minutos.</li></ul>';
+      '<ul class="preguntas-lista">' +
+      '<li>Buscando en los datos publicados. Puede tardar unos minutos.</li>' +
+      '<li class="preguntas-cuota" hidden></li></ul>';
     caja.insertBefore(bloque, caja.firstChild);
+    pintarCuota(bloque.querySelector('.preguntas-cuota'));
+  }
+
+  /** La frase del cupo, ya con los números del contador. */
+  function fraseDeCuota(c) {
+    if (c.usadoDia >= c.limiteDia) {
+      return 'Cupo del día agotado: respondiendo con el modelo de respaldo, puede tardar más.';
+    }
+    var texto = '(' + c.usadoMinuto + ' de ' + c.limiteMinuto + ' preguntas por minuto · ' +
+                c.usadoDia + ' de ' + c.limiteDia + ' preguntas por día)';
+    if (c.usadoDia >= c.limiteDia * 0.9) texto += ' — queda poco cupo del día';
+    return texto;
+  }
+
+  /**
+   * Pide el contador y rellena la linea del cupo. Si no responde, la linea queda
+   * oculta: el aviso se ve igual que antes y la respuesta no se afecta.
+   */
+  function pintarCuota(linea) {
+    if (!linea) return;
+    fetch(CUOTA_URL, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (c) {
+        if (!c || !linea.parentNode) return;
+        if (typeof c.usadoMinuto !== 'number' || typeof c.usadoDia !== 'number') return;
+        linea.textContent = fraseDeCuota(c);
+        linea.hidden = false;
+      })
+      .catch(function () { });
   }
 
   function quitarAviso(caja) {
@@ -1049,7 +1083,8 @@ window.SurveyPortalPreguntas = (function () {
 
   return {
     cargar: cargar,
-    preguntar: preguntar,
+    fraseDeCuota: fraseDeCuota,
+  preguntar: preguntar,
     responder: function (texto) { return cargar().then(function () { return respuesta(sin(texto)); }); },
     iniciar: iniciar,
     responderConIA: responderConIA,

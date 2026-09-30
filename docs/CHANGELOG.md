@@ -2,6 +2,16 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — El aviso del asistente muestra el cupo de preguntas
+
+- **Qué se hizo.** Mientras el asistente piensa, el aviso ya no dice solo "Consultando…": agrega el cupo usado, tal como pidió el usuario:
+  `(3 de 15 preguntas por minuto · 27 de 500 preguntas por día)`. Al 90 % del día suma "— queda poco cupo del día" y, agotado, avisa que responde con el modelo de respaldo.
+- **Cómo se cuenta.** `/api/interpretar` suma 1 en Firebase **solo cuando la pregunta se envía a Google** (las que resuelven las reglas de la página no gastan cupo y no se cuentan). El día y el minuto se cortan en **hora del Pacífico**, igual que Google.
+- **Endpoint nuevo:** `/api/cuota` (GET, solo lectura) devuelve `{usadoMinuto, limiteMinuto, usadoDia, limiteDia}`. Contrato en `CONTRACTS.md`.
+- **Sin datos de nadie:** se cuentan preguntas y nada más (ni texto, ni dirección IP).
+- **Si el contador no responde**, la página muestra el aviso como antes (sin la línea del cupo): nunca se rompe la pantalla.
+- **Pruebas:** asistente 1.9 en jsdom 34 → **38**; `interpretar` (vitest) 14 → **16**, más 5 pruebas del contador y 3 del endpoint nuevo.
+
 ## 2026-09-30 — El intérprete del asistente arranca con Gemini 3.5 Flash Lite
 
 - **Qué pasaba.** La función `/api/interpretar` (Vercel) usaba solo modelos gratuitos de NVIDIA: medido con la pregunta real del portal, tardaba **90 962 ms** — el primer modelo se cortaba a los 90 segundos y recién el siguiente contestaba. Ese paso era el **99,7 %** del tiempo total de la consulta.
