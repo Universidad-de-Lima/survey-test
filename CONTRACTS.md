@@ -642,7 +642,8 @@ secciones: *Qué es*, *Cómo están los datos*, *Cómo está organizado el cuest
 
 Respuesta 200: `{ "consulta": { se_puede, operacion, periodo, filtros[], pregunta_objetivo, valores_objetivo[], entidad, orden, motivo } }`.
 
-- `operacion`: `contar | porcentaje | cruce | nps | satisfaccion | carreras | facultades | ciclos | dimensiones | comentarios | temas | comparacion | fechas | periodos | ninguna`.
+- `operacion`: `contar | porcentaje | cruce | listar | nps | satisfaccion | carreras | facultades | ciclos | dimensiones | comentarios | temas | comparacion | fechas | periodos | ninguna`.
+  - `listar` = "qué valores hay de una pregunta" (qué carreras se encuestaron): el portal cuenta **todos sus valores publicados** y responde la lista; `valores_objetivo` puede venir vacío (todos) o con los que se pidieron.
 - `filtros`: `[{ pregunta, valores[] }]` con nombres exactos del menu; `pregunta_objetivo` y `valores_objetivo` igual.
 - Invariante: la funcion **no calcula cifras**; el portal valida cada nombre contra los datos publicados (si no existe, lo dice) y cuenta sobre `respuestas.json`. Error: 502 si ningun modelo responde.
 

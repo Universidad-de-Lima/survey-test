@@ -9,6 +9,14 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Nota.** No hay gráfico circular en el proyecto: se reusa la barra de distribución (`csat-bar-row` / `csat-segment`) y los colores de los tokens (`COLORES_DISTRIBUCION` en `constants.js`).
 - **Ajuste de estilo (mismo día).** Las líneas de la respuesta van **sin negrita** y la barra usa **escala de grises** (`COLORES_DISTRIBUCION` en `constants.js`), con el color del texto de cada tramo para que el porcentaje se lea en cualquier tono.
 
+## 2026-09-30 — "¿Qué carreras se encuestaron en el 2025?" lista las carreras (lo resuelve la IA)
+
+- **Qué fallaba.** La regla de "cuántos se encuestaron" atajaba la pregunta por la palabra *encuestaron* y respondía el **total del período** (3998), sin ver que se pedían las **carreras**.
+- **Cómo se arregló.** No con otra regla escrita a mano: se le dio al intérprete una operación nueva, **`listar`** —"qué valores hay de una pregunta"— y la regla del conteo ya no ataja las preguntas de lista ("qué carreras/facultades/ciclos"). El modelo elige la pregunta objetivo (por ejemplo `Carrera`) y la página cuenta **todos sus valores publicados** y responde la lista, de mayor a menor, con el total. Si la pregunta nombra valores concretos, se cuentan esos.
+- **Comprobado en la página.** La pregunta devuelve: *En total: 3998 respuestas* + **Derecho 512 · Administración 497 · Ingeniería Industrial 459 · …**, y las doce carreras suman **3998** exacto.
+- **Alcance.** Sirve para cualquier pregunta del menú y cualquier período (carreras, ciclos, facultades, dimensiones...), sin reglas nuevas por cada forma de preguntar.
+- **Pruebas:** asistente 1.9 en jsdom **39 → 40**.
+
 ## 2026-09-30 — El asistente entiende las preguntas de seguimiento ("y del 2025?")
 
 - **Qué fallaba.** Un seguimiento como "y del 2025?" no se podía responder: el mensaje al modelo llevaba el menú de **un solo período** (el detectado, casi siempre el más nuevo) y **nada de lo anterior**, así que no sabía a qué se refería ni qué había publicado el 2025.
