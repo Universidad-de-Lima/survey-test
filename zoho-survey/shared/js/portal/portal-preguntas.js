@@ -963,7 +963,7 @@ window.SurveyPortalPreguntas = (function () {
     bloque.className = 'preguntas-respuesta' + (r.alcance === false ? ' fuera-de-alcance' : '');
     var html = '';
     if (pregunta) {
-      html += '<p class="preguntas-rotulo">Pregunta: ' + esc(pregunta) + '</p>';
+      html += '<p class="preguntas-pregunta">Pregunta: ' + esc(pregunta) + '</p>';
     }
     html += '<p class="preguntas-rotulo preguntas-rotulo-respuesta">Respuesta:</p>' +
       '<p class="preguntas-respuesta-titulo">' + esc(r.titulo) + '</p>';

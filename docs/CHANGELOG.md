@@ -7,6 +7,7 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 - **Qué cambió.** Cada bloque de respuesta empieza ahora con la **pregunta** tal como se escribió, sigue la etiqueta «Respuesta:», el dato y —cuando la respuesta es un cruce o una sola línea— el **resultado aparte y en negrita**. La fuente conserva su archivo (`Fuente: Graduados Pregrado 2026 — respuestas.json`), como pide la regla de verificabilidad.
 - **Por qué.** Antes los bloques se apilaban sin decir qué se había preguntado; ahora cada uno se explica solo, y el número (que es lo que se viene a buscar) resalta.
 - **Detalle.** Las respuestas que son listas (varios períodos, rankings) siguen mostrándose como lista: solo se destaca el resultado cuando hay un número único.
+- **Estilo de la pregunta.** Va dentro de un recuadro redondeado, con el mismo aspecto que las sugerencias del bloque (elegido entre cinco variantes).
 - **Pruebas:** asistente 1.9 en jsdom 34 → **37**.
 
 ## 2026-09-30 — El contador de cupo se retira (no coincidía con AI Studio)

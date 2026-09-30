@@ -620,6 +620,19 @@
   color: var(--gray-600);
 }
 
+.preguntas-pregunta {
+  display: inline-block;
+  max-width: 100%;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: var(--text-md);
+  line-height: 18px;
+  text-align: left;
+}
+
 .preguntas-rotulo-respuesta {
   margin-top: var(--space-sm);
 }

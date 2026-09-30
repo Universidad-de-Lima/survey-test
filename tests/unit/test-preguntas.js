@@ -139,6 +139,7 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   document.body.innerHTML = P.render();
   await P.preguntar('¿qué porcentaje de graduados de la carrera de economía trabajan?');
   const leer = (sel) => { const e = document.querySelector(sel); return e ? e.textContent : ''; };
+  const textoPregunta = leer('.preguntas-pregunta');
   const textoRotulo = leer('.preguntas-rotulo');
   const textoDato = leer('.preguntas-respuesta-titulo');
   const textoContexto = leer('.preguntas-contexto');
@@ -271,8 +272,9 @@ let cruceGraduados, cruceTiempo, cruceAlumnos, cruceSinFiltro;
   });
 
   test('el bloque muestra la pregunta, la etiqueta y el dato', () => {
-    assertIncludes(textoRotulo, 'Pregunta:', 'la etiqueta de la pregunta');
-    assertIncludes(textoRotulo, 'economía', 'la pregunta tal como se escribió');
+    assertIncludes(textoPregunta, 'Pregunta:', 'la etiqueta de la pregunta');
+    assertIncludes(textoPregunta, 'economía', 'la pregunta tal como se escribió');
+    assertIncludes(textoRotulo, 'Respuesta:', 'la etiqueta de la respuesta');
     assertIncludes(textoDato, 'Cruce: Situación laboral', 'el dato');
   });
 
