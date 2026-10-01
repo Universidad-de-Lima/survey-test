@@ -133,7 +133,6 @@
   --sentiment-neg-bg: var(--danger-pastel);
   --sentiment-pos-bg: var(--success-pastel);
   --sentiment-neu-bg: var(--warning-pastel);
-}
 
   /* ── Colores que estaban sueltos en las hojas (mismos valores, ahora con nombre) ── */
   --line-soft: #eee;                 /* línea tenue (filas de tabla de tooltip) */
@@ -149,3 +148,4 @@
   --scrollbar-thumb-hover: #8a8a8a;  /* la misma barra, al pasar el mouse */
   --ring-pendiente: #6f7480;         /* texto del anillo cuando el período está pendiente */
   --ring-vacio: #dfe3e7;             /* aro del anillo sin datos */
+}
