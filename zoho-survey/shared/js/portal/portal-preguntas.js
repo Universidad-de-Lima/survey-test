@@ -272,12 +272,13 @@ window.SurveyPortalPreguntas = (function () {
     var cab = tabla.cabeceras || [];
     var iNps = cab.indexOf('Recomiendas la Universidad de Lima');
     var iSat = cab.indexOf('La Universidad de Lima');
-    var buenos = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho'];
+    var buenos = NIVELES.slice(0, 3);   // los tres mejores niveles, de la escala de la configuración
     var prom = 0, pas = 0, det = 0, conNps = 0, conSat = 0, bien = 0;
     filas.forEach(function (f) {
       if (iNps !== -1) {
         var v = Number((tabla.opciones[cab[iNps]] || [])[f[iNps]]);
-        if (!isNaN(v)) { conNps += 1; if (v >= 9) prom += 1; else if (v >= 7) pas += 1; else det += 1; }
+        // Los cortes de la escala del NPS vienen de config/constants.js.
+        if (!isNaN(v)) { conNps += 1; if (v >= CORTE_PROMOTOR) prom += 1; else if (v >= CORTE_PASIVO) pas += 1; else det += 1; }
       }
       if (iSat !== -1) {
         var s = (tabla.opciones[cab[iSat]] || [])[f[iSat]];
@@ -340,7 +341,14 @@ window.SurveyPortalPreguntas = (function () {
     };
   }
 
-  var ESCALA_SATISFACCION = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
+  // Los cortes de la escala del NPS viven en config/constants.js.
+  var CORTE_PROMOTOR = window.SURVEY_META?.('NPS_PROMOTOR');
+  var CORTE_PASIVO = window.SURVEY_META?.('NPS_PASIVO');
+
+  // Los niveles de la escala de satisfaccion tambien (config/constants.js -> SAT_KEYS).
+  var NIVELES = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.SAT_KEYS) || [];
+
+  var ESCALA_SATISFACCION = NIVELES;
 
   /** La satisfacción de un grupo con una pregunta de escala: los tres mejores niveles. */
   function satisfaccionDe(tabla, filas, campo) {

@@ -13,6 +13,10 @@
 window.SurveySentimentView = (() => {
   'use strict';
 
+  // Los cortes de la escala del NPS viven en config/constants.js.
+  const CORTE_PROMOTOR = window.SURVEY_META?.('NPS_PROMOTOR');
+  const CORTE_PASIVO = window.SURVEY_META?.('NPS_PASIVO');
+
   const _fmt = window.SurveyFormatters;
   const _dh = window.SurveyDOMHelpers;
   const _san = window.SurveySanitizer;
@@ -243,8 +247,8 @@ window.SurveySentimentView = (() => {
       
       const nps = Number(c.nps_score);
       let npsKey = 'det';
-      if (nps >= 9) npsKey = 'prom';
-      else if (nps >= 7) npsKey = 'pas';
+      if (nps >= CORTE_PROMOTOR) npsKey = 'prom';
+      else if (nps >= CORTE_PASIVO) npsKey = 'pas';
 
       let sentKey = 'neu';
       if (c.sentimiento === 'positivo') sentKey = 'pos';
@@ -344,8 +348,8 @@ window.SurveySentimentView = (() => {
       if (!c.es_valido) return;
       const nps = Number(c.nps_score);
       let seg = '';
-      if (nps >= 9) seg = 'Promotor';
-      else if (nps >= 7) seg = 'Pasivo';
+      if (nps >= CORTE_PROMOTOR) seg = 'Promotor';
+      else if (nps >= CORTE_PASIVO) seg = 'Pasivo';
       else seg = 'Detractor';
       c.segmento_nps = seg;
       
@@ -530,13 +534,13 @@ window.SurveySentimentView = (() => {
       if (commentId) {
         if (!carStats[car].uniqueComments.has(commentId)) {
           carStats[car].uniqueComments.add(commentId);
-          if (c.nps_score >= 9) carStats[car].prom++;
-          else if (c.nps_score >= 7) carStats[car].pas++;
+          if (c.nps_score >= CORTE_PROMOTOR) carStats[car].prom++;
+          else if (c.nps_score >= CORTE_PASIVO) carStats[car].pas++;
           else carStats[car].det++;
         }
       } else {
-        if (c.nps_score >= 9) carStats[car].prom++;
-        else if (c.nps_score >= 7) carStats[car].pas++;
+        if (c.nps_score >= CORTE_PROMOTOR) carStats[car].prom++;
+        else if (c.nps_score >= CORTE_PASIVO) carStats[car].pas++;
         else carStats[car].det++;
       }
     });
@@ -673,8 +677,8 @@ window.SurveySentimentView = (() => {
       }
 
       let nivelNps = 'det';
-      if (c.nps_score >= 9) nivelNps = 'prom';
-      else if (c.nps_score >= 7) nivelNps = 'pas';
+      if (c.nps_score >= CORTE_PROMOTOR) nivelNps = 'prom';
+      else if (c.nps_score >= CORTE_PASIVO) nivelNps = 'pas';
       const npsBadge = `<span class="insignia-nps insignia-nps-${nivelNps}">${c.nps_score}</span>`;
 
       let safeCiclo = '-';

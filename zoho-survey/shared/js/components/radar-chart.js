@@ -19,7 +19,8 @@ window.SurveyRadarChart = (() => {
   const _dh = window.SurveyDOMHelpers;
 
   const C = window.SURVEY_CONFIG || {};
-  const META_CSAT = C.META_CSAT ?? 93;
+  const META_CSAT = window.SURVEY_META?.('CSAT');
+  const META_PONDERADO = window.SURVEY_META?.('PONDERADO');
   const RADAR_LABEL_MAXLEN = C.RADAR_LABEL_MAXLEN ?? 26;
   const ANIMATION_FALLBACK_MS = C.ANIMATION_FALLBACK_MS ?? 1200;
   const SAT_KEYS = C.SAT_KEYS;
@@ -42,8 +43,8 @@ window.SurveyRadarChart = (() => {
     }
 
     const fortalezas = allDims.filter((d) => d.pct >= META_CSAT).sort((a, b) => b.pct - a.pct);
-    const adecuados = allDims.filter((d) => d.pct >= 80 && d.pct < META_CSAT).sort((a, b) => b.pct - a.pct);
-    const atencion = allDims.filter((d) => d.pct < 80).sort((a, b) => a.pct - b.pct);
+    const adecuados = allDims.filter((d) => d.pct >= META_PONDERADO && d.pct < META_CSAT).sort((a, b) => b.pct - a.pct);
+    const atencion = allDims.filter((d) => d.pct < META_PONDERADO).sort((a, b) => a.pct - b.pct);
 
     const hayFiltro = fac || car || (Array.isArray(cic) ? cic.length > 0 : cic);
     const contexto = hayFiltro ? [fac, car, Array.isArray(cic) ? cic.join(', ') : cic].filter(Boolean).join(' · ') : '';
@@ -322,7 +323,7 @@ window.SurveyRadarChart = (() => {
       const oy = cy + maxR * Math.sin(a);
       const px = cx + rFinal * Math.cos(a);
       const py = cy + rFinal * Math.sin(a);
-      const color = d.pct >= META_CSAT ? 'var(--satisfaction-high,#374151)' : d.pct >= 80 ? 'var(--satisfaction-medium,#9CA3AF)' : 'var(--satisfaction-low,#FF0000)';
+      const color = d.pct >= META_CSAT ? 'var(--satisfaction-high,#374151)' : d.pct >= META_PONDERADO ? 'var(--satisfaction-medium,#9CA3AF)' : 'var(--satisfaction-low,#FF0000)';
 
       parts.push(`<circle cx="${ox}" cy="${oy}" r="4" fill="${color}" class="radar-invisible"
                   data-dim="${_fmt.formatDimensionNameForAttr(d.dim)}"

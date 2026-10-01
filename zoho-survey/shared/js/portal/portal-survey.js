@@ -22,8 +22,8 @@
   var $ = _dh.$;
 
   // Meta de satisfacción (desde constants.js, fuente canónica)
-  const META_CSAT = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_CSAT) ?? 93;
-  const META_PONDERADO = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_PONDERADO) ?? 80;
+  const META_CSAT = window.SURVEY_META?.('CSAT');
+  const META_PONDERADO = window.SURVEY_META?.('PONDERADO');
 
   // ── Top 3 por categoría (réplica index.html) ──
   const top3Config = [

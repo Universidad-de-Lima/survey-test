@@ -51,11 +51,9 @@ window.SurveyMetrics = (() => {
    * Útil para vistas filtradas y como fallback cuando el JSON no trae t2b_pct.
    */
   const deriveT2B = (distribution, keys) => {
-    const top2Keys = keys || ['Totalmente satisfecho', 'Muy satisfecho'];
-    const satKeys = window.SURVEY_CONFIG?.SAT_KEYS || [
-      'Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho',
-      'Insatisfecho', 'Totalmente insatisfecho',
-    ];
+    // Los niveles de la escala viven en config/constants.js (SAT_KEYS): aquí no se copian.
+    const satKeys = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.SAT_KEYS) || [];
+    const top2Keys = keys || satKeys.slice(0, 2);
     const subset = top2Keys.reduce((acc, k) => acc + (distribution[k] || 0), 0);
     const total = satKeys.reduce((acc, k) => acc + (distribution[k] || 0), 0);
     return calcBoxScore(subset, total);
@@ -66,12 +64,10 @@ window.SurveyMetrics = (() => {
    * Usa CSAT_WEIGHTS y CSAT_SCALE_MAX de SURVEY_CONFIG (gemelo de lib/config.py).
    */
   const derivePonderado = (distribution) => {
+    // La escala y sus pesos viven en config/constants.js: aquí no se copian.
     const cfg = window.SURVEY_CONFIG || {};
-    const satKeys = cfg.SAT_KEYS || [
-      'Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho',
-      'Insatisfecho', 'Totalmente insatisfecho',
-    ];
-    const weights = cfg.CSAT_WEIGHTS || [5, 4, 3, 2, 1];
+    const satKeys = cfg.SAT_KEYS || [];
+    const weights = cfg.CSAT_WEIGHTS;
     const maxScale = cfg.CSAT_SCALE_MAX || 5;
     const counts = satKeys.map((k) => distribution[k] || 0);
     return calcPromedioPonderado(counts, weights, maxScale);

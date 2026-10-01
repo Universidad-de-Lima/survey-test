@@ -6,11 +6,12 @@ const SurveyDashboard = (() => {
   // ── Constantes y Configuración de Negocio ──
   const config = window.SURVEY_CONFIG || {};
   const BASE_URL = './json';
-  const META_NPS = config.META_NPS ?? 50;
-  const META_CSAT = config.META_CSAT ?? 93;
-  const META_T2B = config.META_T2B ?? 70;
-  const META_PONDERADO = config.META_PONDERADO ?? 80;
-  const META_EMPLEABILIDAD = config.META_EMPLEABILIDAD ?? 85;
+  // Las metas vienen de config/constants.js: aquí no se escribe ningún número.
+  const META_NPS = window.SURVEY_META?.('NPS');
+  const META_CSAT = window.SURVEY_META?.('CSAT');
+  const META_T2B = window.SURVEY_META('T2B');
+  const META_PONDERADO = window.SURVEY_META?.('PONDERADO');
+  const META_EMPLEABILIDAD = window.SURVEY_META?.('EMPLEABILIDAD');
   const CARRERAS_12_CICLOS = config.CARRERAS_12_CICLOS;
   const FACULTADES_12_CICLOS = config.FACULTADES_12_CICLOS;
   const PROGRAMA_ESTUDIOS_GENERALES = config.PROGRAMA_ESTUDIOS_GENERALES;
@@ -665,7 +666,7 @@ const SurveyDashboard = (() => {
   }
 
     data.forEach((item, index) => {
-      const barClass = item.pct >= META_CSAT ? 'high' : item.pct >= 80 ? 'medium' : 'low';
+      const barClass = item.pct >= META_CSAT ? 'high' : item.pct >= META_PONDERADO ? 'medium' : 'low';
       const barValueOutside = item.pct < 12;
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
@@ -887,10 +888,10 @@ const SurveyDashboard = (() => {
         item.categoria;
       const heatClass =
         parseFloat(item.top3box) >= META_CSAT ? 'heat-high' :
-        parseFloat(item.top3box) >= 80 ? 'heat-medium' : 'heat-low';
+        parseFloat(item.top3box) >= META_PONDERADO ? 'heat-medium' : 'heat-low';
       const heatClassT2 =
         parseFloat(item.top2box) >= META_CSAT ? 'heat-high' :
-        parseFloat(item.top2box) >= 80 ? 'heat-medium' : 'heat-low';
+        parseFloat(item.top2box) >= META_PONDERADO ? 'heat-medium' : 'heat-low';
 
       tr.innerHTML = `
         <td>${_fmt.formatDimensionName(item.dimension)}</td>

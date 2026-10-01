@@ -23,10 +23,11 @@
   var $ = _dh.$;
 
   // ── Constantes del radar (desde constants.js, fuente canónica) ──
-  const RADAR_META_CSAT = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_CSAT) ?? 93;
-  const RADAR_META_PONDERADO = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_PONDERADO) ?? 80;
-  const RADAR_LABEL_MAXLEN = 26;
-  const RADAR_SAT_KEYS = ['Totalmente satisfecho', 'Muy satisfecho', 'Satisfecho', 'Insatisfecho', 'Totalmente insatisfecho'];
+  const RADAR_META_CSAT = window.SURVEY_META?.('CSAT');
+  const RADAR_META_PONDERADO = window.SURVEY_META?.('PONDERADO');
+  const RADAR_LABEL_MAXLEN = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.RADAR_LABEL_MAXLEN) || 26;
+  // Los niveles de la escala viven en config/constants.js (SAT_KEYS).
+  const RADAR_SAT_KEYS = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.SAT_KEYS) || [];
   const RADAR_SAT_TOP3_KEYS = RADAR_SAT_KEYS.slice(0, 3);
 
   function fmtDecimal(n, digits) {

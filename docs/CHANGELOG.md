@@ -2,6 +2,26 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — Las reglas de negocio de las pantallas, en un solo sitio
+
+- **Qué pasaba.** Cada pantalla llevaba su copia de las metas del proyecto: 14 respaldos escritos a mano
+  (`?? 93`, `?? 80`, `?? 50`, `?? 70`, `?? 85`) en 6 archivos, el umbral intermedio (80) suelto en 3 sitios
+  más, la meta del NPS medio (20) solo en `portal-dashboard.js` —su comentario admitía que no estaba en la
+  configuración—, los cortes del NPS (9 y 7) repetidos en 2 archivos, y los niveles de la escala
+  re-declarados en `portal-radar.js` y `utils/metrics.js`. Si cambiaba una meta, hasta 6 archivos seguían
+  juzgando con el número viejo y nada avisaba.
+- **Qué cambió.** Todo eso vive ahora en `config/constants.js`, que además expone un único acceso
+  (`window.SURVEY_META('CSAT')`): las pantallas ya no escriben ningún número ni su propio respaldo, y si la
+  configuración no cargara no juzgan (mejor no juzgar que juzgar con un número viejo). Se agregaron a la
+  configuración `META_NPS_MEDIO: 20`, `META_NPS_PROMOTOR: 9` y `META_NPS_PASIVO: 7`.
+- **Alcance.** 9 módulos: `dashboard.js`, `utils/metrics.js`, `components/sentiment-view.js`,
+  `components/radar-chart.js` y los cinco `portal/*.js`. El orden de carga no cambia: `constants.js` va
+  primero en las tres familias de páginas (portal, fichas y plantilla).
+- **Pruebas:** las del proyecto siguen verdes (métricas, sentimiento, portal y asistente); los marcadores
+  `?v=` de las tres fichas y del portal quedaron actualizados.
+- **Pendiente de la misma propuesta:** la leyenda de niveles (hoy escrita en 4 fichas y en
+  `portal-survey.js`) y los 22 colores sueltos del CSS.
+
 ## 2026-09-30 — El asistente entrega las dos lecturas de "trabajan"
 
 - **Qué pasaba.** A "¿Qué porcentaje de graduados de la carrera de economía trabajan?" el asistente

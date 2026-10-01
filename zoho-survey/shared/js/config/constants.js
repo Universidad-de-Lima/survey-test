@@ -20,6 +20,11 @@ window.SURVEY_CONFIG = {
   META_T2B: 70,
   META_PONDERADO: 80,
   META_EMPLEABILIDAD: 85,
+  // La línea media del NPS (para las pantallas que pintan el rango medio).
+  META_NPS_MEDIO: 20,
+  // Los cortes de la escala del NPS: de 9 a 10 promotor, de 7 a 8 pasivo, el resto detractor.
+  META_NPS_PROMOTOR: 9,
+  META_NPS_PASIVO: 7,
 
   // ── Carreras y facultades con 12 ciclos (en lugar de 10) ──
   CARRERAS_12_CICLOS: ['Derecho', 'Psicología'],
@@ -74,4 +79,15 @@ window.SURVEY_CONFIG = {
   RADAR_LABEL_MAXLEN: 26,
   ANIMATION_FALLBACK_MS: 1200,
 
+};
+
+/**
+ * El acceso único a las metas de negocio. Las pantallas preguntan por la suya con
+ * SURVEY_META('CSAT') y NUNCA escriben el número ni su propio respaldo: si este archivo no cargó,
+ * devuelve undefined y la pantalla no juzga — mejor no juzgar que juzgar con un número viejo.
+ */
+window.SURVEY_META = function (nombre) {
+  var cfg = window.SURVEY_CONFIG || {};
+  var valor = cfg['META_' + nombre];
+  return (typeof valor === 'number') ? valor : undefined;
 };

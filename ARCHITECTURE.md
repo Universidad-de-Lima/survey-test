@@ -282,6 +282,11 @@ Los mismos valores en el portal y en las paginas de detalle, para que el proyect
 
 ### Reglas de mantenimiento
 
+**Metas de negocio: un solo sitio.** `shared/js/config/constants.js` declara las metas (NPS, CSAT,
+ponderado, T2B, empleabilidad, NPS medio y los cortes de la escala del NPS) y expone
+`window.SURVEY_META('<nombre>')`. Las pantallas leen de ahí y **no escriben el número ni su propio
+respaldo**: si la configuración no cargó, la pantalla no juzga (no inventa un umbral viejo).
+
 - Los altos de linea van **en pixeles enteros**: el navegador no puede partir un pixel y a media altura la letra se ve borrosa. Equivalencias: 10->15, 11->17, 12->18, 13->20, 14->21, 18->27, 24->36.
 - El espaciado entre letras es `0` por defecto, `1px` en rotulos en mayusculas y `-1px` en el logotipo. Sin decimales.
 - Prohibido `!important` en reglas de tipografia y prohibido el suavizado global (`-webkit-font-smoothing: antialiased` apaga la nitidez de Windows).

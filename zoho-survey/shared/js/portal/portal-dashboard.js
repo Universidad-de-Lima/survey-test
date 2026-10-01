@@ -14,10 +14,10 @@
   var $ = window.SurveyDOMHelpers.$;
 
   // Umbrales de color (desde constants.js, fuente canónica)
-  const META_CSAT = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_CSAT) ?? 93;
-  const META_PONDERADO = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_PONDERADO) ?? 80;
-  const META_NPS = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_NPS) ?? 50;
-  const META_NPS_MEDIO = 20; // no hay en constants, mantener como visual
+  const META_CSAT = window.SURVEY_META?.('CSAT');
+  const META_PONDERADO = window.SURVEY_META?.('PONDERADO');
+  const META_NPS = window.SURVEY_META?.('NPS');
+  const META_NPS_MEDIO = window.SURVEY_META?.('NPS_MEDIO');
 
   // Subtítulo de cada tarjeta: el periodo publicado o, si todavía no hay
   // datos, el mismo texto que las fases sin dashboard.

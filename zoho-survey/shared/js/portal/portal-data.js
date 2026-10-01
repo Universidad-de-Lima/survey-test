@@ -37,8 +37,8 @@
   const MAX_CICLOS_ESPECIALES = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.MAX_CICLOS_ESPECIALES) ?? 12;
 
   function satColorPortal(val) {
-    const metaCsat = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_CSAT) ?? 93;
-    const metaPond = (window.SURVEY_CONFIG && window.SURVEY_CONFIG.META_PONDERADO) ?? 80;
+    const metaCsat = window.SURVEY_META?.('CSAT');
+    const metaPond = window.SURVEY_META?.('PONDERADO');
     return val >= metaCsat ? 'var(--emerald)' : val >= metaPond ? 'var(--amber)' : 'var(--rose)';
   }
   function esEstudiosGen(facultad) {
