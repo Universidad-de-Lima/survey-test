@@ -122,3 +122,22 @@ class TestCssLimpio(unittest.TestCase):
         libres = [d for d in definidos if d not in texto and d not in referidos
                   and d not in PERMITIDOS_TOKENS]
         self.assertEqual([], libres, 'tokens definidos y nunca usados')
+
+    def test_tokens_dentro_de_un_bloque(self):
+        """Un token declarado fuera de un bloque no existe: el navegador descarta la declaracion.
+
+        Paso el 2026-09-30: los 13 tokens que se sumaron a tokens.css quedaron escritos despues
+        del cierre de `:root`. La hoja era valida, las pruebas seguian verdes, y en pantalla la
+        barra de desplazamiento del portal y los anillos "proximamente" del Dashboard se quedaron
+        sin color sin un solo error. Esta prueba es la que lo habria detenido.
+        """
+        fuera = []
+        for hoja in HOJAS:
+            texto = re.sub(r'/\*.*?\*/', '', hoja.read_text(encoding='utf-8'), flags=re.S)
+            profundidad = 0
+            for n, linea in enumerate(texto.splitlines(), 1):
+                if profundidad == 0 and re.match(r'\s*--[a-z][\w-]*\s*:', linea):
+                    fuera.append(f'{hoja.relative_to(RAIZ).as_posix()}:{n} -> {linea.strip()[:60]}')
+                profundidad += linea.count('{') - linea.count('}')
+        self.assertEqual([], fuera,
+                         'tokens declarados fuera de un bloque (el navegador los ignora)')

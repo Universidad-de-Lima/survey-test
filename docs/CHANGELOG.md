@@ -2,6 +2,18 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — La guardiana del CSS evita tokens fuera de su bloque
+
+- **Qué pasó.** Al pasar los colores sueltos a `tokens.css`, los 13 tokens nuevos quedaron escritos
+  después del cierre de `:root`: la hoja era CSS válido, las pruebas seguían verdes, y el navegador
+  descartaba cada declaración sin avisar. En pantalla: la barra de desplazamiento del portal y los
+  anillos "próximamente" del Dashboard quedaron sin color.
+- **Qué se corrigió.** Los tokens volvieron dentro de `:root` (verificado en la página publicada: el
+  navegador resuelve los seis que se comprobaron y los anillos vuelven a pintarse).
+- **Qué se agregó.** Una cuarta regla a la guardiana del CSS (`test_css_limpio.py`): falla si un token
+  queda declarado fuera de un bloque. Es la prueba que habría detenido este error, y sus cuatro reglas
+  quedan documentadas en `ARCHITECTURE.md`.
+
 ## 2026-09-30 — Los colores sueltos del CSS tienen nombre
 
 - **Qué pasaba.** 14 colores estaban escritos a mano dentro de las hojas (un verde, un celeste, un violeta,

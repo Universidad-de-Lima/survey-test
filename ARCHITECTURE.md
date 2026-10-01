@@ -323,6 +323,13 @@ Reglas que sostienen el orden:
 3. `generated.css` va al final: sus reglas estan pensadas para ajustar las de las capas anteriores cuando coinciden en fuerza.
 4. Al tocar cualquier hoja se sube el `?v=` de las cinco paginas, para que el navegador no sirva la version vieja.
 
+La guardiana del CSS (`zoho-survey/scripts/tests/test_css_limpio.py`, se ejecuta con el resto de la
+suite) vigila cuatro cosas: que no haya **clases definidas y sin usar**, que el mismo estilo no esté
+escrito en **dos hojas**, que ningún `style="--w:…"` quede **sin la clase que lo consume** y que ningún
+token quede **declarado fuera de un bloque** (el navegador lo descarta sin avisar: pasó el 2026-09-30 con
+13 tokens nuevos, y en pantalla se quedaron sin color la barra de desplazamiento del portal y los anillos
+"próximamente" del Dashboard; la hoja era válida y las pruebas seguían verdes).
+
 `shared/css/DIVERGENCIAS.md` lista los 48 selectores que el portal y las fichas escriben distinto a proposito, con lo que cambia en cada uno. La prueba `zoho-survey/scripts/tests/test_css_limpio.py` (en GitHub Actions) falla si vuelve a aparecer una clase muerta, una regla repetida igual en dos hojas o un token sin uso.
 
 `dashboard.css` fue eliminado en v3.2.0 (CSS muerto; los imports viven en las capas base).
