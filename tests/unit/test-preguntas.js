@@ -204,10 +204,10 @@ const P = window.SurveyPortalPreguntas;
     assertTrue(!P.respuestaSostenida('El NPS subió 20 puntos.', datos), 'no debería aceptar una resta que no da');
   });
 
-  test('dividir y redondear una cifra publicada también sostienen la respuesta', function () {
+  test('dividir una cifra publicada sostiene la respuesta, pero una parecida NO', function () {
     const datos = '## Datos\n- Total: 598 respuestas.\n- Carrera = Economía: 14 respuestas.\n- NPS 72,61.';
     assertTrue(P.respuestaSostenida('Economía es 14 de 598 (2,34 %).', datos), 'acepta la proporción');
-    assertTrue(P.respuestaSostenida('El NPS fue de 73.', datos), 'acepta el redondeo de 72,61');
+    assertTrue(!P.respuestaSostenida('El NPS fue de 73.', datos), 'no acepta 73 por 72,61: eso es otra cifra');
     assertTrue(!P.respuestaSostenida('El NPS fue de 85.', datos), 'no acepta una cifra que no sale de los datos');
   });
 

@@ -243,17 +243,15 @@ window.SurveyPortalPreguntas = (function () {
 
   /**
    * ¿La cifra se puede obtener de dos que SI estan en los datos? Se permiten las cuentas simples
-   * (resta, suma, cambio porcentual y proporcion), que es como se responde "cuanto subio" o
-   * "cuantos son en total" sin inventar: cada operando esta publicado. Solo para cifras de dos
-   * digitos o con decimales; un numero suelto y pequeno no se valida por parecido.
+   * (resta, suma, multiplicacion, division, cambio porcentual y proporcion), que es como se responde
+   * "cuanto subio" o "cuantos son en total" sin inventar: cada operando esta publicado y el resultado
+   * se escribe con dos decimales, como el resto del proyecto. Una cifra que se parezca a una publicada
+   * pero no sea ella (73 en vez de 72,61) NO pasa: eso es mostrar un numero que no esta.
    */
   function derivable(x, valores) {
     var grande = Math.abs(x) >= 10 || String(x).indexOf('.') !== -1;
     if (!grande) return false;
-    var redondeado = Number.isInteger(x);
     for (var i = 0; i < valores.length; i++) {
-      // El redondeo de una cifra publicada tambien es legitimo: 73 viene de 72,61.
-      if (redondeado && Math.abs(x - valores[i]) <= 0.5) return true;
       for (var j = 0; j < valores.length; j++) {
         if (i === j) continue;
         var a = valores[i], b = valores[j];

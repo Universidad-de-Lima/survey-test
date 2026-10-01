@@ -6,14 +6,18 @@ Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](h
 
 - **Decisión del usuario.** "Calcular no es inventar". La comprobación de la pantalla ya no exige que cada
   cifra esté escrita tal cual: acepta el resultado de una cuenta entre cifras publicadas (suma, resta,
-  multiplicación, división, cambio porcentual, proporción) y también el **redondeo** de una cifra publicada
-  (73 viene de 72,61). Sigue rechazando cualquier cifra que no salga de los datos de ninguna de esas formas.
+  multiplicación, división, cambio porcentual, proporción), con el resultado escrito a dos decimales como el
+  resto del proyecto. Sigue rechazando cualquier cifra que no salga de los datos de ninguna de esas formas.
+- **Corrección (misma fecha).** Una versión intermedia de esta comprobación aceptaba además una cifra
+  *parecida* a una publicada (73 en lugar de 72,61). El usuario lo detuvo: en el proyecto no existe ese
+  redondeo, y dejar pasar 73 cuando el dato dice 72,61 es mostrar un número que no está. Se retiró esa
+  tolerancia y hay una prueba que exige su rechazo.
 - **Instrucciones del intérprete.** Puede hacer esas cuentas con las cifras que recibe, y nunca negarse por
   ser la pregunta amplia, general o conversacional.
 - **Formato de los números (regla del proyecto).** La pantalla normaliza lo que escriba el modelo: enteros
   sin separador de miles (4239, no 4.239), decimales con coma (72,61), porcentajes con coma y espacio antes
   del signo (97,85 %). Se probó con `formatearNumeros`.
-- **Pruebas:** asistente 1.9 en jsdom 18 → **20**.
+- **Pruebas:** asistente 1.9 en jsdom 18 → **20** (una de ellas exige que 73 por 72,61 se rechace).
 
 ## 2026-09-30 — La IA ya responde cuando la pregunta es amplia, y puede hacer cuentas simples
 
