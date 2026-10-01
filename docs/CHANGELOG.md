@@ -2,6 +2,19 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — La IA calcula (sumar, restar, multiplicar, dividir, contar) y escribe los números como el proyecto
+
+- **Decisión del usuario.** "Calcular no es inventar". La comprobación de la pantalla ya no exige que cada
+  cifra esté escrita tal cual: acepta el resultado de una cuenta entre cifras publicadas (suma, resta,
+  multiplicación, división, cambio porcentual, proporción) y también el **redondeo** de una cifra publicada
+  (73 viene de 72,61). Sigue rechazando cualquier cifra que no salga de los datos de ninguna de esas formas.
+- **Instrucciones del intérprete.** Puede hacer esas cuentas con las cifras que recibe, y nunca negarse por
+  ser la pregunta amplia, general o conversacional.
+- **Formato de los números (regla del proyecto).** La pantalla normaliza lo que escriba el modelo: enteros
+  sin separador de miles (4239, no 4.239), decimales con coma (72,61), porcentajes con coma y espacio antes
+  del signo (97,85 %). Se probó con `formatearNumeros`.
+- **Pruebas:** asistente 1.9 en jsdom 18 → **20**.
+
 ## 2026-09-30 — La IA ya responde cuando la pregunta es amplia, y puede hacer cuentas simples
 
 - **Qué pasaba.** A "Compara las carreras del 2025 y 2026" el asistente contestaba "la comparación global es

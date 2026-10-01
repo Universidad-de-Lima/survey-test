@@ -250,14 +250,19 @@ window.SurveyPortalPreguntas = (function () {
   function derivable(x, valores) {
     var grande = Math.abs(x) >= 10 || String(x).indexOf('.') !== -1;
     if (!grande) return false;
+    var redondeado = Number.isInteger(x);
     for (var i = 0; i < valores.length; i++) {
+      // El redondeo de una cifra publicada tambien es legitimo: 73 viene de 72,61.
+      if (redondeado && Math.abs(x - valores[i]) <= 0.5) return true;
       for (var j = 0; j < valores.length; j++) {
         if (i === j) continue;
         var a = valores[i], b = valores[j];
         if (casiIgual(x, a - b) || casiIgual(x, b - a) || casiIgual(x, a + b)) return true;
+        if (casiIgual(x, a * b)) return true;                         // multiplicar
         if (b) {
-          if (casiIgual(x, Math.round(((a - b) / b) * 10000) / 100)) return true;
-          if (casiIgual(x, Math.round((a / b) * 10000) / 100)) return true;
+          if (casiIgual(x, a / b)) return true;                       // dividir
+          if (casiIgual(x, Math.round(((a - b) / b) * 10000) / 100)) return true;   // cambio porcentual
+          if (casiIgual(x, Math.round((a / b) * 10000) / 100)) return true;         // proporcion
         }
       }
     }
@@ -588,6 +593,19 @@ window.SurveyPortalPreguntas = (function () {
       '</div>';
   }
 
+  /**
+   * Deja los numeros como los pide el proyecto: enteros sin separador de miles (4239), decimales con
+   * coma (72,61) y porcentajes con la coma y el espacio antes del signo (97,85 %).
+   */
+  function formatearNumeros(texto) {
+    var x = String(texto == null ? '' : texto);
+    x = x.replace(/\b\d{1,3}(?:\.\d{3})+\b/g, function (v) { return v.replace(/\./g, ''); });
+    x = x.replace(/\b\d{1,3}(?:,\d{3})+\b/g, function (v) { return v.replace(/,/g, ''); });
+    x = x.replace(/(\d)\.(\d)/g, '$1,$2');
+    x = x.replace(/(\d)\s*%/g, '$1 %');
+    return x;
+  }
+
   /** Pinta la respuesta: la pregunta en la burbuja de la derecha y el texto a la izquierda. */
   function pintar(contenedor, r, pregunta) {
     var bloque = document.createElement('div');
@@ -597,7 +615,7 @@ window.SurveyPortalPreguntas = (function () {
       html += '<p class="preguntas-burbuja-pregunta"><span>' + esc(pregunta) + '</span></p>';
     }
     html += '<div class="preguntas-burbuja-respuesta">';
-    html += '<p class="preguntas-resultado">' + esc((r && (r.texto || r.aviso)) || '').replace(/\n/g, '<br>') + '</p>';
+    html += '<p class="preguntas-resultado">' + esc(formatearNumeros((r && (r.texto || r.aviso)) || '')).replace(/\n/g, '<br>') + '</p>';
     if (r && r.fuente && !r.aviso) {
       html += '<p class="preguntas-fuente">' + esc(r.fuente) + '</p>';
     }
@@ -700,6 +718,7 @@ window.SurveyPortalPreguntas = (function () {
     redactar: redactar,
     bloquesDe: bloquesDe,
     respuestaSostenida: respuestaSostenida,
+    formatearNumeros: formatearNumeros,
     medir: medir,
     construirMenu: construirMenu,
     textoDeContexto: textoDeContexto,
