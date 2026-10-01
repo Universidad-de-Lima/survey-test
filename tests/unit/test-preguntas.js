@@ -164,6 +164,10 @@ const P = window.SurveyPortalPreguntas;
     assertIncludes(contexto, '## Qué es');
     assertIncludes(contexto, '## Cómo están los datos');
     assertIncludes(contexto, '## Cómo se pregunta por las cosas', 'las palabras coloquiales');
+    assertIncludes(contexto, '## Cómo se preguntó cada cosa', 'el texto real de las preguntas peculiares');
+    assertIncludes(contexto, '## Dimensiones', 'las dimensiones con sus preguntas');
+    assertIncludes(contexto, 'Docencia', 'una dimensión que solo existe en Graduados');
+    assertIncludes(contexto, '## Columnas que no son preguntas', 'el ID y las fechas');
     assertTrue(contexto.length > 500, 'el contexto no puede quedar vacío');
   });
 

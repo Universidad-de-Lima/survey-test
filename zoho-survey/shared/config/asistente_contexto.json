@@ -27,6 +27,127 @@
     "Las preguntas y las opciones del indice son las que existen: interpreta los sinonimos y las formas del habla comun sin necesidad de que te los enumeren.",
     "Los valores de los filtros se copian tal cual del indice; no se inventan categorias, etiquetas ni descripciones."
   ],
+  "como_se_pregunto": [
+    "Carrera: el formulario pregunta «¿Qué carrera profesional estudias?» (en Graduados, «estudiaste»).",
+    "Ciclo: «¿Qué ciclo es el que cursas?; considera el ciclo donde más cursos llevas».",
+    "Recomiendas la Universidad de Lima: es la pregunta del Net Promoter Score, «Net Promoter Score (de un total de 10)»; sus valores van de 0 a 10.",
+    "La carrera y La Universidad de Lima: no son preguntas sueltas, son los DOS ITEMS de una misma pregunta del formulario sobre la satisfaccion global (satisfaccion con tu carrera y con la Universidad). El texto completo de esa pregunta no esta en los datos: la encuesta la parte en items y solo viaja el item.",
+    "Perfil del egreso de la carrera: «El perfil de egreso de tu carrera».",
+    "Empleabilidad, vinculacion y ALUMNI: «Empleabilidad, vinculacion profesional y ALUMNI».",
+    "Situacion laboral (Graduados): «¿Cual es tu situacion laboral actual?».",
+    "Tiempo laboral (Graduados): «¿Cual es el tiempo dedicado a tu trabajo?» (solo se le pregunta a quien trabaja).",
+    "Las demas preguntas se publican con el mismo texto con el que se preguntan."
+  ],
+  "columnas_que_no_son_preguntas": [
+    "ID: el identificador de cada respuesta (en el formulario, «ID de respuesta»). Sirve para enlazar con los comentarios analizados; no es una pregunta.",
+    "Inicio y Fin: la fecha en la que se empezo y se termino cada respuesta (en el formulario, «Start time» y «Hora de finalizacion»).",
+    "Carrera, Ciclo y Facultad: no se preguntan como satisfaccion; se usan para agrupar (Facultad se deduce de Carrera)."
+  ],
+  "dimensiones": {
+    "que_son": "Las preguntas de satisfaccion se agrupan en dimensiones. Sirven para responder cosas como «compara las dimensiones», «que dimension esta peor» o «que preguntas forman Docencia».",
+    "Estudiantes Pregrado": {
+      "Académico": [
+        "Calidad de la enseñanza en la carrera",
+        "Calidad de la formación académica",
+        "Claridad de los recursos académicos",
+        "Cursos del programa y contenidos",
+        "Evaluación del aprendizaje",
+        "Exigencia académica",
+        "Intercambio estudiantil",
+        "La carrera",
+        "Perfil del egreso de la carrera",
+        "Plan curricular y perfil de egreso",
+        "Satisfacción estudiantil"
+      ],
+      "Administrativo y Bienestar": [
+        "Actividades deportivas",
+        "Atención del personal administrativo",
+        "Ayuda financiera",
+        "Empleabilidad, vinculación y ALUMNI",
+        "Información sobre el récord académico",
+        "Material bibliográfico en la biblioteca",
+        "Procedimientos administrativos",
+        "Servicio de atención psicopedagógica",
+        "Servicio médico y su infraestructura",
+        "Talleres de actividades artísticas y culturales"
+      ],
+      "Infraestructura": [
+        "Ambientes y salas para estudio",
+        "Aulas de clase",
+        "Condiciones ambientales en laboratorios",
+        "Equipamiento tecnológico en laboratorios",
+        "Espacios comunes",
+        "Espacios de alimentación",
+        "Ubicación"
+      ],
+      "Tecnología": [
+        "Aula virtual",
+        "Conexión Wi-Fi en el campus",
+        "Portal web de la Universidad (Mi Ulima)",
+        "Software especializado empleado en la carrera",
+        "Soporte técnico del sistema informático"
+      ]
+    },
+    "Graduados Pregrado": {
+      "Académico": [
+        "Calidad de la enseñanza en la carrera",
+        "Calidad de la formación académica",
+        "Claridad de los recursos académicos",
+        "Cursos del programa y contenidos",
+        "Evaluación del aprendizaje",
+        "Exigencia académica",
+        "Intercambio estudiantil",
+        "La carrera",
+        "Perfil del egreso de la carrera",
+        "Plan curricular y perfil de egreso",
+        "Satisfacción estudiantil"
+      ],
+      "Administrativo y Bienestar": [
+        "Actividades deportivas",
+        "Atención del personal administrativo",
+        "Ayuda financiera",
+        "Empleabilidad, vinculación y ALUMNI",
+        "Información sobre el récord académico",
+        "Material bibliográfico en la biblioteca",
+        "Procedimientos administrativos",
+        "Servicio de atención psicopedagógica",
+        "Servicio médico y su infraestructura",
+        "Talleres de actividades artísticas y culturales"
+      ],
+      "Desarrollo Profesional": [
+        "Habilidades de comunicación",
+        "Habilidades para aportar nuevas ideas",
+        "Habilidades para trabajar en equipo",
+        "Mejora en perspectivas de empleo"
+      ],
+      "Docencia": [
+        "Compromiso",
+        "Conocimientos actualizados",
+        "Cumplimiento de normas y programas",
+        "Disponibilidad para asesorías",
+        "Metodologías",
+        "Retroalimentación",
+        "Transmisión de conocimientos",
+        "Transmisión de experiencias"
+      ],
+      "Infraestructura": [
+        "Ambientes y salas para estudio",
+        "Aulas de clase",
+        "Condiciones ambientales en laboratorios",
+        "Equipamiento tecnológico en laboratorios",
+        "Espacios comunes",
+        "Espacios de alimentación",
+        "Ubicación"
+      ],
+      "Tecnología": [
+        "Aula virtual",
+        "Conexión Wi-Fi en el campus",
+        "Portal web de la Universidad (Mi Ulima)",
+        "Software especializado empleado en la carrera",
+        "Soporte técnico del sistema informático"
+      ]
+    }
+  },
   "palabras_coloquiales": {
     "Recomiendas la Universidad de Lima": [
       "recomiendas",

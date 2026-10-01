@@ -2,6 +2,26 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-01 — El contexto explica cómo se preguntó cada cosa, qué columnas no son preguntas y las dimensiones
+
+- **Qué pidió el usuario.** Que "La carrera" y "La Universidad de Lima" (que son ítems, no preguntas) lleven su
+  contexto correcto; que las columnas que no son preguntas (ID, Inicio, Fin) queden explicadas; y que a cada
+  pregunta se le agregue **su dimensión**, para mejorar el contexto.
+- **Qué se agregó a `asistente_contexto.json`** (tres secciones nuevas):
+  - *Cómo se preguntó cada cosa*: el texto real de las cabeceras peculiares, tomado de la tabla de renombrado
+    del ETL («¿Qué carrera profesional estudias?», «Net Promoter Score (de un total de 10)», «¿Cuál es tu
+    situación laboral actual?», …). Incluye la explicación de que **La carrera** y **La Universidad de Lima**
+    son los dos ítems de una misma pregunta del formulario sobre satisfacción global: el texto completo de esa
+    pregunta **no está en los datos**, porque la encuesta la parte en ítems (queda pendiente si se quiere el
+    texto exacto del PDF).
+  - *Columnas que no son preguntas*: ID, Inicio, Fin y el uso de Carrera, Ciclo y Facultad para agrupar.
+  - *Dimensiones*: las cuatro de Pregrado (Académico 11, Administrativo y Bienestar 10, Infraestructura 7,
+    Tecnología 5) y las seis de Graduados (las mismas más Docencia 8 y Desarrollo Profesional 4), con las
+    preguntas de cada una. Sale del mapa del ETL (`CATEGORIA_DIMENSION_*`), no se escribe a mano.
+- **El contexto creció:** 7 378 → 13 052 bytes, así que el tope subió de 8 000 a 16 000 caracteres en los dos
+  lados (portal y función).
+- **Pruebas:** asistente 1.9 en jsdom 20 → **20** (cinco comprobaciones nuevas dentro de la prueba del contexto).
+
 ## 2026-10-01 — El contexto del asistente deja de tener equivalencias y corrige sus reglas viejas
 
 - **Qué se corrigió (dos reglas que viajaban en cada pregunta y ya eran falsas).** Decían "las cifras las

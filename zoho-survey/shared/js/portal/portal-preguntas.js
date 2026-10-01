@@ -150,13 +150,16 @@ window.SurveyPortalPreguntas = (function () {
     var partes = [];
     [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'],
       ['como_esta_organizado', 'Cómo está organizado el cuestionario'], ['reglas', 'Reglas'],
+      ['como_se_pregunto', 'Cómo se preguntó cada cosa'],
+      ['columnas_que_no_son_preguntas', 'Columnas que no son preguntas'],
+      ['dimensiones', 'Dimensiones (qué preguntas forman cada una)'],
       ['palabras_coloquiales', 'Cómo se pregunta por las cosas']]
       .forEach(function (par) {
         var v = c && c[par[0]];
         if (!v) return;
         if (Array.isArray(v)) {
           partes.push('## ' + par[1] + '\n' + v.map(function (x) { return '- ' + x; }).join('\n'));
-        } else if (typeof v === 'object') {
+        } else if (typeof v === 'object' && !Array.isArray(v)) {
           partes.push('## ' + par[1] + '\n' + Object.keys(v).map(function (k) {
             return '- ' + k + ' → se pide como: ' + (Array.isArray(v[k]) ? v[k].join(', ') : v[k]);
           }).join('\n'));
@@ -164,7 +167,7 @@ window.SurveyPortalPreguntas = (function () {
           partes.push('## ' + par[1] + '\n' + v);
         }
       });
-    return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 6000);
+    return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 16000);
   }
 
   /** El menú de un periodo: sus preguntas y las opciones publicadas. Sin cifras. */
@@ -200,7 +203,7 @@ window.SurveyPortalPreguntas = (function () {
     return pedirAlServicio({
       paso: PASO_PLAN,
       pregunta: String(texto).slice(0, 300),
-      contexto: String(contexto || '').slice(0, 8000),
+      contexto: String(contexto || '').slice(0, 16000),
       menu: String(menu || '').slice(0, 40000)
     }).then(function (d) { return (d && d.plan) ? d.plan : null; });
   }
