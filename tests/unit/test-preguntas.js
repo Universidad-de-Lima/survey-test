@@ -197,6 +197,13 @@ const P = window.SurveyPortalPreguntas;
     assertTrue(P.respuestaSostenida('Hay 4239 respuestas.\nFuente: Estudiantes Pregrado 2026-1', 'Total: 4239 respuestas'), 'debería sostenerla');
   });
 
+  test('una cuenta simple entre cifras publicadas sí sostiene la respuesta', function () {
+    const datos = '## Datos\n- NPS 61,31 sobre 3998 respuestas.\n- NPS 72,61 sobre 4239 respuestas.';
+    assertTrue(P.respuestaSostenida('El NPS subió 11,3 puntos (de 61,31 a 72,61).', datos), 'debería aceptar la resta');
+    assertTrue(P.respuestaSostenida('Respondieron 8241 personas en total (3998 y 4239).', datos), 'debería aceptar la suma');
+    assertTrue(!P.respuestaSostenida('El NPS subió 20 puntos.', datos), 'no debería aceptar una resta que no da');
+  });
+
   test('una cifra que no está en los datos NO sostiene la respuesta', function () {
     assertTrue(!P.respuestaSostenida('Hay 99999 respuestas.', 'Total: 4239 respuestas'), 'debería rechazarla');
   });

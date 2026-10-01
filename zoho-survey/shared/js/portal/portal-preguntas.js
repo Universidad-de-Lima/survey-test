@@ -230,11 +230,52 @@ window.SurveyPortalPreguntas = (function () {
     return String(texto).replace(/^\s*Fuente:.*$/im, '').trim();
   }
 
-  /** ¿Todo lo que dice la respuesta esta en los datos? (los numeros, uno por uno). */
+  /** ¿Son el mismo numero? (con la tolerancia del redondeo a dos decimales). */
+  function casiIgual(a, b) {
+    return Math.abs(a - b) < 0.011;
+  }
+
+  /** Los numeros que hay en los datos, como valores, para comprobar la aritmetica. */
+  function valoresDeDatos(bloques) {
+    return numerosDe(bloques).map(function (x) { return Number(String(x).replace(',', '.')); })
+      .filter(function (v) { return !isNaN(v); });
+  }
+
+  /**
+   * ¿La cifra se puede obtener de dos que SI estan en los datos? Se permiten las cuentas simples
+   * (resta, suma, cambio porcentual y proporcion), que es como se responde "cuanto subio" o
+   * "cuantos son en total" sin inventar: cada operando esta publicado. Solo para cifras de dos
+   * digitos o con decimales; un numero suelto y pequeno no se valida por parecido.
+   */
+  function derivable(x, valores) {
+    var grande = Math.abs(x) >= 10 || String(x).indexOf('.') !== -1;
+    if (!grande) return false;
+    for (var i = 0; i < valores.length; i++) {
+      for (var j = 0; j < valores.length; j++) {
+        if (i === j) continue;
+        var a = valores[i], b = valores[j];
+        if (casiIgual(x, a - b) || casiIgual(x, b - a) || casiIgual(x, a + b)) return true;
+        if (b) {
+          if (casiIgual(x, Math.round(((a - b) / b) * 10000) / 100)) return true;
+          if (casiIgual(x, Math.round((a / b) * 10000) / 100)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * ¿Todo lo que dice la respuesta esta en los datos? Cada numero tiene que estar publicado tal cual
+   * (72,61) o salir de una cuenta simple entre dos cifras publicadas (72,61 - 61,31 = 11,3): lo que
+   * no se puede es escribir una cifra que no venga de los datos de ninguna de las dos formas.
+   */
   function respuestaSostenida(texto, bloques) {
     var datos = String(bloques);
+    var valores = valoresDeDatos(bloques);
     return numerosDe(sinFuente(texto)).every(function (num) {
-      return datos.indexOf(num) !== -1 || datos.indexOf(num.replace('.', ',')) !== -1;
+      if (datos.indexOf(num) !== -1 || datos.indexOf(num.replace('.', ',')) !== -1) return true;
+      var x = Number(String(num).replace(',', '.'));
+      return !isNaN(x) && derivable(x, valores);
     });
   }
 

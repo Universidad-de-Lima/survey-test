@@ -2,6 +2,26 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — La IA ya responde cuando la pregunta es amplia, y puede hacer cuentas simples
+
+- **Qué pasaba.** A "Compara las carreras del 2025 y 2026" el asistente contestaba "la comparación global es
+  demasiado amplia para una sola consulta": el primer paso (el que decide qué leer) se negaba **antes de leer**,
+  inventando reglas que nadie le dio —alcance, tipo de consulta, "es conversacional"—. Medido: devolvía
+  `se_puede: false` y al modelo no le llegaba **ni un carácter** de datos, aunque la comparación sí se puede
+  armar (dos períodos, catorce carreras cada uno, con sus respuestas, su NPS y su satisfacción).
+- **Qué cambió (el texto, no los datos).** En las instrucciones de los dos pasos: que **nunca** se niegue por
+  ser la pregunta amplia, general, larga o conversacional; que los únicos dos motivos para negarse son que el
+  tema no esté en las encuestas o que la pregunta no sea sobre ellas; y que en la redacción no hable de
+  alcance, tipos de consulta ni reglas internas.
+- **Calcular no es inventar (corrección del usuario).** La pantalla dejó de exigir que cada cifra estuviera
+  escrita letra por letra: ahora acepta también las **cuentas simples entre dos cifras publicadas** (resta,
+  suma, cambio porcentual), así "el NPS subió 11,3 puntos (de 61,31 a 72,61)" es válido. Lo que sigue
+  prohibido es una cifra que no venga de los datos de ninguna de las dos formas: si no está publicada ni sale
+  de una cuenta entre dos publicadas, la respuesta no se muestra.
+- **Pruebas:** asistente 1.9 en jsdom 17 → **18**.
+- **Pendiente:** las "dimensiones" (`dimensiones.json`) todavía no se le pueden pedir: eso es agregar un tipo
+  de datos nuevo, no texto.
+
 ## 2026-09-30 — Se retira la función `/api/preguntas`
 
 - **Qué era.** La función del backend de `survey-tracker` que guardaba sin datos personales las preguntas
