@@ -2,6 +2,22 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-01 — El contexto del asistente deja de tener equivalencias y corrige sus reglas viejas
+
+- **Qué se corrigió (dos reglas que viajaban en cada pregunta y ya eran falsas).** Decían "las cifras las
+  calcula la página, nunca el modelo" y "cada respuesta cita el archivo del que salió". Hoy el modelo **sí**
+  calcula (sumar, restar, multiplicar, dividir y contar) y la cita es **la encuesta**, no el archivo. Se
+  reescribieron las dos, y se agregó que lo que no está en los datos (la hora, la fecha, el clima) no se
+  responde.
+- **Qué se retiró.** La llave `equivalencias`: eran tres entradas que le decían a la IA, pregunta por
+  pregunta, cómo interpretar ("cuando habla de *trabajan*…"). Decisión del usuario: la IA lo debe deducir,
+  no se le dan instrucciones por pregunta; solo restricciones. Se conservó lo útil como dos reglas nuevas:
+  interpretar sinónimos del habla común sin que se los enumeren, y copiar los valores del índice tal cual
+  (sin inventar categorías).
+- **Qué se arregla de paso.** El aviso "Tratamiento especial equivalencias" que apareció una vez en las
+  respuestas era el modelo nombrando la sección `Equivalencias`: al retirarse la llave, desaparece el motivo.
+- **Pruebas:** la del contexto sigue verde (comprueba las secciones y las palabras coloquiales).
+
 ## 2026-09-30 — La IA calcula (sumar, restar, multiplicar, dividir, contar) y escribe los números como el proyecto
 
 - **Decisión del usuario.** "Calcular no es inventar". La comprobación de la pantalla ya no exige que cada

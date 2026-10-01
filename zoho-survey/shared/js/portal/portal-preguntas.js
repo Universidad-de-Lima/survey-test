@@ -150,7 +150,7 @@ window.SurveyPortalPreguntas = (function () {
     var partes = [];
     [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'],
       ['como_esta_organizado', 'Cómo está organizado el cuestionario'], ['reglas', 'Reglas'],
-      ['equivalencias', 'Equivalencias'], ['palabras_coloquiales', 'Cómo se pregunta por las cosas']]
+      ['palabras_coloquiales', 'Cómo se pregunta por las cosas']]
       .forEach(function (par) {
         var v = c && c[par[0]];
         if (!v) return;

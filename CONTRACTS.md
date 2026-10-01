@@ -648,7 +648,7 @@ Atiende **dos pasos**, según el campo `paso`:
   calcula**.
 - **`menu`**: las preguntas publicadas con sus opciones, de **todos** los periodos; nunca lleva cifras.
 - **`contexto`**: sale de `zoho-survey/shared/config/asistente_contexto.json` (que es el proyecto, como estan
-  los datos, como esta organizado el cuestionario, reglas, equivalencias y palabras coloquiales); la
+  los datos, como esta organizado el cuestionario, reglas y palabras coloquiales); la
   **conversacion reciente** viaja primero, para que ningun tope la recorte.
 - Errores: `400` si falta la pregunta (menos de 3 letras); `502` si ningun modelo responde.
 - Cadena de modelos: **Google `gemini-3.5-flash-lite`** (llave `GOOGLE_API_KEY`; corte a los 20 s) y, si

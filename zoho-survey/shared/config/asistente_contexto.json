@@ -1,248 +1,245 @@
 {
- "_descripcion": "Contexto del asistente del portal (item 1.9): que es el proyecto, como estan los datos y las reglas. Se envia como parte del mensaje al modelo que interpreta la pregunta (ver survey-tracker/apps/backend/api/interpretar.js). Editar este archivo NO requiere tocar codigo.",
- "_ubicacion": "zoho-survey/shared/config/asistente_contexto.json",
- "_como_se_usa": "El portal lo lee una vez por carga, arma con el el mensaje junto con el menu del periodo y la pregunta, y el modelo solo puede elegir nombres de ese menu. La pagina valida y cuenta.",
- "que_es": [
-  "Portal de resultados de las encuestas de satisfaccion de la Universidad de Lima.",
-  "Estudiantes de Pregrado: periodos 2025-2 y 2026-1 (encuesta semestral).",
-  "Graduados de Pregrado: periodo 2026 (encuesta anual)."
- ],
- "como_estan_los_datos": [
-  "respuestas.json: una fila por respuesta y una columna por pregunta; cada celda guarda la opcion elegida, o \"(sin respuesta)\" si quedo en blanco.",
-  "Los demas archivos del periodo (resumen, filtros, dimensiones, comentarios) ya vienen calculados; el asistente los cita, no los recalcula.",
-  "Todo es anonimo: no hay nombres, correos ni telefonos."
- ],
- "como_esta_organizado": [
-  "El cuestionario va por secciones: datos personales, servicios académicos (plana docente y desarrollo profesional solo en Graduados), servicios al estudiante, recursos e infraestructura, tecnologías de información y satisfacción global.",
-  "Las preguntas de satisfacción usan la escala: Totalmente satisfecho, Muy satisfecho, Satisfecho, Insatisfecho, Totalmente insatisfecho; algunas agregan No utilizo y No conozco.",
-  "El perfil de egreso se pregunta una sola vez, pero el texto que ve cada persona cambia según su carrera: sigue siendo la misma pregunta.",
-  "El tiempo dedicado al trabajo solo se pregunta a quienes trabajan (Trabajador dependiente o Trabajador independiente); los demás lo dejan en blanco.",
-  "Pregrado no tiene plana docente ni desarrollo profesional; Graduados sí."
- ],
- "reglas": [
-  "Solo se responde con los datos publicados; nada inventado.",
-  "Las cifras las calcula la pagina, nunca el modelo.",
-  "Cada respuesta cita el archivo del que salio.",
-  "Lo que no este en los datos (la hora, el clima, otra universidad) no se responde."
- ],
- "equivalencias": [
-  "En Graduados, cuando la pregunta habla de \"trabajan\", \"trabajo\", \"empleo\" o empleabilidad, la pregunta objetivo es Situación laboral y sus valores_objetivo son EXACTAMENTE estas cuatro opciones del menú, copiadas tal cual: Trabajador dependiente, Trabajador independiente, Prácticas profesionales, Prácticas pre - profesionales. No cuentan En búsqueda de empleo ni No disponible para trabajar.",
-  "En Graduados, la satisfacción general (o \"con la universidad\") es la pregunta La Universidad de Lima; la satisfacción \"con la carrera\" es la pregunta La carrera.",
-  "Una equivalencia NO es un valor: nunca escribas \"equivalencia\", \"tratamiento\" ni una descripción como valor de \"filtros\" o de \"valores_objetivo\". Los valores son SIEMPRE opciones copiadas del menú."
- ],
- "palabras_coloquiales": {
-  "Recomiendas la Universidad de Lima": [
-   "recomiendas",
-   "recomendarias",
-   "nps"
+  "_descripcion": "Contexto del asistente del portal (item 1.9): que es el proyecto, como estan los datos y las reglas. Se envia como parte del mensaje al modelo que interpreta la pregunta (ver survey-tracker/apps/backend/api/interpretar.js). Editar este archivo NO requiere tocar codigo.",
+  "_ubicacion": "zoho-survey/shared/config/asistente_contexto.json",
+  "_como_se_usa": "El portal lo lee una vez por carga, arma con el el mensaje junto con el menu del periodo y la pregunta, y el modelo solo puede elegir nombres de ese menu. La pagina valida y cuenta.",
+  "que_es": [
+    "Portal de resultados de las encuestas de satisfaccion de la Universidad de Lima.",
+    "Estudiantes de Pregrado: periodos 2025-2 y 2026-1 (encuesta semestral).",
+    "Graduados de Pregrado: periodo 2026 (encuesta anual)."
   ],
-  "Carrera": [
-   "carrera",
-   "alumnos de",
-   "egresados de"
+  "como_estan_los_datos": [
+    "respuestas.json: una fila por respuesta y una columna por pregunta; cada celda guarda la opcion elegida, o \"(sin respuesta)\" si quedo en blanco.",
+    "Los demas archivos del periodo (resumen, filtros, dimensiones, comentarios) ya vienen calculados; el asistente los cita, no los recalcula.",
+    "Todo es anonimo: no hay nombres, correos ni telefonos."
   ],
-  "Ciclo": [
-   "ciclo",
-   "ciclos"
+  "como_esta_organizado": [
+    "El cuestionario va por secciones: datos personales, servicios académicos (plana docente y desarrollo profesional solo en Graduados), servicios al estudiante, recursos e infraestructura, tecnologías de información y satisfacción global.",
+    "Las preguntas de satisfacción usan la escala: Totalmente satisfecho, Muy satisfecho, Satisfecho, Insatisfecho, Totalmente insatisfecho; algunas agregan No utilizo y No conozco.",
+    "El perfil de egreso se pregunta una sola vez, pero el texto que ve cada persona cambia según su carrera: sigue siendo la misma pregunta.",
+    "El tiempo dedicado al trabajo solo se pregunta a quienes trabajan (Trabajador dependiente o Trabajador independiente); los demás lo dejan en blanco.",
+    "Pregrado no tiene plana docente ni desarrollo profesional; Graduados sí."
   ],
-  "Perfil del egreso de la carrera": [
-   "perfil de egreso",
-   "perfil del egreso"
+  "reglas": [
+    "Solo se responde con los datos publicados: no se inventa ninguna cifra.",
+    "Con las cifras publicadas SI se puede calcular (sumar, restar, multiplicar, dividir y contar); lo que no se puede es escribir una cifra que no venga de los datos ni de una cuenta entre ellos.",
+    "Cada respuesta cita la encuesta de la que sale (publico y periodo), nunca el nombre de un archivo.",
+    "Lo que no este en los datos (la hora, la fecha, el clima, otra universidad o una opinion) no se responde.",
+    "Las preguntas y las opciones del indice son las que existen: interpreta los sinonimos y las formas del habla comun sin necesidad de que te los enumeren.",
+    "Los valores de los filtros se copian tal cual del indice; no se inventan categorias, etiquetas ni descripciones."
   ],
-  "Plan curricular y perfil de egreso": [
-   "plan curricular",
-   "malla curricular",
-   "plan de estudios"
-  ],
-  "Cursos del programa y contenidos": [
-   "cursos",
-   "contenidos",
-   "programa"
-  ],
-  "Calidad de la enseñanza en la carrera": [
-   "calidad de la ensenanza",
-   "ensenanza"
-  ],
-  "Claridad de los recursos académicos": [
-   "recursos academicos",
-   "claridad"
-  ],
-  "Calidad de la formación académica": [
-   "formacion academica",
-   "formacion"
-  ],
-  "Evaluación del aprendizaje": [
-   "evaluacion",
-   "aprendizaje"
-  ],
-  "Intercambio estudiantil": [
-   "intercambio",
-   "intercambio estudiantil"
-  ],
-  "Información sobre el récord académico": [
-   "record academico",
-   "notas"
-  ],
-  "Material bibliográfico en la biblioteca": [
-   "biblioteca",
-   "material bibliografico",
-   "libros"
-  ],
-  "Atención del personal administrativo": [
-   "atencion del personal",
-   "personal administrativo"
-  ],
-  "Procedimientos administrativos": [
-   "procedimientos",
-   "tramites"
-  ],
-  "Ayuda financiera": [
-   "ayuda financiera",
-   "becas",
-   "financiera"
-  ],
-  "Servicio médico y su infraestructura": [
-   "servicio medico",
-   "topico",
-   "enfermeria"
-  ],
-  "Servicio de atención psicopedagógica": [
-   "psicopedagogica",
-   "bienestar"
-  ],
-  "Talleres de actividades artísticas y culturales": [
-   "talleres",
-   "actividades artisticas",
-   "culturales"
-  ],
-  "Actividades deportivas": [
-   "deportivas",
-   "deportes"
-  ],
-  "Empleabilidad, vinculación y ALUMNI": [
-   "empleabilidad",
-   "alumni",
-   "vinculacion",
-   "bolsa de trabajo"
-  ],
-  "Aulas de clase": [
-   "aulas",
-   "salones"
-  ],
-  "Ambientes y salas para estudio": [
-   "ambientes",
-   "salas de estudio",
-   "estudio"
-  ],
-  "Equipamiento tecnológico en laboratorios": [
-   "laboratorios",
-   "equipamiento",
-   "equipos"
-  ],
-  "Condiciones ambientales en laboratorios": [
-   "condiciones ambientales",
-   "ambiente de laboratorios"
-  ],
-  "Software especializado empleado en la carrera": [
-   "software",
-   "programas"
-  ],
-  "Portal web de la Universidad (Mi Ulima)": [
-   "portal",
-   "mi ulima",
-   "intranet"
-  ],
-  "Aula virtual": [
-   "aula virtual",
-   "blackboard"
-  ],
-  "Conexión Wi-Fi en el campus": [
-   "wifi",
-   "internet",
-   "conexion"
-  ],
-  "Soporte técnico del sistema informático": [
-   "soporte tecnico",
-   "soporte"
-  ],
-  "La carrera": [
-   "satisfaccion con la carrera",
-   "satisfecho con la carrera"
-  ],
-  "La Universidad de Lima": [
-   "satisfaccion con la universidad",
-   "satisfaccion general",
-   "satisfecho con la universidad"
-  ],
-  "Facultad": [
-   "facultad",
-   "facultades"
-  ],
-  "Situación laboral": [
-   "trabajan",
-   "trabajo",
-   "empleo",
-   "situacion laboral",
-   "desempleo"
-  ],
-  "Tiempo laboral": [
-   "tiempo completo",
-   "tiempo parcial",
-   "medio tiempo"
-  ],
-  "Exigencia académica": [
-   "exigencia",
-   "rigor"
-  ],
-  "Transmisión de conocimientos": [
-   "transmision de conocimientos",
-   "conocimientos"
-  ],
-  "Transmisión de experiencias": [
-   "transmision de experiencias",
-   "experiencias"
-  ],
-  "Metodologías": [
-   "metodologias",
-   "metodo de ensenanza"
-  ],
-  "Conocimientos actualizados": [
-   "conocimientos actualizados",
-   "actualizado"
-  ],
-  "Compromiso": [
-   "compromiso"
-  ],
-  "Retroalimentación": [
-   "retroalimentacion",
-   "feedback"
-  ],
-  "Disponibilidad para asesorías": [
-   "asesorias",
-   "disponibilidad",
-   "asesoria"
-  ],
-  "Cumplimiento de normas y programas": [
-   "cumplimiento",
-   "normas"
-  ],
-  "Habilidades para trabajar en equipo": [
-   "trabajo en equipo",
-   "equipo"
-  ],
-  "Habilidades de comunicación": [
-   "comunicacion",
-   "habilidades de comunicacion"
-  ],
-  "Habilidades para aportar nuevas ideas": [
-   "nuevas ideas",
-   "aportar ideas",
-   "creatividad"
-  ],
-  "Mejora en perspectivas de empleo": [
-   "perspectivas de empleo",
-   "empleabilidad futura",
-   "salida laboral"
-  ]
- }
+  "palabras_coloquiales": {
+    "Recomiendas la Universidad de Lima": [
+      "recomiendas",
+      "recomendarias",
+      "nps"
+    ],
+    "Carrera": [
+      "carrera",
+      "alumnos de",
+      "egresados de"
+    ],
+    "Ciclo": [
+      "ciclo",
+      "ciclos"
+    ],
+    "Perfil del egreso de la carrera": [
+      "perfil de egreso",
+      "perfil del egreso"
+    ],
+    "Plan curricular y perfil de egreso": [
+      "plan curricular",
+      "malla curricular",
+      "plan de estudios"
+    ],
+    "Cursos del programa y contenidos": [
+      "cursos",
+      "contenidos",
+      "programa"
+    ],
+    "Calidad de la enseñanza en la carrera": [
+      "calidad de la ensenanza",
+      "ensenanza"
+    ],
+    "Claridad de los recursos académicos": [
+      "recursos academicos",
+      "claridad"
+    ],
+    "Calidad de la formación académica": [
+      "formacion academica",
+      "formacion"
+    ],
+    "Evaluación del aprendizaje": [
+      "evaluacion",
+      "aprendizaje"
+    ],
+    "Intercambio estudiantil": [
+      "intercambio",
+      "intercambio estudiantil"
+    ],
+    "Información sobre el récord académico": [
+      "record academico",
+      "notas"
+    ],
+    "Material bibliográfico en la biblioteca": [
+      "biblioteca",
+      "material bibliografico",
+      "libros"
+    ],
+    "Atención del personal administrativo": [
+      "atencion del personal",
+      "personal administrativo"
+    ],
+    "Procedimientos administrativos": [
+      "procedimientos",
+      "tramites"
+    ],
+    "Ayuda financiera": [
+      "ayuda financiera",
+      "becas",
+      "financiera"
+    ],
+    "Servicio médico y su infraestructura": [
+      "servicio medico",
+      "topico",
+      "enfermeria"
+    ],
+    "Servicio de atención psicopedagógica": [
+      "psicopedagogica",
+      "bienestar"
+    ],
+    "Talleres de actividades artísticas y culturales": [
+      "talleres",
+      "actividades artisticas",
+      "culturales"
+    ],
+    "Actividades deportivas": [
+      "deportivas",
+      "deportes"
+    ],
+    "Empleabilidad, vinculación y ALUMNI": [
+      "empleabilidad",
+      "alumni",
+      "vinculacion",
+      "bolsa de trabajo"
+    ],
+    "Aulas de clase": [
+      "aulas",
+      "salones"
+    ],
+    "Ambientes y salas para estudio": [
+      "ambientes",
+      "salas de estudio",
+      "estudio"
+    ],
+    "Equipamiento tecnológico en laboratorios": [
+      "laboratorios",
+      "equipamiento",
+      "equipos"
+    ],
+    "Condiciones ambientales en laboratorios": [
+      "condiciones ambientales",
+      "ambiente de laboratorios"
+    ],
+    "Software especializado empleado en la carrera": [
+      "software",
+      "programas"
+    ],
+    "Portal web de la Universidad (Mi Ulima)": [
+      "portal",
+      "mi ulima",
+      "intranet"
+    ],
+    "Aula virtual": [
+      "aula virtual",
+      "blackboard"
+    ],
+    "Conexión Wi-Fi en el campus": [
+      "wifi",
+      "internet",
+      "conexion"
+    ],
+    "Soporte técnico del sistema informático": [
+      "soporte tecnico",
+      "soporte"
+    ],
+    "La carrera": [
+      "satisfaccion con la carrera",
+      "satisfecho con la carrera"
+    ],
+    "La Universidad de Lima": [
+      "satisfaccion con la universidad",
+      "satisfaccion general",
+      "satisfecho con la universidad"
+    ],
+    "Facultad": [
+      "facultad",
+      "facultades"
+    ],
+    "Situación laboral": [
+      "trabajan",
+      "trabajo",
+      "empleo",
+      "situacion laboral",
+      "desempleo"
+    ],
+    "Tiempo laboral": [
+      "tiempo completo",
+      "tiempo parcial",
+      "medio tiempo"
+    ],
+    "Exigencia académica": [
+      "exigencia",
+      "rigor"
+    ],
+    "Transmisión de conocimientos": [
+      "transmision de conocimientos",
+      "conocimientos"
+    ],
+    "Transmisión de experiencias": [
+      "transmision de experiencias",
+      "experiencias"
+    ],
+    "Metodologías": [
+      "metodologias",
+      "metodo de ensenanza"
+    ],
+    "Conocimientos actualizados": [
+      "conocimientos actualizados",
+      "actualizado"
+    ],
+    "Compromiso": [
+      "compromiso"
+    ],
+    "Retroalimentación": [
+      "retroalimentacion",
+      "feedback"
+    ],
+    "Disponibilidad para asesorías": [
+      "asesorias",
+      "disponibilidad",
+      "asesoria"
+    ],
+    "Cumplimiento de normas y programas": [
+      "cumplimiento",
+      "normas"
+    ],
+    "Habilidades para trabajar en equipo": [
+      "trabajo en equipo",
+      "equipo"
+    ],
+    "Habilidades de comunicación": [
+      "comunicacion",
+      "habilidades de comunicacion"
+    ],
+    "Habilidades para aportar nuevas ideas": [
+      "nuevas ideas",
+      "aportar ideas",
+      "creatividad"
+    ],
+    "Mejora en perspectivas de empleo": [
+      "perspectivas de empleo",
+      "empleabilidad futura",
+      "salida laboral"
+    ]
+  }
 }
