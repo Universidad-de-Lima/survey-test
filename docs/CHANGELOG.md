@@ -2,6 +2,18 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — Se retira la función `/api/preguntas`
+
+- **Qué era.** La función del backend de `survey-tracker` que guardaba sin datos personales las preguntas
+  que hacía la gente y contaba las más frecuentes: alimentaba la lista "las más preguntadas" del portal.
+- **Por qué se retira.** El portal dejó de registrar preguntas el 2026-09-30 (decisión del usuario: esa
+  lista no debía existir), así que la función quedó publicada y sin ningún consumidor.
+- **Qué se hizo** (en `survey-tracker`): se borraron `apps/backend/api/preguntas.js` y su prueba, y su
+  ruta en `apps/backend/vercel.json`. La documentación de endpoints de ese repositorio no la mencionaba.
+- **Verificación.** CI del otro repositorio en verde y, contra el servicio publicado, `/api/preguntas`
+  responde **404** (tres veces, tras el despliegue); el control `/api/interpretar` sigue vivo (400 sin
+  pregunta, como corresponde).
+
 ## 2026-09-30 — La guardiana del CSS evita tokens fuera de su bloque
 
 - **Qué pasó.** Al pasar los colores sueltos a `tokens.css`, los 13 tokens nuevos quedaron escritos
