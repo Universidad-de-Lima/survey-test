@@ -101,6 +101,20 @@ window.SurveyDOMHelpers = (() => {
    * @param {string} [itemName='ciclos'] - Sustantivo plural para el conteo (ej. 'ciclos', 'categorías')
    * @returns {string}
    */
+  /**
+   * La leyenda de niveles del radar. Los números salen de config/constants.js (metas CSAT y
+   * ponderado): ninguna página los escribe a mano.
+   */
+  function leyendaNiveles() {
+    var csat = window.SURVEY_META?.('CSAT');
+    var pond = window.SURVEY_META?.('PONDERADO');
+    var desde = (typeof pond === 'number') ? pond : '';
+    var hasta = (typeof csat === 'number') ? csat - 1 : '';
+    return '<div class="legend-item"><div class="legend-dot punto-gris700"></div>\u2265' + ((typeof csat === 'number') ? csat : '') + ' % (Fortaleza)</div>' +
+      '<div class="legend-item"><div class="legend-dot punto-gris400"></div>' + desde + '-' + hasta + ' % (Adecuado)</div>' +
+      '<div class="legend-item"><div class="legend-dot punto-rojo"></div>&lt;' + desde + ' % (Atenci\u00f3n)</div>';
+  }
+
   function formatMultiselectLabel(values, placeholder, itemName = 'ciclos') {
     if (!values || !values.length) return placeholder;
     if (values.length === 1) return values[0];
@@ -116,5 +130,6 @@ window.SurveyDOMHelpers = (() => {
     getPlaceholderText,
     formatCustomLabel,
     formatMultiselectLabel,
+    leyendaNiveles,
   };
 })();

@@ -485,11 +485,7 @@
       ${filtroRadarHtml}
       <div class="card radar-container">
         <svg class="radar-svg" viewBox="-40 -40 600 600" preserveAspectRatio="xMidYMid meet" id="radar-chart" role="img" aria-label="Gráfico radar de satisfacción por dimensión"></svg>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot punto-gris700"></div>≥93 % (Fortaleza)</div>
-          <div class="legend-item"><div class="legend-dot punto-gris400"></div>80-92 % (Adecuado)</div>
-          <div class="legend-item"><div class="legend-dot punto-rojo"></div><80 % (Atención)</div>
-        </div>
+        <div class="legend">${window.SurveyDOMHelpers.leyendaNiveles()}</div>
       </div>
       <div class="insight-box success" aria-live="polite">
         <div class="insight-title">Fortalezas</div>

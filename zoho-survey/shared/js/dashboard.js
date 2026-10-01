@@ -1265,3 +1265,10 @@ const SurveyDashboard = (() => {
 })();
 
 window.SurveyDashboard = SurveyDashboard;
+
+// La leyenda del radar (Fortaleza / Adecuado / Atención) se arma con las metas de la configuración:
+// los números (93 y 80) no se escriben en la página.
+document.addEventListener('DOMContentLoaded', function () {
+  var caja = document.getElementById('leyendaNiveles');
+  if (caja && window.SurveyDOMHelpers) caja.innerHTML = window.SurveyDOMHelpers.leyendaNiveles();
+});
