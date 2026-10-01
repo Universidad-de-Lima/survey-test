@@ -508,7 +508,7 @@ svg { display: block; }
   font-weight: var(--font-medium);
   text-decoration: none;
 }
-.btn-zip:hover { background: #333; }
+.btn-zip:hover { background: var(--btn-zip-hover); }
 
 /* Postcondition footer */
 .postcondition {
@@ -519,7 +519,7 @@ svg { display: block; }
   background: rgba(16,185,129,0.05);
   border-radius: 8px;
   font-size: var(--text-md);
-  color: #047857;
+  color: var(--postcondition);
 }
 
 /* Altos de línea en píxeles enteros: el multiplicador 1,75 daba 26,25px en el
@@ -670,7 +670,7 @@ svg { display: block; }
 /* Evidence markers */
 mark.ed {
   background: rgba(16,185,129,0.15);
-  color: #047857;
+  color: var(--postcondition);
   font-family: var(--font-family-primary);
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
@@ -679,7 +679,7 @@ mark.ed {
 }
 mark.ei {
   background: rgba(14,165,233,0.15);
-  color: #0369A1;
+  color: var(--mark-ei);
   font-family: var(--font-family-primary);
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
@@ -688,7 +688,7 @@ mark.ei {
 }
 mark.inf {
   background: rgba(139,92,246,0.15);
-  color: #6D28D9;
+  color: var(--mark-inf);
   font-family: var(--font-family-primary);
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
@@ -697,7 +697,7 @@ mark.inf {
 }
 mark.hip {
   background: rgba(245,158,11,0.15);
-  color: #B45309;
+  color: var(--mark-hip);
   font-family: var(--font-family-primary);
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
@@ -706,7 +706,7 @@ mark.hip {
 }
 mark.inc {
   background: rgba(244,63,94,0.15);
-  color: #BE123C;
+  color: var(--mark-inc);
   font-family: var(--font-family-primary);
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
@@ -763,23 +763,23 @@ mark.inc {
 .portal-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
 .portal-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .portal-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #b3b3b3;
+  background-color: var(--scrollbar-thumb);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
-.portal-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #8a8a8a; }
+.portal-scrollbar::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-thumb-hover); }
 
 /* Scrollbar de tablas: mismo estilo fino que la principal */
 .survey-table-wrap::-webkit-scrollbar { width: 8px; height: 8px; }
 .survey-table-wrap::-webkit-scrollbar-track { background: transparent; }
 .survey-table-wrap::-webkit-scrollbar-thumb {
-  background-color: #b3b3b3;
+  background-color: var(--scrollbar-thumb);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
-.survey-table-wrap::-webkit-scrollbar-thumb:hover { background-color: #8a8a8a; }
+.survey-table-wrap::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-thumb-hover); }
 
 /* Spacing utility */
 .section { margin-bottom: 24px; }

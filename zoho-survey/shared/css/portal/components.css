@@ -392,7 +392,7 @@
 .ring.pendiente .ring-centro b { color: var(--muted-foreground, var(--gray-500)); }
 .ring.pendiente .ring-per,
 .ring.pendiente .ring-satisf span,
-.ring.pendiente .ring-tend { color: #6f7480; }
+.ring.pendiente .ring-tend { color: var(--ring-pendiente); }
 
 .ring-aro {
   position: relative;
@@ -403,7 +403,7 @@
 }
 /* Anillo todavía sin datos: gris algo más marcado que la pista normal, para
    que se vea que existe una encuesta pendiente. */
-.ring-aro.vacio { background: conic-gradient(#dfe3e7 0 100%); }
+.ring-aro.vacio { background: conic-gradient(var(--ring-vacio) 0 100%); }
 .ring-centro {
   position: absolute;
   inset: 8px;

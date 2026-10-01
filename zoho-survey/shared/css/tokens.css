@@ -134,3 +134,18 @@
   --sentiment-pos-bg: var(--success-pastel);
   --sentiment-neu-bg: var(--warning-pastel);
 }
+
+  /* ── Colores que estaban sueltos en las hojas (mismos valores, ahora con nombre) ── */
+  --line-soft: #eee;                 /* línea tenue (filas de tabla de tooltip) */
+  --line-strong: #ccc;               /* línea algo más marcada (fila fuerte) */
+  --ink-dark: #1a1410;               /* tinta oscura del aviso de "en construcción" */
+  --btn-zip-hover: #333;             /* fondo del botón de descarga al pasar el mouse */
+  --mark-ei: #0369A1;                /* marcas del texto del análisis: ei */
+  --mark-inf: #6D28D9;               /* marcas del texto del análisis: inf */
+  --mark-hip: #B45309;               /* marcas del texto del análisis: hip */
+  --mark-inc: #BE123C;               /* marcas del texto del análisis: inc */
+  --postcondition: #047857;          /* verde de la línea de postcondición */
+  --scrollbar-thumb: #b3b3b3;        /* barra de desplazamiento del portal */
+  --scrollbar-thumb-hover: #8a8a8a;  /* la misma barra, al pasar el mouse */
+  --ring-pendiente: #6f7480;         /* texto del anillo cuando el período está pendiente */
+  --ring-vacio: #dfe3e7;             /* aro del anillo sin datos */

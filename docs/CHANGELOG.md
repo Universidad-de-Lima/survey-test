@@ -2,6 +2,21 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — Los colores sueltos del CSS tienen nombre
+
+- **Qué pasaba.** 14 colores estaban escritos a mano dentro de las hojas (un verde, un celeste, un violeta,
+  un ámbar, un rosa, varios grises y tres blancos), sin nombre y fuera de la paleta.
+- **Qué cambió.** Viven en `shared/css/tokens.css` con su nombre (`--mark-ei`, `--mark-inf`, `--mark-hip`,
+  `--mark-inc`, `--postcondition`, `--line-soft`, `--line-strong`, `--ink-dark`, `--btn-zip-hover`,
+  `--scrollbar-thumb`, `--scrollbar-thumb-hover`, `--ring-pendiente`, `--ring-vacio`) y los blancos usan
+  `--white`. **Los valores son idénticos**: no cambia ni un pixel.
+- **Lo que se deja a propósito.** Las cuatro definiciones propias del portal (`--foreground`, `--muted`,
+  `--border`, `--sidebar`) y los respaldos `var(--token, #valor)` de `generated.css` y `components.css`:
+  esas hojas también las cargan las fichas, donde esos tokens del portal no existen, así que el respaldo
+  hace trabajo real.
+- **Verificación:** ningún color queda suelto fuera de `tokens.css` salvo esos casos explicados, y los 13
+  tokens nuevos tienen uso (la guardiana de CSS falla por token declarado y sin usar).
+
 ## 2026-09-30 — Las reglas de negocio de las pantallas, en un solo sitio
 
 - **Qué pasaba.** Cada pantalla llevaba su copia de las metas del proyecto: 14 respaldos escritos a mano
