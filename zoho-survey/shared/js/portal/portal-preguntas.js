@@ -359,6 +359,55 @@ window.SurveyPortalPreguntas = (function () {
     return { bien: bien, total: conRespuesta, pct: Math.round((bien / conRespuesta) * 10000) / 100 };
   }
 
+  /** Lo que significa "trabajar": el trabajo formal y, aparte, las prácticas (constants.js). */
+  function gruposDeTrabajo() {
+    var cfg = window.SURVEY_CONFIG || {};
+    var trabajo = cfg.VALORES_TRABAJO || [];
+    var practica = cfg.VALORES_PRACTICA || [];
+    return (trabajo.length && practica.length) ? { trabajo: trabajo, practica: practica } : null;
+  }
+
+  /**
+   * Las dos lecturas de "trabajan" (con prácticas / solo trabajo formal) y, de los que trabajan,
+   * su tiempo laboral. Los grupos son configuración de negocio: el modelo no tiene que decidir
+   * si una práctica es trabajo ni sumar porcentajes.
+   */
+  function lecturasDeTrabajo(tabla, campo, filas) {
+    var grupos = gruposDeTrabajo();
+    var ops = tabla.opciones[campo] || [];
+    if (!grupos || !ops.length) return [];
+    var faltan = grupos.trabajo.concat(grupos.practica).filter(function (v) { return ops.indexOf(v) === -1; });
+    if (faltan.length) return [];
+    var i = (tabla.cabeceras || []).indexOf(campo);
+    function cuenta(valores) {
+      var suma = valores.reduce(function (total, v) {
+        var k = ops.indexOf(v);
+        return total + (k === -1 ? 0 : filas.filter(function (f) { return f[i] === k; }).length);
+      }, 0);
+      return { n: suma, pct: filas.length ? Math.round((suma / filas.length) * 10000) / 100 : 0 };
+    }
+    var formal = cuenta(grupos.trabajo);
+    var amplio = cuenta(grupos.trabajo.concat(grupos.practica));
+    var lineas = [
+      '- Trabajan (trabajo formal: ' + grupos.trabajo.join(' o ') + '): ' + n(formal.n) + ' de ' + n(filas.length) + ' (' + pct(formal.pct) + ').',
+      '- Si se cuentan también las prácticas: ' + n(amplio.n) + ' de ' + n(filas.length) + ' (' + pct(amplio.pct) + ').'
+    ];
+    // El tiempo laboral solo se le pregunta a quien trabaja: se cuenta sobre el trabajo formal.
+    var iTiempo = (tabla.cabeceras || []).indexOf('Tiempo laboral');
+    if (iTiempo !== -1 && formal.n) {
+      var trabajan = filas.filter(function (f) {
+        return grupos.trabajo.some(function (v) { return f[i] === ops.indexOf(v); });
+      });
+      var partes = (tabla.opciones['Tiempo laboral'] || []).map(function (o, k) {
+        if (!o || o === '(sin respuesta)') return null;
+        var c = trabajan.filter(function (f) { return f[iTiempo] === k; }).length;
+        return o + ' ' + n(c) + ' (' + pct(Math.round((c / trabajan.length) * 10000) / 100) + ')';
+      }).filter(Boolean);
+      if (partes.length) lineas.push('- El tiempo laboral de esos ' + n(trabajan.length) + ': ' + partes.join(' · ') + '.');
+    }
+    return lineas;
+  }
+
   /** El bloque del reparto de una pregunta: cuantas respuestas hay de cada opcion. */
   function bloqueDeReparto(p, tabla, pregunta, filtros) {
     var campo = nombrePublicado(tabla, pregunta);
@@ -386,7 +435,7 @@ window.SurveyPortalPreguntas = (function () {
       titulo: campo + (filtros.length ? ' (' + textoDeFiltros(filtros) + ')' : '') + ' en ' + etiquetaDe(p),
       lineas: ['- Total: ' + n(filas.length) + ' respuestas.'].concat(conteo.map(function (x) {
         return '- ' + x.valor + ': ' + n(x.cuenta) + ' (' + pct(filas.length ? 100 * x.cuenta / filas.length : 0) + ').';
-      })).concat(extra)
+      })).concat(extra).concat(lecturasDeTrabajo(tabla, campo, filas))
     };
   }
 

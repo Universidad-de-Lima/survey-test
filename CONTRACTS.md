@@ -642,8 +642,10 @@ Atiende **dos pasos**, según el campo `paso`:
 - **`respuesta`**: el modelo **redacta** con los `bloques` que le manda el portal y cierra con una linea
   `Fuente: …`. El portal descarta la respuesta si trae alguna cifra que no este en los bloques.
 - **`bloques`**: los arma el portal con los JSON publicados (repartos de una pregunta, NPS, satisfaccion,
-  los tres mejores niveles, y NPS y satisfaccion por carrera, facultad o ciclo). Son la unica fuente de las
-  cifras: **el modelo no calcula**.
+  los tres mejores niveles, NPS y satisfaccion por carrera, facultad o ciclo, y las **dos lecturas de
+  "trabajan"** —con practicas / solo trabajo formal— con el tiempo laboral de quienes trabajan, segun
+  `VALORES_TRABAJO`/`VALORES_PRACTICA` de `constants.js`). Son la unica fuente de las cifras: **el modelo no
+  calcula**.
 - **`menu`**: las preguntas publicadas con sus opciones, de **todos** los periodos; nunca lleva cifras.
 - **`contexto`**: sale de `zoho-survey/shared/config/asistente_contexto.json` (que es el proyecto, como estan
   los datos, como esta organizado el cuestionario, reglas, equivalencias y palabras coloquiales); la

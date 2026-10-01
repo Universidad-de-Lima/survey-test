@@ -2,6 +2,19 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-09-30 — El asistente entrega las dos lecturas de "trabajan"
+
+- **Qué pasaba.** A "¿Qué porcentaje de graduados de la carrera de economía trabajan?" el asistente
+  contestaba que no podía: recibía el reparto de la situación laboral (57,14 % dependiente y 42,86 %
+  prácticas profesionales, sobre 14 respuestas) y tenía prohibido sumar o decidir si una práctica es
+  trabajo.
+- **Qué cambió.** Los datos que el portal le manda ahora traen ya las dos lecturas, calculadas por la
+  página con los grupos de `constants.js` (`VALORES_TRABAJO` / `VALORES_PRACTICA`): "Trabajan (trabajo
+  formal): 8 de 14 (57,14 %)" y "Si se cuentan también las prácticas: 14 de 14 (100 %)", más el tiempo
+  laboral de esos 8 (completo 8 · parcial 0). Es la misma decisión de negocio que el usuario ya había
+  fijado: las prácticas no son trabajo, y por eso las dos cifras van juntas.
+- **Pruebas:** asistente 1.9 en jsdom 16 → **17**.
+
 ## 2026-09-30 — El asistente busca los datos y el modelo redacta (sin catálogo de operaciones)
 
 - **Qué pasaba.** El asistente elegía entre una lista cerrada de operaciones (`contar`, `porcentaje`,

@@ -19,6 +19,7 @@ global.navigator = dom.window.navigator;
 const basePath = path.resolve(__dirname, '..', '..');
 const raiz = path.join(basePath, 'zoho-survey');
 
+require(path.join(raiz, 'shared/js/config/constants.js'));
 require(path.join(raiz, 'shared/js/utils/sanitizer.js'));
 require(path.join(raiz, 'shared/js/utils/formatters.js'));
 require(path.join(raiz, 'shared/js/portal/portal-preguntas.js'));
@@ -100,6 +101,10 @@ const P = window.SurveyPortalPreguntas;
   planSimulado = { se_puede: true, periodos: ['Graduados Pregrado 2026'], preguntas: ['Situación laboral'], filtros: [], motivo: '' };
   const bloquesGraduados = P.bloquesDe(planSimulado, tablas);
 
+  // Las dos lecturas de "trabajan" con el filtro de una carrera (Graduados 2026).
+  planSimulado = { se_puede: true, periodos: ['Graduados Pregrado 2026'], preguntas: ['Situación laboral'], filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }], motivo: '' };
+  const bloquesTrabajo = P.bloquesDe(planSimulado, tablas);
+
   // Bloques del NPS y de la satisfacción del período.
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Recomiendas la Universidad de Lima'], filtros: [], motivo: '' };
   const bloquesNps = P.bloquesDe(planSimulado, tablas);
@@ -174,6 +179,13 @@ const P = window.SurveyPortalPreguntas;
     assertIncludes(bloquesGraduados.texto, 'Situación laboral');
     assertIncludes(bloquesGraduados.texto, 'Trabajador dependiente: 260');
     assertIncludes(bloquesGraduados.texto, '598 respuestas');
+  });
+
+  test('para "trabajan" van las dos lecturas y el tiempo laboral', function () {
+    assertIncludes(bloquesTrabajo.texto, 'Trabajan (trabajo formal');
+    assertIncludes(bloquesTrabajo.texto, '8 de 14 (57,14 %)');
+    assertIncludes(bloquesTrabajo.texto, '14 de 14 (100 %)');
+    assertIncludes(bloquesTrabajo.texto, 'El tiempo laboral de esos 8: Tiempo completo 8 (100 %)');
   });
 
   test('los bloques del NPS y de la satisfacción salen del dashboard', function () {

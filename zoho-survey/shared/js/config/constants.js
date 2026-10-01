@@ -49,6 +49,12 @@ window.SURVEY_CONFIG = {
   CSAT_WEIGHTS: [5, 4, 3, 2, 1],
   CSAT_SCALE_MAX: 5,
 
+  // ── Asistente (ítem 1.9): qué significa "trabajar" en las encuestas ──
+  // El trabajo formal y las prácticas no son lo mismo: con estos dos grupos la página entrega
+  // las dos lecturas (con prácticas / solo trabajo) sin que el modelo cuente nada.
+  VALORES_TRABAJO: ['Trabajador dependiente', 'Trabajador independiente'],
+  VALORES_PRACTICA: ['Prácticas profesionales', 'Prácticas pre - profesionales'],
+
   // ── Placeholder texts ──
   FACULTAD_PLACEHOLDER: 'Todas las unidades académicas',
   FACULTAD_PLACEHOLDER_PROG: 'Todas las unidades académicas',

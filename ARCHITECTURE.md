@@ -344,7 +344,9 @@ en dos pasos y una comprobación.
    las encuestas publicadas (preguntas y opciones, sin cifras) a `POST /api/interpretar` con
    `paso: "plan"`; el servicio devuelve los períodos, las preguntas y los filtros que hacen falta.
 2. **El portal busca esos datos.** Con el plan, arma los bloques con lo publicado: el reparto de cada
-   pregunta y, cuando el plan pide un grupo, el NPS y la satisfacción de cada carrera, facultad o ciclo.
+   pregunta —con las **dos lecturas de "trabajan"** (con prácticas / solo trabajo formal, y el tiempo
+   laboral de quienes trabajan)— y, cuando el plan pide un grupo, el NPS y la satisfacción de cada carrera,
+   facultad o ciclo.
    Los filtros se aplican sobre las filas de `respuestas.json`. Los bloques son de pocos KB, nunca la tabla
    completa.
 3. **El modelo redacta** la respuesta en español con esos bloques y cita la encuesta de la que sale
