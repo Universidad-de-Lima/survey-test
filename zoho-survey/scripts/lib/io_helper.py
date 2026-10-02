@@ -70,14 +70,18 @@ def normalize_dates(df: "pd.DataFrame", columns: List[str]) -> "pd.DataFrame":
         if col not in df_copy.columns:
             continue
             
-        # Reemplazar abreviaciones de meses
-        for es, en in meses_es.items():
-            df_copy[col] = df_copy[col].str.replace(es, en, regex=False)
-            
-        # Formatear AM/PM de Zoho: "p. m." -> "PM", "a. m." -> "AM"
-        df_copy[col] = df_copy[col].str.replace(r"p.\s*m\.", "PM", regex=True)
-        df_copy[col] = df_copy[col].str.replace(r"a.\s*m\.", "AM", regex=True)
-        
+        # Solo el texto necesita la limpieza de meses y AM/PM. Una columna que llega
+        # sin valores (pandas la lee como numero) no tiene .str: se convierte directo,
+        # de modo que una encuesta con fechas vacias no rompa el ETL.
+        if pd.api.types.is_object_dtype(df_copy[col]) or pd.api.types.is_string_dtype(df_copy[col]):
+            # Reemplazar abreviaciones de meses
+            for es, en in meses_es.items():
+                df_copy[col] = df_copy[col].str.replace(es, en, regex=False)
+
+            # Formatear AM/PM de Zoho: "p. m." -> "PM", "a. m." -> "AM"
+            df_copy[col] = df_copy[col].str.replace(r"p.\s*m\.", "PM", regex=True)
+            df_copy[col] = df_copy[col].str.replace(r"a.\s*m\.", "AM", regex=True)
+
         # Conversión a datetime
         df_copy[col] = pd.to_datetime(df_copy[col], dayfirst=True, errors="coerce")
         

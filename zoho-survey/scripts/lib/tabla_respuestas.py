@@ -58,18 +58,21 @@ def _fechas_iso(df: pd.DataFrame, col: str) -> List[str]:
     directo; si no se pudiera leer ninguna, se conserva el texto original.
     """
     serie = df[col]
-    if not pd.api.types.is_datetime64_any_dtype(serie):
-        # Primero el camino directo (una fecha ya en formato de maquina). Solo si casi
-        # nada se puede leer, se usa el normalizador de Zoho (meses en espanol), que
-        # interpreta el dia primero y por eso no debe aplicarse a una fecha ISO.
-        directo = pd.to_datetime(_texto(serie), errors="coerce")
-        if directo.notna().sum() >= max(1, len(df) // 2):
-            serie = directo
-        else:
-            try:
-                serie = normalize_dates(df[[col]], [col])[col]
-            except Exception:
-                serie = pd.to_datetime(_texto(serie), errors="coerce", dayfirst=True)
+    if pd.api.types.is_datetime64_any_dtype(serie):
+        # Ya es fecha: se formatea directo (NaT -> ""). Sin este atajo, una columna
+        # de fechas totalmente vacia (todo NaT) caeria en el camino de texto.
+        return ["" if pd.isna(v) else v.strftime("%Y-%m-%d") for v in serie]
+    # Primero el camino directo (una fecha ya en formato de maquina). Solo si casi
+    # nada se puede leer, se usa el normalizador de Zoho (meses en espanol), que
+    # interpreta el dia primero y por eso no debe aplicarse a una fecha ISO.
+    directo = pd.to_datetime(_texto(serie), errors="coerce")
+    if directo.notna().sum() >= max(1, len(df) // 2):
+        serie = directo
+    else:
+        try:
+            serie = normalize_dates(df[[col]], [col])[col]
+        except Exception:
+            serie = pd.to_datetime(_texto(serie), errors="coerce", dayfirst=True)
     if serie.isna().all():
         return [v for v in _texto(df[col])]
     return ["" if pd.isna(v) else v.strftime("%Y-%m-%d") for v in serie]

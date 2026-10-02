@@ -364,7 +364,8 @@ def main() -> None:
         if pd.isnull(fin):
             fin = pd.Timestamp.now()
 
-        anio = df[col_inicio].dt.year.mode()[0] if not df[col_inicio].empty else inicio.year
+        anios = df[col_inicio].dt.year.dropna()
+        anio = int(anios.mode()[0]) if not anios.empty else inicio.year
         fechas_unicas = df[col_inicio].dt.date.nunique() if not df[col_inicio].empty else 1
 
         # metricas NPS y CSAT globales
