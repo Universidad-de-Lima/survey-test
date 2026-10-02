@@ -1,0 +1,293 @@
+{
+  "version": "2.1",
+  "resumen": {
+    "encuestas": 1,
+    "carreras": 1,
+    "facultades": 1,
+    "fecha_inicio": "2026-10-02",
+    "fecha_fin": "2026-10-02",
+    "dias": 1,
+    "dias_recoleccion": 1,
+    "año": 2026,
+    "periodo": "2026",
+    "nps": {
+      "score": 100.0,
+      "promotores": 1,
+      "pasivos": 0,
+      "detractores": 0,
+      "total": 1
+    },
+    "csat": {
+      "score": 0,
+      "t3b": 0,
+      "total": 0,
+      "t2b": 0,
+      "t2b_pct": 0,
+      "ponderado": 0
+    },
+    "empleabilidad": {
+      "score": 0.0,
+      "empleados": 0,
+      "total": 1
+    }
+  },
+  "hallazgos": {
+    "csat_pct": 0,
+    "nps_score": 100,
+    "nps_tipo": "Excelente",
+    "nps_etapas": {},
+    "tendencia": "se mantiene",
+    "delta": 0,
+    "top_dimensiones": [],
+    "top_facultades": []
+  },
+  "nps": {
+    "promotores": 1,
+    "pasivos": 0,
+    "detractores": 0,
+    "score": 100.0
+  },
+  "csat": {
+    "Totalmente satisfecho": 0,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0
+  },
+  "_export": {
+    "nombre_encuesta": "encuesta_de_satisfacción_estudiantil_escuela_de_posgrado_2026",
+    "fecha_generacion": "2026-10-02"
+  },
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "escala": "NPS"
+    },
+    {
+      "id": "pg_carrera_profesion",
+      "nombre": "Carrera (profesión)",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_edad",
+      "nombre": "Edad",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_grado_academico",
+      "nombre": "Grado académico",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_nivel_semestre",
+      "nombre": "Nivel / Semestre",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "carrera",
+      "nombre": "Programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_puesto",
+      "nombre": "Puesto",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_residencia",
+      "nombre": "Residencia",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_rubro",
+      "nombre": "Rubro",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_sector",
+      "nombre": "Sector",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_sexo",
+      "nombre": "Sexo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_situacion_laboral",
+      "nombre": "Situación laboral",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "pg_competencias",
+      "nombre": "Competencias del programa",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_liderazgo",
+      "nombre": "Desarrollo de liderazgo",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_perfil_profesional",
+      "nombre": "Fortalecimiento del perfil profesional",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_red_contactos",
+      "nombre": "Red de contactos profesionales",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_internacionalizacion",
+      "nombre": "Oportunidades de internacionalización",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_secuencia_plan",
+      "nombre": "Secuencia del plan de estudios",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_duracion_asignaturas",
+      "nombre": "Duración de las asignaturas",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_contenidos_actualizados",
+      "nombre": "Contenidos actualizados",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_dominio_docente",
+      "nombre": "Dominio de los contenidos por los profesores",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_carga_academica",
+      "nombre": "Carga de trabajo académico",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_metodologias",
+      "nombre": "Metodologías de enseñanza",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_retroalimentacion",
+      "nombre": "Retroalimentación recibida",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_plazos_academicos",
+      "nombre": "Atención de solicitudes académicas",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_atencion_administrativa",
+      "nombre": "Atención del personal administrativo",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_informacion_pagos",
+      "nombre": "Información sobre pagos",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_comunicaciones",
+      "nombre": "Comunicaciones de la Escuela",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_recursos_bibliograficos",
+      "nombre": "Recursos bibliográficos",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_aulas",
+      "nombre": "Aulas de clase",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_equipamiento_aulas",
+      "nombre": "Equipamiento de las aulas",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_conexion_internet",
+      "nombre": "Conexión a internet",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_espacios_limpios",
+      "nombre": "Limpieza de los espacios",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_csat_programa",
+      "nombre": "Satisfacción con la calidad académica",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_lealtad_programa",
+      "nombre": "Volvería a estudiar el programa",
+      "tipo": "medida",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "escala": ""
+    }
+  ]
+}

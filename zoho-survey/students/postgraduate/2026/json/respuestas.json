@@ -1,0 +1,478 @@
+{
+  "version": "1.1",
+  "nivel": "postgraduate",
+  "periodo": "2026",
+  "respuestas": 1,
+  "cabeceras": [
+    "Recomendación (0 al 10)",
+    "Carrera (profesión)",
+    "Edad",
+    "Grado académico",
+    "Nivel / Semestre",
+    "Programa",
+    "Puesto",
+    "Residencia",
+    "Rubro",
+    "Sector",
+    "Sexo",
+    "Situación laboral",
+    "Competencias del programa",
+    "Desarrollo de liderazgo",
+    "Fortalecimiento del perfil profesional",
+    "Red de contactos profesionales",
+    "Oportunidades de internacionalización",
+    "Secuencia del plan de estudios",
+    "Duración de las asignaturas",
+    "Contenidos actualizados",
+    "Dominio de los contenidos por los profesores",
+    "Carga de trabajo académico",
+    "Metodologías de enseñanza",
+    "Retroalimentación recibida",
+    "Atención de solicitudes académicas",
+    "Atención del personal administrativo",
+    "Información sobre pagos",
+    "Comunicaciones de la Escuela",
+    "Recursos bibliográficos",
+    "Aulas de clase",
+    "Equipamiento de las aulas",
+    "Conexión a internet",
+    "Aula virtual",
+    "Limpieza de los espacios",
+    "Satisfacción con la calidad académica",
+    "Volvería a estudiar el programa",
+    "Ciclo",
+    "Facultad"
+  ],
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "pregunta": "En una escala del 0 al 10, donde 0 significa ‘Definitivamente no la recomendaría’ y 10 ‘Definitivamente sí la recomendaría’¿Qué tan probable es que recomiendes a la Escuela de Posgrado de la Universidad de Lima a un familiar o amigo como institución para estudiar un posgrado?",
+      "escala": "NPS"
+    },
+    {
+      "id": "pg_carrera_profesion",
+      "nombre": "Carrera (profesión)",
+      "tipo": "agrupacion",
+      "pregunta": "Carrera (profesión)",
+      "escala": ""
+    },
+    {
+      "id": "pg_edad",
+      "nombre": "Edad",
+      "tipo": "agrupacion",
+      "pregunta": "Edad:",
+      "escala": ""
+    },
+    {
+      "id": "pg_grado_academico",
+      "nombre": "Grado académico",
+      "tipo": "agrupacion",
+      "pregunta": "Grado Académico más alto alcanzado:",
+      "escala": ""
+    },
+    {
+      "id": "pg_nivel_semestre",
+      "nombre": "Nivel / Semestre",
+      "tipo": "agrupacion",
+      "pregunta": "Nivel  / Semestre actual:",
+      "escala": ""
+    },
+    {
+      "id": "carrera",
+      "nombre": "Programa",
+      "tipo": "agrupacion",
+      "pregunta": "Programa:",
+      "escala": ""
+    },
+    {
+      "id": "pg_puesto",
+      "nombre": "Puesto",
+      "tipo": "agrupacion",
+      "pregunta": "Puesto que ocupa:",
+      "escala": ""
+    },
+    {
+      "id": "pg_residencia",
+      "nombre": "Residencia",
+      "tipo": "agrupacion",
+      "pregunta": "Residencia actual:",
+      "escala": ""
+    },
+    {
+      "id": "pg_rubro",
+      "nombre": "Rubro",
+      "tipo": "agrupacion",
+      "pregunta": "Rubro:",
+      "escala": ""
+    },
+    {
+      "id": "pg_sector",
+      "nombre": "Sector",
+      "tipo": "agrupacion",
+      "pregunta": "Sector:",
+      "escala": ""
+    },
+    {
+      "id": "pg_sexo",
+      "nombre": "Sexo",
+      "tipo": "agrupacion",
+      "pregunta": "Sexo:",
+      "escala": ""
+    },
+    {
+      "id": "pg_situacion_laboral",
+      "nombre": "Situación laboral",
+      "tipo": "agrupacion",
+      "pregunta": "Situación laboral actual:",
+      "escala": ""
+    },
+    {
+      "id": "pg_competencias",
+      "nombre": "Competencias del programa",
+      "tipo": "medida",
+      "pregunta": "El programa comunica claramente las competencias que se espera que desarrolle.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_liderazgo",
+      "nombre": "Desarrollo de liderazgo",
+      "tipo": "medida",
+      "pregunta": "El programa contribuye al desarrollo de mis habilidades de liderazgo.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_perfil_profesional",
+      "nombre": "Fortalecimiento del perfil profesional",
+      "tipo": "medida",
+      "pregunta": "El programa contribuye al fortalecimiento de mi perfil profesional.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_red_contactos",
+      "nombre": "Red de contactos profesionales",
+      "tipo": "medida",
+      "pregunta": "El programa me ofrece oportunidades para ampliar mi red de contactos profesionales.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_internacionalizacion",
+      "nombre": "Oportunidades de internacionalización",
+      "tipo": "medida",
+      "pregunta": "El programa ofrece oportunidades de internacionalización pertinentes para mi formación.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_secuencia_plan",
+      "nombre": "Secuencia del plan de estudios",
+      "tipo": "medida",
+      "pregunta": "Las asignaturas siguen una secuencia coherente dentro del plan de estudios.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_duracion_asignaturas",
+      "nombre": "Duración de las asignaturas",
+      "tipo": "medida",
+      "pregunta": "La duración de las asignaturas permite desarrollar adecuadamente sus contenidos.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_contenidos_actualizados",
+      "nombre": "Contenidos actualizados",
+      "tipo": "medida",
+      "pregunta": "Los contenidos desarrollados en las asignaturas se encuentran actualizados.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_dominio_docente",
+      "nombre": "Dominio de los contenidos por los profesores",
+      "tipo": "medida",
+      "pregunta": "Los profesores demuestran dominio de los contenidos que enseñan.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_carga_academica",
+      "nombre": "Carga de trabajo académico",
+      "tipo": "medida",
+      "pregunta": "La carga de trabajo académico es adecuada para un programa de posgrado.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_metodologias",
+      "nombre": "Metodologías de enseñanza",
+      "tipo": "medida",
+      "pregunta": "Las metodologías de enseñanza empleadas facilitan mi aprendizaje.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_retroalimentacion",
+      "nombre": "Retroalimentación recibida",
+      "tipo": "medida",
+      "pregunta": "La retroalimentación recibida me ayuda a mejorar mi desempeño académico.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_plazos_academicos",
+      "nombre": "Atención de solicitudes académicas",
+      "tipo": "medida",
+      "pregunta": "Mis solicitudes académicas son atendidas dentro de plazos razonables.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_atencion_administrativa",
+      "nombre": "Atención del personal administrativo",
+      "tipo": "medida",
+      "pregunta": "Las respuestas del personal administrativo son útiles para resolver mis consultas.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_informacion_pagos",
+      "nombre": "Información sobre pagos",
+      "tipo": "medida",
+      "pregunta": "La información sobre pagos y obligaciones económicas se comunica con claridad.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_comunicaciones",
+      "nombre": "Comunicaciones de la Escuela",
+      "tipo": "medida",
+      "pregunta": "Recibo oportunamente las comunicaciones relevantes para el desarrollo de mis estudios.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_recursos_bibliograficos",
+      "nombre": "Recursos bibliográficos",
+      "tipo": "medida",
+      "pregunta": "Los recursos bibliográficos disponibles responden a mis necesidades académicas.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_aulas",
+      "nombre": "Aulas de clase",
+      "tipo": "medida",
+      "pregunta": "Las aulas presentan condiciones físicas apropiadas para el desarrollo de las clases.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_equipamiento_aulas",
+      "nombre": "Equipamiento de las aulas",
+      "tipo": "medida",
+      "pregunta": "El equipamiento de las aulas funciona adecuadamente durante las clases.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_conexion_internet",
+      "nombre": "Conexión a internet",
+      "tipo": "medida",
+      "pregunta": "La conexión a internet del campus permite desarrollar mis actividades académicas.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "pregunta": "El aula virtual facilita el acceso a los recursos académicos de mis asignaturas.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_espacios_limpios",
+      "nombre": "Limpieza de los espacios",
+      "tipo": "medida",
+      "pregunta": "Los espacios del campus que utilizo se mantienen limpios.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_csat_programa",
+      "nombre": "Satisfacción con la calidad académica",
+      "tipo": "medida",
+      "pregunta": "En general, estoy satisfecho(a) con la calidad académica del programa.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "pg_lealtad_programa",
+      "nombre": "Volvería a estudiar el programa",
+      "tipo": "medida",
+      "pregunta": "Si tuviera que elegir nuevamente, volvería a estudiar este programa en la Universidad de Lima.",
+      "escala": "acuerdo"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "pregunta": "Ciclo (derivado; la encuesta de posgrado no lo pregunta)",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "pregunta": "Facultad (derivada; un programa de posgrado no es una carrera de pregrado)",
+      "escala": ""
+    }
+  ],
+  "opciones": {
+    "Recomendación (0 al 10)": [
+      "10"
+    ],
+    "Carrera (profesión)": [
+      "Otra área"
+    ],
+    "Edad": [
+      "46 años a más"
+    ],
+    "Grado académico": [
+      "Grado de Doctor"
+    ],
+    "Nivel / Semestre": [
+      "Nivel 1"
+    ],
+    "Programa": [
+      "Maestría en Administración y Dirección de Negocios"
+    ],
+    "Puesto": [
+      "Alta dirección / Gerencia general / Directorio / Decanatura o Rectorado"
+    ],
+    "Residencia": [
+      "Lima Metropolitana y Callao"
+    ],
+    "Rubro": [
+      "Educación Superior, Ciencia e Investigación"
+    ],
+    "Sector": [
+      "Sector Privado"
+    ],
+    "Sexo": [
+      "Hombre"
+    ],
+    "Situación laboral": [
+      "Dependiente a tiempo completo"
+    ],
+    "Competencias del programa": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Desarrollo de liderazgo": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Fortalecimiento del perfil profesional": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Red de contactos profesionales": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Oportunidades de internacionalización": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Secuencia del plan de estudios": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Duración de las asignaturas": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Contenidos actualizados": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Dominio de los contenidos por los profesores": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Carga de trabajo académico": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Metodologías de enseñanza": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Retroalimentación recibida": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Atención de solicitudes académicas": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Atención del personal administrativo": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Información sobre pagos": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Comunicaciones de la Escuela": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Recursos bibliográficos": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Aulas de clase": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Equipamiento de las aulas": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Conexión a internet": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Aula virtual": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Limpieza de los espacios": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Satisfacción con la calidad académica": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Volvería a estudiar el programa": [
+      "1 = Totalmente en desacuerdo"
+    ],
+    "Ciclo": [
+      "NA"
+    ],
+    "Facultad": [
+      "Otra"
+    ]
+  },
+  "filas": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "ids": [
+    "dYC58yqn"
+  ],
+  "fechas": [
+    "2026-10-02"
+  ]
+}
