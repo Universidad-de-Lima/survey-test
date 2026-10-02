@@ -37,6 +37,7 @@ from lib.config import (
     clasificar_categoria_dimension,
     declaraciones_de,
     columna,
+    columnas_que_no_son_preguntas,
 )
 from lib.metrics import calc_nps, calc_csat, calc_promedio_ponderado, calc_nps_carrera, calc_csat_carrera
 from lib.io_helper import read_csv_robust, normalize_dates, hash_csv, csv_cambiado, guardar_hash_csv, enmascarar_pii
@@ -174,10 +175,10 @@ def _detectar_dimensiones(df) -> "Dict[str, str]":
     excluyen. Devuelve {columna_original: categoria_padre}.
     """
     resp = set(RESPUESTAS_TEXTO)
-    skip = {"ID de respuesta", "ID", "Start time", "Hora de finalizacion",
-            "Net Promoter Score (de un total de 10)", "Recomendación (0 al 10)",
-            "Satisfacción con la Universidad", "Carrera", "Facultad", "Ciclo",
-            "Comentario NPS", "CSAT Score", "Fecha de inicio", "Fecha de fin"}
+    # Columnas que no son preguntas del formulario (fechas, identificadores y las
+    # medidas de cierre), derivadas de la declaracion en lib/config.py: renombrar
+    # una pregunta no deja este conjunto desactualizado.
+    skip = columnas_que_no_son_preguntas()
     out = {}
     for col in df.columns:
         if col in skip:

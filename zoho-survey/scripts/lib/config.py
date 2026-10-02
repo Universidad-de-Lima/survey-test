@@ -721,6 +721,28 @@ def pregunta_de(nivel: str, id_pregunta: str) -> str:
     return _declaracion_por_id(id_pregunta)["pregunta"]
 
 
+# Ids de las medidas de cierre: se miden (NPS o CSAT) pero no son dimensiones del
+# cuestionario; el detector de dimensiones de los niveles sin declaracion las ignora.
+IDS_MEDIDAS_DE_CIERRE: List[str] = ["nps", "csat_sujeto", "csat_universidad"]
+
+
+def columnas_que_no_son_preguntas() -> Set[str]:
+    """Nombres y textos de las columnas publicadas que no son preguntas del formulario.
+
+    Son las de tipo 'fecha' o 'identificador' y las medidas de cierre, mas el
+    comentario abierto (que no se declara como pregunta porque no se publica en
+    respuestas.json). Sale de la declaracion: renombrar una pregunta no deja este
+    conjunto desactualizado.
+    """
+    fuera: Set[str] = {"Comentario NPS"}
+    for declaraciones in PREGUNTAS_POR_NIVEL.values():
+        for d in declaraciones:
+            if d["tipo"] in ("fecha", "identificador") or d["id"] in IDS_MEDIDAS_DE_CIERRE:
+                fuera.add(d["nombre"])
+                fuera.add(d["pregunta"])
+    return fuera
+
+
 def _mapa_renombrado(declaraciones: List[Dict[str, str]]) -> Dict[str, str]:
     """Deriva el mapa {pregunta de Zoho: nombre publicado} de una declaracion."""
     mapa = {d["pregunta"]: d["nombre"] for d in declaraciones}
@@ -761,109 +783,140 @@ CARRERA_FACULTAD: Dict[str, str] = {
 # 3. CATÁLOGO DIMENSIÓN → CATEGORÍA
 # ============================================================
 
-CATEGORIA_DIMENSION_PREGRADO: Dict[str, str] = {
-    # Académico
-    "Perfil del egreso de la carrera": "Académico",
-    "Plan curricular y perfil de egreso": "Académico",
-    "Cursos del programa y contenidos": "Académico",
-    "Calidad de la enseñanza en la carrera": "Académico",
-    "Claridad de los recursos académicos": "Académico",
-    "Calidad de la formación académica": "Académico",
-    "Exigencia académica": "Académico",
-    "Evaluación del aprendizaje": "Académico",
-    "Intercambio estudiantil": "Académico",
-    "Satisfacción con tu carrera": "Académico",
-    "Satisfacción estudiantil": "Académico",
-    
-    # Administrativo y Bienestar
-    "Información sobre el récord académico": "Administrativo y Bienestar",
-    "Material bibliográfico en la biblioteca": "Administrativo y Bienestar",
-    "Atención del personal administrativo": "Administrativo y Bienestar",
-    "Procedimientos administrativos": "Administrativo y Bienestar",
-    "Ayuda financiera": "Administrativo y Bienestar",
-    "Servicio médico y su infraestructura": "Administrativo y Bienestar",
-    "Servicio de atención psicopedagógica": "Administrativo y Bienestar",
-    "Talleres de actividades artísticas y culturales": "Administrativo y Bienestar",
-    "Actividades deportivas": "Administrativo y Bienestar",
-    "Empleabilidad, vinculación y ALUMNI": "Administrativo y Bienestar",
-    
-    # Infraestructura
-    "Aulas de clase": "Infraestructura",
-    "Ambientes y salas para estudio": "Infraestructura",
-    "Equipamiento tecnológico en laboratorios": "Infraestructura",
-    "Condiciones ambientales en laboratorios": "Infraestructura",
-    "Ubicación": "Infraestructura",
-    "Espacios de alimentación": "Infraestructura",
-    # Fase IA: dimensión catch-all para referencias genéricas a espacios del campus
-    # (no tiene pregunta CSAT directa en Zoho; se infiere del comentario).
-    "Espacios comunes": "Infraestructura",
-   
-    # Tecnología
-    "Software especializado empleado en la carrera": "Tecnología",
-    "Portal web de la Universidad (Mi Ulima)": "Tecnología",
-    "Aula virtual": "Tecnología",
-    "Conexión Wi-Fi en el campus": "Tecnología",
-    "Soporte técnico del sistema informático": "Tecnología",
+# ---- Catálogo dimensión → categoría, llaveado por el id declarado ----
+# Cada entrada es (id de la pregunta, categoría padre). Las dimensiones que no son
+# preguntas del formulario (catch-all que el motor IA infiere del comentario) van
+# por su nombre publicado. El mapa {nombre publicado: categoría} se deriva de aquí,
+# así renombrar una pregunta en la declaración no obliga a tocar este catálogo.
+_DIMENSIONES_CATCH_ALL: Set[str] = {
+    "Satisfacción estudiantil",
+    "Ubicación",
+    "Espacios de alimentación",
+    "Espacios comunes",
 }
 
-CATEGORIA_DIMENSION_GRADUADO: Dict[str, str] = {
+
+def _categoria_dimension(entradas: List[tuple]) -> Dict[str, str]:
+    """Deriva {nombre publicado: categoría} de una lista de (id o nombre, categoría).
+
+    Los ids se resuelven contra la declaración vigente (nombre_publicado); las
+    entradas que ya son un nombre publicado son dimensiones catch-all sin pregunta
+    y se dejan tal cual. Falla si un id no está declarado: un nombre de dimensión
+    nunca debe quedar escrito a mano.
+    """
+    mapa: Dict[str, str] = {}
+    for clave, categoria in entradas:
+        mapa[clave if clave in _DIMENSIONES_CATCH_ALL else nombre_publicado(clave)] = categoria
+    return mapa
+
+
+DIMENSIONES_PREGRADO: List[tuple] = [
+    # Académico
+    ("perfil_del_egreso_de_la_carrera", "Académico"),
+    ("plan_curricular_y_perfil_de_egreso", "Académico"),
+    ("cursos_del_programa_y_contenidos", "Académico"),
+    ("calidad_de_la_ensenanza_en_la_carrera", "Académico"),
+    ("claridad_de_los_recursos_academicos", "Académico"),
+    ("calidad_de_la_formacion_academica", "Académico"),
+    ("exigencia_academica", "Académico"),
+    ("evaluacion_del_aprendizaje", "Académico"),
+    ("intercambio_estudiantil", "Académico"),
+    ("csat_sujeto", "Académico"),
+    ("Satisfacción estudiantil", "Académico"),
+
+    # Administrativo y Bienestar
+    ("informacion_sobre_el_record_academico", "Administrativo y Bienestar"),
+    ("material_bibliografico_en_la_biblioteca", "Administrativo y Bienestar"),
+    ("atencion_del_personal_administrativo", "Administrativo y Bienestar"),
+    ("procedimientos_administrativos", "Administrativo y Bienestar"),
+    ("ayuda_financiera", "Administrativo y Bienestar"),
+    ("servicio_medico_y_su_infraestructura", "Administrativo y Bienestar"),
+    ("servicio_de_atencion_psicopedagogica", "Administrativo y Bienestar"),
+    ("talleres_de_actividades_artisticas_y_culturales", "Administrativo y Bienestar"),
+    ("actividades_deportivas", "Administrativo y Bienestar"),
+    ("empleabilidad_vinculacion_y_alumni", "Administrativo y Bienestar"),
+
+    # Infraestructura
+    ("aulas_de_clase", "Infraestructura"),
+    ("ambientes_y_salas_para_estudio", "Infraestructura"),
+    ("equipamiento_tecnologico_en_laboratorios", "Infraestructura"),
+    ("condiciones_ambientales_en_laboratorios", "Infraestructura"),
+    ("Ubicación", "Infraestructura"),
+    ("Espacios de alimentación", "Infraestructura"),
+    # Catch-all para referencias genéricas a espacios del campus (sin pregunta CSAT
+    # directa en Zoho; se infiere del comentario).
+    ("Espacios comunes", "Infraestructura"),
+
+    # Tecnología
+    ("software_especializado_empleado_en_la_carrera", "Tecnología"),
+    ("portal_web_de_la_universidad_mi_ulima", "Tecnología"),
+    ("aula_virtual", "Tecnología"),
+    ("conexion_wi_fi_en_el_campus", "Tecnología"),
+    ("soporte_tecnico_del_sistema_informatico", "Tecnología"),
+]
+
+CATEGORIA_DIMENSION_PREGRADO: Dict[str, str] = _categoria_dimension(DIMENSIONES_PREGRADO)
+
+DIMENSIONES_GRADUADO: List[tuple] = [
     # Docencia
-    "Transmisión de conocimientos": "Docencia",
-    "Transmisión de experiencias": "Docencia",
-    "Metodologías": "Docencia",
-    "Conocimientos actualizados": "Docencia",
-    "Compromiso": "Docencia",
-    "Retroalimentación": "Docencia",
-    "Disponibilidad para asesorías": "Docencia",
-    "Cumplimiento de normas y programas": "Docencia",
-    
+    ("transmision_de_conocimientos", "Docencia"),
+    ("transmision_de_experiencias", "Docencia"),
+    ("metodologias", "Docencia"),
+    ("conocimientos_actualizados", "Docencia"),
+    ("compromiso", "Docencia"),
+    ("retroalimentacion", "Docencia"),
+    ("disponibilidad_para_asesorias", "Docencia"),
+    ("cumplimiento_de_normas_y_programas", "Docencia"),
+
     # Desarrollo Profesional
-    "Habilidades para trabajar en equipo": "Desarrollo Profesional",
-    "Habilidades de comunicación": "Desarrollo Profesional",
-    "Habilidades para aportar nuevas ideas": "Desarrollo Profesional",
-    "Mejora en perspectivas de empleo": "Desarrollo Profesional",
+    ("habilidades_para_trabajar_en_equipo", "Desarrollo Profesional"),
+    ("habilidades_de_comunicacion", "Desarrollo Profesional"),
+    ("habilidades_para_aportar_nuevas_ideas", "Desarrollo Profesional"),
+    ("mejora_en_perspectivas_de_empleo", "Desarrollo Profesional"),
 
     # Académico
-    "Perfil del egreso de la carrera": "Académico",
-    "Plan curricular y perfil de egreso": "Académico",
-    "Cursos del programa y contenidos": "Académico",
-    "Calidad de la enseñanza en la carrera": "Académico",
-    "Claridad de los recursos académicos": "Académico",
-    "Calidad de la formación académica": "Académico",
-    "Exigencia académica": "Académico",
-    "Evaluación del aprendizaje": "Académico",
-    "Intercambio estudiantil": "Académico",
-    "Satisfacción con tu carrera": "Académico",
-    "Satisfacción estudiantil": "Académico",
-    
+    ("perfil_del_egreso_de_la_carrera", "Académico"),
+    ("plan_curricular_y_perfil_de_egreso", "Académico"),
+    ("cursos_del_programa_y_contenidos", "Académico"),
+    ("calidad_de_la_ensenanza_en_la_carrera", "Académico"),
+    ("claridad_de_los_recursos_academicos", "Académico"),
+    ("calidad_de_la_formacion_academica", "Académico"),
+    ("exigencia_academica", "Académico"),
+    ("evaluacion_del_aprendizaje", "Académico"),
+    ("intercambio_estudiantil", "Académico"),
+    ("csat_sujeto", "Académico"),
+    ("Satisfacción estudiantil", "Académico"),
+
     # Administrativo y Bienestar
-    "Información sobre el récord académico": "Administrativo y Bienestar",
-    "Material bibliográfico en la biblioteca": "Administrativo y Bienestar",
-    "Atención del personal administrativo": "Administrativo y Bienestar",
-    "Procedimientos administrativos": "Administrativo y Bienestar",
-    "Ayuda financiera": "Administrativo y Bienestar",
-    "Servicio médico y su infraestructura": "Administrativo y Bienestar",
-    "Servicio de atención psicopedagógica": "Administrativo y Bienestar",
-    "Talleres de actividades artísticas y culturales": "Administrativo y Bienestar",
-    "Actividades deportivas": "Administrativo y Bienestar",
-    "Empleabilidad, vinculación y ALUMNI": "Administrativo y Bienestar",
-    
+    ("informacion_sobre_el_record_academico", "Administrativo y Bienestar"),
+    ("material_bibliografico_en_la_biblioteca", "Administrativo y Bienestar"),
+    ("atencion_del_personal_administrativo", "Administrativo y Bienestar"),
+    ("procedimientos_administrativos", "Administrativo y Bienestar"),
+    ("ayuda_financiera", "Administrativo y Bienestar"),
+    ("servicio_medico_y_su_infraestructura", "Administrativo y Bienestar"),
+    ("servicio_de_atencion_psicopedagogica", "Administrativo y Bienestar"),
+    ("talleres_de_actividades_artisticas_y_culturales", "Administrativo y Bienestar"),
+    ("actividades_deportivas", "Administrativo y Bienestar"),
+    ("empleabilidad_vinculacion_y_alumni", "Administrativo y Bienestar"),
+
     # Infraestructura
-    "Aulas de clase": "Infraestructura",
-    "Ambientes y salas para estudio": "Infraestructura",
-    "Equipamiento tecnológico en laboratorios": "Infraestructura",
-    "Condiciones ambientales en laboratorios": "Infraestructura",
-    "Ubicación": "Infraestructura",
-    "Espacios de alimentación": "Infraestructura",
-    "Espacios comunes": "Infraestructura",
-   
+    ("aulas_de_clase", "Infraestructura"),
+    ("ambientes_y_salas_para_estudio", "Infraestructura"),
+    ("equipamiento_tecnologico_en_laboratorios", "Infraestructura"),
+    ("condiciones_ambientales_en_laboratorios", "Infraestructura"),
+    ("Ubicación", "Infraestructura"),
+    ("Espacios de alimentación", "Infraestructura"),
+    ("Espacios comunes", "Infraestructura"),
+
     # Tecnología
-    "Software especializado empleado en la carrera": "Tecnología",
-    "Portal web de la Universidad (Mi Ulima)": "Tecnología",
-    "Aula virtual": "Tecnología",
-    "Conexión Wi-Fi en el campus": "Tecnología",
-    "Soporte técnico del sistema informático": "Tecnología",
-}
+    ("software_especializado_empleado_en_la_carrera", "Tecnología"),
+    ("portal_web_de_la_universidad_mi_ulima", "Tecnología"),
+    ("aula_virtual", "Tecnología"),
+    ("conexion_wi_fi_en_el_campus", "Tecnología"),
+    ("soporte_tecnico_del_sistema_informatico", "Tecnología"),
+]
+
+CATEGORIA_DIMENSION_GRADUADO: Dict[str, str] = _categoria_dimension(DIMENSIONES_GRADUADO)
 
 
 # ============================================================
@@ -894,8 +947,8 @@ CATEGORIA_DIMENSION_UNIFICADA.update(CATEGORIA_DIMENSION_GRADUADO)
 DIMENSIONES_SIN_CSAT: Set[str] = {
     "Satisfacción estudiantil",
     "Espacios comunes",
-    "Satisfacción con tu carrera",
-    "Satisfacción con la Universidad",
+    nombre_publicado("csat_sujeto"),
+    nombre_publicado("csat_universidad"),
     "Pendiente de Clasificación",
 }
 
@@ -1090,12 +1143,14 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
     facultad_map = nivel in _NIVEL_FAC_MAP
 
     rename: Dict[str, str] = {}
-    if "ID de respuesta" in colset:
-        rename["ID de respuesta"] = "ID"
-    if "Net Promoter Score (de un total de 10)" in colset:
-        rename["Net Promoter Score (de un total de 10)"] = "Recomendación (0 al 10)"
+    # La tabla {pregunta de Zoho -> nombre publicado} sale de la declaracion: ni el
+    # texto del cuestionario ni el nombre publicado se escriben a mano aqui.
+    for id_col in ("id_respuesta", "nps"):
+        declaracion = _declaracion_por_id(id_col)
+        if declaracion["pregunta"] in colset:
+            rename[declaracion["pregunta"]] = declaracion["nombre"]
     if carrera:
-        rename[carrera] = "Carrera"
+        rename[carrera] = nombre_publicado("carrera")
     if csat:
         # El nombre publicado del CSAT global sale de la declaracion (id
         # csat_universidad): renombrarlo no debe exigir escribirlo a mano aqui.
@@ -1112,7 +1167,7 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
             rename[c] = "Comentario NPS"
             break
 
-    requeridas = ["ID de respuesta", "Net Promoter Score (de un total de 10)"]
+    requeridas = [pregunta_de(nivel, "id_respuesta"), pregunta_de(nivel, "nps")]
     if carrera:
         requeridas.append(carrera)
 

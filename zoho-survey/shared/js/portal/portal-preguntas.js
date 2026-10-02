@@ -573,13 +573,32 @@ window.SurveyPortalPreguntas = (function () {
     };
   }
 
+  /** ¿El pedido es el NPS? Se resuelve por su id declarado (no por un trozo del nombre). */
+  function esElNps(tabla, pregunta) {
+    var d = declaracionDeId(tabla, 'nps');
+    var x = sin(pregunta);
+    if (d && (sin(d.nombre) === x || sin(d.pregunta) === x)) return true;
+    // Compatibilidad: un respuestas.json anterior a la declaración usaba el nombre heredado.
+    var col = columnaDeId(tabla, 'nps', 'Recomiendas la Universidad de Lima');
+    return !!col && sin(col) === x;
+  }
+
+  /** ¿El pedido alude a la Universidad en general (la satisfacción global del período)? */
+  function pideLaUniversidad(tabla, pregunta) {
+    var d = declaracionDeId(tabla, 'csat_universidad');
+    var texto = (d && d.pregunta) || columnaDeId(tabla, 'csat_universidad', 'La Universidad de Lima');
+    return !!texto && sin(pregunta).indexOf(sin(texto)) !== -1;
+  }
+
   /** El bloque que corresponde a una pregunta pedida. */
   function bloqueDeUna(p, tabla, pregunta, filtros) {
     if (!pregunta) return null;
     var x = sin(pregunta);
     if (nombresDeGrupos(tabla).some(function (g) { return sin(g) === x; })) return bloqueDeGrupo(p, tabla, pregunta, filtros);
-    if (x.indexOf('recomiendas') !== -1 || x.indexOf('nps') !== -1) return bloqueDeNps(p);
-    if (x.indexOf('universidad de lima') !== -1 && !nombrePublicado(tabla, pregunta)) return bloqueDeSatisfaccion(p);
+    // El NPS y la satisfacción global se reconocen por su id declarado (o su tipo),
+    // no por un fragmento del nombre: renombrar la pregunta no rompe esto.
+    if (esElNps(tabla, pregunta)) return bloqueDeNps(p);
+    if (pideLaUniversidad(tabla, pregunta) && !nombrePublicado(tabla, pregunta)) return bloqueDeSatisfaccion(p);
     return bloqueDeReparto(p, tabla, pregunta, filtros);
   }
 
