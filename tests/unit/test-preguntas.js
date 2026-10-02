@@ -106,9 +106,9 @@ const P = window.SurveyPortalPreguntas;
   const bloquesTrabajo = P.bloquesDe(planSimulado, tablas);
 
   // Bloques del NPS y de la satisfacción del período.
-  // El plan lo arma el modelo desde el menú; estas dos pruebas ejercitan el camino
-  // heredado que el portal reconoce por su nombre (bloqueDeNps / bloqueDeSatisfaccion).
-  planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Recomiendas la Universidad de Lima'], filtros: [], motivo: '' };
+  // El plan lo arma el modelo desde el menú (nombres publicados); el portal los
+  // reconoce por su id declarado (bloqueDeNps / bloqueDeSatisfaccion).
+  planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Recomendación (0 al 10)'], filtros: [], motivo: '' };
   const bloquesNps = P.bloquesDe(planSimulado, tablas);
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['La Universidad de Lima'], filtros: [], motivo: '' };
   const bloquesSatisfaccion = P.bloquesDe(planSimulado, tablas);
@@ -444,6 +444,37 @@ const P = window.SurveyPortalPreguntas;
       [{ p: p, tabla: conOtros }]);
     assertIncludes(a.texto, esperado);
     assertIncludes(b.texto, esperado, 'con otros nombres el tiempo laboral sigue saliendo');
+  });
+
+  test('el NPS se elige por el id de la declaración, con cualquier nombre', function () {
+    var tabla = {
+      cabeceras: ['Puntaje de recomendación'],
+      opciones: {},
+      preguntas: [
+        { id: 'nps', nombre: 'Puntaje de recomendación', tipo: 'medida', pregunta: 'Otra pregunta', escala: 'NPS' }
+      ],
+      filas: []
+    };
+    var p = periodoSintetico({ resumen: { nps: { score: 55.5, total: 10, promotores: 6, pasivos: 3, detractores: 1 } } });
+    var out = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['Puntaje de recomendación'], filtros: [] },
+      [{ p: p, tabla: tabla }]);
+    assertIncludes(out.texto, 'NPS 55,5', 'el NPS sale del dashboard por el id, con el nombre que sea');
+  });
+
+  test('la satisfacción global se elige por el id, aunque su pregunta tenga otro nombre', function () {
+    var tabla = {
+      cabeceras: ['Satisfacción Ulima'],
+      opciones: { 'Satisfacción Ulima': window.SURVEY_CONFIG.SAT_KEYS.slice() },
+      preguntas: [
+        { id: 'csat_universidad', nombre: 'Satisfacción Ulima', tipo: 'medida', pregunta: 'La universidad en general', escala: 'CSAT' }
+      ],
+      filas: [[0]]
+    };
+    var p = periodoSintetico({ resumen: { csat: { score: 97.85 } } });
+    var out = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['La universidad en general'], filtros: [] },
+      [{ p: p, tabla: tabla }]);
+    assertIncludes(out.texto, 'Satisfaccion en Prueba 2026-1', 'se reconoce por el id de la declaración');
+    assertIncludes(out.texto, '97,85 %');
   });
 
   console.log('\n=== asistente del item 1.9 (portal-preguntas) ===');
