@@ -28,12 +28,12 @@
     "Los valores de los filtros se copian tal cual del indice; no se inventan categorias, etiquetas ni descripciones."
   ],
   "cierre_de_la_encuesta": [
-    "Al final del cuestionario hay UNA sola pregunta de satisfaccion global: \"De manera global, ¿cual es tu nivel de satisfaccion con...?\". Sus dos items se publican como dos columnas de tipo medida: una mide la satisfaccion con el sujeto que cambia segun el publico (\"La carrera\" en Estudiantes Pregrado; en otros publicos, la Escuela de Posgrado o la Dependencia) y la otra mide la satisfaccion con \"La Universidad de Lima\". No son dos preguntas distintas: son los dos items de esa sola pregunta del cuestionario.",
+    "Al final del cuestionario hay UNA sola pregunta de satisfaccion global: \"De manera global, ¿cual es tu nivel de satisfaccion con...?\". Sus dos items se publican como dos columnas de tipo medida: una mide la satisfaccion con el sujeto que cambia segun el publico (\"Satisfacción con tu carrera\" en Estudiantes Pregrado; en otros publicos, la Escuela de Posgrado o la Dependencia) y la otra mide la satisfaccion con \"Satisfacción con la Universidad\". No son dos preguntas distintas: son los dos items de esa sola pregunta del cuestionario.",
     "Como leerlo: cuando alguien pregunte por \"la carrera\" debe entenderse la satisfaccion global con tu carrera; cuando pregunte por \"la universidad\" o \"la Ulima\", la satisfaccion global con la Universidad de Lima; y cuando pregunte por \"recomendarias\" o \"recomiendas\", la pregunta del 0 al 10 (la recomendacion)."
   ],
   "columnas_que_no_son_preguntas": [
     "ID: el identificador de cada respuesta (en el formulario, \"ID de respuesta\"); sirve para enlazar con los comentarios analizados, no es una pregunta.",
-    "Inicio y Fin: cuando se empezo y cuando se termino de responder (en el formulario, \"Start time\" y \"Hora de finalizacion\").",
+    "Fecha de inicio y Fecha de fin: cuando se empezo y cuando se termino de responder (en el formulario, \"Start time\" y \"Hora de finalizacion\").",
     "Carrera, Ciclo y Facultad: no se preguntan como satisfaccion; se usan para agrupar (Facultad se deduce de Carrera)."
   ],
   "dimensiones": {
@@ -47,7 +47,7 @@
         "Evaluación del aprendizaje",
         "Exigencia académica",
         "Intercambio estudiantil",
-        "La carrera",
+        "Satisfacción con tu carrera",
         "Perfil del egreso de la carrera",
         "Plan curricular y perfil de egreso",
         "Satisfacción estudiantil"
@@ -90,7 +90,7 @@
         "Evaluación del aprendizaje",
         "Exigencia académica",
         "Intercambio estudiantil",
-        "La carrera",
+        "Satisfacción con tu carrera",
         "Perfil del egreso de la carrera",
         "Plan curricular y perfil de egreso",
         "Satisfacción estudiantil"
@@ -142,7 +142,7 @@
     }
   },
   "palabras_coloquiales": {
-    "Recomiendas la Universidad de Lima": [
+    "Recomendación (0 al 10)": [
       "recomiendas",
       "recomendarias",
       "nps"
@@ -276,11 +276,11 @@
       "soporte tecnico",
       "soporte"
     ],
-    "La carrera": [
+    "Satisfacción con tu carrera": [
       "satisfaccion con la carrera",
       "satisfecho con la carrera"
     ],
-    "La Universidad de Lima": [
+    "Satisfacción con la Universidad": [
       "satisfaccion con la universidad",
       "satisfaccion general",
       "satisfecho con la universidad"

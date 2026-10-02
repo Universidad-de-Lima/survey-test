@@ -106,6 +106,8 @@ const P = window.SurveyPortalPreguntas;
   const bloquesTrabajo = P.bloquesDe(planSimulado, tablas);
 
   // Bloques del NPS y de la satisfacción del período.
+  // El plan lo arma el modelo desde el menú; estas dos pruebas ejercitan el camino
+  // heredado que el portal reconoce por su nombre (bloqueDeNps / bloqueDeSatisfaccion).
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Recomiendas la Universidad de Lima'], filtros: [], motivo: '' };
   const bloquesNps = P.bloquesDe(planSimulado, tablas);
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['La Universidad de Lima'], filtros: [], motivo: '' };
@@ -195,9 +197,9 @@ const P = window.SurveyPortalPreguntas;
     assertTrue(iAgrup !== -1 && iMedida !== -1 && iAgrup < iMedida, 'la agrupación va antes que las medidas');
     const iCarrera = m.indexOf('- Carrera:');
     assertTrue(iCarrera > iAgrup && iCarrera < iMedida, 'Carrera se anuncia como columna de agrupación');
-    assertTrue(m.indexOf('- La carrera') > iMedida, 'La carrera se anuncia como medida (satisfacción con tu carrera)');
-    assertTrue(m.indexOf('- La Universidad de Lima:') > iMedida, 'La Universidad de Lima se anuncia como medida');
-    assertTrue(m.indexOf('- Recomiendas la Universidad de Lima') > iMedida, 'la recomendación se anuncia como medida');
+    assertTrue(m.indexOf('- Satisfacción con tu carrera') > iMedida, 'la satisfacción con tu carrera se anuncia como medida');
+    assertTrue(m.indexOf('- Satisfacción con la Universidad:') > iMedida, 'la satisfacción con la Universidad se anuncia como medida');
+    assertTrue(m.indexOf('- Recomendación (0 al 10)') > iMedida, 'la recomendación se anuncia como medida');
   });
 
   test('el menú se arma con el bloque preguntas publicado y no con nombres fijos', function () {
