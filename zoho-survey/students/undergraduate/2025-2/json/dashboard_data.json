@@ -76,5 +76,205 @@
   "_export": {
     "nombre_encuesta": "encuesta_de_satisfacción_estudiantil_pregrado_2025_2",
     "fecha_generacion": "2026-10-02"
-  }
+  },
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomiendas la Universidad de Lima",
+      "tipo": "medida",
+      "escala": "NPS"
+    },
+    {
+      "id": "carrera",
+      "nombre": "Carrera",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "perfil_del_egreso_de_la_carrera",
+      "nombre": "Perfil del egreso de la carrera",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "plan_curricular_y_perfil_de_egreso",
+      "nombre": "Plan curricular y perfil de egreso",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "cursos_del_programa_y_contenidos",
+      "nombre": "Cursos del programa y contenidos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "calidad_de_la_ensenanza_en_la_carrera",
+      "nombre": "Calidad de la enseñanza en la carrera",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "claridad_de_los_recursos_academicos",
+      "nombre": "Claridad de los recursos académicos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "calidad_de_la_formacion_academica",
+      "nombre": "Calidad de la formación académica",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "evaluacion_del_aprendizaje",
+      "nombre": "Evaluación del aprendizaje",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "intercambio_estudiantil",
+      "nombre": "Intercambio estudiantil",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "informacion_sobre_el_record_academico",
+      "nombre": "Información sobre el récord académico",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "material_bibliografico_en_la_biblioteca",
+      "nombre": "Material bibliográfico en la biblioteca",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "atencion_del_personal_administrativo",
+      "nombre": "Atención del personal administrativo",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "procedimientos_administrativos",
+      "nombre": "Procedimientos administrativos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ayuda_financiera",
+      "nombre": "Ayuda financiera",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "servicio_medico_y_su_infraestructura",
+      "nombre": "Servicio médico y su infraestructura",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "servicio_de_atencion_psicopedagogica",
+      "nombre": "Servicio de atención psicopedagógica",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "talleres_de_actividades_artisticas_y_culturales",
+      "nombre": "Talleres de actividades artísticas y culturales",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "actividades_deportivas",
+      "nombre": "Actividades deportivas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "empleabilidad_vinculacion_y_alumni",
+      "nombre": "Empleabilidad, vinculación y ALUMNI",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "aulas_de_clase",
+      "nombre": "Aulas de clase",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ambientes_y_salas_para_estudio",
+      "nombre": "Ambientes y salas para estudio",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "equipamiento_tecnologico_en_laboratorios",
+      "nombre": "Equipamiento tecnológico en laboratorios",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "condiciones_ambientales_en_laboratorios",
+      "nombre": "Condiciones ambientales en laboratorios",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "software_especializado_empleado_en_la_carrera",
+      "nombre": "Software especializado empleado en la carrera",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "portal_web_de_la_universidad_mi_ulima",
+      "nombre": "Portal web de la Universidad (Mi Ulima)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "conexion_wi_fi_en_el_campus",
+      "nombre": "Conexión Wi-Fi en el campus",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "soporte_tecnico_del_sistema_informatico",
+      "nombre": "Soporte técnico del sistema informático",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_sujeto",
+      "nombre": "La carrera",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_universidad",
+      "nombre": "La Universidad de Lima",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "escala": ""
+    }
+  ]
 }
