@@ -36,7 +36,11 @@ from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib.config import COLUMN_RENAME_GRADUADO, COLUMN_RENAME_PREGRADO  # noqa: E402
+from lib.config import (  # noqa: E402
+    COLUMN_RENAME_GRADUADO,
+    COLUMN_RENAME_PREGRADO,
+    cabeceras_declaradas,
+)
 
 CARPETA_PENDIENTES = Path("data") / "zoho_pendientes"
 CARPETA_DESTINO = Path("data")
@@ -50,52 +54,16 @@ CLAVE_ESTADO = "Estado de respuesta"
 # no se puede saber su estado y no conviene descartar datos en silencio.
 ESTADO_COMPLETO = "COMPLETED"
 
-# Cabeceras por nivel, en el orden que espera build_json.py. Cubre las nueve
-# encuestas del catalogo; si un nivel no esta aqui, la conversion falla con
-# aviso explicito en vez de generar un CSV a medias.
+# Cabeceras por nivel SOLO para los niveles cuyo cuestionario aun NO se declara
+# en lib/config.py (egresados, docente pregrado, no docente y empleadores). Los
+# niveles declarados derivan sus cabeceras de la declaracion con cabeceras_de()
+# (el texto de cada pregunta, en el orden del formulario): dejan de ser una
+# segunda copia que puede desincronizarse en silencio y publicar columnas vacias.
+# Si un nivel no esta ni declarado ni aqui, la conversion falla con aviso explicito.
 CABECERAS_POR_NIVEL: Dict[str, List[str]] = {
     # Las dos encuestas que ya estaban: las columnas que el ETL conoce.
     "undergraduate": list(COLUMN_RENAME_PREGRADO),
     "graduate": list(COLUMN_RENAME_GRADUADO),
-    # Encuestas 2026: cabeceras tomadas de la descarga de Zoho Survey.
-    # Son una base; si Zoho agrega o quita preguntas, se actualiza aqui.
-    # Se excluyen las columnas propias de Zoho (IP, agente, tiempo, etc.).
-    # Estudiantil Posgrado
-    "postgraduate": [
-        "ID de respuesta",
-        "Estado de respuesta",
-        "Start time",
-        "Hora de finalización",
-        "Net Promoter Score (de un total de 10)",
-        "¿Qué programa de posgrado estudias?",
-        "¿Qué nivel es el que cursas?",
-        "El perfil de egreso del programa",
-        "La correspondencia entre el perfil de egreso y el plan curricular del programa",
-        "Los cursos y contenidos del programa",
-        "La calidad del servicio de enseñanza del programa",
-        "La claridad, precisión y actualización de los materiales de estudio del programa",
-        "La evaluación del aprendizaje del programa",
-        "La información sobre tu récord académico",
-        "El material bibliográfico físico o digital disponible en la biblioteca",
-        "El servicio recibido por los directores o coordinadores de la Escuela de Posgrado",
-        "El servicio recibido por las secretarias de la Escuela de Posgrado",
-        "Los procedimientos de los servicios administrativos de la Escuela de Posgrado",
-        "El servicio médico y su infraestructura",
-        "El servicio de consejería",
-        "Los talleres de actividades artísticas y culturales",
-        "Las actividades deportivas",
-        "Las aulas de clase",
-        "Los ambientes y salas para estudio",
-        "El portal web de la universidad: Mi Ulima",
-        "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
-        "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
-        "El soporte técnico brindado ante las fallas del sistema informático",
-        "Empleabilidad, vinculación profesional y ALUMNI",
-        "La calidad de la formación académica",
-        "La Escuela de Posgrado",
-        "La Universidad de Lima",
-        "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
-    ],
     # Egresados Pregrado
     "alumni-ug": [
         "ID de respuesta",
@@ -256,60 +224,6 @@ CABECERAS_POR_NIVEL: Dict[str, List[str]] = {
         "La Universidad de Lima",
         "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
     ],
-    # Docente Posgrado
-    "faculty-pg": [
-        "ID de respuesta",
-        "Estado de respuesta",
-        "Start time",
-        "Hora de finalización",
-        "Net Promoter Score (de un total de 10)",
-        "¿Qué programa de posgrado dictas en la Universidad de Lima?",
-        "¿Cuántos años laboras en la Universidad de Lima?",
-        "El perfil de egreso del programa",
-        "La correspondencia entre el perfil de egreso y el plan curricular del programa",
-        "Los cursos y contenidos del programa",
-        "La cantidad de horas asignadas para el desarrollo de las asignaturas",
-        "La contribución de tu asignatura a alcanzar el perfil de egreso del programa",
-        "La ubicación de tu asignatura en el plan curricular del programa",
-        "Los criterios utilizados en la definición del sistema de evaluación como las tareas académicas y el examen final",
-        "El conocimiento de las normativas de la Escuela de Posgrado como registro de notas, plazos, etc.",
-        "El liderazgo y compromiso de las autoridades de la Escuela de Posgrado",
-        "Interacción, presencial o virtual, con las autoridades de la Escuela de Posgrado",
-        "La comunicación oportuna y clara por parte de las autoridades de la Escuela de Posgrado, en ciertos temas como lineamientos, políticas, reuniones, etc.",
-        "La claridad, pertinencia y oportunidad en la comunicación por parte de las autoridades de la Escuela de Posgrado",
-        "La interacción con el coordinador de la maestría o doctorado",
-        "La oportunidad y eficacia en la solución de los problemas planteados a las autoridades de la Escuela de Posgrado",
-        "El clima laboral en la Escuela de Posgrado",
-        "La utilidad y pertinencia de los temas tratados en la reunión de docentes",
-        "La utilidad y pertinencia de los temas tratados en las reuniones, individuales o grupales, de coordinación con las autoridades de la Escuela de Posgrado",
-        "La frecuencia y antelación debida en la convocatoria a las reuniones, individuales o grupales, de coordinación las autoridades de la Escuela de Posgrado",
-        "Las actividades de internacionalización como congresos, intercambios e investigación",
-        "Las actividades de responsabilidad social universitaria como voluntariado, foros e investigación",
-        "La retroalimentación de los resultados de la evaluación referencial docente (ERD) por parte de las autoridades de la Escuela de Posgrado",
-        "El seguimiento al plan de mejora coordinado con las autoridades de la Escuela de Posgrado",
-        "El programa de capacitación a los cuales ha sido invitado durante el año referido a la variedad de temas, pertinencia de horarios, pertinencia en la Invitación, etc.",
-        "Las políticas y procedimientos establecidos por la Escuela de Posgrado para apoyar la investigación",
-        "La comunicación de la política de beneficios y promoción de la investigación de la Escuela de Posgrado",
-        "Los mecanismos para promover la investigación entre los docentes",
-        "El material bibliográfico físico o digital disponible en la biblioteca",
-        "El servicio recibido por las secretarias de la Escuela de Posgrado",
-        "El servicio brindado por el personal administrativo de la Escuela de Posgrado",
-        "El servicio médico y su infraestructura",
-        "El servicio de consejería",
-        "Los talleres de actividades artísticas y culturales",
-        "Las actividades deportivas",
-        "Las aulas de clase",
-        "Los ambientes y salas para estudio",
-        "Las instalaciones para facilitar la relación social entre los docentes",
-        "Las oficinas o cubículos para los docentes",
-        "El portal web de la universidad: Mi Ulima",
-        "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
-        "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
-        "El soporte técnico brindado ante las fallas del sistema informático",
-        "La Escuela de Posgrado",
-        "La Universidad de Lima",
-        "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
-    ],
     # No Docente
     "nonfaculty": [
         "ID de respuesta",
@@ -422,17 +336,26 @@ def nombre_csv(encuesta: str) -> str:
 
 
 def cabeceras_de(encuesta: str) -> List[str]:
-    """Columnas del CSV para esa encuesta, en el orden del ETL."""
+    """Columnas del CSV para esa encuesta, en el orden del ETL.
+
+    Si el nivel ya declara sus preguntas en lib/config.py, las cabeceras SALEN DE
+    ESA DECLARACION (cabeceras_declaradas): el texto de cada pregunta y, si la
+    encuesta tiene, su pregunta abierta. Solo los niveles sin declarar usan la
+    lista literal de CABECERAS_POR_NIVEL.
+    """
     nivel = detectar_nivel(nombre_csv(encuesta))
     if nivel is None:
         raise ValueError(
             f"no se pudo deducir el nivel de '{encuesta}': el nombre debe seguir el "
             "formato de CONTRACTS.md (ENCUESTA DE SATISFACCION {CATEGORIA} [- NIVEL] [- PERIODO])"
         )
+    declaradas = cabeceras_declaradas(nivel)
+    if declaradas:
+        return declaradas
     if nivel not in CABECERAS_POR_NIVEL:
         raise ValueError(
             f"el nivel '{nivel}' todavia no se convierte desde la bandeja: "
-            "agrega sus cabeceras a CABECERAS_POR_NIVEL"
+            "declara sus preguntas en lib/config.py o agrega sus cabeceras a CABECERAS_POR_NIVEL"
         )
     return CABECERAS_POR_NIVEL[nivel]
 
