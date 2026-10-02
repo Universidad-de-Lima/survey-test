@@ -354,6 +354,96 @@ const P = window.SurveyPortalPreguntas;
     assertTrue(!tablaSinRespaldo, 'no se dibuja una tabla sin respaldo');
   });
 
+  // --- las columnas se resuelven por su id declarado, no por su nombre publicado ---
+  // Tabla mínima: el mismo dato publicado con otros nombres (mismos ids y misma escala).
+  function tablaSintetica(nombres) {
+    var tabla = {
+      cabeceras: [nombres.carrera, nombres.nps, nombres.csat],
+      opciones: {},
+      preguntas: [
+        { id: 'carrera', nombre: nombres.carrera, tipo: 'agrupacion', escala: '' },
+        { id: 'nps', nombre: nombres.nps, tipo: 'medida', escala: 'NPS' },
+        { id: 'csat_universidad', nombre: nombres.csat, tipo: 'medida', escala: 'CSAT' }
+      ],
+      // Tres de Derecho y uno de Psicología; las tres medidas de cierre con su valor.
+      filas: [[0, 0, 0], [0, 0, 0], [0, 2, 2], [1, 1, 1]]
+    };
+    tabla.opciones[nombres.carrera] = ['Derecho', 'Psicología'];
+    tabla.opciones[nombres.nps] = ['10', '9', '8'];
+    tabla.opciones[nombres.csat] = window.SURVEY_CONFIG.SAT_KEYS.slice();
+    return tabla;
+  }
+
+  function periodoSintetico(extra) {
+    return { nombre: 'Prueba', periodo: '2026-1', fase: '1.0', dash: extra || {} };
+  }
+
+  test('el NPS y la satisfacción se miden por su id, no por su nombre', function () {
+    var originales = tablaSintetica({ carrera: 'Carrera', nps: 'Recomiendas la Universidad de Lima', csat: 'La Universidad de Lima' });
+    var otros = tablaSintetica({ carrera: 'Programa', nps: 'Recomendación (0-10)', csat: 'Satisfacción Ulima' });
+    var a = P.medir(originales, originales.filas);
+    var b = P.medir(otros, otros.filas);
+    assertEqual(JSON.stringify(b), JSON.stringify(a));
+    assertEqual(a.nps, 75);
+    assertEqual(a.satisfaccion, 100);
+  });
+
+  test('la columna de agrupación se reconoce por su id, no por su nombre', function () {
+    var tabla = tablaSintetica({ carrera: 'Programa', nps: 'Recomendación (0-10)', csat: 'Satisfacción Ulima' });
+    var out = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['Programa'], filtros: [] },
+      [{ p: periodoSintetico(), tabla: tabla }]);
+    assertIncludes(out.texto, 'Programa', 'el bloque nombra la columna pedida');
+    assertIncludes(out.texto, 'Derecho:', 'agrupa por sus valores');
+    assertIncludes(out.texto, 'satisfaccion', 'un grupo se mide (NPS y satisfacción del grupo)');
+  });
+
+  test('sin preguntas en el plan se usa la columna de agrupación por su id', function () {
+    var tabla = tablaSintetica({ carrera: 'Programa', nps: 'Recomendación (0-10)', csat: 'Satisfacción Ulima' });
+    var out = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: [], filtros: [] },
+      [{ p: periodoSintetico(), tabla: tabla }]);
+    assertIncludes(out.texto, 'Programa', 'la columna por defecto se resuelve por id');
+    assertIncludes(out.texto, 'satisfaccion', 'y se mide como grupo');
+  });
+
+  test('la satisfacción del período se reconoce por el id de la Universidad', function () {
+    var tabla = tablaSintetica({ carrera: 'Carrera', nps: 'Recomiendas la Universidad de Lima', csat: 'Satisfacción Ulima' });
+    var out = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['Satisfacción Ulima'], filtros: [] },
+      [{ p: periodoSintetico({ resumen: { csat: { score: 97.85 } } }), tabla: tabla }]);
+    assertIncludes(out.texto, 'Satisfacción del período: 97,85 %');
+  });
+
+  test('el tiempo laboral se reconoce por su id, no por su nombre', function () {
+    function tablaGraduado(prog, sit, tiempo) {
+      var o = {};
+      o[prog] = ['Economía'];
+      o[sit] = ['Trabajador dependiente', 'Trabajador independiente', 'Prácticas profesionales', 'Prácticas pre - profesionales'];
+      o[tiempo] = ['Tiempo completo', 'Tiempo parcial'];
+      var filas = [];
+      for (var i = 0; i < 8; i++) filas.push([0, 0, 0]);   // trabajadores dependientes
+      for (var j = 0; j < 6; j++) filas.push([0, 2, 1]);   // prácticas, tiempo parcial
+      return {
+        cabeceras: [prog, sit, tiempo],
+        opciones: o,
+        preguntas: [
+          { id: 'carrera', nombre: prog, tipo: 'agrupacion', escala: '' },
+          { id: 'situacion_laboral', nombre: sit, tipo: 'agrupacion', escala: '' },
+          { id: 'tiempo_laboral', nombre: tiempo, tipo: 'agrupacion', escala: '' }
+        ],
+        filas: filas
+      };
+    }
+    var p = periodoSintetico();
+    var esperado = 'El tiempo laboral de esos 8: Tiempo completo 8 (100 %)';
+    var conOriginales = tablaGraduado('Carrera', 'Situación laboral', 'Tiempo laboral');
+    var conOtros = tablaGraduado('Programa', 'Estado laboral', 'Dedicación laboral');
+    var a = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['Situación laboral'], filtros: [{ pregunta: 'Carrera', valores: ['Economía'] }] },
+      [{ p: p, tabla: conOriginales }]);
+    var b = P.bloquesDe({ periodos: ['Prueba 2026-1'], preguntas: ['Estado laboral'], filtros: [{ pregunta: 'Programa', valores: ['Economía'] }] },
+      [{ p: p, tabla: conOtros }]);
+    assertIncludes(a.texto, esperado);
+    assertIncludes(b.texto, esperado, 'con otros nombres el tiempo laboral sigue saliendo');
+  });
+
   console.log('\n=== asistente del item 1.9 (portal-preguntas) ===');
   results.filter(function (r) { return r.status === 'fail'; }).forEach(function (r) { console.log('❌ ' + r.name + ' → ' + r.error); });
   console.log('\n' + passed + ' passed, ' + failed + ' failed, ' + (passed + failed) + ' total');
