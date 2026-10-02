@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 # Reutilizar I/O helper y configuraciones centrales
-from lib.config import RESPUESTAS_TEXTO, CSAT_WEIGHTS, CSAT_SCALE_MAX
+from lib.config import RESPUESTAS_TEXTO, CSAT_WEIGHTS, CSAT_SCALE_MAX, RESPUESTAS_VERSION, TIPOS_VALIDOS
 from lib.io_helper import load_json
 from lib.metrics import calc_promedio_ponderado
 
@@ -220,6 +220,42 @@ def validate_respuestas_invariants(value: dict, filename: str) -> None:
     for campo in ("ids", "fechas"):
         if campo in value and len(value[campo]) != len(filas):
             raise ValueError(f"{filename}: '{campo}' tiene {len(value[campo])} valores y hay {len(filas)} filas")
+    validate_preguntas_invariants(value, cabeceras, filename)
+
+
+def validate_preguntas_invariants(value: dict, cabeceras: List[str], filename: str) -> None:
+    """Invariantes del bloque 'preguntas' (declaracion de cada columna publicada).
+
+    Desde la version 1.1 el bloque es obligatorio. Sus invariantes: cada id es
+    unico y no vacio, cada tipo es valido (y declara escala si es medida), y
+    TODA cabecera publicada tiene su declaracion.
+    """
+    preguntas = value.get("preguntas")
+    if value.get("version") == RESPUESTAS_VERSION and not isinstance(preguntas, list):
+        raise ValueError(f"{filename}: la version {RESPUESTAS_VERSION} exige el bloque 'preguntas'")
+    if preguntas is None:
+        return
+    if not isinstance(preguntas, list) or not preguntas:
+        raise ValueError(f"{filename}: 'preguntas' debe ser una lista no vacia")
+    ids: List[str] = []
+    for i, pregunta in enumerate(preguntas):
+        if not isinstance(pregunta, dict):
+            raise ValueError(f"{filename}: preguntas[{i}] debe ser un objeto")
+        identificador = pregunta.get("id")
+        if not isinstance(identificador, str) or not identificador.strip():
+            raise ValueError(f"{filename}: preguntas[{i}] no tiene id")
+        ids.append(identificador)
+        tipo = pregunta.get("tipo")
+        if tipo not in TIPOS_VALIDOS:
+            raise ValueError(f"{filename}: la pregunta '{identificador}' tiene tipo invalido: {tipo!r}")
+        if tipo == "medida" and not str(pregunta.get("escala", "")).strip():
+            raise ValueError(f"{filename}: la medida '{identificador}' no declara escala")
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"{filename}: hay ids de pregunta repetidos: {sorted(ids)}")
+    declaradas = {p.get("nombre") for p in preguntas}
+    faltantes = [c for c in cabeceras if c not in declaradas]
+    if faltantes:
+        raise ValueError(f"{filename}: cabeceras publicadas sin declaracion: {faltantes}")
 
 
 def validate_resumenes_invariants(value: dict, filename: str, json_path: Path) -> None:

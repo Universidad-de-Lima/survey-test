@@ -34,7 +34,8 @@ from lib.config import (
     ETAPA_MAP,
     EMPLEABILIDAD_CATEGORIAS,
     resolver_config_etl,
-    clasificar_categoria_dimension
+    clasificar_categoria_dimension,
+    declaraciones_de
 )
 from lib.metrics import calc_nps, calc_csat, calc_promedio_ponderado, calc_nps_carrera, calc_csat_carrera
 from lib.io_helper import read_csv_robust, normalize_dates, hash_csv, csv_cambiado, guardar_hash_csv, enmascarar_pii
@@ -579,9 +580,12 @@ def main() -> None:
         # La tabla de respuestas que usa el asistente del item 1.9: una fila por respuesta,
         # con un numero por pregunta en vez del texto. Es lo que le permite filtrar y contar
         # cruces que no se pueden precalcular ("de los que trabajan a tiempo completo, cuantos
-        # estan satisfechos con la Universidad de Lima").
+        # estan satisfechos con la Universidad de Lima"). El bloque 'preguntas' viaja dentro
+        # del mismo archivo: es la declaracion (id, nombre, tipo, pregunta y escala) de cada
+        # columna publicada, la misma que vive en lib/config.py.
         with open(ruta_salida / "respuestas.json", "w", encoding="utf-8") as f:
-            json.dump(construir_tabla(df, nivel, periodo), f, ensure_ascii=False, indent=2)
+            json.dump(construir_tabla(df, nivel, periodo, declaraciones_de(nivel)),
+                      f, ensure_ascii=False, indent=2)
 
         with open(ruta_salida / "dashboard_data.json", "w", encoding="utf-8") as f:
             json.dump(dashboard_data, f, ensure_ascii=False, indent=2)

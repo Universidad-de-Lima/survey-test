@@ -72,8 +72,10 @@ Ejemplos válidos: `ENCUESTA DE SATISFACCIÓN ESTUDIANTIL - PREGRADO - 2026-1.cs
 ## Cuestionarios (preguntas del formulario)
 
 Las preguntas de cada encuesta, con su orden, son las cabeceras de `CABECERAS_POR_NIVEL`
-(`zoho-survey/scripts/zoho_a_csv.py`), y su nombre corto publicado está en `COLUMN_RENAME_PREGRADO`
-y `COLUMN_RENAME_GRADUADO` (`zoho-survey/scripts/lib/config.py`). Esta sección documenta lo que no
+(`zoho-survey/scripts/zoho_a_csv.py`). Cada pregunta se declara una sola vez en
+`PREGUNTAS_POR_NIVEL` (`zoho-survey/scripts/lib/config.py`): `id` estable, `nombre` publicado,
+`tipo`, `pregunta` (el texto del formulario) y `escala`. Los mapas `COLUMN_RENAME_PREGRADO` y
+`COLUMN_RENAME_GRADUADO` se derivan de esa declaración. Esta sección documenta lo que no
 está en el código: las **secciones** del formulario, el **texto** de cada pregunta, sus **opciones**
 y los **saltos**.
 
@@ -512,11 +514,15 @@ más preguntas, que por definición no se pueden precalcular.
 
 ```json
 {
-  "version": "1.0",
+  "version": "1.1",
   "nivel": "undergraduate",
   "periodo": "2026-1",
   "respuestas": 4239,
   "cabeceras": ["Carrera", "Ciclo", "..."],
+  "preguntas": [
+    { "id": "carrera", "nombre": "Carrera", "tipo": "agrupacion", "pregunta": "¿Qué carrera profesional estudias?", "escala": "" },
+    { "id": "csat_universidad", "nombre": "La Universidad de Lima", "tipo": "medida", "pregunta": "La Universidad de Lima", "escala": "CSAT" }
+  ],
   "opciones": { "Carrera": ["Administración", "..."], "Ciclo": ["1", "..."] },
   "filas": [[0, 3, 1, ...], [1, 3, 0, ...]],
   "ids": ["...", "..."],
@@ -528,6 +534,12 @@ más preguntas, que por definición no se pueden precalcular.
 - **`cabeceras`**: las preguntas que se pueden filtrar, en orden. Cada una tiene sus opciones en
   `opciones` (una sola vez para todas las filas) y un `(sin respuesta)` al inicio cuando la pregunta
   se puede dejar en blanco (los saltos de la encuesta se cuentan, no se esconden).
+- **`preguntas`** (desde la versión 1.1): la declaración de cada columna publicada, la misma que vive
+  en `lib/config.py` (`PREGUNTAS_POR_NIVEL`). Cada entrada trae `id` (estable, el que debe usar el
+  código en vez del nombre), `nombre` (lo que se publica y se muestra), `tipo` (`medida`,
+  `agrupacion`, `fecha` o `identificador`), `pregunta` (el texto del cuestionario) y `escala` (`CSAT`
+  o `NPS`, solo en las medidas). Los archivos que quedaron en la versión 1.0 (anteriores a este
+  cambio) no traen el bloque y siguen siendo válidos.
 - **`filas`**: un número por pregunta y por respuesta; ese número apunta a la opción. Una fila por
   respuesta, en el mismo orden que `ids` y `fechas`.
 - **`ids`** enlaza cada fila con el análisis de los comentarios (`sentimiento.json` lleva el mismo
@@ -540,7 +552,9 @@ la pregunta abierta, que vive en `sentimiento.json` ya analizado.
 
 **Invariantes** (`validate_respuestas_invariants`): `respuestas` coincide con el número de filas; cada
 fila tiene un valor por pregunta; cada valor apunta a una opción existente de esa pregunta; `ids` y
-`fechas`, si están, tienen el mismo largo que las filas.
+`fechas`, si están, tienen el mismo largo que las filas. Si el archivo trae `preguntas` (versión 1.1):
+cada `id` es único y no vacío, cada `tipo` es válido, cada medida declara `escala`, y toda cabecera
+publicada tiene su declaración.
 ## Responsabilidades Por Capa
 
 | Capa | Responsabilidad |

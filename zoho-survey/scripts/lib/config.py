@@ -12,103 +12,683 @@ Para añadir soporte a nuevas carreras, dimensiones o tópicos:
 from typing import Dict, List, Set
 
 # ============================================================
-# 1. RENOMBRADO DE COLUMNAS (Zoho Survey → nombres internos)
+# 1. DECLARACION DE LAS PREGUNTAS (identidad de columna)
 # ============================================================
+# Cada pregunta que procesa el ETL se declara UNA sola vez, aqui:
+#
+#   id       identificador corto, unico dentro de la encuesta y FIJO. Es lo que
+#            el codigo debe usar para comparar columnas (nunca el nombre).
+#   nombre   lo que se publica HOY en respuestas.json y en el portal.
+#   tipo     'medida' (se mide), 'agrupacion' (agrupa o filtra), 'fecha' o
+#            'identificador'.
+#   pregunta el texto completo del cuestionario: la llave con la que Zoho manda
+#            cada columna (antes, la clave de COLUMN_RENAME_*).
+#   escala   solo cuando tipo es 'medida': 'CSAT' (satisfaccion de cinco
+#            niveles) o 'NPS' (0 a 10).
+#
+# Los mapas COLUMN_RENAME_* que consume pandas se DERIVAN de estas listas: el
+# texto de la pregunta vive en un solo sitio. Las columnas que el ETL publica
+# pero que no son preguntas del formulario (Facultad, y Ciclo en graduados) se
+# declaran aparte, en DERIVADAS_*.
+#
+# El comentario abierto (hoy "Comentario NPS") NO se declara como pregunta: no
+# es medida, agrupacion, fecha ni identificador, y no se publica en
+# respuestas.json (se analiza y aparece en sentimiento.json). Se conserva en el
+# mapa de renombrado porque el ETL necesita renombrarlo.
 
-COLUMN_RENAME_PREGRADO: Dict[str, str] = {
-    "ID de respuesta": "ID",
-    "Start time": "Inicio",
-    "Hora de finalización": "Fin",
-    "Net Promoter Score (de un total de 10)": "Recomiendas la Universidad de Lima",
-    "¿Qué carrera profesional estudias?": "Carrera",
-    "¿Qué ciclo es el que cursas?; considera el ciclo donde más cursos llevas": "Ciclo",
-    "El perfil de egreso de tu carrera": "Perfil del egreso de la carrera",
-    "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera": "Plan curricular y perfil de egreso",
-    "Los cursos y contenidos de tu carrera": "Cursos del programa y contenidos",
-    "La calidad del servicio de enseñanza en tu carrera": "Calidad de la enseñanza en la carrera",
-    "La claridad, precisión y actualización de los materiales de estudio de tu carrera": "Claridad de los recursos académicos",
-    "La calidad de la formación académica": "Calidad de la formación académica",
-    "La evaluación del aprendizaje en tu carrera": "Evaluación del aprendizaje",
-    "El proceso de intercambio estudiantil": "Intercambio estudiantil",
-    "La información sobre tu récord académico": "Información sobre el récord académico",
-    "El material bibliográfico físico o digital disponible en la biblioteca": "Material bibliográfico en la biblioteca",
-    "El servicio recibido por el personal administrativo de tu carrera": "Atención del personal administrativo",
-    "Los procedimientos de los servicios administrativos de tu carrera": "Procedimientos administrativos",
-    "El servicio social: ayuda financiera": "Ayuda financiera",
-    "El servicio médico y su infraestructura": "Servicio médico y su infraestructura",
-    "El servicio de atención psicopedagógica": "Servicio de atención psicopedagógica",
-    "Los talleres de actividades artísticas y culturales": "Talleres de actividades artísticas y culturales",
-    "Las actividades deportivas": "Actividades deportivas",
-    "Empleabilidad, vinculación profesional y ALUMNI": "Empleabilidad, vinculación y ALUMNI",
-    "Las aulas de clase": "Aulas de clase",
-    "Los ambientes y salas para estudio": "Ambientes y salas para estudio",
-    "Los laboratorios en lo referido a equipamiento, tecnología y programas": "Equipamiento tecnológico en laboratorios",
-    "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad": "Condiciones ambientales en laboratorios",
-    "El software especializado empleado en la carrera": "Software especializado empleado en la carrera",
-    "El portal web de la universidad: Mi Ulima": "Portal web de la Universidad (Mi Ulima)",
-    "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)": "Aula virtual",
-    "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual": "Conexión Wi-Fi en el campus",
-    "El soporte técnico brindado ante las fallas del sistema informático": "Soporte técnico del sistema informático",
-    "Tu carrera": "La carrera",
-    "La Universidad de Lima": "La Universidad de Lima",
-    "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)": "Comentario NPS",
+TIPOS_VALIDOS: Set[str] = {"medida", "agrupacion", "fecha", "identificador"}
+
+PREGUNTAS_PREGRADO: List[Dict[str, str]] = [
+    {
+        "id": "id_respuesta",
+        "nombre": "ID",
+        "tipo": "identificador",
+        "pregunta": "ID de respuesta",
+        "escala": "",
+    },
+    {
+        "id": "inicio",
+        "nombre": "Inicio",
+        "tipo": "fecha",
+        "pregunta": "Start time",
+        "escala": "",
+    },
+    {
+        "id": "fin",
+        "nombre": "Fin",
+        "tipo": "fecha",
+        "pregunta": "Hora de finalización",
+        "escala": "",
+    },
+    {
+        "id": "nps",
+        "nombre": "Recomiendas la Universidad de Lima",
+        "tipo": "medida",
+        "pregunta": "Net Promoter Score (de un total de 10)",
+        "escala": "NPS",
+    },
+    {
+        "id": "carrera",
+        "nombre": "Carrera",
+        "tipo": "agrupacion",
+        "pregunta": "¿Qué carrera profesional estudias?",
+        "escala": "",
+    },
+    {
+        "id": "ciclo",
+        "nombre": "Ciclo",
+        "tipo": "agrupacion",
+        "pregunta": "¿Qué ciclo es el que cursas?; considera el ciclo donde más cursos llevas",
+        "escala": "",
+    },
+    {
+        "id": "perfil_del_egreso_de_la_carrera",
+        "nombre": "Perfil del egreso de la carrera",
+        "tipo": "medida",
+        "pregunta": "El perfil de egreso de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "plan_curricular_y_perfil_de_egreso",
+        "nombre": "Plan curricular y perfil de egreso",
+        "tipo": "medida",
+        "pregunta": "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "cursos_del_programa_y_contenidos",
+        "nombre": "Cursos del programa y contenidos",
+        "tipo": "medida",
+        "pregunta": "Los cursos y contenidos de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "calidad_de_la_ensenanza_en_la_carrera",
+        "nombre": "Calidad de la enseñanza en la carrera",
+        "tipo": "medida",
+        "pregunta": "La calidad del servicio de enseñanza en tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "claridad_de_los_recursos_academicos",
+        "nombre": "Claridad de los recursos académicos",
+        "tipo": "medida",
+        "pregunta": "La claridad, precisión y actualización de los materiales de estudio de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "calidad_de_la_formacion_academica",
+        "nombre": "Calidad de la formación académica",
+        "tipo": "medida",
+        "pregunta": "La calidad de la formación académica",
+        "escala": "CSAT",
+    },
+    {
+        "id": "evaluacion_del_aprendizaje",
+        "nombre": "Evaluación del aprendizaje",
+        "tipo": "medida",
+        "pregunta": "La evaluación del aprendizaje en tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "intercambio_estudiantil",
+        "nombre": "Intercambio estudiantil",
+        "tipo": "medida",
+        "pregunta": "El proceso de intercambio estudiantil",
+        "escala": "CSAT",
+    },
+    {
+        "id": "informacion_sobre_el_record_academico",
+        "nombre": "Información sobre el récord académico",
+        "tipo": "medida",
+        "pregunta": "La información sobre tu récord académico",
+        "escala": "CSAT",
+    },
+    {
+        "id": "material_bibliografico_en_la_biblioteca",
+        "nombre": "Material bibliográfico en la biblioteca",
+        "tipo": "medida",
+        "pregunta": "El material bibliográfico físico o digital disponible en la biblioteca",
+        "escala": "CSAT",
+    },
+    {
+        "id": "atencion_del_personal_administrativo",
+        "nombre": "Atención del personal administrativo",
+        "tipo": "medida",
+        "pregunta": "El servicio recibido por el personal administrativo de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "procedimientos_administrativos",
+        "nombre": "Procedimientos administrativos",
+        "tipo": "medida",
+        "pregunta": "Los procedimientos de los servicios administrativos de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "ayuda_financiera",
+        "nombre": "Ayuda financiera",
+        "tipo": "medida",
+        "pregunta": "El servicio social: ayuda financiera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "servicio_medico_y_su_infraestructura",
+        "nombre": "Servicio médico y su infraestructura",
+        "tipo": "medida",
+        "pregunta": "El servicio médico y su infraestructura",
+        "escala": "CSAT",
+    },
+    {
+        "id": "servicio_de_atencion_psicopedagogica",
+        "nombre": "Servicio de atención psicopedagógica",
+        "tipo": "medida",
+        "pregunta": "El servicio de atención psicopedagógica",
+        "escala": "CSAT",
+    },
+    {
+        "id": "talleres_de_actividades_artisticas_y_culturales",
+        "nombre": "Talleres de actividades artísticas y culturales",
+        "tipo": "medida",
+        "pregunta": "Los talleres de actividades artísticas y culturales",
+        "escala": "CSAT",
+    },
+    {
+        "id": "actividades_deportivas",
+        "nombre": "Actividades deportivas",
+        "tipo": "medida",
+        "pregunta": "Las actividades deportivas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "empleabilidad_vinculacion_y_alumni",
+        "nombre": "Empleabilidad, vinculación y ALUMNI",
+        "tipo": "medida",
+        "pregunta": "Empleabilidad, vinculación profesional y ALUMNI",
+        "escala": "CSAT",
+    },
+    {
+        "id": "aulas_de_clase",
+        "nombre": "Aulas de clase",
+        "tipo": "medida",
+        "pregunta": "Las aulas de clase",
+        "escala": "CSAT",
+    },
+    {
+        "id": "ambientes_y_salas_para_estudio",
+        "nombre": "Ambientes y salas para estudio",
+        "tipo": "medida",
+        "pregunta": "Los ambientes y salas para estudio",
+        "escala": "CSAT",
+    },
+    {
+        "id": "equipamiento_tecnologico_en_laboratorios",
+        "nombre": "Equipamiento tecnológico en laboratorios",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a equipamiento, tecnología y programas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "condiciones_ambientales_en_laboratorios",
+        "nombre": "Condiciones ambientales en laboratorios",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad",
+        "escala": "CSAT",
+    },
+    {
+        "id": "software_especializado_empleado_en_la_carrera",
+        "nombre": "Software especializado empleado en la carrera",
+        "tipo": "medida",
+        "pregunta": "El software especializado empleado en la carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "portal_web_de_la_universidad_mi_ulima",
+        "nombre": "Portal web de la Universidad (Mi Ulima)",
+        "tipo": "medida",
+        "pregunta": "El portal web de la universidad: Mi Ulima",
+        "escala": "CSAT",
+    },
+    {
+        "id": "aula_virtual",
+        "nombre": "Aula virtual",
+        "tipo": "medida",
+        "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+        "escala": "CSAT",
+    },
+    {
+        "id": "conexion_wi_fi_en_el_campus",
+        "nombre": "Conexión Wi-Fi en el campus",
+        "tipo": "medida",
+        "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+        "escala": "CSAT",
+    },
+    {
+        "id": "soporte_tecnico_del_sistema_informatico",
+        "nombre": "Soporte técnico del sistema informático",
+        "tipo": "medida",
+        "pregunta": "El soporte técnico brindado ante las fallas del sistema informático",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_sujeto",
+        "nombre": "La carrera",
+        "tipo": "medida",
+        "pregunta": "Tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_universidad",
+        "nombre": "La Universidad de Lima",
+        "tipo": "medida",
+        "pregunta": "La Universidad de Lima",
+        "escala": "CSAT",
+    },
+]
+
+PREGUNTAS_GRADUADO: List[Dict[str, str]] = [
+    {
+        "id": "id_respuesta",
+        "nombre": "ID",
+        "tipo": "identificador",
+        "pregunta": "ID de respuesta",
+        "escala": "",
+    },
+    {
+        "id": "inicio",
+        "nombre": "Inicio",
+        "tipo": "fecha",
+        "pregunta": "Start time",
+        "escala": "",
+    },
+    {
+        "id": "fin",
+        "nombre": "Fin",
+        "tipo": "fecha",
+        "pregunta": "Hora de finalización",
+        "escala": "",
+    },
+    {
+        "id": "nps",
+        "nombre": "Recomiendas la Universidad de Lima",
+        "tipo": "medida",
+        "pregunta": "Net Promoter Score (de un total de 10)",
+        "escala": "NPS",
+    },
+    {
+        "id": "carrera",
+        "nombre": "Carrera",
+        "tipo": "agrupacion",
+        "pregunta": "¿Qué carrera profesional estudiaste?",
+        "escala": "",
+    },
+    {
+        "id": "situacion_laboral",
+        "nombre": "Situación laboral",
+        "tipo": "agrupacion",
+        "pregunta": "¿Cuál es tu situación laboral actual?",
+        "escala": "",
+    },
+    {
+        "id": "tiempo_laboral",
+        "nombre": "Tiempo laboral",
+        "tipo": "agrupacion",
+        "pregunta": "¿Cuál es el tiempo dedicado a tu trabajo?",
+        "escala": "",
+    },
+    {
+        "id": "perfil_del_egreso_de_la_carrera",
+        "nombre": "Perfil del egreso de la carrera",
+        "tipo": "medida",
+        "pregunta": "El perfil de egreso de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "plan_curricular_y_perfil_de_egreso",
+        "nombre": "Plan curricular y perfil de egreso",
+        "tipo": "medida",
+        "pregunta": "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "cursos_del_programa_y_contenidos",
+        "nombre": "Cursos del programa y contenidos",
+        "tipo": "medida",
+        "pregunta": "Los cursos y contenidos de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "calidad_de_la_ensenanza_en_la_carrera",
+        "nombre": "Calidad de la enseñanza en la carrera",
+        "tipo": "medida",
+        "pregunta": "La calidad del servicio de enseñanza de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "claridad_de_los_recursos_academicos",
+        "nombre": "Claridad de los recursos académicos",
+        "tipo": "medida",
+        "pregunta": "La claridad, precisión y actualización de los materiales de estudio de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "calidad_de_la_formacion_academica",
+        "nombre": "Calidad de la formación académica",
+        "tipo": "medida",
+        "pregunta": "La calidad de la formación académica",
+        "escala": "CSAT",
+    },
+    {
+        "id": "exigencia_academica",
+        "nombre": "Exigencia académica",
+        "tipo": "medida",
+        "pregunta": "La exigencia académica de las asignaturas de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "evaluacion_del_aprendizaje",
+        "nombre": "Evaluación del aprendizaje",
+        "tipo": "medida",
+        "pregunta": "La evaluación del aprendizaje de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "intercambio_estudiantil",
+        "nombre": "Intercambio estudiantil",
+        "tipo": "medida",
+        "pregunta": "El proceso de intercambio estudiantil",
+        "escala": "CSAT",
+    },
+    {
+        "id": "transmision_de_conocimientos",
+        "nombre": "Transmisión de conocimientos",
+        "tipo": "medida",
+        "pregunta": "El dominio de los conocimientos que transmiten",
+        "escala": "CSAT",
+    },
+    {
+        "id": "transmision_de_experiencias",
+        "nombre": "Transmisión de experiencias",
+        "tipo": "medida",
+        "pregunta": "La capacidad para transmitir el conocimiento y experiencias que complementan la teoría",
+        "escala": "CSAT",
+    },
+    {
+        "id": "metodologias",
+        "nombre": "Metodologías",
+        "tipo": "medida",
+        "pregunta": "Las metodologías y herramientas aplicadas para la enseñanza y aprendizaje",
+        "escala": "CSAT",
+    },
+    {
+        "id": "conocimientos_actualizados",
+        "nombre": "Conocimientos actualizados",
+        "tipo": "medida",
+        "pregunta": "La actualización de los conocimientos transmitidos",
+        "escala": "CSAT",
+    },
+    {
+        "id": "compromiso",
+        "nombre": "Compromiso",
+        "tipo": "medida",
+        "pregunta": "El compromiso con el aprendizaje de los alumnos",
+        "escala": "CSAT",
+    },
+    {
+        "id": "retroalimentacion",
+        "nombre": "Retroalimentación",
+        "tipo": "medida",
+        "pregunta": "La retroalimentación de las tareas, trabajos y desempeño",
+        "escala": "CSAT",
+    },
+    {
+        "id": "disponibilidad_para_asesorias",
+        "nombre": "Disponibilidad para asesorías",
+        "tipo": "medida",
+        "pregunta": "La disposición y tiempo para asesorar a los alumnos",
+        "escala": "CSAT",
+    },
+    {
+        "id": "cumplimiento_de_normas_y_programas",
+        "nombre": "Cumplimiento de normas y programas",
+        "tipo": "medida",
+        "pregunta": "La disciplina en el cumplimiento de las normas y programas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "habilidades_para_trabajar_en_equipo",
+        "nombre": "Habilidades para trabajar en equipo",
+        "tipo": "medida",
+        "pregunta": "El desarrollo de tus habilidades de trabajo en equipo",
+        "escala": "CSAT",
+    },
+    {
+        "id": "habilidades_de_comunicacion",
+        "nombre": "Habilidades de comunicación",
+        "tipo": "medida",
+        "pregunta": "El desarrollo de tus habilidades de comunicación",
+        "escala": "CSAT",
+    },
+    {
+        "id": "habilidades_para_aportar_nuevas_ideas",
+        "nombre": "Habilidades para aportar nuevas ideas",
+        "tipo": "medida",
+        "pregunta": "La capacidad para aportar y explorar nuevas ideas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "mejora_en_perspectivas_de_empleo",
+        "nombre": "Mejora en perspectivas de empleo",
+        "tipo": "medida",
+        "pregunta": "La mejora de tu perspectiva de empleo",
+        "escala": "CSAT",
+    },
+    {
+        "id": "informacion_sobre_el_record_academico",
+        "nombre": "Información sobre el récord académico",
+        "tipo": "medida",
+        "pregunta": "La información sobre tu récord académico",
+        "escala": "CSAT",
+    },
+    {
+        "id": "material_bibliografico_en_la_biblioteca",
+        "nombre": "Material bibliográfico en la biblioteca",
+        "tipo": "medida",
+        "pregunta": "El material bibliográfico físico o digital disponible en la biblioteca",
+        "escala": "CSAT",
+    },
+    {
+        "id": "atencion_del_personal_administrativo",
+        "nombre": "Atención del personal administrativo",
+        "tipo": "medida",
+        "pregunta": "El servicio recibido por el personal administrativo de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "procedimientos_administrativos",
+        "nombre": "Procedimientos administrativos",
+        "tipo": "medida",
+        "pregunta": "Los procedimientos de los servicios administrativos de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "ayuda_financiera",
+        "nombre": "Ayuda financiera",
+        "tipo": "medida",
+        "pregunta": "El servicio social: ayuda financiera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "servicio_medico_y_su_infraestructura",
+        "nombre": "Servicio médico y su infraestructura",
+        "tipo": "medida",
+        "pregunta": "El servicio médico y su infraestructura",
+        "escala": "CSAT",
+    },
+    {
+        "id": "servicio_de_atencion_psicopedagogica",
+        "nombre": "Servicio de atención psicopedagógica",
+        "tipo": "medida",
+        "pregunta": "El servicio de atención psicopedagógica",
+        "escala": "CSAT",
+    },
+    {
+        "id": "talleres_de_actividades_artisticas_y_culturales",
+        "nombre": "Talleres de actividades artísticas y culturales",
+        "tipo": "medida",
+        "pregunta": "Los talleres de actividades artísticas y culturales",
+        "escala": "CSAT",
+    },
+    {
+        "id": "actividades_deportivas",
+        "nombre": "Actividades deportivas",
+        "tipo": "medida",
+        "pregunta": "Las actividades deportivas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "empleabilidad_vinculacion_y_alumni",
+        "nombre": "Empleabilidad, vinculación y ALUMNI",
+        "tipo": "medida",
+        "pregunta": "Empleabilidad, vinculación profesional y ALUMNI",
+        "escala": "CSAT",
+    },
+    {
+        "id": "aulas_de_clase",
+        "nombre": "Aulas de clase",
+        "tipo": "medida",
+        "pregunta": "Las aulas de clase",
+        "escala": "CSAT",
+    },
+    {
+        "id": "ambientes_y_salas_para_estudio",
+        "nombre": "Ambientes y salas para estudio",
+        "tipo": "medida",
+        "pregunta": "Los ambientes y salas para estudio",
+        "escala": "CSAT",
+    },
+    {
+        "id": "equipamiento_tecnologico_en_laboratorios",
+        "nombre": "Equipamiento tecnológico en laboratorios",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a equipamiento, tecnología y programas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "condiciones_ambientales_en_laboratorios",
+        "nombre": "Condiciones ambientales en laboratorios",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad",
+        "escala": "CSAT",
+    },
+    {
+        "id": "software_especializado_empleado_en_la_carrera",
+        "nombre": "Software especializado empleado en la carrera",
+        "tipo": "medida",
+        "pregunta": "El software especializado empleado en tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "portal_web_de_la_universidad_mi_ulima",
+        "nombre": "Portal web de la Universidad (Mi Ulima)",
+        "tipo": "medida",
+        "pregunta": "El portal web de la universidad: Mi Ulima",
+        "escala": "CSAT",
+    },
+    {
+        "id": "aula_virtual",
+        "nombre": "Aula virtual",
+        "tipo": "medida",
+        "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+        "escala": "CSAT",
+    },
+    {
+        "id": "conexion_wi_fi_en_el_campus",
+        "nombre": "Conexión Wi-Fi en el campus",
+        "tipo": "medida",
+        "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+        "escala": "CSAT",
+    },
+    {
+        "id": "soporte_tecnico_del_sistema_informatico",
+        "nombre": "Soporte técnico del sistema informático",
+        "tipo": "medida",
+        "pregunta": "El soporte técnico brindado ante las fallas del sistema informático",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_sujeto",
+        "nombre": "La carrera",
+        "tipo": "medida",
+        "pregunta": "Tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_universidad",
+        "nombre": "La Universidad de Lima",
+        "tipo": "medida",
+        "pregunta": "La Universidad de Lima",
+        "escala": "CSAT",
+    },
+]
+
+# Columnas publicadas por el ETL que no salen del formulario.
+DERIVADAS_PREGRADO: List[Dict[str, str]] = [
+    {
+        "id": "facultad",
+        "nombre": "Facultad",
+        "tipo": "agrupacion",
+        "pregunta": "Facultad (derivada de la carrera)",
+        "escala": "",
+    },
+]
+
+DERIVADAS_GRADUADO: List[Dict[str, str]] = [
+    {
+        "id": "ciclo",
+        "nombre": "Ciclo",
+        "tipo": "agrupacion",
+        "pregunta": "Ciclo (derivado; la encuesta de graduados no lo pregunta)",
+        "escala": "",
+    },
+    {
+        "id": "facultad",
+        "nombre": "Facultad",
+        "tipo": "agrupacion",
+        "pregunta": "Facultad (derivada de la carrera)",
+        "escala": "",
+    },
+]
+
+# Declaracion completa por nivel interno: preguntas del formulario + derivadas.
+PREGUNTAS_POR_NIVEL: Dict[str, List[Dict[str, str]]] = {
+    "undergraduate": PREGUNTAS_PREGRADO + DERIVADAS_PREGRADO,
+    "graduate": PREGUNTAS_GRADUADO + DERIVADAS_GRADUADO,
 }
 
-# ── Mappings específicos para encuesta de GRADUADOS (Posgrado) ──
-# BUG SOLVED: "Comentario NPS" unificado con la columna de pregrado
-# para asegurar que el motor cualitativo procese el texto libre correctamente.
-COLUMN_RENAME_GRADUADO: Dict[str, str] = {
-    "ID de respuesta": "ID",
-    "Start time": "Inicio",
-    "Hora de finalización": "Fin",
-    "Net Promoter Score (de un total de 10)": "Recomiendas la Universidad de Lima",
-    "¿Qué carrera profesional estudiaste?": "Carrera",
-    "¿Cuál es tu situación laboral actual?": "Situación laboral",
-    "¿Cuál es el tiempo dedicado a tu trabajo?": "Tiempo laboral",
-    "El perfil de egreso de tu carrera": "Perfil del egreso de la carrera",
-    "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera": "Plan curricular y perfil de egreso",
-    "Los cursos y contenidos de tu carrera": "Cursos del programa y contenidos",
-    "La calidad del servicio de enseñanza de tu carrera": "Calidad de la enseñanza en la carrera",
-    "La claridad, precisión y actualización de los materiales de estudio de tu carrera": "Claridad de los recursos académicos",
-    "La calidad de la formación académica": "Calidad de la formación académica",
-    "La exigencia académica de las asignaturas de tu carrera": "Exigencia académica",
-    "La evaluación del aprendizaje de tu carrera": "Evaluación del aprendizaje",
-    "El proceso de intercambio estudiantil": "Intercambio estudiantil",
-    "El dominio de los conocimientos que transmiten": "Transmisión de conocimientos",
-    "La capacidad para transmitir el conocimiento y experiencias que complementan la teoría": "Transmisión de experiencias",
-    "Las metodologías y herramientas aplicadas para la enseñanza y aprendizaje": "Metodologías",
-    "La actualización de los conocimientos transmitidos": "Conocimientos actualizados",
-    "El compromiso con el aprendizaje de los alumnos": "Compromiso",
-    "La retroalimentación de las tareas, trabajos y desempeño": "Retroalimentación",
-    "La disposición y tiempo para asesorar a los alumnos": "Disponibilidad para asesorías",
-    "La disciplina en el cumplimiento de las normas y programas": "Cumplimiento de normas y programas",
-    "El desarrollo de tus habilidades de trabajo en equipo": "Habilidades para trabajar en equipo",
-    "El desarrollo de tus habilidades de comunicación": "Habilidades de comunicación",
-    "La capacidad para aportar y explorar nuevas ideas": "Habilidades para aportar nuevas ideas",
-    "La mejora de tu perspectiva de empleo": "Mejora en perspectivas de empleo",
-    "La información sobre tu récord académico": "Información sobre el récord académico",
-    "El material bibliográfico físico o digital disponible en la biblioteca": "Material bibliográfico en la biblioteca",
-    "El servicio recibido por el personal administrativo de tu carrera": "Atención del personal administrativo",
-    "Los procedimientos de los servicios administrativos de tu carrera": "Procedimientos administrativos",
-    "El servicio social: ayuda financiera": "Ayuda financiera",
-    "El servicio médico y su infraestructura": "Servicio médico y su infraestructura",
-    "El servicio de atención psicopedagógica": "Servicio de atención psicopedagógica",
-    "Los talleres de actividades artísticas y culturales": "Talleres de actividades artísticas y culturales",
-    "Las actividades deportivas": "Actividades deportivas",
-    "Empleabilidad, vinculación profesional y ALUMNI": "Empleabilidad, vinculación y ALUMNI",
-    "Las aulas de clase": "Aulas de clase",
-    "Los ambientes y salas para estudio": "Ambientes y salas para estudio",
-    "Los laboratorios en lo referido a equipamiento, tecnología y programas": "Equipamiento tecnológico en laboratorios",
-    "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad": "Condiciones ambientales en laboratorios",
-    "El software especializado empleado en tu carrera": "Software especializado empleado en la carrera",
-    "El portal web de la universidad: Mi Ulima": "Portal web de la Universidad (Mi Ulima)",
-    "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)": "Aula virtual",
-    "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual": "Conexión Wi-Fi en el campus",
-    "El soporte técnico brindado ante las fallas del sistema informático": "Soporte técnico del sistema informático",
-    "Tu carrera": "La carrera",
-    "La Universidad de Lima": "La Universidad de Lima",
-    "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)": "Comentario NPS",
-}
+# Texto de la pregunta abierta: el ETL la renombra, pero no se publica.
+COMENTARIO_NPS_PREGUNTA: str = "Explica con tus palabras, las razones de la calificaci\u00f3n que diste en la pregunta anterior. (m\u00e1x. 100 caracteres)"
+
+
+def declaraciones_de(nivel: str) -> List[Dict[str, str]]:
+    """Declaracion de las preguntas de un nivel interno (vacia si no esta declarado)."""
+    return list(PREGUNTAS_POR_NIVEL.get(nivel, []))
+
+
+def _mapa_renombrado(declaraciones: List[Dict[str, str]]) -> Dict[str, str]:
+    """Deriva el mapa {pregunta de Zoho: nombre publicado} de una declaracion."""
+    mapa = {d["pregunta"]: d["nombre"] for d in declaraciones}
+    mapa[COMENTARIO_NPS_PREGUNTA] = "Comentario NPS"
+    return mapa
+
+
+COLUMN_RENAME_PREGRADO: Dict[str, str] = _mapa_renombrado(PREGUNTAS_PREGRADO)
+COLUMN_RENAME_GRADUADO: Dict[str, str] = _mapa_renombrado(PREGUNTAS_GRADUADO)
+
+# Version del contrato de respuestas.json. Desde 1.1 el archivo trae el bloque
+# 'preguntas' (id, nombre, tipo, pregunta y escala de cada columna publicada);
+# los archivos 1.0 anteriores no lo llevan y siguen siendo validos.
+RESPUESTAS_VERSION: str = "1.1"
 
 # ============================================================
 # 2. CATÁLOGO CARRERA → FACULTAD

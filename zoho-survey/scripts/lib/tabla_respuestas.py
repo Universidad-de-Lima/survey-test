@@ -17,13 +17,16 @@ No incluye identificadores, fechas, estado del webhook ni el texto de la pregunt
 abierta: los comentarios siguen en sentimiento.json (ya analizados y con los datos
 personales enmascarados) y las fechas del periodo en dashboard_data.json.
 """
-from typing import Dict, List
+import re
+import unicodedata
+from typing import Dict, List, Optional
 
 import pandas as pd
 
+from .config import RESPUESTAS_TEXTO, RESPUESTAS_VERSION, declaraciones_de
 from .io_helper import normalize_dates
 
-VERSION = "1.0"
+VERSION = RESPUESTAS_VERSION
 
 # Columnas que no son preguntas de la encuesta.
 NO_VAN = {"Estado de respuesta", "Comentario NPS"}
@@ -72,8 +75,53 @@ def _fechas_iso(df: pd.DataFrame, col: str) -> List[str]:
     return ["" if pd.isna(v) else v.strftime("%Y-%m-%d") for v in serie]
 
 
-def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str) -> Dict:
+def _slug(nombre: str) -> str:
+    """Identificador estable para una columna sin declaración (sin acentos, en minúsculas)."""
+    plano = unicodedata.normalize("NFKD", nombre).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "_", plano).strip("_") or "pregunta"
+
+
+def _declaracion_de_cada_columna(cabeceras: List[str], df: pd.DataFrame,
+                                 declaraciones: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Declaración (id, nombre, tipo, pregunta, escala) de cada columna publicada.
+
+    Las preguntas declaradas en lib/config.py se copian tal cual; una columna sin
+    declaración (un nivel todavía sin declarar) se describe con lo que se sabe de
+    sus valores: medida CSAT si solo trae el catálogo de satisfacción, y
+    agrupación en caso contrario. El id se mantiene único dentro del archivo.
+    """
+    por_nombre = {d["nombre"]: d for d in declaraciones}
+    publicadas: List[Dict[str, str]] = []
+    usados = set()
+    for nombre in cabeceras:
+        d = por_nombre.get(nombre)
+        if d is None:
+            valores = {v for v in _texto(df[nombre]).unique() if v}
+            es_medida = bool(valores) and valores.issubset(set(RESPUESTAS_TEXTO))
+            d = {"id": _slug(nombre), "nombre": nombre,
+                 "tipo": "medida" if es_medida else "agrupacion",
+                 "pregunta": nombre, "escala": "CSAT" if es_medida else ""}
+        id_unico = d["id"]
+        sufijo = 2
+        while id_unico in usados:
+            id_unico = "%s_%d" % (d["id"], sufijo)
+            sufijo += 1
+        usados.add(id_unico)
+        publicadas.append({
+            "id": id_unico,
+            "nombre": d["nombre"],
+            "tipo": d["tipo"],
+            "pregunta": d["pregunta"],
+            "escala": d["escala"],
+        })
+    return publicadas
+
+
+def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str,
+                    declaraciones: Optional[List[Dict[str, str]]] = None) -> Dict:
     """Arma la tabla de respuestas de un periodo."""
+    if declaraciones is None:
+        declaraciones = declaraciones_de(nivel)
     cabeceras: List[str] = []
     opciones: Dict[str, List[str]] = {}
     excluidas: List[Dict[str, str]] = []
@@ -109,6 +157,7 @@ def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str) -> Dict:
         "periodo": str(periodo),
         "respuestas": int(len(df)),
         "cabeceras": cabeceras,
+        "preguntas": _declaracion_de_cada_columna(cabeceras, df, declaraciones),
         "opciones": opciones,
         "filas": filas,
     }
