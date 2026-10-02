@@ -146,4 +146,41 @@
       assert.isTrue(result.includes('&gt;'), 'Debe escapar >');
     });
   });
+
+  // La dimensión "Software" se reconoce por su id declarado, no por su nombre publicado:
+  // la declaración viaja en el bloque `preguntas` que el portal deja en los datos cargados.
+  describe('formatDimensionName — la dimensión Software se resuelve por id', () => {
+    const ID_SOFTWARE = 'software_especializado_empleado_en_la_carrera';
+    const NOMBRE_HEREDADO = 'Software especializado empleado en la carrera';
+
+    function conNombrePublicado(nombre, fn) {
+      const D = window.SurveyPortalData;
+      const original = D.getSurveyData;
+      D.getSurveyData = () => ({ filtros: { preguntas: [{ id: ID_SOFTWARE, nombre: nombre, tipo: 'medida', escala: 'CSAT' }] } });
+      try {
+        fn();
+      } finally {
+        D.getSurveyData = original;
+      }
+    }
+
+    it('con otro nombre publicado pero el mismo id, la cursiva sigue aplicándose', () => {
+      conNombrePublicado('Herramientas de software', () => {
+        const r = F.formatDimensionName('Herramientas de software');
+        assert.isTrue(r.includes('<i>Herramientas</i>'), 'la primera palabra va en cursiva: ' + r);
+        assert.isTrue(r.includes('de software'), 'y el resto se conserva: ' + r);
+      });
+    });
+
+    it('con otro nombre publicado, el nombre viejo ya no es la dimensión Software', () => {
+      conNombrePublicado('Herramientas de software', () => {
+        assert.equal(F.formatDimensionName(NOMBRE_HEREDADO), NOMBRE_HEREDADO);
+      });
+    });
+
+    it('sin declaración publicada, usa el nombre de siempre', () => {
+      // portal-data sin datos cargados: getSurveyData() devuelve null
+      assert.isTrue(F.formatDimensionName(NOMBRE_HEREDADO).includes('<i>Software</i>'));
+    });
+  });
 })();
