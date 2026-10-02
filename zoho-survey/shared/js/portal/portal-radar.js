@@ -52,8 +52,12 @@
     const formatDimensionName = window.SurveyPortalSurvey.formatDimensionName;
     const plain = formatDimensionName(dim).replace(/<[^>]*>/g, '');
     const truncated = plain.length > maxlen ? plain.slice(0, maxlen - 1) + '…' : plain;
-    if (dim === 'Software especializado empleado en la carrera' && truncated.indexOf('Software') === 0) {
-      return '<tspan font-style="italic">Software</tspan>' + truncated.slice('Software'.length);
+    // La dimensión Software se reconoce por su id declarado (SurveyFormatters), no por su
+    // nombre publicado: la cursiva cae sobre la primera palabra del nombre que venga.
+    const fmt = window.SurveyFormatters;
+    const palabra = String(dim).split(' ')[0];
+    if (fmt && fmt.esDimensionSoftware && fmt.esDimensionSoftware(dim) && truncated.indexOf(palabra) === 0) {
+      return '<tspan font-style="italic">' + palabra + '</tspan>' + truncated.slice(palabra.length);
     }
     return truncated;
   }
@@ -533,6 +537,7 @@
     radarRender: radarRender,
     updateInsightFortaleza: updateInsightFortaleza,
     showRadarTooltip: showRadarTooltip,
-    hideRadarTooltip: hideRadarTooltip
+    hideRadarTooltip: hideRadarTooltip,
+    formatDimensionNameSVG: formatDimensionNameSVG
   };
 })();
