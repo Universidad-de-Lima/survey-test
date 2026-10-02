@@ -2,6 +2,27 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-02 — El asistente, el radar y los formateadores dejan de comparar columnas por su nombre
+
+- **Qué.** `portal-preguntas.js`, `utils/formatters.js` y `portal-radar.js` seleccionaban columnas
+  comparando contra el nombre publicado escrito a mano (`cab.indexOf('Recomiendas la Universidad de
+  Lima')`, `dim === 'Software especializado empleado en la carrera'`, `GRUPOS = ['Carrera', …]`):
+  renombrar una pregunta en la declaración del ETL rompía el asistente y la cursiva del radar.
+- **`portal-preguntas.js`** resuelve por el `id` declarado con dos ayudantes (`declaracionDeId`,
+  `columnaDeId`): el NPS (`nps`) y la satisfacción de la Universidad (`csat_universidad`) que mide cada
+  grupo, las columnas de agrupación (`carrera`, `facultad`, `ciclo`), el tiempo laboral (`tiempo_laboral`),
+  la línea de satisfacción del período y la columna por defecto del plan (antes «Carrera» fija).
+- **`formatters.js`** expone `esDimensionSoftware(dim)`: la dimensión Software se reconoce por el id
+  `software_especializado_empleado_en_la_carrera` leído del bloque `preguntas` que el portal deja en los
+  datos cargados (`filtros.json`); fuera del portal cae al nombre de siempre. La cursiva se aplica a la
+  primera palabra del nombre publicado, no a un texto fijo.
+- **`portal-radar.js`** usa ese mismo `esDimensionSoftware` para su rótulo SVG (y re-exporta
+  `formatDimensionNameSVG` para poder probarlo).
+- **Sin cambios visibles.** Con los nombres actuales la salida es idéntica (cursiva en «Software», mismos
+  nombres de columna, mismos títulos); sólo sube el marcador `?v=` de los tres archivos en `index.html`.
+- **Pruebas:** el asistente y el radar se prueban con el mismo dato publicado con otro nombre y el mismo
+  id (`test-preguntas.js` +5, `test-portal-radar.js` nuevo con su paso en CI, `test-formatters.js` +3).
+
 ## 2026-10-02 — El ETL deja de buscar las columnas por su nombre publicado
 
 - **Qué.** El ETL seleccionaba las columnas con el nombre publicado escrito a mano (`df["Carrera"]`,

@@ -20,14 +20,16 @@ tests/
 ├── test-framework.js           # Mini-framework: assert, describe, it, renderTo
 └── unit/
     ├── test-config.js          # SURVEY_CONFIG (9 tests)
-    ├── test-formatters.js      # SurveyFormatters (26 tests)
+    ├── test-formatters.js      # SurveyFormatters (29 tests)
     ├── test-metrics.js         # SurveyMetrics (11 tests)
     ├── test-sanitizer.js       # SurveySanitizer (22 tests)
     ├── test-sentiment-view.js  # SurveySentimentView API surface (9 tests)
     ├── test-filter-controller.js  # SurveyFilterController (16 tests)
     ├── test-insights-ia.js     # Insights IA (4 tests)
     ├── test-portal-data.js     # Capa de datos del portal: periodos reales, mapeo ítem→carpeta y fases con datos (19 tests, TestFramework)
-    └── test-dom.js             # Tests con jsdom (32 tests, dialecto propio)
+    ├── test-dom.js             # Tests con jsdom (32 tests, dialecto propio)
+    ├── test-preguntas.js       # Asistente 1.9: columnas por id, no por nombre (29 tests, jsdom + JSON publicados)
+    └── test-portal-radar.js    # Radar del portal: la dimensión Software por id (3 tests, jsdom)
 ```
 
 ## Agregar Un Test
@@ -66,7 +68,7 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | Archivo | Tests reales | Módulo bajo prueba |
 | --- | --- | --- |
 | `test-config.js` | 9 | `SurveyConfig` (SURVEY_CONFIG) |
-| `test-formatters.js` | 26 | `SurveyFormatters` |
+| `test-formatters.js` | 29 | `SurveyFormatters` |
 | `test-metrics.js` | 10 | `SurveyMetrics` |
 | `test-sanitizer.js` | 20 | `SurveySanitizer` |
 | `test-sentiment-view.js` | 9 | `SurveySentimentView` API surface |
@@ -78,9 +80,10 @@ Estado verificado sobre el repositorio completo (2026-07, Fase 1 de limpieza).
 | Archivo | Tests reales | Módulo bajo prueba |
 | --- | --- | --- |
 | `test-dom.js` | 32 | `SurveyFormatters`, `SurveySanitizer`, `SurveyDomHelpers`, `SurveyTooltip` (con DOM real) |
-| `test-preguntas.js` | 24 | `SurveyPortalPreguntas` (asistente del ítem 1.9, con los JSON publicados) |
+| `test-preguntas.js` | 29 | `SurveyPortalPreguntas` (asistente del ítem 1.9, con los JSON publicados) |
+| `test-portal-radar.js` | 3 | `SurveyPortalRadar` (la dimensión Software se reconoce por su id) |
 
-### Total: 113 tests TestFramework (94 base + 19 de `test-portal-data.js`) + 56 tests con jsdom (32 de `test-dom.js` + 24 de `test-preguntas.js`), según lo que reporta el flujo de pruebas
+### Total: 116 tests TestFramework (97 base + 19 de `test-portal-data.js`) + 64 tests con jsdom (32 de `test-dom.js` + 29 de `test-preguntas.js` + 3 de `test-portal-radar.js`), según lo que reporta el flujo de pruebas
 
 > **Historial:** un snapshot previo de auditoría reportaba `test-sanitizer.js` vacío y
 > `test-sentiment-view.js` ausente; ambos fueron verificados y restaurados/implementados
