@@ -179,6 +179,26 @@ window.SurveyPortalPreguntas = (function () {
     return Object.keys(porNombre).length ? porNombre : null;
   }
 
+  /** La declaración publicada (id, nombre, tipo, escala) de la columna con ese id, o null. */
+  function declaracionDeId(tabla, id) {
+    var lista = (tabla && tabla.preguntas) || [];
+    for (var i = 0; i < lista.length; i++) {
+      if (lista[i] && lista[i].id === id) return lista[i];
+    }
+    return null;
+  }
+
+  /**
+   * El nombre publicado de la columna declarada con ese id. Renombrar la pregunta en la
+   * declaración del ETL no toca este código. Si el JSON todavía no trae la declaración, se
+   * usa el nombre de siempre (compatibilidad con lo ya publicado).
+   */
+  function columnaDeId(tabla, id, nombreHeredado) {
+    var d = declaracionDeId(tabla, id);
+    if (d && d.nombre) return d.nombre;
+    return nombreHeredado || null;
+  }
+
   /** Un renglón del menú: el nombre de la columna y, si tiene, sus opciones publicadas. */
   function lineaDeColumna(nombre, valores) {
     var ops = (valores || []).filter(function (o) { return o && o !== '(sin respuesta)'; });
@@ -237,7 +257,14 @@ window.SurveyPortalPreguntas = (function () {
   var PASO_PLAN = 'plan';
   var PASO_RESPUESTA = 'respuesta';
   var LIMITE_BLOQUES = 20000;
-  var GRUPOS = ['Carrera', 'Facultad', 'Ciclo'];
+  // Las columnas por las que se agrupa y compara, por su id declarado (no por su nombre):
+  // renombrar 'Carrera' en la declaración del ETL no toca este código.
+  var GRUPOS = [['carrera', 'Carrera'], ['facultad', 'Facultad'], ['ciclo', 'Ciclo']];
+
+  /** Los nombres publicados de las columnas de agrupación que usa el asistente. */
+  function nombresDeGrupos(tabla) {
+    return GRUPOS.map(function (g) { return columnaDeId(tabla, g[0], g[1]); });
+  }
 
   /** Una llamada al servicio: el plan (qué leer) o la redacción (con los datos). */
   function pedirAlServicio(cuerpo) {
@@ -367,8 +394,8 @@ window.SurveyPortalPreguntas = (function () {
   /** Cuenta y mide un grupo de filas: respuestas, NPS y satisfaccion (los tres mejores niveles). */
   function medir(tabla, filas) {
     var cab = tabla.cabeceras || [];
-    var iNps = cab.indexOf('Recomiendas la Universidad de Lima');
-    var iSat = cab.indexOf('La Universidad de Lima');
+    var iNps = cab.indexOf(columnaDeId(tabla, 'nps', 'Recomiendas la Universidad de Lima'));
+    var iSat = cab.indexOf(columnaDeId(tabla, 'csat_universidad', 'La Universidad de Lima'));
     var buenos = NIVELES.slice(0, 3);   // los tres mejores niveles, de la escala de la configuración
     var prom = 0, pas = 0, det = 0, conNps = 0, conSat = 0, bien = 0;
     filas.forEach(function (f) {
@@ -498,12 +525,14 @@ window.SurveyPortalPreguntas = (function () {
       '- Si se cuentan también las prácticas: ' + n(amplio.n) + ' de ' + n(filas.length) + ' (' + pct(amplio.pct) + ').'
     ];
     // El tiempo laboral solo se le pregunta a quien trabaja: se cuenta sobre el trabajo formal.
-    var iTiempo = (tabla.cabeceras || []).indexOf('Tiempo laboral');
+    // La columna se identifica por su id, no por su nombre publicado.
+    var colTiempo = columnaDeId(tabla, 'tiempo_laboral', 'Tiempo laboral');
+    var iTiempo = (tabla.cabeceras || []).indexOf(colTiempo);
     if (iTiempo !== -1 && formal.n) {
       var trabajan = filas.filter(function (f) {
         return grupos.trabajo.some(function (v) { return f[i] === ops.indexOf(v); });
       });
-      var partes = (tabla.opciones['Tiempo laboral'] || []).map(function (o, k) {
+      var partes = (tabla.opciones[colTiempo] || []).map(function (o, k) {
         if (!o || o === '(sin respuesta)') return null;
         var c = trabajan.filter(function (f) { return f[iTiempo] === k; }).length;
         return o + ' ' + n(c) + ' (' + pct(Math.round((c / trabajan.length) * 10000) / 100) + ')';
@@ -529,7 +558,7 @@ window.SurveyPortalPreguntas = (function () {
     var extra = [];
     var rr = p.dash && p.dash.resumen && p.dash.resumen.csat;
     // La cifra del portal es la del período completo: solo vale decirlo cuando no hay filtro.
-    if (campo === 'La Universidad de Lima' && rr && !filtros.length) {
+    if (campo === columnaDeId(tabla, 'csat_universidad', 'La Universidad de Lima') && rr && !filtros.length) {
       extra.push('- Satisfacción del período: ' + pct(rr.score) + ' (la cifra que usa el portal).');
     }
     var sat = satisfaccionDe(tabla, filas, campo);
@@ -548,7 +577,7 @@ window.SurveyPortalPreguntas = (function () {
   function bloqueDeUna(p, tabla, pregunta, filtros) {
     if (!pregunta) return null;
     var x = sin(pregunta);
-    if (GRUPOS.some(function (g) { return sin(g) === x; })) return bloqueDeGrupo(p, tabla, pregunta, filtros);
+    if (nombresDeGrupos(tabla).some(function (g) { return sin(g) === x; })) return bloqueDeGrupo(p, tabla, pregunta, filtros);
     if (x.indexOf('recomiendas') !== -1 || x.indexOf('nps') !== -1) return bloqueDeNps(p);
     if (x.indexOf('universidad de lima') !== -1 && !nombrePublicado(tabla, pregunta)) return bloqueDeSatisfaccion(p);
     return bloqueDeReparto(p, tabla, pregunta, filtros);
@@ -569,7 +598,9 @@ window.SurveyPortalPreguntas = (function () {
       if (!x) return;
       if (fuentes.indexOf(etiquetaDe(x.p)) === -1) fuentes.push(etiquetaDe(x.p));
       var pedidas = (plan.preguntas || []).slice();
-      if (!pedidas.length) pedidas = ['Carrera'];
+      // Sin preguntas en el plan se compara por la columna de agrupación (carrera),
+      // identificada por su id declarado y no por su nombre publicado.
+      if (!pedidas.length) pedidas = [columnaDeId(x.tabla, 'carrera', 'Carrera')];
       pedidas.forEach(function (preg) {
         var b = bloqueDeUna(x.p, x.tabla, preg, plan.filtros || []);
         if (b) partes.push('## Datos — ' + etiquetaDe(x.p) + '\n### ' + b.titulo + '\n' + b.lineas.join('\n'));
