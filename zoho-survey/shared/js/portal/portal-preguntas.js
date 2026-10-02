@@ -607,6 +607,55 @@ window.SurveyPortalPreguntas = (function () {
     return x;
   }
 
+  /** Parte una línea de tabla por " | " y limpia los espacios de cada celda. */
+  function partirFila(linea) {
+    return String(linea).split('|').map(function (c) { return c.trim(); });
+  }
+
+  /**
+   * Separa el bloque de tabla que el modelo agrega al final de la respuesta.
+   * Devuelve { texto, encabezados, filas }. Si el bloque no está bien formado, encabezados queda null.
+   */
+  function separarTabla(texto) {
+    var lineas = String(texto == null ? '' : texto).split('\n');
+    var i = -1;
+    for (var k = 0; k < lineas.length; k++) {
+      if (/^\s*Tabla:\s*\S/.test(lineas[k])) { i = k; break; }
+    }
+    if (i === -1) return { texto: texto, encabezados: null, filas: [] };
+    var encabezados = partirFila(lineas[i].replace(/^\s*Tabla:\s*/, ''));
+    var filas = [];
+    for (var j = i + 1; j < lineas.length; j++) {
+      if (!/\S/.test(lineas[j])) continue;
+      var celdas = partirFila(lineas[j]);
+      if (celdas.length !== encabezados.length || celdas.length < 2) { filas = []; break; }
+      filas.push(celdas);
+    }
+    var soloTexto = lineas.slice(0, i).join('\n').trim();
+    if (!encabezados.length || filas.length < 2) {
+      // Una tabla de una sola fila no aporta nada: se descarta el bloque.
+      return { texto: soloTexto, encabezados: null, filas: [] };
+    }
+    return { texto: soloTexto, encabezados: encabezados, filas: filas };
+  }
+
+  /** Dibuja la tabla con los estilos que ya usa el portal (survey-table dentro de table-scroll). */
+  function pintarTabla(encabezados, filas) {
+    var html = '<div class="table-scroll"><table class="survey-table"><thead><tr>';
+    for (var c = 0; c < encabezados.length; c++) {
+      html += '<th scope="col">' + esc(formatearNumeros(encabezados[c])) + '</th>';
+    }
+    html += '</tr></thead><tbody>';
+    for (var f = 0; f < filas.length; f++) {
+      html += '<tr>';
+      for (var d = 0; d < filas[f].length; d++) {
+        html += '<td>' + esc(formatearNumeros(filas[f][d])) + '</td>';
+      }
+      html += '</tr>';
+    }
+    return html + '</tbody></table></div>';
+  }
+
   /** Pinta la respuesta: la pregunta en la burbuja de la derecha y el texto a la izquierda. */
   function pintar(contenedor, r, pregunta) {
     var bloque = document.createElement('div');
@@ -616,7 +665,22 @@ window.SurveyPortalPreguntas = (function () {
       html += '<p class="preguntas-burbuja-pregunta"><span>' + esc(pregunta) + '</span></p>';
     }
     html += '<div class="preguntas-burbuja-respuesta">';
-    html += '<p class="preguntas-resultado">' + esc(formatearNumeros((r && (r.texto || r.aviso)) || '')).replace(/\n/g, '<br>') + '</p>';
+    var cuerpo = formatearNumeros((r && (r.texto || r.aviso)) || '');
+    var tablaHTML = '';
+    if (r && !r.aviso) {
+      var partes = separarTabla(cuerpo);
+      if (partes.encabezados) {
+        var textoDeLaTabla = partes.encabezados.concat(partes.filas.reduce(function (a, f) { return a.concat(f); }, [])).join(' ');
+        // Se reutiliza la misma comprobación que ya valida el texto: el segundo argumento es el
+        // mismo bloque de datos que usa la llamada existente (respuestaSostenida(escrito, datos.texto)).
+        if (respuestaSostenida(textoDeLaTabla, r.datos)) {
+          tablaHTML = pintarTabla(partes.encabezados, partes.filas);
+          cuerpo = partes.texto;
+        }
+      }
+    }
+    html += '<p class="preguntas-resultado">' + esc(cuerpo).replace(/\n/g, '<br>') + '</p>';
+    html += tablaHTML;
     if (r && r.fuente && !r.aviso) {
       html += '<p class="preguntas-fuente">' + esc(r.fuente) + '</p>';
     }
