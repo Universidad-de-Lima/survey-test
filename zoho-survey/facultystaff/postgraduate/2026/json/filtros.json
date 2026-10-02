@@ -1,0 +1,304 @@
+{
+  "version": "2.1",
+  "preguntas": [
+    {
+      "id": "recomendacion_0_al_10",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "carrera",
+      "nombre": "Carrera",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "cuantos_anos_laboras_en_la_universidad_de_lima",
+      "nombre": "¿Cuántos años laboras en la Universidad de Lima?",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_perfil_de_egreso_del_programa",
+      "nombre": "El perfil de egreso del programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_correspondencia_entre_el_perfil_de_egreso_y_el_plan_curricular_del_programa",
+      "nombre": "La correspondencia entre el perfil de egreso y el plan curricular del programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "los_cursos_y_contenidos_del_programa",
+      "nombre": "Los cursos y contenidos del programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_cantidad_de_horas_asignadas_para_el_desarrollo_de_las_asignaturas",
+      "nombre": "La cantidad de horas asignadas para el desarrollo de las asignaturas",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_contribucion_de_tu_asignatura_a_alcanzar_el_perfil_de_egreso_del_programa",
+      "nombre": "La contribución de tu asignatura a alcanzar el perfil de egreso del programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_ubicacion_de_tu_asignatura_en_el_plan_curricular_del_programa",
+      "nombre": "La ubicación de tu asignatura en el plan curricular del programa",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "los_criterios_utilizados_en_la_definicion_del_sistema_de_evaluacion_como_las_tareas_academicas_y_el_examen_final",
+      "nombre": "Los criterios utilizados en la definición del sistema de evaluación como las tareas académicas y el examen final",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_conocimiento_de_las_normativas_de_la_escuela_de_posgrado_como_registro_de_notas_plazos_etc",
+      "nombre": "El conocimiento de las normativas de la Escuela de Posgrado como registro de notas, plazos, etc.",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_liderazgo_y_compromiso_de_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "El liderazgo y compromiso de las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "interaccion_presencial_o_virtual_con_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "Interacción, presencial o virtual, con las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_comunicacion_oportuna_y_clara_por_parte_de_las_autoridades_de_la_escuela_de_posgrado_en_ciertos_temas_como_lineamientos_politicas_reuniones_etc",
+      "nombre": "La comunicación oportuna y clara por parte de las autoridades de la Escuela de Posgrado, en ciertos temas como lineamientos, políticas, reuniones, etc.",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_claridad_pertinencia_y_oportunidad_en_la_comunicacion_por_parte_de_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "La claridad, pertinencia y oportunidad en la comunicación por parte de las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_interaccion_con_el_coordinador_de_la_maestria_o_doctorado",
+      "nombre": "La interacción con el coordinador de la maestría o doctorado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_oportunidad_y_eficacia_en_la_solucion_de_los_problemas_planteados_a_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "La oportunidad y eficacia en la solución de los problemas planteados a las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_clima_laboral_en_la_escuela_de_posgrado",
+      "nombre": "El clima laboral en la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_utilidad_y_pertinencia_de_los_temas_tratados_en_la_reunion_de_docentes",
+      "nombre": "La utilidad y pertinencia de los temas tratados en la reunión de docentes",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_utilidad_y_pertinencia_de_los_temas_tratados_en_las_reuniones_individuales_o_grupales_de_coordinacion_con_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "La utilidad y pertinencia de los temas tratados en las reuniones, individuales o grupales, de coordinación con las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_frecuencia_y_antelacion_debida_en_la_convocatoria_a_las_reuniones_individuales_o_grupales_de_coordinacion_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "La frecuencia y antelación debida en la convocatoria a las reuniones, individuales o grupales, de coordinación las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_actividades_de_internacionalizacion_como_congresos_intercambios_e_investigacion",
+      "nombre": "Las actividades de internacionalización como congresos, intercambios e investigación",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_actividades_de_responsabilidad_social_universitaria_como_voluntariado_foros_e_investigacion",
+      "nombre": "Las actividades de responsabilidad social universitaria como voluntariado, foros e investigación",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_retroalimentacion_de_los_resultados_de_la_evaluacion_referencial_docente_erd_por_parte_de_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "La retroalimentación de los resultados de la evaluación referencial docente (ERD) por parte de las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_seguimiento_al_plan_de_mejora_coordinado_con_las_autoridades_de_la_escuela_de_posgrado",
+      "nombre": "El seguimiento al plan de mejora coordinado con las autoridades de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_programa_de_capacitacion_a_los_cuales_ha_sido_invitado_durante_el_ano_referido_a_la_variedad_de_temas_pertinencia_de_horarios_pertinencia_en_la_invitacion_etc",
+      "nombre": "El programa de capacitación a los cuales ha sido invitado durante el año referido a la variedad de temas, pertinencia de horarios, pertinencia en la Invitación, etc.",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_politicas_y_procedimientos_establecidos_por_la_escuela_de_posgrado_para_apoyar_la_investigacion",
+      "nombre": "Las políticas y procedimientos establecidos por la Escuela de Posgrado para apoyar la investigación",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_comunicacion_de_la_politica_de_beneficios_y_promocion_de_la_investigacion_de_la_escuela_de_posgrado",
+      "nombre": "La comunicación de la política de beneficios y promoción de la investigación de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "los_mecanismos_para_promover_la_investigacion_entre_los_docentes",
+      "nombre": "Los mecanismos para promover la investigación entre los docentes",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_material_bibliografico_fisico_o_digital_disponible_en_la_biblioteca",
+      "nombre": "El material bibliográfico físico o digital disponible en la biblioteca",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_servicio_recibido_por_las_secretarias_de_la_escuela_de_posgrado",
+      "nombre": "El servicio recibido por las secretarias de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_servicio_brindado_por_el_personal_administrativo_de_la_escuela_de_posgrado",
+      "nombre": "El servicio brindado por el personal administrativo de la Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_servicio_medico_y_su_infraestructura",
+      "nombre": "El servicio médico y su infraestructura",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_servicio_de_consejeria",
+      "nombre": "El servicio de consejería",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "los_talleres_de_actividades_artisticas_y_culturales",
+      "nombre": "Los talleres de actividades artísticas y culturales",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_actividades_deportivas",
+      "nombre": "Las actividades deportivas",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_aulas_de_clase",
+      "nombre": "Las aulas de clase",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "los_ambientes_y_salas_para_estudio",
+      "nombre": "Los ambientes y salas para estudio",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_instalaciones_para_facilitar_la_relacion_social_entre_los_docentes",
+      "nombre": "Las instalaciones para facilitar la relación social entre los docentes",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "las_oficinas_o_cubiculos_para_los_docentes",
+      "nombre": "Las oficinas o cubículos para los docentes",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_portal_web_de_la_universidad_mi_ulima",
+      "nombre": "El portal web de la universidad: Mi Ulima",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_aula_virtual_blackboard_y_las_herramientas_de_videoconferencia_zoom",
+      "nombre": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_conexion_wi_fi_del_campus_para_acceder_a_los_recursos_institucionales_como_mi_ulima_blackboard_zoom_correo_institucional_y_biblioteca_virtual",
+      "nombre": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "el_soporte_tecnico_brindado_ante_las_fallas_del_sistema_informatico",
+      "nombre": "El soporte técnico brindado ante las fallas del sistema informático",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "la_escuela_de_posgrado",
+      "nombre": "La Escuela de Posgrado",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "satisfaccion_con_la_universidad",
+      "nombre": "Satisfacción con la Universidad",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "escala": ""
+    }
+  ],
+  "has_ciclo": false,
+  "facultades": [
+    "Otra"
+  ],
+  "carreras": [],
+  "ciclos": [],
+  "facultad_carrera": {
+    "Otra": [
+      NaN
+    ]
+  }
+}

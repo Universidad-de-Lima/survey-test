@@ -80,7 +80,7 @@
   "preguntas": [
     {
       "id": "nps",
-      "nombre": "Recomiendas la Universidad de Lima",
+      "nombre": "Recomendación (0 al 10)",
       "tipo": "medida",
       "escala": "NPS"
     },
@@ -260,13 +260,13 @@
     },
     {
       "id": "csat_sujeto",
-      "nombre": "La carrera",
+      "nombre": "Satisfacción con tu carrera",
       "tipo": "medida",
       "escala": "CSAT"
     },
     {
       "id": "csat_universidad",
-      "nombre": "La Universidad de Lima",
+      "nombre": "Satisfacción con la Universidad",
       "tipo": "medida",
       "escala": "CSAT"
     },

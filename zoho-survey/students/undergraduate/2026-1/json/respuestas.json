@@ -4,7 +4,7 @@
   "periodo": "2026-1",
   "respuestas": 4239,
   "cabeceras": [
-    "Recomiendas la Universidad de Lima",
+    "Recomendación (0 al 10)",
     "Carrera",
     "Ciclo",
     "Perfil del egreso de la carrera",
@@ -34,14 +34,14 @@
     "Aula virtual",
     "Conexión Wi-Fi en el campus",
     "Soporte técnico del sistema informático",
-    "La carrera",
-    "La Universidad de Lima",
+    "Satisfacción con tu carrera",
+    "Satisfacción con la Universidad",
     "Facultad"
   ],
   "preguntas": [
     {
       "id": "nps",
-      "nombre": "Recomiendas la Universidad de Lima",
+      "nombre": "Recomendación (0 al 10)",
       "tipo": "medida",
       "pregunta": "Net Promoter Score (de un total de 10)",
       "escala": "NPS"
@@ -251,14 +251,14 @@
     },
     {
       "id": "csat_sujeto",
-      "nombre": "La carrera",
+      "nombre": "Satisfacción con tu carrera",
       "tipo": "medida",
       "pregunta": "Tu carrera",
       "escala": "CSAT"
     },
     {
       "id": "csat_universidad",
-      "nombre": "La Universidad de Lima",
+      "nombre": "Satisfacción con la Universidad",
       "tipo": "medida",
       "pregunta": "La Universidad de Lima",
       "escala": "CSAT"
@@ -272,7 +272,7 @@
     }
   ],
   "opciones": {
-    "Recomiendas la Universidad de Lima": [
+    "Recomendación (0 al 10)": [
       "0",
       "10",
       "2",
@@ -541,14 +541,14 @@
       "Totalmente insatisfecho",
       "Totalmente satisfecho"
     ],
-    "La carrera": [
+    "Satisfacción con tu carrera": [
       "Insatisfecho",
       "Muy satisfecho",
       "Satisfecho",
       "Totalmente insatisfecho",
       "Totalmente satisfecho"
     ],
-    "La Universidad de Lima": [
+    "Satisfacción con la Universidad": [
       "Insatisfecho",
       "Muy satisfecho",
       "Satisfecho",
