@@ -2,6 +2,29 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-02 — El ETL deja de buscar las columnas por su nombre publicado
+
+- **Qué.** El ETL seleccionaba las columnas con el nombre publicado escrito a mano (`df["Carrera"]`,
+  `df["Ciclo"]`, `row.get("Situación laboral")`, `rev_map.get("La carrera", "Tu carrera")`): renombrar una
+  pregunta en la declaración (`PREGUNTAS_POR_NIVEL`, `lib/config.py`) rompía el pipeline. Ahora la columna se
+  pide por su `id` estable, con dos ayudantes nuevos en `lib/config.py`: `columna(nivel, id)` (nombre
+  publicado) y `pregunta_de(nivel, id)` (texto del cuestionario). La declaración vuelve a ser la única fuente.
+- **`build_json.py`** resuelve de una sola vez, por id, las columnas que usa (`_columnas_de`): carrera, ciclo,
+  facultad, nps, csat_universidad, csat_sujeto, situación/tiempo laboral, id, inicio y fin. Los `groupby` de
+  carrera/facultad/ciclo, el CSAT por carrera, los filtros y el `resumen` usan esos nombres.
+- **`lib/metrics.py`** (`calc_nps_carrera`, `calc_csat_carrera`) recibe las columnas de agrupación en vez de
+  fijarlas.
+- **`lib/csv_exporter.py`** deja de traducir nombres a mano: el encabezado de la satisfacción con la carrera
+  sale de `pregunta_de` y los valores de `columna`; desaparece el `rev_map.get("La carrera", "Tu carrera")`.
+- **`lib/prompts_cualitativo.py`** arma el mapeo de frases coloquiales → dimensión con los nombres declarados
+  (`_mapeo_frases_dimensiones`): las frases son contenido y se quedan; el nombre de la dimensión ya no se
+  escribe a mano. Las dimensiones catch-all (Espacios comunes, Ubicación) viajan como texto porque no son
+  preguntas del formulario.
+- **Sin cambios de salida.** Se regeneró con el dispatch del ETL: los 18 JSON publicados quedan byte a byte
+  idénticos (mismos conteos 3998 / 4239 / 598); el único cambio es el marcador `?v=` de los tres `index.html`.
+- **Pruebas:** tres archivos nuevos (`test_columnas_por_id.py`, `test_csv_exporter_columnas.py`,
+  `test_prompts_columnas.py`) que exigen resolver por id y fallar con un id desconocido.
+
 ## 2026-10-02 — El asistente sabe qué columna agrupa y qué pregunta se mide
 
 - **Qué pidió el usuario.** Que el asistente deje de adivinar por el nombre de la columna: el índice debe anunciar
