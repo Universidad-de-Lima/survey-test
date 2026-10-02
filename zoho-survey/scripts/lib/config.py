@@ -1289,6 +1289,9 @@ def cabeceras_declaradas(nivel: str) -> List[str]:
     declara sus preguntas (esos niveles conservan su lista literal en zoho_a_csv).
     """
     textos = [d["pregunta"] for d in PREGUNTAS_FORMULARIO.get(nivel, [])]
+    if not textos:
+        # Nivel aun sin declaracion: no inventa cabeceras (zoho_a_csv usa su lista).
+        return []
     comentario = comentario_de(nivel)
     if comentario and comentario not in textos:
         textos.append(comentario)

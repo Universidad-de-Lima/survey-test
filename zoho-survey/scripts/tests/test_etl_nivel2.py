@@ -34,8 +34,8 @@ COLS_EMPLEADORES_PREGRADO = [
 COLS_DOCENTES_POSGRADO = [
     "ID de respuesta",
     "Net Promoter Score (de un total de 10)",
-    "¿Qué programa de posgrado dictas en la Universidad de Lima?",
-    "La Universidad de Lima",
+    "Programa:",
+    "Hora inicial de resuestas",
 ]
 
 
@@ -57,9 +57,10 @@ class TestResolverConfig(unittest.TestCase):
         self.assertIsNone(cfg["csat"])
 
     def test_docente_posgrado(self):
+        # La columna de agrupacion real de la bandeja de posgrado es 'Programa:'.
         cfg = resolver_config_etl("faculty-pg", COLS_DOCENTES_POSGRADO)
-        self.assertEqual(cfg["carrera"], "¿Qué programa de posgrado dictas en la Universidad de Lima?")
-        self.assertEqual(cfg["csat"], "La Universidad de Lima")
+        self.assertEqual(cfg["carrera"], "Programa:")
+        self.assertIsNone(cfg["csat"])  # no hay 'Satisfaccion con la Universidad'
 
     def test_facultad_mapea_solo_donde_la_respuesta_es_una_carrera(self):
         """Carrera -> Facultad: pregrado, graduados, egresados pregrado, docentes

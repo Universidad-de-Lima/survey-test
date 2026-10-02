@@ -36,11 +36,7 @@ from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib.config import (  # noqa: E402
-    COLUMN_RENAME_GRADUADO,
-    COLUMN_RENAME_PREGRADO,
-    cabeceras_declaradas,
-)
+from lib.config import cabeceras_declaradas  # noqa: E402
 
 CARPETA_PENDIENTES = Path("data") / "zoho_pendientes"
 CARPETA_DESTINO = Path("data")
@@ -56,14 +52,12 @@ ESTADO_COMPLETO = "COMPLETED"
 
 # Cabeceras por nivel SOLO para los niveles cuyo cuestionario aun NO se declara
 # en lib/config.py (egresados, docente pregrado, no docente y empleadores). Los
-# niveles declarados derivan sus cabeceras de la declaracion con cabeceras_de()
-# (el texto de cada pregunta, en el orden del formulario): dejan de ser una
-# segunda copia que puede desincronizarse en silencio y publicar columnas vacias.
-# Si un nivel no esta ni declarado ni aqui, la conversion falla con aviso explicito.
+# niveles declarados (pregrado, graduados y los dos de posgrado) derivan sus
+# cabeceras de la declaracion con cabeceras_de() (el texto de cada pregunta, en
+# el orden del formulario): dejan de ser una segunda copia que puede
+# desincronizarse en silencio y publicar columnas vacias. Si un nivel no esta ni
+# declarado ni aqui, la conversion falla con aviso explicito.
 CABECERAS_POR_NIVEL: Dict[str, List[str]] = {
-    # Las dos encuestas que ya estaban: las columnas que el ETL conoce.
-    "undergraduate": list(COLUMN_RENAME_PREGRADO),
-    "graduate": list(COLUMN_RENAME_GRADUADO),
     # Egresados Pregrado
     "alumni-ug": [
         "ID de respuesta",
