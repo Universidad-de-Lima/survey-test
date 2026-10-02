@@ -135,3 +135,6 @@ jobs:
 
       - name: Run JS tests del asistente 1.9 (jsdom + JSON del repositorio)
         run: node tests/unit/test-preguntas.js
+
+      - name: Run JS tests del radar del portal (jsdom)
+        run: node tests/unit/test-portal-radar.js
