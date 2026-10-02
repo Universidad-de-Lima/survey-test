@@ -224,7 +224,7 @@ const P = window.SurveyPortalPreguntas;
     assertIncludes(contexto, '## Cómo se pregunta por las cosas', 'las palabras coloquiales');
     assertIncludes(contexto, '## El cierre de la encuesta', 'el cierre: los dos ítems y cómo leerlo');
     assertIncludes(contexto, 'De manera global', 'el texto de la pregunta global del cierre');
-    assertNoIncludes(contexto, 'PLANA DOCENTE', 'la enumeración larga de preguntas ya no está');
+    assertNoIncludes(contexto, 'secciones del formulario', 'la enumeración larga de preguntas ya no está');
     assertIncludes(contexto, '## Dimensiones', 'las dimensiones con sus preguntas');
     assertIncludes(contexto, 'Docencia', 'una dimensión que solo existe en Graduados');
     assertIncludes(contexto, '## Columnas que no son preguntas', 'el ID y las fechas');

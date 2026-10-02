@@ -150,7 +150,7 @@ window.SurveyPortalPreguntas = (function () {
     var partes = [];
     [['que_es', 'Qué es'], ['como_estan_los_datos', 'Cómo están los datos'],
       ['como_esta_organizado', 'Cómo está organizado el cuestionario'], ['reglas', 'Reglas'],
-      ['como_se_pregunto', 'Cómo se preguntó cada cosa'],
+      ['cierre_de_la_encuesta', 'El cierre de la encuesta'],
       ['columnas_que_no_son_preguntas', 'Columnas que no son preguntas'],
       ['dimensiones', 'Dimensiones (qué preguntas forman cada una)'],
       ['palabras_coloquiales', 'Cómo se pregunta por las cosas']]
@@ -170,15 +170,65 @@ window.SurveyPortalPreguntas = (function () {
     return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 24000);
   }
 
-  /** El menú de un periodo: sus preguntas y las opciones publicadas. Sin cifras. */
+  /** La declaración de cada columna publicada, por nombre (o null si el JSON no la trae). */
+  function declaracionesDe(tabla) {
+    var lista = (tabla && tabla.preguntas) || [];
+    if (!lista.length || !(tabla && tabla.cabeceras && tabla.cabeceras.length)) return null;
+    var porNombre = {};
+    lista.forEach(function (d) { if (d && d.nombre) porNombre[d.nombre] = d; });
+    return Object.keys(porNombre).length ? porNombre : null;
+  }
+
+  /** Un renglón del menú: el nombre de la columna y, si tiene, sus opciones publicadas. */
+  function lineaDeColumna(nombre, valores) {
+    var ops = (valores || []).filter(function (o) { return o && o !== '(sin respuesta)'; });
+    return '- ' + nombre + (ops.length ? ': ' + ops.slice(0, 40).join(' | ') : '');
+  }
+
+  /**
+   * El menú de un periodo: cada columna con el papel que declara el bloque `preguntas`
+   * del respuestas.json publicado — las de agrupación (se agrupa y se compara por ellas)
+   * y las que se miden (con su escala). Sin cifras.
+   */
   function construirMenu(p, tabla) {
     var cab = (tabla && tabla.cabeceras) || [];
     var ops = (tabla && tabla.opciones) || {};
+    var decl = declaracionesDe(tabla);
     var lineas = ['## Menú — ' + etiquetaDe(p)];
+
+    // Un respuestas.json publicado antes de la declaración no trae `preguntas`: el menú
+    // se arma como siempre (la lista plana de columnas con sus opciones).
+    if (!decl) {
+      cab.forEach(function (q) { lineas.push(lineaDeColumna(q, ops[q])); });
+      return lineas.join('\n').slice(0, 12000);
+    }
+
+    var agrupacion = [];
+    var escalas = [];
+    var porEscala = {};
+    var otras = [];
     cab.forEach(function (q) {
-      var valores = (ops[q] || []).filter(function (o) { return o && o !== '(sin respuesta)'; });
-      lineas.push('- ' + q + (valores.length ? ': ' + valores.slice(0, 40).join(' | ') : ''));
+      var d = decl[q] || {};
+      if (d.tipo === 'agrupacion') agrupacion.push(lineaDeColumna(q, ops[q]));
+      else if (d.tipo === 'medida') {
+        var e = d.escala || 'sin escala';
+        if (!porEscala[e]) { porEscala[e] = []; escalas.push(e); }
+        porEscala[e].push(lineaDeColumna(q, ops[q]));
+      } else otras.push(lineaDeColumna(q, ops[q]));
     });
+
+    if (agrupacion.length) {
+      lineas.push('### Agrupación — columnas para agrupar y comparar (no se miden)');
+      lineas = lineas.concat(agrupacion);
+    }
+    escalas.forEach(function (e) {
+      lineas.push('### Medida — preguntas que se miden con la escala ' + e);
+      lineas = lineas.concat(porEscala[e]);
+    });
+    if (otras.length) {
+      lineas.push('### Otras columnas (no son preguntas)');
+      lineas = lineas.concat(otras);
+    }
     return lineas.join('\n').slice(0, 12000);
   }
 

@@ -2,6 +2,23 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-02 — El asistente sabe qué columna agrupa y qué pregunta se mide
+
+- **Qué pidió el usuario.** Que el asistente deje de adivinar por el nombre de la columna: el índice debe anunciar
+  los dos papeles (las columnas por las que se agrupa y las preguntas que se miden, con su escala) y el contexto
+  debe dejar de enumerar pregunta por pregunta lo que el dato ya dice.
+- **`construirMenu()`** (`zoho-survey/shared/js/portal/portal-preguntas.js`) arma el menú con el bloque `preguntas`
+  que publica cada `respuestas.json` (Fase 1): las columnas de tipo `agrupacion` van en su grupo y las de tipo
+  `medida` en el grupo de su escala (CSAT, NPS). Un JSON sin el bloque se sigue anunciando como siempre (lista plana).
+- **`asistente_contexto.json`**: se retiró la sección *Cómo se preguntó cada cosa* (la enumeración larga por
+  secciones del formulario). Queda `cierre_de_la_encuesta`, sólo con lo que el dato no puede decir: que las dos
+  últimas medidas de satisfacción son los **dos ítems de una sola** pregunta global («De manera global, ¿cuál es
+  tu nivel de satisfacción con…?»), cuyo sujeto cambia por público, y la nota de cómo leerlo (la carrera, la
+  universidad, recomendación). El portal actualiza la lista de secciones que arma `textoDeContexto()`.
+- **Pruebas:** asistente 1.9 en jsdom **24** (dos pruebas nuevas: el menú distingue los dos papeles y se arma con el
+  bloque `preguntas` en vez de nombres fijos; y el contexto del cierre).
+- **Marcador del asistente** (`portal-preguntas.js?v=`) sube a `2026093403` para que el sitio publicado sirva el JS nuevo.
+
 ## 2026-10-01 — El contexto trae el texto real de las preguntas (de los cuestionarios) y su sección
 
 - **Qué pidió el usuario.** Que las cabeceras con peculiaridades lleven su contexto correcto (La carrera, La
