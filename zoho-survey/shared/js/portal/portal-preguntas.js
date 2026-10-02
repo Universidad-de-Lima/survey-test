@@ -167,7 +167,7 @@ window.SurveyPortalPreguntas = (function () {
           partes.push('## ' + par[1] + '\n' + v);
         }
       });
-    return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 16000);
+    return ('# Contexto del asistente\n' + partes.join('\n\n')).slice(0, 24000);
   }
 
   /** El menú de un periodo: sus preguntas y las opciones publicadas. Sin cifras. */
@@ -203,7 +203,7 @@ window.SurveyPortalPreguntas = (function () {
     return pedirAlServicio({
       paso: PASO_PLAN,
       pregunta: String(texto).slice(0, 300),
-      contexto: String(contexto || '').slice(0, 16000),
+      contexto: String(contexto || '').slice(0, 24000),
       menu: String(menu || '').slice(0, 40000)
     }).then(function (d) { return (d && d.plan) ? d.plan : null; });
   }

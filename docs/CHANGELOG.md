@@ -2,6 +2,29 @@
 
 Historial de cambios significativos del proyecto. Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-10-01 — El contexto trae el texto real de las preguntas (de los cuestionarios) y su sección
+
+- **Qué pidió el usuario.** Que las cabeceras con peculiaridades lleven su contexto correcto (La carrera, La
+  Universidad de Lima, el NPS, las fechas, el ID) y que a las preguntas que sí están en el cuestionario se les
+  agregue su dimensión. Mandó los dos PDF.
+- **Qué se reescribió en `asistente_contexto.json`** (sección *Cómo se preguntó cada cosa*): ahora, por sección
+  del formulario (DATOS PERSONALES, SERVICIOS ACADÉMICOS, SERVICIOS AL ESTUDIANTE, RECURSOS E INFRAESTRUCTURA,
+  TECNOLOGÍAS DE INFORMACIÓN, PLANA DOCENTE, DESARROLLO PROFESIONAL, SATISFACCIÓN GLOBAL), va el texto real de
+  cada pregunta que **no** coincide con el nombre publicado, con su columna. Lo verificado de los cuestionarios:
+  - **La carrera** y **La Universidad de Lima** son los dos ítems de **una sola** pregunta: *«De manera global,
+    ¿cuál es tu nivel de satisfacción con…?»*. Está escrito con esa frase, tomada del PDF.
+  - **Recomiendas la Universidad de Lima** es la pregunta del 0 al 10: *«En una escala del 0 al 10, … ¿Qué tan
+    probable es que recomiendes la Universidad de Lima a un familiar o amigo…?»*.
+  - Graduados pregunta *«¿Qué carrera profesional estudiaste?»*, *«¿Cuál es tu situación laboral actual?»* y
+    *«¿Cuál es el tiempo dedicado a tu trabajo?»*.
+  - Se agregó cómo leerlo: "la carrera" = satisfacción global con tu carrera; "la universidad" = con la
+    Universidad de Lima; "recomendarías" = la pregunta del 0 al 10.
+- **Las dimensiones** ahora dicen que cada una corresponde a una sección del formulario.
+- **El contexto creció** a 18 612 bytes, así que el tope pasó de 16 000 a 24 000 caracteres en los dos lados.
+- **Pendiente:** la encuesta de estudiantes adjunta es la de **2026-2**, un período que todavía no está
+  publicado (hoy hay 2025-2 y 2026-1); cuando se publique habrá que revisar que el texto de las preguntas siga
+  coincidiendo.
+
 ## 2026-10-01 — El contexto explica cómo se preguntó cada cosa, qué columnas no son preguntas y las dimensiones
 
 - **Qué pidió el usuario.** Que "La carrera" y "La Universidad de Lima" (que son ítems, no preguntas) lleven su
