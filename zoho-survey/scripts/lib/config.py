@@ -1100,6 +1100,13 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
         # El nombre publicado del CSAT global sale de la declaracion (id
         # csat_universidad): renombrarlo no debe exigir escribirlo a mano aqui.
         rename[csat] = nombre_publicado("csat_universidad")
+    # Las fechas tambien viajan como columnas internas declaradas (ids inicio/fin):
+    # se renombran desde el texto del formulario igual que el ID, el NPS o el CSAT.
+    # Sin esto, build_json pide la fecha por su nombre publicado y no la encuentra.
+    for id_fecha in ("inicio", "fin"):
+        declaracion_fecha = _declaracion_por_id(id_fecha)
+        if declaracion_fecha["pregunta"] in colset:
+            rename[declaracion_fecha["pregunta"]] = declaracion_fecha["nombre"]
     for c in cols:
         if c.startswith("Explica con tus palabras"):
             rename[c] = "Comentario NPS"
