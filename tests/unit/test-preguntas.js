@@ -183,11 +183,48 @@ const P = window.SurveyPortalPreguntas;
     assertNoIncludes(menu, '72,61', 'el menú no lleva el NPS');
   });
 
+  test('el menú distingue las columnas de agrupación de las preguntas que se miden', function () {
+    const pregrado = tablas.filter(function (x) { return x.p.fase === '1.0' && x.p.periodo === '2026-1'; })[0];
+    const m = P.construirMenu(pregrado.p, pregrado.tabla);
+    assertIncludes(m, '### Agrupación', 'hay un grupo de columnas de agrupación');
+    assertIncludes(m, '### Medida', 'hay un grupo de preguntas que se miden');
+    assertIncludes(m, 'escala CSAT', 'las medidas de satisfacción dicen su escala');
+    assertIncludes(m, 'escala NPS', 'la recomendación del 0 al 10 dice su escala');
+    const iAgrup = m.indexOf('### Agrupación');
+    const iMedida = m.indexOf('### Medida');
+    assertTrue(iAgrup !== -1 && iMedida !== -1 && iAgrup < iMedida, 'la agrupación va antes que las medidas');
+    const iCarrera = m.indexOf('- Carrera:');
+    assertTrue(iCarrera > iAgrup && iCarrera < iMedida, 'Carrera se anuncia como columna de agrupación');
+    assertTrue(m.indexOf('- La carrera') > iMedida, 'La carrera se anuncia como medida (satisfacción con tu carrera)');
+    assertTrue(m.indexOf('- La Universidad de Lima:') > iMedida, 'La Universidad de Lima se anuncia como medida');
+    assertTrue(m.indexOf('- Recomiendas la Universidad de Lima') > iMedida, 'la recomendación se anuncia como medida');
+  });
+
+  test('el menú se arma con el bloque preguntas publicado y no con nombres fijos', function () {
+    const tabla = {
+      cabeceras: ['Carrera', 'Cohorte'],
+      opciones: { Carrera: ['Derecho'], Cohorte: ['2019', '2020'] },
+      preguntas: [
+        { id: 'carrera', nombre: 'Carrera', tipo: 'medida', pregunta: 'Tu carrera', escala: 'CSAT' },
+        { id: 'cohorte', nombre: 'Cohorte', tipo: 'agrupacion', pregunta: '¿De qué cohorte egresaste?', escala: '' }
+      ]
+    };
+    const m = P.construirMenu({ nombre: 'Prueba', periodo: '2026-1' }, tabla);
+    const iAgrup = m.indexOf('### Agrupación');
+    const iMedida = m.indexOf('### Medida');
+    assertTrue(iAgrup !== -1 && iMedida !== -1, 'arma los dos grupos del dato');
+    const iCohorte = m.indexOf('- Cohorte:');
+    assertTrue(iCohorte > iAgrup && iCohorte < iMedida, 'la columna de agrupación va en su grupo');
+    assertTrue(m.indexOf('- Carrera:') > iMedida, 'una columna declarada medida va en el grupo de medidas');
+  });
+
   test('el contexto del asistente sale del archivo de configuración', function () {
     assertIncludes(contexto, '## Qué es');
     assertIncludes(contexto, '## Cómo están los datos');
     assertIncludes(contexto, '## Cómo se pregunta por las cosas', 'las palabras coloquiales');
-    assertIncludes(contexto, '## Cómo se preguntó cada cosa', 'el texto real de las preguntas peculiares');
+    assertIncludes(contexto, '## El cierre de la encuesta', 'el cierre: los dos ítems y cómo leerlo');
+    assertIncludes(contexto, 'De manera global', 'el texto de la pregunta global del cierre');
+    assertNoIncludes(contexto, 'PLANA DOCENTE', 'la enumeración larga de preguntas ya no está');
     assertIncludes(contexto, '## Dimensiones', 'las dimensiones con sus preguntas');
     assertIncludes(contexto, 'Docencia', 'una dimensión que solo existe en Graduados');
     assertIncludes(contexto, '## Columnas que no son preguntas', 'el ID y las fechas');
