@@ -148,6 +148,28 @@ const P = window.SurveyPortalPreguntas;
   const pintadoSinRedaccion = caja ? caja.textContent : '';
   fallaLaRedaccion = false;
 
+  // 6. Una respuesta con bloque de tabla: se dibuja como tabla (no como texto).
+  planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Carrera'], filtros: [], motivo: '' };
+  redaccionSimulada = 'Ingeniería Industrial tiene la satisfacción más alta.\n' +
+    'Tabla: Carrera | Satisfacción\nIngeniería Industrial | 98,87 %\nPsicología | 97,22 %\n' +
+    'Fuente: Estudiantes Pregrado 2026-1';
+  caja.innerHTML = '';
+  await P.preguntar('compara las carreras');
+  const tablaDibujada = caja.querySelector('table.survey-table');
+  const envoltorioTabla = caja.querySelector('.table-scroll');
+  const columnasTabla = tablaDibujada ? tablaDibujada.querySelectorAll('th').length : 0;
+  const filasTabla = tablaDibujada ? tablaDibujada.querySelectorAll('tbody tr').length : 0;
+  const pintadoTabla = caja.textContent;
+
+  // 7. Una tabla con una cifra que no está en los datos: no se dibuja.
+  planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Carrera'], filtros: [], motivo: '' };
+  redaccionSimulada = 'Comparación de carreras.\n' +
+    'Tabla: Carrera | Satisfacción\nAdministración | 97,10 %\nPsicología | 97,22 %\n' +
+    'Fuente: Estudiantes Pregrado 2026-1';
+  caja.innerHTML = '';
+  await P.preguntar('compara las carreras');
+  const tablaSinRespaldo = caja.querySelector('table.survey-table');
+
   // --- las pruebas ---
   test('se cargan las tres encuestas publicadas', function () {
     assertEqual(tablas.length, 3);
@@ -279,6 +301,19 @@ const P = window.SurveyPortalPreguntas;
       return cabeceras.indexOf(c) === -1;
     });
     assertEqual(huerfanas.join(', '), '', 'claves que ya no son preguntas publicadas');
+  });
+
+  test('una respuesta con bloque de tabla se dibuja con el estilo del portal', function () {
+    assertTrue(tablaDibujada, 'la tabla se dibuja');
+    assertTrue(envoltorioTabla, 'usa el envoltorio que ya existe');
+    assertEqual(columnasTabla, 2);   // dos columnas: Carrera y Satisfacción
+    assertEqual(filasTabla, 2);      // dos filas: una por carrera
+    assertIncludes(pintadoTabla, 'Ingeniería Industrial', 'la tabla trae sus filas');
+    assertNoIncludes(pintadoTabla, 'Tabla:', 'el bloque no se muestra como texto');
+  });
+
+  test('una tabla con una cifra que no está en los datos no se dibuja', function () {
+    assertTrue(!tablaSinRespaldo, 'no se dibuja una tabla sin respaldo');
   });
 
   console.log('\n=== asistente del item 1.9 (portal-preguntas) ===');
