@@ -19,6 +19,89 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
+from .config import nombre_publicado
+
+
+# Mapeo de frases coloquiales -> dimensión. Las frases (lo que escribe el
+# estudiante) son contenido y viven aquí; el nombre de la dimensión NO se escribe
+# a mano: se resuelve con la declaración (lib/config.py) por su id, para que un
+# rename no deje el prompt apuntando a un nombre viejo. Cuando el destino no es
+# una pregunta del formulario (dimensiones catch-all) se conserva el texto.
+_FRASES_DIMENSION = [
+    (["No es accesible para todos", "muy caro", "becas", "pensiones", "servicio social", "ayuda financiera"],
+     ["ayuda_financiera"], ""),
+    (["trámites", "burocracia", "representación estudiantil", "comunicación con alumnos",
+      "cosas que no son eficientes", "cosas que se pueden optimizar", "procedimientos"],
+     ["procedimientos_administrativos"], ""),
+    (["Atención del personal administrativo", "trato del personal"],
+     ["atencion_del_personal_administrativo"], ""),
+    (["Soporte técnico", "soporte en otras áreas", "mesa de ayuda"],
+     ["soporte_tecnico_del_sistema_informatico"], ""),
+    (["Malla curricular", "cursos", "plan de estudios", "electivos", "intercambio"],
+     ["cursos_del_programa_y_contenidos", "plan_curricular_y_perfil_de_egreso"], ""),
+    (["Profesores", "docentes", "enseñanza", "metodología"],
+     ["calidad_de_la_ensenanza_en_la_carrera"], ""),
+    (["Evaluaciones", "exámenes", "parciales", "notas"], ["evaluacion_del_aprendizaje"], ""),
+    (["Aulas", "salones", "carpetas", "aire acondicionado"], ["aulas_de_clase"], ""),
+    (["Laboratorios", "equipos", "computadoras"], ["equipamiento_tecnologico_en_laboratorios"], ""),
+    (["Biblioteca", "libros", "material bibliográfico"], ["material_bibliografico_en_la_biblioteca"], ""),
+    (["Wifi", "internet", "conexión"], ["conexion_wi_fi_en_el_campus"], ""),
+    (["Mi Ulima", "portal", "Blackboard", "aula virtual"],
+     ["portal_web_de_la_universidad_mi_ulima", "aula_virtual"], ""),
+    (["Comida", "cafetería", "kiosko", "comedor", "restaurantes", "patio de comidas", "almuerzo",
+      "comer", "mesas", "fila"], ["Espacios de alimentación"], ""),
+    (["Deportes", "cancha", "gimnasio"], ["actividades_deportivas"], ""),
+    (["Psicología", "tópico", "salud mental"],
+     ["servicio_de_atencion_psicopedagogica", "servicio_medico_y_su_infraestructura"], ""),
+    (["Distancia", "ubicación", "transporte", "bus", "buses", "tráfico", "llegar", "queda lejos",
+      "viven lejos"], ["Ubicación"], ""),
+    (["mi carrera", "otras carreras", "comunica", "atención a la carrera", "cesura"], ["csat_sujeto"],
+     " (cuando se refiere a la carrera profesional específica del estudiante, no a la calidad docente)"),
+    (["Libertad de expresión", "derechos estudiantiles", "distanciamiento de la rectora"],
+     ["Satisfacción estudiantil"], " (aspectos institucionales generales)"),
+    (["Hay un par de cosas que mejorar", "tiene fallas que pueden arreglarse",
+      "no me deja poner mi respuesta completa", "no es nada relacionado a la carrera", "podría ser mas"],
+     ["Satisfacción estudiantil"],
+     " (valoración general que no encaja en una dimensión específica)"),
+    (["asesorías", "asesoría", "no todas son aptas para todos", "disponibilidad de asesoría"],
+     ["disponibilidad_para_asesorias"], ""),
+    (["asesoría a los cursos especializados", "certificaciones", "horario adecuado",
+      "dentro del horario académico"], ["disponibilidad_para_asesorias"], ""),
+    (["atención de los profesores tanto en clase como en las asesorías", "asesorías es muy buena"],
+     ["disponibilidad_para_asesorias"], ""),
+    (["disposición para dudas", "dar críticas en asesorías", "guien en asesorías"],
+     ["disponibilidad_para_asesorias"], ""),
+    (["depende de la carrera", "dependiendo de la carrera"], ["csat_sujeto"], ""),
+    (["exigencia", "exigente", "más exigencia", "rigor académico", "nivel académico",
+      "carga académica", "estándares académicos", "exijan más", "falta exigir"],
+     ["exigencia_academica"], ""),
+    (["muchos alumnos", "demasiados alumnos", "mucha gente", "sobrepoblación"], ["Espacios comunes"], ""),
+]
+
+
+def _nombre(id_o_texto: str) -> str:
+    """Nombre publicado de una dimensión declarada; si no es una pregunta, el texto.
+
+    Las dimensiones del mapeo son preguntas del formulario (se piden por su id)
+    salvo las catch-all (Espacios comunes, Ubicación, Espacios de alimentación),
+    que no tienen pregunta y viajan como texto.
+    """
+    try:
+        return nombre_publicado(id_o_texto)
+    except KeyError:
+        return id_o_texto
+
+
+def _mapeo_frases_dimensiones() -> str:
+    """Bloque del system prompt: frases coloquiales -> dimensión declarada."""
+    lineas = ["**Mapeo de frases comunes a dimensiones (usa estas como guía):**"]
+    for frases, destinos, sufijo in _FRASES_DIMENSION:
+        nombres = " o ".join("**%s**" % _nombre(destino) for destino in destinos)
+        lineas.append(
+            "- " + " / ".join('"%s"' % frase for frase in frases) + " → " + nombres + sufijo
+        )
+    return "\n".join(lineas)
+
 
 
 
@@ -256,6 +339,9 @@ def build_system_prompt(taxonomia_oficial: Dict[str, str],
     _ctx = _cargar_contexto_universidad()
     _contexto_str = _build_contexto_institucional(_ctx)
 
+    # El mapeo de frases coloquiales usa los nombres de dimensión declarados.
+    mapeo_frases = _mapeo_frases_dimensiones()
+
     return f"""Eres un analista cualitativo senior especializado en Análisis de Contenido (Bardin, 2011) y Análisis Temático (Braun & Clarke, 2006), con experiencia en encuestas de satisfacción estudiantil universitaria en Perú. Analizas comentarios abiertos del NPS de la Universidad de Lima.
 
 # TU MISIÓN
@@ -308,7 +394,7 @@ Marca los flags booleanos derivados de la regla:
 Asigna cada unidad a UNA dimensión de la Taxonomía Oficial (lista más abajo).
 
 Criterios:
-- Prioriza la dimensión específica sobre la genérica. Si el estudiante menciona "las aulas", clasifica como "Aulas de clase", NO como "Espacios comunes".
+- Prioriza la dimensión específica sobre la genérica. Si el estudiante menciona "las aulas", clasifica como "{_nombre("aulas_de_clase")}", NO como "Espacios comunes".
 - Si la unidad expresa satisfacción general sin dimensión específica ("es una buena universidad", "estoy contento"), usa "Satisfacción estudiantil".
 - Si menciona espacios genéricos del campus sin especificar aulas/laboratorios/biblioteca ("los espacios", "las instalaciones", "el campus"), usa "Espacios comunes".
 - Si NO puedes identificar la dimensión con confianza razonable, usa "Pendiente de Clasificación". NUNCA inventes dimensiones que no estén en la lista.
@@ -317,35 +403,9 @@ Criterios:
 **REGLA CRÍTICA — Evita "Pendiente de Clasificación" en unidades válidas:**
 Solo usa "Pendiente de Clasificación" cuando la unidad sea genuinamente incomprensible o no relacionada con ningún aspecto universitario. Si la unidad expresa una queja, sugerencia o valoración sobre CUALQUIER aspecto de la experiencia universitaria (incluso genérico), clasifícala en la dimensión más cercana. Es preferible una clasificación aproximada que "Pendiente de Clasificación".
 
-**Mapeo de frases comunes a dimensiones (usa estas como guía):**
-- "No es accesible para todos" / "muy caro" / "becas" / "pensiones" / "servicio social" / "ayuda financiera" → **Ayuda financiera**
-- "trámites" / "burocracia" / "representación estudiantil" / "comunicación con alumnos" / "cosas que no son eficientes" / "cosas que se pueden optimizar" / "procedimientos" → **Procedimientos administrativos**
-- "Atención del personal administrativo" / "trato del personal" → **Atención del personal administrativo**
-- "Soporte técnico" / "soporte en otras áreas" / "mesa de ayuda" → **Soporte técnico del sistema informático**
-- "Malla curricular" / "cursos" / "plan de estudios" / "electivos" / "intercambio" → **Cursos del programa y contenidos** o **Plan curricular y perfil de egreso**
-- "Profesores" / "docentes" / "enseñanza" / "metodología" → **Calidad de la enseñanza en la carrera**
-- "Evaluaciones" / "exámenes" / "parciales" / "notas" → **Evaluación del aprendizaje**
-- "Aulas" / "salones" / "carpetas" / "aire acondicionado" → **Aulas de clase**
-- "Laboratorios" / "equipos" / "computadoras" → **Equipamiento tecnológico en laboratorios**
-- "Biblioteca" / "libros" / "material bibliográfico" → **Material bibliográfico en la biblioteca**
-- "Wifi" / "internet" / "conexión" → **Conexión Wi-Fi en el campus**
-- "Mi Ulima" / "portal" / "Blackboard" / "aula virtual" → **Portal web de la Universidad (Mi Ulima)** o **Aula virtual**
-- "Comida" / "cafetería" / "kiosko" / "comedor" / "restaurantes" / "patio de comidas" / "almuerzo" / "comer" / "mesas" / "fila" → **Espacios de alimentación**
-- "Deportes" / "cancha" / "gimnasio" → **Actividades deportivas**
-- "Psicología" / "tópico" / "salud mental" → **Servicio de atención psicopedagógica** o **Servicio médico y su infraestructura**
-- "Distancia" / "ubicación" / "transporte" / "bus" / "buses" / "tráfico" / "llegar" / "queda lejos" / "viven lejos" → **Ubicación**
-- "mi carrera" / "otras carreras" / "comunica" / "atención a la carrera" / "cesura" → **La carrera** (cuando se refiere a la carrera profesional específica del estudiante, no a la calidad docente)
-- "Libertad de expresión" / "derechos estudiantiles" / "distanciamiento de la rectora" → **Satisfacción estudiantil** (aspectos institucionales generales)
-- "Hay un par de cosas que mejorar" / "tiene fallas que pueden arreglarse" / "no me deja poner mi respuesta completa" / "no es nada relacionado a la carrera" / "podría ser mas" → **Satisfacción estudiantil** (valoración general que no encaja en una dimensión específica)
-- "asesorías" / "asesoría" / "no todas son aptas para todos" / "disponibilidad de asesoría" → **Disponibilidad para asesorías**
-- "asesoría a los cursos especializados" / "certificaciones" / "horario adecuado" / "dentro del horario académico" → **Disponibilidad para asesorías**
-- "atención de los profesores tanto en clase como en las asesorías" / "asesorías es muy buena" → **Disponibilidad para asesorías**
-- "disposición para dudas" / "dar críticas en asesorías" / "guien en asesorías" → **Disponibilidad para asesorías**
-- "depende de la carrera" / "dependiendo de la carrera" → **La carrera**
-- "exigencia" / "exigente" / "más exigencia" / "rigor académico" / "nivel académico" / "carga académica" / "estándares académicos" / "exijan más" / "falta exigir" → **Exigencia académica**
-- "muchos alumnos" / "demasiados alumnos" / "mucha gente" / "sobrepoblación" → **Espacios comunes**
+{mapeo_frases}
 
-**Cuando una queja mencione "soporte" o "áreas" de forma genérica, usa "Procedimientos administrativos" o "Soporte técnico del sistema informático" según contexto, NO "Pendiente de Clasificación".**
+**Cuando una queja mencione "soporte" o "áreas" de forma genérica, usa "{_nombre("procedimientos_administrativos")}" o "{_nombre("soporte_tecnico_del_sistema_informatico")}" según contexto, NO "Pendiente de Clasificación".**
 
 ## 4. Validez de la Unidad
 Marca `es_valido = false` cuando la unidad sea:

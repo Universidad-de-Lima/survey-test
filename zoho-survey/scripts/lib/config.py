@@ -675,6 +675,52 @@ def declaraciones_de(nivel: str) -> List[Dict[str, str]]:
     return list(PREGUNTAS_POR_NIVEL.get(nivel, []))
 
 
+def _declaracion_por_id(id_pregunta: str) -> Dict[str, str]:
+    """La declaracion de la pregunta con ese id, venga del nivel que venga."""
+    for declaraciones in PREGUNTAS_POR_NIVEL.values():
+        for d in declaraciones:
+            if d["id"] == id_pregunta:
+                return d
+    raise KeyError("no hay pregunta declarada con id '%s'" % (id_pregunta,))
+
+
+def nombre_publicado(id_pregunta: str) -> str:
+    """Nombre publicado de la pregunta declarada con ese id (sin depender del nivel).
+
+    Se usa donde no hay un nivel concreto (por ejemplo los prompts, comunes a
+    todas las encuestas). Falla si el id no esta declarado: un nombre de columna
+    jamas debe quedar escrito a mano.
+    """
+    return _declaracion_por_id(id_pregunta)["nombre"]
+
+
+def columna(nivel: str, id_pregunta: str) -> str:
+    """Nombre publicado de la columna declarada con ese id en esa encuesta.
+
+    Es la unica via por la que el codigo debe pedir una columna: se identifica
+    por el id estable, nunca por el nombre publicado. Si la encuesta aun no
+    declara sus preguntas, cae al catalogo comun derivado de las declaraciones
+    (esos niveles se renombran a esos mismos nombres en resolver_config_etl).
+    """
+    for d in declaraciones_de(nivel):
+        if d["id"] == id_pregunta:
+            return d["nombre"]
+    return nombre_publicado(id_pregunta)
+
+
+def pregunta_de(nivel: str, id_pregunta: str) -> str:
+    """Texto del cuestionario de la pregunta declarada con ese id.
+
+    Inverso de `columna`: el texto al que el ETL renombra vive en la declaracion.
+    Se usa donde el archivo exportado debe mostrar la pregunta de la encuesta y
+    no el nombre publicado.
+    """
+    for d in declaraciones_de(nivel):
+        if d["id"] == id_pregunta:
+            return d["pregunta"]
+    return _declaracion_por_id(id_pregunta)["pregunta"]
+
+
 def _mapa_renombrado(declaraciones: List[Dict[str, str]]) -> Dict[str, str]:
     """Deriva el mapa {pregunta de Zoho: nombre publicado} de una declaracion."""
     mapa = {d["pregunta"]: d["nombre"] for d in declaraciones}

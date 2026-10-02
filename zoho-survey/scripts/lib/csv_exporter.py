@@ -14,7 +14,7 @@ from typing import Dict
 
 import pandas as pd
 
-from lib.config import COLUMN_RENAME_PREGRADO, COLUMN_RENAME_GRADUADO
+from lib.config import COLUMN_RENAME_PREGRADO, COLUMN_RENAME_GRADUADO, columna, pregunta_de
 from lib.io_helper import enmascarar_pii
 
 
@@ -65,9 +65,22 @@ def generar_csvs_y_zip(
     rev_graduado = {v: k for k, v in COLUMN_RENAME_GRADUADO.items()}
     rev_map = rev_graduado if nivel == "graduate" else rev_pregrado
 
+    # Columnas por id: el nombre publicado que viaja en el df se resuelve con la
+    # declaracion (lib/config.py); nunca se escribe a mano.
+    col_id = columna(nivel, "id_respuesta")
+    col_carrera = columna(nivel, "carrera")
+    col_facultad = columna(nivel, "facultad")
+    col_ciclo = columna(nivel, "ciclo")
+    col_situacion = columna(nivel, "situacion_laboral")
+    col_tiempo = columna(nivel, "tiempo_laboral")
+    col_sujeto = columna(nivel, "csat_sujeto")
+    # Encabezado de la satisfacción con la carrera: el texto del cuestionario
+    # (antes se traducía a mano desde el nombre publicado).
+    enc_sujeto = pregunta_de(nivel, "csat_sujeto")
+
     # ── CSV 1: analisis_cualitativo ──
     csv1_headers = [
-        "ID", "CID", "Carrera", "Facultad", "Ciclo",
+        col_id, "CID", col_carrera, col_facultad, col_ciclo,
         "NPS Score", "Sentimiento", "Intensidad",
         "Tema", "Tema Padre",
         "Comentario Original", "Comentario Corregido"
@@ -95,20 +108,19 @@ def generar_csvs_y_zip(
 
     # ── CSV 2: respuestas por dimensión ──
     dim_cols_renamed = [d for d in categoria_dim.keys() if d in df.columns]
-    csv2_headers = ["ID", "Carrera"]
-    if "Situación laboral" in df.columns:
-        csv2_headers.append("Situación laboral")
-    if "Tiempo laboral" in df.columns:
-        csv2_headers.append("Tiempo laboral")
-    csv2_headers.append("Facultad")
-    if "Ciclo" in df.columns:
-        csv2_headers.append("Ciclo")
+    csv2_headers = [col_id, col_carrera]
+    if col_situacion in df.columns:
+        csv2_headers.append(col_situacion)
+    if col_tiempo in df.columns:
+        csv2_headers.append(col_tiempo)
+    csv2_headers.append(col_facultad)
+    if col_ciclo in df.columns:
+        csv2_headers.append(col_ciclo)
 
     for d_renamed in dim_cols_renamed:
         csv2_headers.append(rev_map.get(d_renamed, d_renamed))
 
-    rev_carrera = rev_map.get("La carrera", "Tu carrera")
-    csv2_headers.append(rev_carrera)
+    csv2_headers.append(enc_sujeto)
     csv2_headers.append(rev_map.get(csat_col, csat_col))
     csv2_headers.append(rev_map.get(nps_col, nps_col))
     csv2_headers.append("Comentario Original")
@@ -116,21 +128,21 @@ def generar_csvs_y_zip(
     csv2_rows = []
     for _, row in df.iterrows():
         r = [
-            row.get("ID", ""),
-            row.get("Carrera", ""),
+            row.get(col_id, ""),
+            row.get(col_carrera, ""),
         ]
-        if "Situación laboral" in df.columns:
-            r.append(row.get("Situación laboral", ""))
-        if "Tiempo laboral" in df.columns:
-            r.append(row.get("Tiempo laboral", ""))
-        r.append(row.get("Facultad", ""))
-        if "Ciclo" in df.columns:
-            r.append(row.get("Ciclo", ""))
+        if col_situacion in df.columns:
+            r.append(row.get(col_situacion, ""))
+        if col_tiempo in df.columns:
+            r.append(row.get(col_tiempo, ""))
+        r.append(row.get(col_facultad, ""))
+        if col_ciclo in df.columns:
+            r.append(row.get(col_ciclo, ""))
 
         for d_renamed in dim_cols_renamed:
             r.append(row.get(d_renamed, ""))
 
-        r.append(row.get("La carrera", ""))
+        r.append(row.get(col_sujeto, ""))
         r.append(row.get(csat_col, ""))
         r.append(row.get(nps_col, ""))
         r.append(enmascarar_pii(row.get(comentario_col, "")))

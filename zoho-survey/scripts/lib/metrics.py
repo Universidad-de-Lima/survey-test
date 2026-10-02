@@ -60,13 +60,16 @@ def calc_promedio_ponderado(counts: List[int], weights: List[int], max_scale: in
 # ── Métricas por segmento ───────────────────────────────────────
 
 
-def calc_nps_carrera(df_nps, nps_col: str) -> list:
+def calc_nps_carrera(df_nps, nps_col: str, carrera_col: str) -> list:
     """Calcula NPS agrupado por carrera.
+
+    `carrera_col` es el nombre publicado de la columna que agrupa (se resuelve por
+    su id en build_json con `columna`, no se escribe a mano).
 
     Retorna lista de dicts con: carrera, promotores, pasivos, detractores, score.
     """
     nps_carrera = []
-    for carrera, sub in df_nps.groupby("Carrera"):
+    for carrera, sub in df_nps.groupby(carrera_col):
         p = int((sub[nps_col] >= 9).sum())
         pa = int(((sub[nps_col] >= 7) & (sub[nps_col] <= 8)).sum())
         d = int((sub[nps_col] <= 6).sum())
@@ -80,13 +83,17 @@ def calc_nps_carrera(df_nps, nps_col: str) -> list:
     return nps_carrera
 
 
-def calc_csat_carrera(df, csat_col: str, respuestas_texto: list) -> list:
+def calc_csat_carrera(df, csat_col: str, respuestas_texto: list,
+                      carrera_col: str, facultad_col: str) -> list:
     """Calcula CSAT agrupado por carrera + facultad.
+
+    `carrera_col` y `facultad_col` son los nombres publicados de las columnas que
+    agrupan (se resuelven por id en build_json con `columna`).
 
     Retorna lista de dicts con: carrera, facultad, conteos por respuesta, score.
     """
     csat_carrera = []
-    for (car, fac), sub in df.groupby(["Carrera", "Facultad"]):
+    for (car, fac), sub in df.groupby([carrera_col, facultad_col]):
         serie = sub[csat_col].dropna()
         row = {"carrera": car, "facultad": fac}
         for r in respuestas_texto:

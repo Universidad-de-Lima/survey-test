@@ -35,7 +35,8 @@ from lib.config import (
     EMPLEABILIDAD_CATEGORIAS,
     resolver_config_etl,
     clasificar_categoria_dimension,
-    declaraciones_de
+    declaraciones_de,
+    columna,
 )
 from lib.metrics import calc_nps, calc_csat, calc_promedio_ponderado, calc_nps_carrera, calc_csat_carrera
 from lib.io_helper import read_csv_robust, normalize_dates, hash_csv, csv_cambiado, guardar_hash_csv, enmascarar_pii
@@ -64,6 +65,25 @@ SURVEY_DIRS: Dict[str, Path] = {
 }
 
 SUPPORTED_EXTENSIONS: List[str] = [".csv"]
+
+# Ids de las columnas que el ETL necesita de cada encuesta. Se resuelven por id
+# con columna() para que renombrar una pregunta en la declaracion (lib/config.py)
+# no rompa el ETL: el codigo nunca vuelve a escribir el nombre publicado a mano.
+IDS_COLUMNAS_ETL: List[str] = [
+    "id_respuesta", "inicio", "fin", "carrera", "ciclo", "facultad",
+    "nps", "csat_universidad", "csat_sujeto", "situacion_laboral", "tiempo_laboral",
+]
+
+
+def _columnas_de(nivel: str) -> "Dict[str, str]":
+    """Nombre publicado de cada columna que el ETL usa, resuelto por su id.
+
+    Es la traduccion id -> columna de una sola vez: el resto de main() trabaja
+    con estos nombres y no con literales, de modo que un rename en la declaracion
+    se propaga solo (la declaracion es la unica fuente).
+    """
+    return {id_col: columna(nivel, id_col) for id_col in IDS_COLUMNAS_ETL}
+
 
 
 # ============================================================
@@ -302,42 +322,54 @@ def main() -> None:
             df.rename(columns=COLUMN_RENAME_GRADUADO, inplace=True)
         else:
             df.rename(columns=etl_cfg["rename"], inplace=True)
-        if "Carrera" not in df.columns:
-            df["Carrera"] = "General"
+
+        # Columnas de trabajo, resueltas por su id declarado (nunca por el nombre
+        # publicado escrito a mano): la declaracion es la unica fuente.
+        cols = _columnas_de(nivel)
+        col_id = cols["id_respuesta"]
+        col_inicio = cols["inicio"]
+        col_fin = cols["fin"]
+        col_carrera = cols["carrera"]
+        col_ciclo = cols["ciclo"]
+        col_facultad = cols["facultad"]
+        col_situacion = cols["situacion_laboral"]
+
+        if col_carrera not in df.columns:
+            df[col_carrera] = "General"
 
         # Manejo de Ciclo
         # Ojo: la columna ya fue renombrada arriba al nombre interno, así que hay
         # que aceptar ambos nombres; con solo el de Zoho se daba por ausente y se
         # sobrescribía el ciclo real con "NA".
         tiene_ciclo: bool = bool(etl_cfg["ciclo"]) and (
-            etl_cfg["ciclo"] in df.columns or "Ciclo" in df.columns
+            etl_cfg["ciclo"] in df.columns or col_ciclo in df.columns
         )
         if not tiene_ciclo:
-            df["Ciclo"] = "NA"
+            df[col_ciclo] = "NA"
 
         # Asignación de Facultad
         if etl_cfg["facultad_map"]:
-            df["Facultad"] = df["Carrera"].map(CARRERA_FACULTAD)
+            df[col_facultad] = df[col_carrera].map(CARRERA_FACULTAD)
         else:
-            df["Facultad"] = "Otra"
+            df[col_facultad] = "Otra"
         # Fallback genérico si alguna carrera no tiene mapeo
-        df["Facultad"] = df["Facultad"].fillna("Programa de Estudios Generales" if nivel == "undergraduate" else "Otra")
+        df[col_facultad] = df[col_facultad].fillna("Programa de Estudios Generales" if nivel == "undergraduate" else "Otra")
 
         # Normalización de fechas de Inicio y Fin
-        df = normalize_dates(df, ["Inicio", "Fin"])
-        inicio = df["Inicio"].min()
-        fin = max(df["Inicio"].max(), df["Fin"].max())
+        df = normalize_dates(df, [col_inicio, col_fin])
+        inicio = df[col_inicio].min()
+        fin = max(df[col_inicio].max(), df[col_fin].max())
         if pd.isnull(inicio):
             inicio = pd.Timestamp.now()
         if pd.isnull(fin):
             fin = pd.Timestamp.now()
 
-        anio = df["Inicio"].dt.year.mode()[0] if not df["Inicio"].empty else inicio.year
-        fechas_unicas = df["Inicio"].dt.date.nunique() if not df["Inicio"].empty else 1
+        anio = df[col_inicio].dt.year.mode()[0] if not df[col_inicio].empty else inicio.year
+        fechas_unicas = df[col_inicio].dt.date.nunique() if not df[col_inicio].empty else 1
 
         # metricas NPS y CSAT globales
-        nps_col: str = "Recomiendas la Universidad de Lima"
-        df_nps = df[[nps_col, "Carrera", "Ciclo", "Facultad"]].dropna()
+        nps_col: str = cols["nps"]
+        df_nps = df[[nps_col, col_carrera, col_ciclo, col_facultad]].dropna()
         df_nps[nps_col] = pd.to_numeric(df_nps[nps_col], errors="coerce")
         df_nps = df_nps.dropna(subset=[nps_col])
 
@@ -346,7 +378,11 @@ def main() -> None:
         detractores_total = int(df_nps[df_nps[nps_col] <= 6].shape[0])
         nps_score = calc_nps(promotores_total, pasivos_total, detractores_total)
 
-        csat_col: str = etl_cfg["csat"]
+        # La columna CSAT global se pide por id (csat_universidad); si la encuesta
+        # no la declara (empleadores), se cae a la configuracion por nivel.
+        csat_col: str = cols["csat_universidad"]
+        if csat_col not in df.columns:
+            csat_col = etl_cfg["csat"]
         if csat_col and csat_col in df.columns:
             serie_csat = df[csat_col].dropna()
             csat_t3b = int(serie_csat.isin(RESPUESTAS_TEXTO[:3]).sum())
@@ -376,8 +412,8 @@ def main() -> None:
 
         # Métrica de Empleabilidad (solo graduados)
         empleabilidad = None
-        if "Situación laboral" in df.columns:
-            serie_emp = df["Situación laboral"].dropna()
+        if col_situacion in df.columns:
+            serie_emp = df[col_situacion].dropna()
             total_emp = len(serie_emp)
             if total_emp > 0:
                 empleados = int(serie_emp.isin(EMPLEABILIDAD_CATEGORIAS).sum())
@@ -388,12 +424,12 @@ def main() -> None:
                 }
 
         # NPS Carrera (Fase 11: delegado a _calcular_nps_carrera)
-        nps_carrera = calc_nps_carrera(df_nps, nps_col)
+        nps_carrera = calc_nps_carrera(df_nps, nps_col, col_carrera)
 
         # NPS Ciclo Carrera
         nps_ciclo_carrera: List[Dict[str, any]] = []
         if tiene_ciclo:
-            for (fac, car, cic), sub in df_nps.groupby(["Facultad", "Carrera", "Ciclo"]):
+            for (fac, car, cic), sub in df_nps.groupby([col_facultad, col_carrera, col_ciclo]):
                 p = int((sub[nps_col] >= 9).sum())
                 pa = int(((sub[nps_col] >= 7) & (sub[nps_col] <= 8)).sum())
                 d = int((sub[nps_col] <= 6).sum())
@@ -408,12 +444,12 @@ def main() -> None:
                 })
 
         # CSAT Carrera (Fase 11: delegado a _calcular_csat_carrera)
-        csat_carrera = calc_csat_carrera(df, csat_col, RESPUESTAS_TEXTO) if csat_col else []
+        csat_carrera = calc_csat_carrera(df, csat_col, RESPUESTAS_TEXTO, col_carrera, col_facultad) if csat_col else []
 
                 # CSAT Ciclo Carrera
         csat_ciclo_carrera: List[Dict[str, any]] = []
         if csat_col and tiene_ciclo:
-            for (fac, car, cic), sub in df.groupby(["Facultad", "Carrera", "Ciclo"]):
+            for (fac, car, cic), sub in df.groupby([col_facultad, col_carrera, col_ciclo]):
                 serie = sub[csat_col].dropna()
                 row = {"facultad": fac, "carrera": car, "ciclo": cic}
                 for r in RESPUESTAS_TEXTO:
@@ -433,7 +469,7 @@ def main() -> None:
         else:
             # Auto-deteccion: columnas cuyos valores son subconjunto de RESPUESTAS_TEXTO
             categoria_dim = _detectar_dimensiones(df)
-        for (fac, car, cic), sub in df.groupby(["Facultad", "Carrera", "Ciclo"]):
+        for (fac, car, cic), sub in df.groupby([col_facultad, col_carrera, col_ciclo]):
             for dim, cat in categoria_dim.items():
                 if dim not in sub.columns:
                     continue
@@ -466,7 +502,7 @@ def main() -> None:
 
         # IDs
         ids_conteo: List[Dict[str, any]] = []
-        for (fac, car, cic), sub in df.groupby(["Facultad", "Carrera", "Ciclo"]):
+        for (fac, car, cic), sub in df.groupby([col_facultad, col_carrera, col_ciclo]):
             ids_conteo.append({
                 "facultad": fac,
                 "carrera": car,
@@ -477,7 +513,7 @@ def main() -> None:
         # Agrupamiento NPS etapas (inicial, intermedio, avanzado)
         etapas: Dict[str, Dict[str, int]] = {}
         if tiene_ciclo:
-            for ciclo, sub in df_nps.groupby("Ciclo"):
+            for ciclo, sub in df_nps.groupby(col_ciclo):
                 p = int((sub[nps_col] >= 9).sum())
                 pa = int(((sub[nps_col] >= 7) & (sub[nps_col] <= 8)).sum())
                 d = int((sub[nps_col] <= 6).sum())
@@ -520,8 +556,8 @@ def main() -> None:
 
         resumen = {
             "encuestas": int(len(df)),
-            "carreras": int(df["Carrera"].nunique()),
-            "facultades": int(df["Facultad"].nunique()),
+            "carreras": int(df[col_carrera].nunique()),
+            "facultades": int(df[col_facultad].nunique()),
             "fecha_inicio": inicio.strftime("%Y-%m-%d"),
             "fecha_fin": fin.strftime("%Y-%m-%d"),
             "dias": int((fin - inicio).days + 1),
@@ -604,13 +640,13 @@ def main() -> None:
             "version": "2.1",
             "preguntas": declaracion_resumen,
             "has_ciclo": tiene_ciclo,
-            "facultades": sorted(df["Facultad"].dropna().unique().tolist()),
-            "carreras": sorted(df["Carrera"].dropna().unique().tolist()),
-            "ciclos": sorted(df["Ciclo"].dropna().unique().tolist(),
+            "facultades": sorted(df[col_facultad].dropna().unique().tolist()),
+            "carreras": sorted(df[col_carrera].dropna().unique().tolist()),
+            "ciclos": sorted(df[col_ciclo].dropna().unique().tolist(),
                              key=lambda x: int("".join(filter(str.isdigit, x)) or 0)) if tiene_ciclo else [],
             "facultad_carrera": {
-                fac: sorted(df[df["Facultad"] == fac]["Carrera"].unique().tolist())
-                for fac in df["Facultad"].dropna().unique()
+                fac: sorted(df[df[col_facultad] == fac][col_carrera].unique().tolist())
+                for fac in df[col_facultad].dropna().unique()
             }
         }
         with open(ruta_salida / "filtros.json", "w", encoding="utf-8") as f:
@@ -620,7 +656,7 @@ def main() -> None:
         comentario_col: str = "Comentario NPS"
         if comentario_col in df.columns:
             # Incluir csat_col (Satisfacción Global) si existe
-            cols_to_extract = [comentario_col, nps_col, "Carrera", "Facultad", "Ciclo"]
+            cols_to_extract = [comentario_col, nps_col, col_carrera, col_facultad, col_ciclo]
             if csat_col in df.columns:
                 cols_to_extract.append(csat_col)
                 
@@ -629,9 +665,9 @@ def main() -> None:
             rename_dict = {
                 comentario_col: "comentario",
                 nps_col: "nps_score",
-                "Carrera": "carrera",
-                "Facultad": "facultad",
-                "Ciclo": "ciclo"
+                col_carrera: "carrera",
+                col_facultad: "facultad",
+                col_ciclo: "ciclo"
             }
             if csat_col in df.columns:
                 rename_dict[csat_col] = "satisfaccion_global"
@@ -639,10 +675,8 @@ def main() -> None:
             df_sent.rename(columns=rename_dict, inplace=True)
             
             # Si la columna ID de respuesta existe, agregarla
-            if "ID de respuesta" in df.columns:
-                df_sent["ID"] = df["ID de respuesta"]
-            elif "ID" in df.columns:
-                df_sent["ID"] = df["ID"]
+            if col_id in df.columns:
+                df_sent["ID"] = df[col_id]
 
             df_sent = df_sent.dropna(subset=["comentario", "nps_score"])
             df_sent["comentario"] = df_sent["comentario"].fillna("").astype(str)
