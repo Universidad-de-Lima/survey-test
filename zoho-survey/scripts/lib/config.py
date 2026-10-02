@@ -1075,8 +1075,8 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
     Returns:
         dict con carrera, csat, ciclo, facultad_map, rename, requeridas.
         'rename' mapea solo columnas clave a nombres internos
-        (ID, Recomiendas la Universidad de Lima, Carrera, La Universidad de
-        Lima, Comentario NPS). El resto de columnas conserva su nombre.
+        (ID, Recomendación (0 al 10), Carrera, Satisfacción con la
+        Universidad, Comentario NPS). El resto de columnas conserva su nombre.
     """
     cols = [str(c) for c in columnas_df]
     colset = set(cols)
@@ -1097,7 +1097,9 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
     if carrera:
         rename[carrera] = "Carrera"
     if csat:
-        rename[csat] = "La Universidad de Lima"
+        # El nombre publicado del CSAT global sale de la declaracion (id
+        # csat_universidad): renombrarlo no debe exigir escribirlo a mano aqui.
+        rename[csat] = nombre_publicado("csat_universidad")
     for c in cols:
         if c.startswith("Explica con tus palabras"):
             rename[c] = "Comentario NPS"

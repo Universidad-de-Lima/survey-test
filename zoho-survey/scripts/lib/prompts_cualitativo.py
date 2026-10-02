@@ -516,7 +516,7 @@ Salida:
 
 ---
 EJEMPLO 2 — Detractor (NPS 3), comentario con 3 unidades y 1 salvavidas:
-Entrada: comentario="Ultimamente me he topado con antibajos en la carrera y apesar de eso sali adelante pero hay varias cosas que no me gustaron d la carrera.", nps=3, csat={{"Calidad de la enseñanza en la carrera": "Insatisfecho", "La carrera": "Insatisfecho"}}
+Entrada: comentario="Ultimamente me he topado con antibajos en la carrera y apesar de eso sali adelante pero hay varias cosas que no me gustaron d la carrera.", nps=3, csat={{"Calidad de la enseñanza en la carrera": "Insatisfecho", "Satisfacción con tu carrera": "Insatisfecho"}}
 Salida:
 {{
   "unidades": [
@@ -560,7 +560,7 @@ Salida:
       "sentimiento": "Negativo",
       "intensidad": 3,
       "justificacion_sentimiento": "Detractor; queja genérica pero acorde al NPS bajo. Intensidad 3 (moderado, sin adjetivo fuerte).",
-      "dimension": "La carrera",
+      "dimension": "Satisfacción con tu carrera",
       "categoria_padre": "Académico",
       "es_mencion_mejora": false,
       "es_salvavidas": false,
@@ -614,7 +614,7 @@ Salida:
 
 ---
 EJEMPLO 4 — Detractor (NPS 1), comentario con queja fuerte:
-Entrada: comentario="Hay demasiados cursos para rellenar la matrícula, cursos que podrían ser electivos. La carrera está estúpidamente alargada en comparación con otras universidades.", nps=1, csat={{"Plan curricular y perfil de egreso": "Totalmente insatisfecho", "La carrera": "Totalmente insatisfecho"}}
+Entrada: comentario="Hay demasiados cursos para rellenar la matrícula, cursos que podrían ser electivos. La carrera está estúpidamente alargada en comparación con otras universidades.", nps=1, csat={{"Plan curricular y perfil de egreso": "Totalmente insatisfecho", "Satisfacción con tu carrera": "Totalmente insatisfecho"}}
 Salida:
 {{
   "unidades": [

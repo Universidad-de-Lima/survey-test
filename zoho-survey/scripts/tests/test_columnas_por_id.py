@@ -36,8 +36,8 @@ class TestColumnaPorId(unittest.TestCase):
 
     def test_nombre_publicado_es_la_version_sin_nivel(self):
         self.assertEqual(nombre_publicado("aulas_de_clase"), "Aulas de clase")
-        self.assertEqual(nombre_publicado("csat_sujeto"), "La carrera")
-        self.assertEqual(nombre_publicado("nps"), "Recomiendas la Universidad de Lima")
+        self.assertEqual(nombre_publicado("csat_sujeto"), "Satisfacción con tu carrera")
+        self.assertEqual(nombre_publicado("nps"), "Recomendación (0 al 10)")
 
     def test_columna_falla_con_un_id_desconocido(self):
         with self.assertRaises(KeyError):
@@ -62,14 +62,14 @@ class TestColumnasDelEtl(unittest.TestCase):
     def test_resuelve_por_id_las_columnas_que_usa_build_json(self):
         esperado = {
             "id_respuesta": "ID",
-            "inicio": "Inicio",
-            "fin": "Fin",
+            "inicio": "Fecha de inicio",
+            "fin": "Fecha de fin",
             "carrera": "Carrera",
             "ciclo": "Ciclo",
             "facultad": "Facultad",
-            "nps": "Recomiendas la Universidad de Lima",
-            "csat_universidad": "La Universidad de Lima",
-            "csat_sujeto": "La carrera",
+            "nps": "Recomendación (0 al 10)",
+            "csat_universidad": "Satisfacción con la Universidad",
+            "csat_sujeto": "Satisfacción con tu carrera",
         }
         for nivel in ("undergraduate", "graduate"):
             with self.subTest(nivel=nivel):
@@ -94,7 +94,7 @@ class TestColumnasDelEtl(unittest.TestCase):
         cols = _columnas_de("faculty-ug")
         self.assertEqual(cols["carrera"], "Carrera")
         self.assertEqual(cols["facultad"], "Facultad")
-        self.assertEqual(cols["nps"], "Recomiendas la Universidad de Lima")
+        self.assertEqual(cols["nps"], "Recomendación (0 al 10)")
 
     def test_build_json_no_indexa_por_el_nombre_publicado(self):
         """El ETL no debe volver a escribir el nombre de columna a mano."""
@@ -105,7 +105,7 @@ class TestColumnasDelEtl(unittest.TestCase):
             'df["Ciclo"]',
             'df["Situación laboral"]',
             'df[[nps_col, "Carrera", "Ciclo", "Facultad"]',
-            'nps_col: str = "Recomiendas la Universidad de Lima"',
+            'nps_col: str = "Recomendación (0 al 10)"',
             'groupby(["Facultad", "Carrera", "Ciclo"])',
         ):
             with self.subTest(literal=literal):

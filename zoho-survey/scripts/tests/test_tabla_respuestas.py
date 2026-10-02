@@ -11,16 +11,16 @@ from lib.tabla_respuestas import SIN_RESPUESTA, construir_tabla
 def marco():
     """Cuatro respuestas con dos preguntas de opciones, una abierta y campos de control."""
     return pd.DataFrame([
-        {"ID": "a", "Inicio": "2026-01-01", "Fin": "2026-01-01",
+        {"ID": "a", "Fecha de inicio": "2026-01-01", "Fecha de fin": "2026-01-01",
          "Carrera": "Economía", "Tiempo laboral": "Tiempo completo",
          "La Universidad de Lima": "Muy satisfecho", "Comentario NPS": "excelente universidad"},
-        {"ID": "b", "Inicio": "2026-01-02", "Fin": "2026-01-02",
+        {"ID": "b", "Fecha de inicio": "2026-01-02", "Fecha de fin": "2026-01-02",
          "Carrera": "Economía", "Tiempo laboral": "Tiempo parcial",
          "La Universidad de Lima": "Satisfecho", "Comentario NPS": "muy buena"},
-        {"ID": "c", "Inicio": "2026-01-03", "Fin": "2026-01-03",
+        {"ID": "c", "Fecha de inicio": "2026-01-03", "Fecha de fin": "2026-01-03",
          "Carrera": "Derecho", "Tiempo laboral": "",
          "La Universidad de Lima": "Insatisfecho", "Comentario NPS": ""},
-        {"ID": "d", "Inicio": "2026-01-04", "Fin": "2026-01-04",
+        {"ID": "d", "Fecha de inicio": "2026-01-04", "Fecha de fin": "2026-01-04",
          "Carrera": "Derecho", "Tiempo laboral": "Tiempo completo",
          "La Universidad de Lima": "Muy satisfecho", "Comentario NPS": "regular"},
     ])
@@ -42,7 +42,7 @@ class TablaTest(unittest.TestCase):
         self.assertEqual(len(t["ids"]), len(t["filas"]))
         self.assertEqual(len(t["fechas"]), len(t["filas"]))
         # No son columnas de opciones
-        for fuera in ("ID", "Inicio", "Fin", "Comentario NPS"):
+        for fuera in ("ID", "Fecha de inicio", "Fecha de fin", "Comentario NPS"):
             self.assertNotIn(fuera, t["cabeceras"])
         motivos = {e["pregunta"]: e["motivo"] for e in t.get("excluidas", [])}
         self.assertIn("Comentario NPS", motivos)

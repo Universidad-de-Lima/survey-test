@@ -23,7 +23,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .config import RESPUESTAS_TEXTO, RESPUESTAS_VERSION, declaraciones_de
+from .config import RESPUESTAS_TEXTO, RESPUESTAS_VERSION, columna, declaraciones_de
 from .io_helper import normalize_dates
 
 VERSION = RESPUESTAS_VERSION
@@ -34,9 +34,9 @@ NO_VAN = {"Estado de respuesta", "Comentario NPS"}
 # Campos que viajan aparte, en paralelo a las filas (no como opciones):
 # el ID enlaza con el analisis de los comentarios (sentimiento.json) y la fecha
 # permite contar por dia o por semana. Las columnas vacias se declaran en
-# `opciones` con "(sin respuesta)".
-COLUMNA_ID = "ID"
-COLUMNAS_FECHA = ("Inicio", "Fin")
+# `opciones` con "(sin respuesta)". Sus nombres publicados NO se escriben aqui:
+# construir_tabla los resuelve por su id declarado (id_respuesta, inicio, fin),
+# de modo que renombrar una columna en la declaracion no deje de excluirla.
 
 # Tope defensivo: una pregunta de opciones no tiene mas valores distintos que esto.
 # Lo que lo supere es texto libre (u otro campo abierto) y se deja fuera.
@@ -140,13 +140,17 @@ def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str,
     """Arma la tabla de respuestas de un periodo."""
     if declaraciones is None:
         declaraciones = declaraciones_de(nivel)
+    # El ID y las fechas viajan aparte (`ids` y `fechas`), nunca como preguntas.
+    # Se resuelven por su id declarado, no por el nombre publicado escrito a mano.
+    col_id = columna(nivel, "id_respuesta")
+    columnas_fecha = tuple(columna(nivel, id_fecha) for id_fecha in ("inicio", "fin"))
     cabeceras: List[str] = []
     opciones: Dict[str, List[str]] = {}
     excluidas: List[Dict[str, str]] = []
 
     for col in df.columns:
         nombre = str(col)
-        if nombre == COLUMNA_ID or nombre in COLUMNAS_FECHA:
+        if nombre == col_id or nombre in columnas_fecha:
             continue  # viajan aparte, en `ids` y `fechas`
         if nombre in NO_VAN:
             excluidas.append({"pregunta": nombre, "motivo": "no es una pregunta"})
@@ -180,9 +184,9 @@ def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str,
         "filas": filas,
     }
     # El ID y la fecha viajan en paralelo a las filas (misma posicion = misma respuesta).
-    if COLUMNA_ID in df.columns:
-        tabla["ids"] = [v for v in _texto(df[COLUMNA_ID])]
-    col_fecha = next((c for c in COLUMNAS_FECHA if c in df.columns), None)
+    if col_id in df.columns:
+        tabla["ids"] = [v for v in _texto(df[col_id])]
+    col_fecha = next((c for c in columnas_fecha if c in df.columns), None)
     if col_fecha:
         tabla["fechas"] = _fechas_iso(df, col_fecha)
     if excluidas:
