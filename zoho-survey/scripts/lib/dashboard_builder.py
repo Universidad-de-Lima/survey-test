@@ -26,7 +26,9 @@ def construir_dashboard_data(
     final que consume el frontend.
     """
     return {
-        "version": "2.0",
+        # Desde 2.1 el archivo trae ademas el bloque 'preguntas' (declaracion compacta de
+        # cada columna publicada), que build_json.py agrega tras ensamblar el dashboard.
+        "version": "2.1",
         "resumen": resumen,
         "hallazgos": {
             "csat_pct": int(csat_score),
