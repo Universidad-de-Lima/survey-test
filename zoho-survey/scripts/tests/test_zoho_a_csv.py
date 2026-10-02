@@ -16,6 +16,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from lib import config
 from lib.config import resolver_config_etl
 from zoho_a_csv import (
     CABECERAS_POR_NIVEL,
@@ -117,7 +118,19 @@ class NivelesTest(unittest.TestCase):
     """El catalogo debe cubrir las nueve encuestas y traer lo que el ETL exige."""
 
     def test_las_nueve_encuestas_tienen_cabeceras(self):
-        self.assertEqual(set(CABECERAS_POR_NIVEL), set(ENCUESTA_POR_NIVEL))
+        # Los niveles declarados en config.py derivan sus cabeceras de la
+        # declaracion; los demas las traen literales en CABECERAS_POR_NIVEL.
+        for nivel, encuesta in ENCUESTA_POR_NIVEL.items():
+            with self.subTest(nivel=nivel):
+                self.assertTrue(cabeceras_de(encuesta))
+
+    def test_los_niveles_declarados_no_duplican_sus_cabeceras(self):
+        # Si un nivel ya declara sus preguntas no puede tener ademas una lista
+        # literal: seria la segunda copia que este cambio elimina.
+        for nivel, declaraciones in config.PREGUNTAS_FORMULARIO.items():
+            with self.subTest(nivel=nivel):
+                self.assertTrue(declaraciones)
+                self.assertNotIn(nivel, CABECERAS_POR_NIVEL)
 
     def test_cada_nivel_trae_las_columnas_que_el_etl_exige(self):
         for nivel, encuesta in ENCUESTA_POR_NIVEL.items():
@@ -128,7 +141,12 @@ class NivelesTest(unittest.TestCase):
                 for requerida in cfg["requeridas"]:
                     self.assertIn(requerida, cabeceras)
                 self.assertIsNotNone(cfg["carrera"])
-                self.assertTrue(any(c.startswith("Explica con tus palabras") for c in cabeceras))
+                # El comentario abierto se reconoce por el texto declarado del
+                # nivel (el estudiantil de posgrado no tiene; por eso no se exige
+                # a todas las encuestas).
+                comentario = config.comentario_de(nivel)
+                if comentario:
+                    self.assertIn(comentario, cabeceras)
 
 
 class ConversionTest(unittest.TestCase):
