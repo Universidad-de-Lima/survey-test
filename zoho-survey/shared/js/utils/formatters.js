@@ -70,9 +70,33 @@ window.SurveyFormatters = (() => {
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
     );
 
+  // La dimensión "Software" se reconoce por su id declarado, nunca por su nombre
+  // publicado: si la declaración publicada renombra la pregunta, la cursiva debe
+  // seguir cayendo en su primera palabra. La declaración viaja en el bloque
+  // `preguntas` de los resúmenes que el portal carga (filtros.json).
+  const ID_DIMENSION_SOFTWARE = 'software_especializado_empleado_en_la_carrera';
+  const NOMBRE_SOFTWARE_HEREDADO = 'Software especializado empleado en la carrera';
+
+  const nombreDeDimensionSoftware = () => {
+    try {
+      const portal = window.SurveyPortalData;
+      const datos = portal && portal.getSurveyData ? portal.getSurveyData() : null;
+      const lista = (datos && datos.filtros && datos.filtros.preguntas) || [];
+      const decl = lista.filter((x) => x && x.id === ID_DIMENSION_SOFTWARE)[0];
+      if (decl && decl.nombre) return decl.nombre;
+    } catch (e) {
+      /* sin datos del portal: se usa el nombre heredado */
+    }
+    return NOMBRE_SOFTWARE_HEREDADO;
+  };
+
+  const esDimensionSoftware = (dim) => dim === nombreDeDimensionSoftware();
+
   const formatDimensionName = (dim) => {
-    if (dim === 'Software especializado empleado en la carrera') {
-      return '<span><i>Software</i> especializado empleado en la carrera</span>';
+    if (esDimensionSoftware(dim)) {
+      const texto = String(dim);
+      const palabra = texto.split(' ')[0];
+      return '<span><i>' + escapeHTML(palabra) + '</i>' + escapeHTML(texto.slice(palabra.length)) + '</span>';
     }
     return escapeHTML(dim);
   };
@@ -80,11 +104,9 @@ window.SurveyFormatters = (() => {
   const formatDimensionNameSVG = (dim, maxLen = 26) => {
     const plain = formatDimensionName(dim).replace(/<[^>]*>/g, '');
     const truncated = cortarTexto(plain, maxLen);
-    if (
-      dim === 'Software especializado empleado en la carrera' &&
-      truncated.startsWith('Software')
-    ) {
-      return `<tspan font-style="italic">Software</tspan>${escapeHTML(truncated.slice('Software'.length))}`;
+    const palabra = String(dim).split(' ')[0];
+    if (esDimensionSoftware(dim) && truncated.startsWith(palabra)) {
+      return `<tspan font-style="italic">${palabra}</tspan>${escapeHTML(truncated.slice(palabra.length))}`;
     }
     return truncated;
   };
@@ -110,5 +132,6 @@ window.SurveyFormatters = (() => {
     formatDimensionName,
     formatDimensionNameSVG,
     formatDimensionNameForAttr,
+    esDimensionSoftware,
   };
 })();
