@@ -944,13 +944,23 @@ CATEGORIA_DIMENSION_UNIFICADA.update(CATEGORIA_DIMENSION_GRADUADO)
 # Estas dimensiones se usan en el análisis cualitativo pero NO tienen una
 # columna CSV de calificación CSAT asociada. El cross-reference
 # dimension_evaluada_rating devolverá null para ellas.
-DIMENSIONES_SIN_CSAT: Set[str] = {
-    "Satisfacción estudiantil",
-    "Espacios comunes",
-    nombre_publicado("csat_sujeto"),
-    nombre_publicado("csat_universidad"),
-    "Pendiente de Clasificación",
-}
+def _dimensiones_sin_csat() -> Set[str]:
+    """Dimensiones del catálogo que no tienen una columna CSAT propia.
+
+    El cross-reference ``dimension_evaluada_rating`` devuelve null para ellas. Las
+    dos medidas de cierre salen de la declaración (renombrarlas no obliga a tocar
+    el conjunto); las demás son catch-all sin pregunta.
+    """
+    return {
+        "Satisfacción estudiantil",
+        "Espacios comunes",
+        nombre_publicado("csat_sujeto"),
+        nombre_publicado("csat_universidad"),
+        "Pendiente de Clasificación",
+    }
+
+
+DIMENSIONES_SIN_CSAT: Set[str] = _dimensiones_sin_csat()
 
 # ============================================================
 # 4. RESPUESTAS DE TEXTO ESTÁNDAR

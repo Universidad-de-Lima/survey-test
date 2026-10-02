@@ -83,8 +83,9 @@ class TestRenombrarNoRompeLasDimensiones(unittest.TestCase):
 
     def test_las_dimensiones_sin_csat_siguen_el_nombre_nuevo(self):
         with _Renombrado("undergraduate", {"csat_universidad": "Satisfacción Ulima"}):
-            self.assertIn("Satisfacción Ulima", config.DIMENSIONES_SIN_CSAT)
-            self.assertNotIn("Satisfacción con la Universidad", config.DIMENSIONES_SIN_CSAT)
+            sin_csat = config._dimensiones_sin_csat()
+            self.assertIn("Satisfacción Ulima", sin_csat)
+            self.assertNotIn("Satisfacción con la Universidad", sin_csat)
 
     def test_el_detector_ignora_las_medidas_de_cierre_con_su_nombre_nuevo(self):
         # Renombrada la satisfacción global, una columna con ese nombre no es
