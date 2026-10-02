@@ -162,9 +162,10 @@ const P = window.SurveyPortalPreguntas;
   const pintadoTabla = caja.textContent;
 
   // 7. Una tabla con una cifra que no está en los datos: no se dibuja.
+  //    (88,88 % no aparece en los datos ni sale de ninguna cuenta entre las cifras publicadas.)
   planSimulado = { se_puede: true, periodos: ['Estudiantes Pregrado 2026-1'], preguntas: ['Carrera'], filtros: [], motivo: '' };
   redaccionSimulada = 'Comparación de carreras.\n' +
-    'Tabla: Carrera | Satisfacción\nAdministración | 97,10 %\nPsicología | 97,22 %\n' +
+    'Tabla: Carrera | Satisfacción\nAdministración | 88,88 %\nPsicología | 97,22 %\n' +
     'Fuente: Estudiantes Pregrado 2026-1';
   caja.innerHTML = '';
   await P.preguntar('compara las carreras');
