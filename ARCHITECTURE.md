@@ -69,7 +69,7 @@ survey-test/
 │   ├── template/            # Plantilla HTML para dashboards de periodo.
 │   ├── scripts/             # ETL en Python, validacion de contratos y schemas.
 │   │   ├── lib/             # 13 modulos activos del ETL (motor legacy eliminado en v3.2.0).
-│   │   ├── schemas/         # JSON Schemas Draft-07 (8 schemas formales).
+│   │   ├── schemas/         # JSON Schemas Draft-07 (9 schemas formales).
 │   │   ├── config/          # Configuracion estatica (contexto_universidad.json).
 │   │   └── tests/           # Tests Python (10 modulos).
 │   └── students/            # Dashboards y JSONs generados por nivel y periodo.
@@ -96,7 +96,7 @@ Para mayor detalle de responsabilidades:
 
 ## Pipeline De Datos
 
-`zoho-survey/scripts/build_json.py` (958 lineas) transforma CSVs en contratos JSON estaticos. Delega en los siguientes submodulos en `scripts/lib/`:
+`zoho-survey/scripts/build_json.py` (965 lineas) transforma CSVs en contratos JSON estaticos. Delega en los siguientes submodulos en `scripts/lib/`:
 
 ### Modulos ETL (12 activos)
 
@@ -187,7 +187,7 @@ Adicionalmente:
 - Copiar el template del periodo y actualizar `periodos.json`.
 - Mantener idempotencia: correr el script dos veces con la misma entrada debe producir el mismo resultado (con caveat: si el CSV no tiene fechas validas, se usa `pd.Timestamp.now()` como fallback, lo que rompe idempotencia en ese edge case).
 
-Los esquemas, archivos requeridos e invariantes estan definidos en `CONTRACTS.md` y formalmente en `zoho-survey/scripts/schemas/*.schema.json` (8 schemas Draft-07).
+Los esquemas, archivos requeridos e invariantes estan definidos en `CONTRACTS.md` y formalmente en `zoho-survey/scripts/schemas/*.schema.json` (9 schemas Draft-07).
 
 ## Validacion
 

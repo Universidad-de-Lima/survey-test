@@ -20,7 +20,7 @@ from typing import Dict, List, Set
 # las variables llegan por entorno (Secrets). No se lee ningun archivo .env.
 
 # Importar configuración, métricas, nlp e io_helpers modularizados
-from lib.tabla_respuestas import construir_tabla
+from lib.tabla_respuestas import construir_tabla, declaracion_compacta
 from lib.config import (
     COLUMN_RENAME_PREGRADO,
     COLUMN_RENAME_GRADUADO,
@@ -547,6 +547,13 @@ def main() -> None:
         if empleabilidad:
             resumen["empleabilidad"] = empleabilidad
 
+        # La declaracion de cada columna publicada se escribe una sola vez: respuestas.json
+        # la publica completa (con el texto largo de la pregunta) y los resumidos que leen
+        # las paginas del portal la repiten compacta (id, nombre, tipo y escala), para que
+        # el codigo sepa que es cada columna sin comparar por nombre y sin engordar los KB.
+        tabla_respuestas = construir_tabla(df, nivel, periodo, declaraciones_de(nivel))
+        declaracion_resumen = declaracion_compacta(tabla_respuestas["preguntas"])
+
         # Generar dashboard_data.json (Fase 11: delegado a _construir_dashboard_data)
         dashboard_data = construir_dashboard_data(
             resumen=resumen,
@@ -565,11 +572,14 @@ def main() -> None:
             "nombre_encuesta": _sanitizar_nombre_csv(csv_file.name),
             "fecha_generacion": pd.Timestamp.now().strftime("%Y-%m-%d")
         }
+        # La declaracion compacta de las columnas publicadas (misma que respuestas.json).
+        dashboard_data["preguntas"] = declaracion_resumen
         # Un solo archivo con los cinco resumenes que antes iban por separado
         # (ids, nps_carrera, csat_carrera, nps_ciclo_carrera, csat_ciclo_carrera).
         with open(ruta_salida / "resumenes.json", "w", encoding="utf-8") as f:
             json.dump({
-                "version": "1.0",
+                "version": "1.1",
+                "preguntas": declaracion_resumen,
                 "ids": ids_conteo,
                 "nps_carrera": nps_carrera,
                 "csat_carrera": csat_carrera,
@@ -584,15 +594,15 @@ def main() -> None:
         # del mismo archivo: es la declaracion (id, nombre, tipo, pregunta y escala) de cada
         # columna publicada, la misma que vive en lib/config.py.
         with open(ruta_salida / "respuestas.json", "w", encoding="utf-8") as f:
-            json.dump(construir_tabla(df, nivel, periodo, declaraciones_de(nivel)),
-                      f, ensure_ascii=False, indent=2)
+            json.dump(tabla_respuestas, f, ensure_ascii=False, indent=2)
 
         with open(ruta_salida / "dashboard_data.json", "w", encoding="utf-8") as f:
             json.dump(dashboard_data, f, ensure_ascii=False, indent=2)
 
         # Generar filtros.json
         filtros = {
-            "version": "2.0",
+            "version": "2.1",
+            "preguntas": declaracion_resumen,
             "has_ciclo": tiene_ciclo,
             "facultades": sorted(df["Facultad"].dropna().unique().tolist()),
             "carreras": sorted(df["Carrera"].dropna().unique().tolist()),

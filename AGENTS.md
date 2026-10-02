@@ -33,7 +33,7 @@ Antes de tocar codigo, comprender la arquitectura real (no la documentacion prev
   - `ia_filtro_ruido.py` — pre-filtro de comentarios ruidosos (15 criterios regex).
   - `ia_validacion.py` — validacion de respuestas de los motores IA + redaccion PII post-LLM.
   - `insights_generator.py` — sintesis determinista de insights (sin LLM).
-- **`schemas/`** contiene **8 JSON Schemas Draft-07** (incluye `dataset_cualitativo.schema.json`).
+- **`schemas/`** contiene **9 JSON Schemas Draft-07** (incluye `dataset_cualitativo.schema.json` y `resumenes.schema.json`).
 
 ### Frontend JS (`zoho-survey/shared/js/`)
 

@@ -117,6 +117,24 @@ def _declaracion_de_cada_columna(cabeceras: List[str], df: pd.DataFrame,
     return publicadas
 
 
+# Campos que viajan en los JSON resumidos: sin el texto largo de la pregunta, para
+# que sigan pesando pocos KB. Lo que el codigo necesita para no comparar por nombre
+# (id, nombre, tipo y escala) es obligatorio; el `pregunta` completo se queda solo en
+# respuestas.json.
+CAMPOS_DECLARACION_RESUMEN = ("id", "nombre", "tipo", "escala")
+
+
+def declaracion_compacta(preguntas: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """La misma declaración de respuestas.json, sin el texto largo de la pregunta.
+
+    Conserva los ids y los campos id, nombre, tipo y escala, de modo que los JSON
+    resumidos declaren exactamente las mismas columnas que el respuestas.json del mismo
+    período. El id de cada columna queda así idéntico en todos los archivos del período.
+    """
+    return [{campo: str(p.get(campo, "")) for campo in CAMPOS_DECLARACION_RESUMEN}
+            for p in preguntas]
+
+
 def construir_tabla(df: pd.DataFrame, nivel: str, periodo: str,
                     declaraciones: Optional[List[Dict[str, str]]] = None) -> Dict:
     """Arma la tabla de respuestas de un periodo."""

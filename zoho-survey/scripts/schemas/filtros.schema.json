@@ -4,11 +4,13 @@
   "title": "Filtros",
   "description": "Metadatos de filtros para la cascada Facultad → Carrera → Ciclo.",
   "type": "object",
+  "additionalProperties": false,
   "required": ["version", "has_ciclo", "facultades", "carreras", "ciclos", "facultad_carrera"],
   "properties": {
     "version": {
       "type": "string",
-      "const": "2.0"
+      "description": "Versión del contrato. Desde 2.1 el archivo trae el bloque 'preguntas' (declaración compacta de cada columna publicada); los 2.0 anteriores no lo llevan y siguen siendo válidos.",
+      "enum": ["2.0", "2.1"]
     },
     "has_ciclo": {
       "type": "boolean",
@@ -35,6 +37,30 @@
         "type": "array",
         "items": { "type": "string" }
       }
+    },
+    "preguntas": {
+      "description": "Declaración compacta de cada columna publicada (desde 2.1): id estable, nombre publicado, tipo de columna y escala. Es la misma declaración que publica respuestas.json, sin el texto largo de la pregunta. Los archivos 2.0 anteriores no la traen y siguen siendo válidos.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "nombre", "tipo", "escala"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "nombre": { "type": "string", "minLength": 1 },
+          "tipo": { "type": "string", "enum": ["medida", "agrupacion", "fecha", "identificador"] },
+          "escala": { "type": "string" }
+        },
+        "if": { "properties": { "tipo": { "const": "medida" } }, "required": ["tipo"] },
+        "then": { "properties": { "escala": { "minLength": 1 } } }
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "version": { "const": "2.1" } }, "required": ["version"] },
+      "then": { "required": ["preguntas"] }
+    }
+  ]
 }

@@ -47,6 +47,7 @@ SCHEMAS_DIR: Path = BASE_DIR / "schemas"
 SCHEMA_BY_FILE: Dict[str, str] = {
     "dashboard_data.json": "dashboard_data.schema.json",
     "filtros.json": "filtros.schema.json",
+    "resumenes.json": "resumenes.schema.json",
     "sentimiento.json": "sentimiento.schema.json",
     "dimensiones.json": "dimensiones.schema.json",
     "respuestas.json": "respuestas.schema.json",
@@ -258,6 +259,33 @@ def validate_preguntas_invariants(value: dict, cabeceras: List[str], filename: s
         raise ValueError(f"{filename}: cabeceras publicadas sin declaracion: {faltantes}")
 
 
+def validate_preguntas_cruzadas(value: dict, filename: str, json_dir: Path) -> None:
+    """Invariante cruzada: si el JSON trae 'preguntas', sus ids coinciden con los del
+    respuestas.json del mismo período.
+
+    Es lo que garantiza que los resumidos que leen las páginas (dashboard_data.json,
+    resumenes.json y filtros.json) publiquen la misma declaración que la tabla de
+    respuestas: el código que compara por id obtiene el mismo resultado leyendo
+    cualquiera de los archivos del período.
+    """
+    preguntas = value.get("preguntas")
+    if preguntas is None:
+        return
+    respuestas_path = json_dir / "respuestas.json"
+    if not respuestas_path.exists():
+        raise ValueError(f"{filename}: trae 'preguntas' pero falta respuestas.json para compararlas")
+    respuestas = load_json(respuestas_path)
+    ids_respuestas = [p.get("id") for p in respuestas.get("preguntas", []) if isinstance(p, dict)]
+    ids = [p.get("id") for p in preguntas if isinstance(p, dict)]
+    if set(ids) != set(ids_respuestas):
+        faltan = sorted(set(ids_respuestas) - set(ids))
+        sobran = sorted(set(ids) - set(ids_respuestas))
+        raise ValueError(
+            f"{filename}: los ids de 'preguntas' no coinciden con respuestas.json "
+            f"(faltan={faltan}, sobran={sobran})"
+        )
+
+
 def validate_resumenes_invariants(value: dict, filename: str, json_path: Path) -> None:
     """resumenes.json junta los cinco resumenes del periodo (ids y los NPS/CSAT por carrera y por
     ciclo). No agrega contratos: cada parte se valida contra su propio schema formal."""
@@ -366,6 +394,11 @@ def validate_json_file(json_dir: Path, filename: str, spec: Dict[str, any]) -> T
         validate_dashboard_csat_extended(value)
     elif filename == "respuestas.json":
         validate_respuestas_invariants(value, filename)
+
+    # Invariante cruzada con respuestas.json: los resumidos que leen las páginas llevan
+    # la misma declaración de preguntas que la tabla de respuestas del período.
+    if filename in ("dashboard_data.json", "filtros.json", "resumenes.json"):
+        validate_preguntas_cruzadas(value, filename, json_dir)
 
     return value, schema_errors
 

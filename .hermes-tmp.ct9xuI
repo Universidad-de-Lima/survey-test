@@ -372,7 +372,11 @@ Ejemplo real (undergraduate 2026-1):
     "Totalmente insatisfecho": 16,
     "No utilizo": 0,
     "No conozco": 0
-  }
+  },
+  "preguntas": [
+    { "id": "carrera", "nombre": "Carrera", "tipo": "agrupacion", "escala": "" },
+    { "id": "csat_universidad", "nombre": "La Universidad de Lima", "tipo": "medida", "escala": "CSAT" }
+  ]
 }
 ```
 
@@ -434,35 +438,24 @@ Schema: `zoho-survey/scripts/schemas/filtros.schema.json`.
 
 Claves requeridas:
 
-- `version` (`"2.1"`)
+- `version` (`"2.0"`)
 - `has_ciclo` (booleano)
 - `facultades` (lista no vacía)
 - `carreras` (lista no vacía)
 - `ciclos` (lista, puede ser vacía cuando `has_ciclo=false`)
 - `facultad_carrera` (objeto no vacío)
-- `preguntas` (desde la versión 2.1; declaración compacta de cada columna publicada, con los mismos
-  `id` que `respuestas.json` del período)
 
-Invariante: `facultad_carrera` debe mapear TODAS las facultades listadas en `facultades`. Y, si el
-archivo trae `preguntas`, sus `id` coinciden con los del `respuestas.json` del mismo período.
+Invariante: `facultad_carrera` debe mapear TODAS las facultades listadas en `facultades`.
 
 ## `resumenes.json`
 
-Schema del archivo completo: `zoho-survey/scripts/schemas/resumenes.schema.json` (además, cada parte
-se valida contra su propio schema; ver más abajo).
-
 Un solo archivo por período con los cinco resúmenes que antes iban sueltos: `ids` (conteo de
 respuestas por facultad, carrera y ciclo), `nps_carrera`, `csat_carrera`, `nps_ciclo_carrera` y
-`csat_ciclo_carrera`. Desde la versión 1.1 trae además el bloque `preguntas` (la declaración compacta
-de cada columna publicada, con los mismos `id` que `respuestas.json` del período); los archivos 1.0
-anteriores no lo llevan y siguen siendo válidos.
+`csat_ciclo_carrera`.
 
 ```json
 {
-  "version": "1.1",
-  "preguntas": [
-    { "id": "carrera", "nombre": "Carrera", "tipo": "agrupacion", "escala": "" }
-  ],
+  "version": "1.0",
   "ids": [ ... ],
   "nps_carrera": [ ... ],
   "csat_carrera": [ ... ],
@@ -477,8 +470,7 @@ cada tabla NPS/CSAT contra su schema (`nps_carrera.schema.json`, `csat_carrera.s
 lo que desaparece son los cinco archivos.
 
 **Invariantes:** las cinco partes son obligatorias y no pueden estar vacías; `ids` además cumple las
-reglas de `validate_id_rows_invariants`. Si el archivo trae `preguntas`, sus `id` coinciden con los del
-`respuestas.json` del mismo período.
+reglas de `validate_id_rows_invariants`.
 
 **Por qué existe:** los tres cargadores del sitio (`dashboard.js`, `portal/portal-data.js` y
 `portal/portal-preguntas.js`) pedían los cinco archivos por separado, seis peticiones por período
@@ -600,8 +592,6 @@ publicada tiene su declaración.
 - NPS debe estar entre -100 y 100.
 - CSAT debe estar entre 0 y 100.
 - Los IDs de carrera en `filtros.json` deben coincidir con los usados por los JSON de NPS/CSAT.
-- Si un resumido (`dashboard_data.json`, `filtros.json` o `resumenes.json`) trae el bloque `preguntas`,
-  sus `id` deben coincidir con los del `respuestas.json` del mismo período.
 - Los JSON generados no deben modificarse manualmente.
 - Cambios incompatibles requieren actualizar el ETL, schemas, validador, frontend y este documento en el mismo PR.
 
