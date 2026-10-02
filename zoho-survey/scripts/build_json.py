@@ -175,9 +175,9 @@ def _detectar_dimensiones(df) -> "Dict[str, str]":
     """
     resp = set(RESPUESTAS_TEXTO)
     skip = {"ID de respuesta", "ID", "Start time", "Hora de finalizacion",
-            "Net Promoter Score (de un total de 10)", "Recomiendas la Universidad de Lima",
-            "La Universidad de Lima", "Carrera", "Facultad", "Ciclo",
-            "Comentario NPS", "CSAT Score", "Inicio", "Fin"}
+            "Net Promoter Score (de un total de 10)", "Recomendación (0 al 10)",
+            "Satisfacción con la Universidad", "Carrera", "Facultad", "Ciclo",
+            "Comentario NPS", "CSAT Score", "Fecha de inicio", "Fecha de fin"}
     out = {}
     for col in df.columns:
         if col in skip:

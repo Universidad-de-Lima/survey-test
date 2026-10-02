@@ -772,7 +772,7 @@ CATEGORIA_DIMENSION_PREGRADO: Dict[str, str] = {
     "Exigencia académica": "Académico",
     "Evaluación del aprendizaje": "Académico",
     "Intercambio estudiantil": "Académico",
-    "La carrera": "Académico",
+    "Satisfacción con tu carrera": "Académico",
     "Satisfacción estudiantil": "Académico",
     
     # Administrativo y Bienestar
@@ -833,7 +833,7 @@ CATEGORIA_DIMENSION_GRADUADO: Dict[str, str] = {
     "Exigencia académica": "Académico",
     "Evaluación del aprendizaje": "Académico",
     "Intercambio estudiantil": "Académico",
-    "La carrera": "Académico",
+    "Satisfacción con tu carrera": "Académico",
     "Satisfacción estudiantil": "Académico",
     
     # Administrativo y Bienestar
@@ -894,8 +894,8 @@ CATEGORIA_DIMENSION_UNIFICADA.update(CATEGORIA_DIMENSION_GRADUADO)
 DIMENSIONES_SIN_CSAT: Set[str] = {
     "Satisfacción estudiantil",
     "Espacios comunes",
-    "La carrera",
-    "La Universidad de Lima",
+    "Satisfacción con tu carrera",
+    "Satisfacción con la Universidad",
     "Pendiente de Clasificación",
 }
 
@@ -1093,7 +1093,7 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
     if "ID de respuesta" in colset:
         rename["ID de respuesta"] = "ID"
     if "Net Promoter Score (de un total de 10)" in colset:
-        rename["Net Promoter Score (de un total de 10)"] = "Recomiendas la Universidad de Lima"
+        rename["Net Promoter Score (de un total de 10)"] = "Recomendación (0 al 10)"
     if carrera:
         rename[carrera] = "Carrera"
     if csat:
