@@ -206,8 +206,11 @@ El comentario libre (columna `Comentario NPS` del ETL, máximo 100 caracteres) n
 
 Obligatorias siempre: `ID de respuesta`, `Net Promoter Score (de un total de 10)`, `La Universidad de Lima`.
 Más la columna de carrera propia de cada nivel (ver *Columna de identidad por nivel*).
-Las cabeceras completas de cada encuesta están en `zoho-survey/scripts/zoho_a_csv.py`
-(`CABECERAS_POR_NIVEL`); si Zoho agrega o quita preguntas, se actualizan ahí.
+Las cabeceras completas de cada encuesta salen de su declaración en
+`zoho-survey/scripts/lib/config.py` (`PREGUNTAS_POR_NIVEL` / `PREGUNTAS_FORMULARIO`),
+derivadas por `cabeceras_de()` de `zoho-survey/scripts/zoho_a_csv.py`. Solo los niveles
+que aún no declaran sus preguntas (egresados y empleadores) conservan su lista literal
+en `CABECERAS_POR_NIVEL`; si Zoho agrega o quita preguntas, se actualiza la declaración.
 
 > **Discrepancia documentada (no automatizar):** el validador exige la columna de carrera también para **empleadores**, idéntico a `build_json.py`, aunque la especificación original de empleadores podría no incluirla. Mantiene coherrencia con el ETL; revisar con el owner si se debe aflojar para `employers`.
 
