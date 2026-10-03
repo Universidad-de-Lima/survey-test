@@ -1,0 +1,424 @@
+{
+  "version": "1.1",
+  "nivel": "nonfaculty",
+  "periodo": "2026",
+  "respuestas": 1,
+  "cabeceras": [
+    "Recomendación (0 al 10)",
+    "Dependencia",
+    "Años en la Universidad",
+    "Organización del puesto de trabajo",
+    "Claridad de funciones y responsabilidades",
+    "Distribución de la carga laboral",
+    "Liderazgo y compromiso de la jefatura",
+    "Comunicación de la jefatura",
+    "Mecanismos de comunicación y coordinación",
+    "Solución de problemas",
+    "Trabajo en equipo",
+    "Comunicación con compañeros",
+    "Coordinación con otras dependencias",
+    "Motivación para aportar ideas",
+    "Clima laboral",
+    "Promoción y reconocimiento",
+    "Retroalimentación del desempeño",
+    "Programa de becas internas",
+    "Programas de capacitación",
+    "Servicio médico y su infraestructura",
+    "Talleres artísticos y culturales",
+    "Actividades deportivas",
+    "Instalaciones para relación social",
+    "Oficinas o cubículos",
+    "Software especializado",
+    "Portal web (Mi Ulima)",
+    "Aula virtual",
+    "Conexión Wi-Fi",
+    "Soporte técnico",
+    "Satisfacción con tu dependencia",
+    "Satisfacción con la Universidad",
+    "Ciclo",
+    "Facultad"
+  ],
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "pregunta": "En una escala del 0 al 10, donde 0 significa ‘Definitivamente, no la recomendaría’ y 10 ‘Definitivamente, sí la recomendaría’:¿Qué tan probable es que recomiendes la Universidad de Lima a un familiar o amigo como institución para trabajar?",
+      "escala": "NPS"
+    },
+    {
+      "id": "carrera",
+      "nombre": "Dependencia",
+      "tipo": "agrupacion",
+      "pregunta": "¿A qué dependencia perteneces?",
+      "escala": ""
+    },
+    {
+      "id": "nd_antiguedad",
+      "nombre": "Años en la Universidad",
+      "tipo": "agrupacion",
+      "pregunta": "¿Cuántos años laboras en la Universidad de Lima?",
+      "escala": ""
+    },
+    {
+      "id": "nd_organizacion_puesto",
+      "nombre": "Organización del puesto de trabajo",
+      "tipo": "medida",
+      "pregunta": "La organización en tu puesto de trabajo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_claridad_funciones",
+      "nombre": "Claridad de funciones y responsabilidades",
+      "tipo": "medida",
+      "pregunta": "La claridad en la definición de las funciones y responsabilidades de tu puesto de trabajo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_carga_laboral",
+      "nombre": "Distribución de la carga laboral",
+      "tipo": "medida",
+      "pregunta": "La distribución de carga laboral en tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_liderazgo",
+      "nombre": "Liderazgo y compromiso de la jefatura",
+      "tipo": "medida",
+      "pregunta": "El liderazgo y compromiso del responsable de tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_comunicacion_jefatura",
+      "nombre": "Comunicación de la jefatura",
+      "tipo": "medida",
+      "pregunta": "La comunicación oportuna y clara por parte de la jefatura de tu dependencia sobre asuntos que afectan tu trabajo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_mecanismos_comunicacion",
+      "nombre": "Mecanismos de comunicación y coordinación",
+      "tipo": "medida",
+      "pregunta": "Los mecanismos de comunicación y coordinación de la jefatura de tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_solucion_problemas",
+      "nombre": "Solución de problemas",
+      "tipo": "medida",
+      "pregunta": "La oportunidad y eficacia en la solución de los problemas planteados a la jefatura de tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_trabajo_equipo",
+      "nombre": "Trabajo en equipo",
+      "tipo": "medida",
+      "pregunta": "El trabajo en equipo para cumplir con las tareas asignadas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_comunicacion_companeros",
+      "nombre": "Comunicación con compañeros",
+      "tipo": "medida",
+      "pregunta": "La comunicación con tus compañeros de tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_coordinacion_dependencias",
+      "nombre": "Coordinación con otras dependencias",
+      "tipo": "medida",
+      "pregunta": "La coordinación con otras dependencias de la Universidad",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_motivacion",
+      "nombre": "Motivación para aportar ideas",
+      "tipo": "medida",
+      "pregunta": "La motivación para participar con aportes y sugerencias en tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_clima_laboral",
+      "nombre": "Clima laboral",
+      "tipo": "medida",
+      "pregunta": "El clima laboral en tu dependencia",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_promocion_reconocimiento",
+      "nombre": "Promoción y reconocimiento",
+      "tipo": "medida",
+      "pregunta": "El proceso de promoción y reconocimiento al personal no docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_retroalimentacion",
+      "nombre": "Retroalimentación del desempeño",
+      "tipo": "medida",
+      "pregunta": "La retroalimentación de los resultados de la evaluación de tu desempeño por parte de tu superior inmediato",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_becas",
+      "nombre": "Programa de becas internas",
+      "tipo": "medida",
+      "pregunta": "El programa de becas internas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_capacitacion",
+      "nombre": "Programas de capacitación",
+      "tipo": "medida",
+      "pregunta": "Los programas de capacitación a los cuales has sido invitado durante el año referido a la variedad de temas, pertinencia de horarios, pertinencia en la invitación, etcétera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_servicio_medico",
+      "nombre": "Servicio médico y su infraestructura",
+      "tipo": "medida",
+      "pregunta": "El servicio médico y su infraestructura",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_talleres",
+      "nombre": "Talleres artísticos y culturales",
+      "tipo": "medida",
+      "pregunta": "Los talleres de actividades artísticas y culturales",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_actividades_deportivas",
+      "nombre": "Actividades deportivas",
+      "tipo": "medida",
+      "pregunta": "Las actividades deportivas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_instalaciones_sociales",
+      "nombre": "Instalaciones para relación social",
+      "tipo": "medida",
+      "pregunta": "Las instalaciones para facilitar la relación social entre el personal no docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_oficinas",
+      "nombre": "Oficinas o cubículos",
+      "tipo": "medida",
+      "pregunta": "Las oficinas o cubículos para el personal no docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_software",
+      "nombre": "Software especializado",
+      "tipo": "medida",
+      "pregunta": "El software especializado empleado en tu trabajo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_portal_mi_ulima",
+      "nombre": "Portal web (Mi Ulima)",
+      "tipo": "medida",
+      "pregunta": "El portal web de la Universidad: Mi Ulima",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_conexion_wifi",
+      "nombre": "Conexión Wi-Fi",
+      "tipo": "medida",
+      "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_soporte_tecnico",
+      "nombre": "Soporte técnico",
+      "tipo": "medida",
+      "pregunta": "El soporte técnico brindado ante las fallas del sistema informático",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_sujeto",
+      "nombre": "Satisfacción con tu dependencia",
+      "tipo": "medida",
+      "pregunta": "La dependencia a la que perteneces",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_universidad",
+      "nombre": "Satisfacción con la Universidad",
+      "tipo": "medida",
+      "pregunta": "La Universidad de Lima",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "pregunta": "Ciclo (derivado; la encuesta de no docente no lo pregunta)",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "pregunta": "Facultad (derivada; una dependencia no es una carrera de pregrado)",
+      "escala": ""
+    }
+  ],
+  "opciones": {
+    "Recomendación (0 al 10)": [
+      "10"
+    ],
+    "Dependencia": [
+      "Centro Cultural"
+    ],
+    "Años en la Universidad": [
+      "Menos de 2 años"
+    ],
+    "Organización del puesto de trabajo": [
+      "Totalmente satisfecho"
+    ],
+    "Claridad de funciones y responsabilidades": [
+      "Totalmente satisfecho"
+    ],
+    "Distribución de la carga laboral": [
+      "Totalmente satisfecho"
+    ],
+    "Liderazgo y compromiso de la jefatura": [
+      "Totalmente satisfecho"
+    ],
+    "Comunicación de la jefatura": [
+      "Totalmente satisfecho"
+    ],
+    "Mecanismos de comunicación y coordinación": [
+      "Totalmente satisfecho"
+    ],
+    "Solución de problemas": [
+      "Totalmente satisfecho"
+    ],
+    "Trabajo en equipo": [
+      "Totalmente satisfecho"
+    ],
+    "Comunicación con compañeros": [
+      "Totalmente satisfecho"
+    ],
+    "Coordinación con otras dependencias": [
+      "Totalmente satisfecho"
+    ],
+    "Motivación para aportar ideas": [
+      "Totalmente satisfecho"
+    ],
+    "Clima laboral": [
+      "Totalmente satisfecho"
+    ],
+    "Promoción y reconocimiento": [
+      "Totalmente satisfecho"
+    ],
+    "Retroalimentación del desempeño": [
+      "Totalmente satisfecho"
+    ],
+    "Programa de becas internas": [
+      "Totalmente satisfecho"
+    ],
+    "Programas de capacitación": [
+      "Totalmente satisfecho"
+    ],
+    "Servicio médico y su infraestructura": [
+      "Totalmente satisfecho"
+    ],
+    "Talleres artísticos y culturales": [
+      "Totalmente satisfecho"
+    ],
+    "Actividades deportivas": [
+      "Totalmente satisfecho"
+    ],
+    "Instalaciones para relación social": [
+      "Totalmente satisfecho"
+    ],
+    "Oficinas o cubículos": [
+      "Totalmente satisfecho"
+    ],
+    "Software especializado": [
+      "Totalmente satisfecho"
+    ],
+    "Portal web (Mi Ulima)": [
+      "Totalmente satisfecho"
+    ],
+    "Aula virtual": [
+      "Totalmente satisfecho"
+    ],
+    "Conexión Wi-Fi": [
+      "Totalmente satisfecho"
+    ],
+    "Soporte técnico": [
+      "Totalmente satisfecho"
+    ],
+    "Satisfacción con tu dependencia": [
+      "Totalmente satisfecho"
+    ],
+    "Satisfacción con la Universidad": [
+      "Totalmente satisfecho"
+    ],
+    "Ciclo": [
+      "NA"
+    ],
+    "Facultad": [
+      "Otra"
+    ]
+  },
+  "filas": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "ids": [
+    "JcC54MSW"
+  ],
+  "fechas": [
+    "2026-10-03"
+  ],
+  "excluidas": [
+    {
+      "pregunta": "Comentario NPS",
+      "motivo": "no es una pregunta"
+    }
+  ]
+}

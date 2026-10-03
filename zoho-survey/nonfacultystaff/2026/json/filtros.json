@@ -1,0 +1,216 @@
+{
+  "version": "2.1",
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "escala": "NPS"
+    },
+    {
+      "id": "carrera",
+      "nombre": "Dependencia",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "nd_antiguedad",
+      "nombre": "Años en la Universidad",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "nd_organizacion_puesto",
+      "nombre": "Organización del puesto de trabajo",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_claridad_funciones",
+      "nombre": "Claridad de funciones y responsabilidades",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_carga_laboral",
+      "nombre": "Distribución de la carga laboral",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_liderazgo",
+      "nombre": "Liderazgo y compromiso de la jefatura",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_comunicacion_jefatura",
+      "nombre": "Comunicación de la jefatura",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_mecanismos_comunicacion",
+      "nombre": "Mecanismos de comunicación y coordinación",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_solucion_problemas",
+      "nombre": "Solución de problemas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_trabajo_equipo",
+      "nombre": "Trabajo en equipo",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_comunicacion_companeros",
+      "nombre": "Comunicación con compañeros",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_coordinacion_dependencias",
+      "nombre": "Coordinación con otras dependencias",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_motivacion",
+      "nombre": "Motivación para aportar ideas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_clima_laboral",
+      "nombre": "Clima laboral",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_promocion_reconocimiento",
+      "nombre": "Promoción y reconocimiento",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_retroalimentacion",
+      "nombre": "Retroalimentación del desempeño",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_becas",
+      "nombre": "Programa de becas internas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_capacitacion",
+      "nombre": "Programas de capacitación",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_servicio_medico",
+      "nombre": "Servicio médico y su infraestructura",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_talleres",
+      "nombre": "Talleres artísticos y culturales",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_actividades_deportivas",
+      "nombre": "Actividades deportivas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_instalaciones_sociales",
+      "nombre": "Instalaciones para relación social",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_oficinas",
+      "nombre": "Oficinas o cubículos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_software",
+      "nombre": "Software especializado",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_portal_mi_ulima",
+      "nombre": "Portal web (Mi Ulima)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_conexion_wifi",
+      "nombre": "Conexión Wi-Fi",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "nd_soporte_tecnico",
+      "nombre": "Soporte técnico",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_sujeto",
+      "nombre": "Satisfacción con tu dependencia",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_universidad",
+      "nombre": "Satisfacción con la Universidad",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "escala": ""
+    }
+  ],
+  "has_ciclo": false,
+  "facultades": [
+    "Otra"
+  ],
+  "carreras": [
+    "Centro Cultural"
+  ],
+  "ciclos": [],
+  "facultad_carrera": {
+    "Otra": [
+      "Centro Cultural"
+    ]
+  }
+}
