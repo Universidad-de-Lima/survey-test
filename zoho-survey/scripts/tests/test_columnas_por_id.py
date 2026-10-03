@@ -89,9 +89,9 @@ class TestColumnasDelEtl(unittest.TestCase):
             config.PREGUNTAS_POR_NIVEL["undergraduate"] = original
 
     def test_los_niveles_sin_declaracion_usan_el_catalogo_comun(self):
-        # nonfaculty no está en PREGUNTAS_POR_NIVEL: el nombre sale del catálogo
+        # alumni-ug no está en PREGUNTAS_POR_NIVEL: el nombre sale del catálogo
         # común derivado de las declaraciones (los mismos que publica el ETL).
-        cols = _columnas_de("nonfaculty")
+        cols = _columnas_de("alumni-ug")
         self.assertEqual(cols["carrera"], "Carrera")
         self.assertEqual(cols["facultad"], "Facultad")
         self.assertEqual(cols["nps"], "Recomendación (0 al 10)")
