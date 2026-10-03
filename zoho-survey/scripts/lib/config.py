@@ -1176,6 +1176,360 @@ PREGUNTAS_DOCENTE_PG: List[Dict[str, str]] = [
     },
 ]
 
+# ---- Docente Pregrado ----
+# Los `pregunta` son EXACTAMENTE las claves con las que Zoho manda cada columna
+# en data/zoho_pendientes (el texto del cuestionario nuevo), y los `nombre` son
+# los nombres publicados que elegimos (cortos) para el portal. A diferencia de
+# posgrado, este público SÍ cierra con el par estándar (tu facultad o programa /
+# la Universidad de Lima) y su pregunta abierta tiene un texto propio (ver
+# COMENTARIO_POR_NIVEL). Es un docente de una carrera de pregrado, así que su
+# columna de identidad se traduce a facultad con CARRERA_FACULTAD.
+PREGUNTAS_DOCENTE_UG: List[Dict[str, str]] = [
+    {
+        "id": "id_respuesta",
+        "nombre": "ID",
+        "tipo": "identificador",
+        "pregunta": "ID de respuesta",
+        "escala": "",
+    },
+    {
+        "id": "inicio",
+        "nombre": "Fecha de inicio",
+        "tipo": "fecha",
+        "pregunta": "Hora inicial de resuestas",
+        "escala": "",
+    },
+    {
+        "id": "fin",
+        "nombre": "Fecha de fin",
+        "tipo": "fecha",
+        "pregunta": "Hora final de resuestas",
+        "escala": "",
+    },
+    {
+        "id": "nps",
+        "nombre": "Recomendación (0 al 10)",
+        "tipo": "medida",
+        "pregunta": "En una escala del 0 al 10, donde 0 significa ‘Definitivamente, no la recomendaría’ y 10 ‘Definitivamente, sí la recomendaría’:¿Qué tan probable es que recomiendes la Universidad de Lima a un familiar o amigo como institución para trabajar?",
+        "escala": "NPS",
+    },
+    {
+        "id": "carrera",
+        "nombre": "Carrera",
+        "tipo": "agrupacion",
+        "pregunta": "¿A qué carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?",
+        "escala": "",
+    },
+    {
+        "id": "dug_antiguedad",
+        "nombre": "Años en la Universidad",
+        "tipo": "agrupacion",
+        "pregunta": "¿Cuántos años laboras en la Universidad de Lima?",
+        "escala": "",
+    },
+    {
+        "id": "dug_perfil_egreso",
+        "nombre": "Perfil de egreso",
+        "tipo": "medida",
+        "pregunta": "El perfil de egreso de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_plan_curricular",
+        "nombre": "Plan curricular y perfil de egreso",
+        "tipo": "medida",
+        "pregunta": "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_cursos_contenidos",
+        "nombre": "Cursos y contenidos",
+        "tipo": "medida",
+        "pregunta": "Los cursos y contenidos de tu carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_horas_asignadas",
+        "nombre": "Horas asignadas",
+        "tipo": "medida",
+        "pregunta": "La cantidad de horas asignadas para el desarrollo de las asignaturas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_carga_trabajo",
+        "nombre": "Carga de trabajo",
+        "tipo": "medida",
+        "pregunta": "La carga de trabajo para el desarrollo de las asignaturas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_carga_lectiva",
+        "nombre": "Carga lectiva y no lectiva",
+        "tipo": "medida",
+        "pregunta": "La distribución de su carga lectiva y no lectiva",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_coordinacion_asignaturas",
+        "nombre": "Coordinación de asignaturas",
+        "tipo": "medida",
+        "pregunta": "La coordinación de las asignaturas a su cargo",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_registro_notas",
+        "nombre": "Registro de notas",
+        "tipo": "medida",
+        "pregunta": "La administración del registro de notas de los alumnos",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_liderazgo_autoridades",
+        "nombre": "Liderazgo de las autoridades",
+        "tipo": "medida",
+        "pregunta": "El liderazgo y compromiso de las autoridades de tu facultad o programa",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_trato_autoridades",
+        "nombre": "Trato de las autoridades",
+        "tipo": "medida",
+        "pregunta": "El trato recibido por las autoridades de tu facultad o programa",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_comunicacion_autoridades",
+        "nombre": "Comunicación con las autoridades",
+        "tipo": "medida",
+        "pregunta": "Los mecanismos de comunicación y coordinación entre las autoridades de la carrera y los docentes",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_clima_laboral",
+        "nombre": "Clima laboral",
+        "tipo": "medida",
+        "pregunta": "El clima laboral en tu facultad o programa",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_promocion_reconocimiento",
+        "nombre": "Promoción y reconocimiento",
+        "tipo": "medida",
+        "pregunta": "El proceso de promoción y reconocimiento al docente",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_internacionalizacion",
+        "nombre": "Internacionalización",
+        "tipo": "medida",
+        "pregunta": "Las actividades de internacionalización como congresos, intercambios e investigación",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_responsabilidad_social",
+        "nombre": "Responsabilidad social",
+        "tipo": "medida",
+        "pregunta": "Las actividades de responsabilidad social universitaria como voluntariado, foros e investigación",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_retroalimentacion_erd",
+        "nombre": "Retroalimentación ERD",
+        "tipo": "medida",
+        "pregunta": "La retroalimentación de los resultados de la evaluación referencial docente (ERD) por parte de las autoridades de tu facultad o programa",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_capacitacion_generales",
+        "nombre": "Capacitación en competencias generales",
+        "tipo": "medida",
+        "pregunta": "La capacitación y perfeccionamiento para competencias generales",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_capacitacion_pedagogia",
+        "nombre": "Capacitación en pedagogía",
+        "tipo": "medida",
+        "pregunta": "La capacitación para el desarrollo de habilidades específicas en pedagogía",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_investigacion_idic",
+        "nombre": "Investigación (IDIC)",
+        "tipo": "medida",
+        "pregunta": "Las políticas y procedimientos establecidos por el IDIC para apoyar la investigación docente",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_investigacion_carrera",
+        "nombre": "Investigación (carrera)",
+        "tipo": "medida",
+        "pregunta": "Las políticas y procedimientos establecidos por la carrera para apoyar la investigación docente",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_recursos_investigacion",
+        "nombre": "Recursos para investigación",
+        "tipo": "medida",
+        "pregunta": "Los recursos proporcionados para el desarrollo de los proyectos de investigación docente",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_promocion_investigacion",
+        "nombre": "Promoción de la investigación",
+        "tipo": "medida",
+        "pregunta": "Los mecanismos para promover la investigación entre los docentes",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_publicacion_investigacion",
+        "nombre": "Publicación en revistas indexadas",
+        "tipo": "medida",
+        "pregunta": "Las facilidades para publicar las investigaciones en revistas indexadas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_difusion_investigacion",
+        "nombre": "Difusión de investigaciones",
+        "tipo": "medida",
+        "pregunta": "La difusión de los resultados de las investigaciones como sílabos, repositorio institucional, revistas, libros, etcétera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_material_bibliografico",
+        "nombre": "Material bibliográfico",
+        "tipo": "medida",
+        "pregunta": "El material bibliográfico físico o digital disponible en la Biblioteca",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_servicio_administrativo",
+        "nombre": "Servicio del personal administrativo",
+        "tipo": "medida",
+        "pregunta": "El servicio del personal administrativo",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_servicio_medico",
+        "nombre": "Servicio médico",
+        "tipo": "medida",
+        "pregunta": "El servicio médico y su infraestructura",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_atencion_psicopedagogica",
+        "nombre": "Atención psicopedagógica",
+        "tipo": "medida",
+        "pregunta": "El servicio de atención psicopedagógica",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_talleres_artisticos",
+        "nombre": "Talleres artísticos y culturales",
+        "tipo": "medida",
+        "pregunta": "Los talleres de actividades artísticas y culturales",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_actividades_deportivas",
+        "nombre": "Actividades deportivas",
+        "tipo": "medida",
+        "pregunta": "Las actividades deportivas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_aulas_clase",
+        "nombre": "Aulas de clase",
+        "tipo": "medida",
+        "pregunta": "Las aulas de clase",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_ambientes_estudio",
+        "nombre": "Ambientes y salas para estudio",
+        "tipo": "medida",
+        "pregunta": "Los ambientes y salas para estudio",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_laboratorios_equipamiento",
+        "nombre": "Laboratorios (equipamiento)",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a equipamiento, tecnología y programas",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_laboratorios_condiciones",
+        "nombre": "Laboratorios (condiciones)",
+        "tipo": "medida",
+        "pregunta": "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_instalaciones_sociales",
+        "nombre": "Instalaciones para relación social",
+        "tipo": "medida",
+        "pregunta": "Las instalaciones para facilitar la relación social entre los docentes",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_oficinas_docentes",
+        "nombre": "Oficinas o cubículos",
+        "tipo": "medida",
+        "pregunta": "Las oficinas o cubículos de los docentes",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_software_especializado",
+        "nombre": "Software especializado",
+        "tipo": "medida",
+        "pregunta": "El software especializado empleado en la carrera",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_portal_mi_ulima",
+        "nombre": "Portal web (Mi Ulima)",
+        "tipo": "medida",
+        "pregunta": "El portal web de la Universidad: Mi Ulima",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_aula_virtual",
+        "nombre": "Aula virtual",
+        "tipo": "medida",
+        "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_conexion_wifi",
+        "nombre": "Conexión Wi-Fi",
+        "tipo": "medida",
+        "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+        "escala": "CSAT",
+    },
+    {
+        "id": "dug_soporte_tecnico",
+        "nombre": "Soporte técnico",
+        "tipo": "medida",
+        "pregunta": "El soporte técnico brindado ante las fallas del sistema informático",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_sujeto",
+        "nombre": "Satisfacción con tu facultad o programa",
+        "tipo": "medida",
+        "pregunta": "Tu facultad o programa",
+        "escala": "CSAT",
+    },
+    {
+        "id": "csat_universidad",
+        "nombre": "Satisfacción con la Universidad",
+        "tipo": "medida",
+        "pregunta": "La Universidad de Lima",
+        "escala": "CSAT",
+    },
+]
+
 # Columnas publicadas por el ETL que no salen del formulario.
 DERIVADAS_PREGRADO: List[Dict[str, str]] = [
     {
@@ -1242,12 +1596,33 @@ DERIVADAS_DOCENTE_PG: List[Dict[str, str]] = [
     },
 ]
 
+# Docente de pregrado: la encuesta tampoco pregunta el ciclo, pero su identidad SÍ
+# es una carrera de pregrado, así que la Facultad se traduce con CARRERA_FACULTAD
+# (facultad_map). Por eso la derivada de Facultad no es una carrera de posgrado.
+DERIVADAS_DOCENTE_UG: List[Dict[str, str]] = [
+    {
+        "id": "ciclo",
+        "nombre": "Ciclo",
+        "tipo": "agrupacion",
+        "pregunta": "Ciclo (derivado; la encuesta de docente pregrado no lo pregunta)",
+        "escala": "",
+    },
+    {
+        "id": "facultad",
+        "nombre": "Facultad",
+        "tipo": "agrupacion",
+        "pregunta": "Facultad (derivada de la carrera)",
+        "escala": "",
+    },
+]
+
 # Declaracion completa por nivel interno: preguntas del formulario + derivadas.
 PREGUNTAS_POR_NIVEL: Dict[str, List[Dict[str, str]]] = {
     "undergraduate": PREGUNTAS_PREGRADO + DERIVADAS_PREGRADO,
     "graduate": PREGUNTAS_GRADUADO + DERIVADAS_GRADUADO,
     "postgraduate": PREGUNTAS_POSTGRADO + DERIVADAS_POSTGRADO,
     "faculty-pg": PREGUNTAS_DOCENTE_PG + DERIVADAS_DOCENTE_PG,
+    "faculty-ug": PREGUNTAS_DOCENTE_UG + DERIVADAS_DOCENTE_UG,
 }
 
 # Solo las preguntas del formulario de cada nivel (sin las derivadas): de aqui
@@ -1259,19 +1634,23 @@ PREGUNTAS_FORMULARIO: Dict[str, List[Dict[str, str]]] = {
     "graduate": PREGUNTAS_GRADUADO,
     "postgraduate": PREGUNTAS_POSTGRADO,
     "faculty-pg": PREGUNTAS_DOCENTE_PG,
+    "faculty-ug": PREGUNTAS_DOCENTE_UG,
 }
 
 # Texto de la pregunta abierta: el ETL la renombra, pero no se publica.
 COMENTARIO_NPS_PREGUNTA: str = "Explica con tus palabras, las razones de la calificaci\u00f3n que diste en la pregunta anterior. (m\u00e1x. 100 caracteres)"
 
 # El texto de la pregunta abierta cambia por encuesta: el estudiantil de posgrado
-# no tiene ninguna (queda vacio a proposito) y el docente de posgrado usa su propio
-# texto. Los demas niveles heredan COMENTARIO_NPS_PREGUNTA. Es el unico dato del
-# comentario: resolverlo aqui evita rastrearlo por el prefijo 'Explica con tus
-# palabras', que solo era cierto para pregrado.
+# no tiene ninguna (queda vacio a proposito), el docente de posgrado usa su propio
+# texto y el docente de pregrado usa el del cuestionario nuevo (sin punto despues
+# de "anterior" y con punto final, a diferencia del historico de pregrado). Los
+# demas niveles heredan COMENTARIO_NPS_PREGUNTA. Es el unico dato del comentario:
+# resolverlo aqui evita rastrearlo por el prefijo 'Explica con tus palabras', que
+# solo era cierto para pregrado.
 COMENTARIO_POR_NIVEL: Dict[str, str] = {
     "postgraduate": "",
     "faculty-pg": "Desde su experiencia, \u00bfqu\u00e9 aspecto deber\u00eda mejorarse prioritariamente en la Escuela de Posgrado? Si lo desea, incluya comentarios o sugerencias adicionales.",
+    "faculty-ug": "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior (máx. 100 caracteres).",
 }
 
 
@@ -1684,7 +2063,7 @@ _NIVEL_CARRERA: Dict[str, List[str]] = {
     "graduate": ["\u00bfQu\u00e9 carrera profesional estudiaste?"],
     "alumni-ug": ["\u00bfQu\u00e9 carrera profesional estudiaste?"],
     "alumni-pg": ["\u00bfQu\u00e9 programa de posgrado estudiaste?"],
-    "faculty-ug": ["\u00bfQu\u00e9 carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?"],
+    "faculty-ug": ["\u00bfA qu\u00e9 carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?"],
     "faculty-pg": ["Programa:"],
     "nonfaculty": ["\u00bfA qu\u00e9 dependencia perteneces?"],
     "employers": [

@@ -51,8 +51,8 @@ CLAVE_ESTADO = "Estado de respuesta"
 ESTADO_COMPLETO = "COMPLETED"
 
 # Cabeceras por nivel SOLO para los niveles cuyo cuestionario aun NO se declara
-# en lib/config.py (egresados, docente pregrado, no docente y empleadores). Los
-# niveles declarados (pregrado, graduados y los dos de posgrado) derivan sus
+# en lib/config.py (egresados, no docente y empleadores). Los niveles declarados
+# (pregrado, graduados, los dos de posgrado y docente de pregrado) derivan sus
 # cabeceras de la declaracion con cabeceras_de() (el texto de cada pregunta, en
 # el orden del formulario): dejan de ser una segunda copia que puede
 # desincronizarse en silencio y publicar columnas vacias. Si un nivel no esta ni
@@ -161,60 +161,6 @@ CABECERAS_POR_NIVEL: Dict[str, List[str]] = {
         "Empleabilidad, vinculación profesional y ALUMNI",
         "La calidad de la formación académica",
         "La Escuela de Posgrado",
-        "La Universidad de Lima",
-        "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
-    ],
-    # Docente Pregrado
-    "faculty-ug": [
-        "ID de respuesta",
-        "Estado de respuesta",
-        "Start time",
-        "Hora de finalización",
-        "Net Promoter Score (de un total de 10)",
-        "¿Qué carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?",
-        "¿Cuántos años laboras en la Universidad de Lima?",
-        "El perfil de egreso de tu carrera",
-        "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera",
-        "Los cursos y contenidos de tu carrera",
-        "La cantidad de horas asignadas para el desarrollo de las asignaturas",
-        "La carga de trabajo para el desarrollo de las asignaturas",
-        "La distribución de su carga lectiva y no lectiva",
-        "La coordinación de las asignaturas a su cargo",
-        "La administración del registro de notas de los alumnos",
-        "El liderazgo y compromiso de las autoridades de tu facultad o programa",
-        "El trato recibido por las autoridades de tu facultad o programa",
-        "Los mecanismos de comunicación y coordinación entre las autoridades de la carrera y los docentes",
-        "El clima laboral en tu facultad o programa",
-        "El proceso de promoción y reconocimiento al docente",
-        "Las actividades de internacionalización como congresos, intercambios e investigación",
-        "Las actividades de responsabilidad social universitaria como voluntariado, foros e investigación",
-        "La retroalimentación de los resultados de la evaluación referencial docente (ERD) por parte de las autoridades de tu facultad o programa",
-        "La capacitación y perfeccionamiento para competencias generales",
-        "La capacitación para el desarrollo de habilidades específicas en pedagogía",
-        "Las políticas y procedimientos establecidos por el IDIC para apoyar la investigación docente",
-        "Las políticas y procedimientos establecidos por la carrera para apoyar la investigación docente",
-        "Los recursos proporcionados para el desarrollo de los proyectos de investigación docente",
-        "Los mecanismos para promover la investigación entre los docentes",
-        "Las facilidades para publicar las investigaciones en revistas indexadas",
-        "La difusión de los resultados de las investigaciones como sílabos, repositorio institucional, revistas, libros, etc.",
-        "El material bibliográfico físico o digital disponible en la biblioteca",
-        "El servicio recibido por el personal administrativo",
-        "El servicio médico y su infraestructura",
-        "El servicio de atención psicopedagógica",
-        "Los talleres de actividades artísticas y culturales",
-        "Las actividades deportivas",
-        "Las aulas de clase",
-        "Los ambientes y salas para estudio",
-        "Los laboratorios en lo referido a equipamiento, tecnología y programas",
-        "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad",
-        "Las instalaciones para facilitar la relación social entre los docentes",
-        "Las oficinas o cubículos de los docentes",
-        "El software especializado empleado en la carrera",
-        "El portal web de la universidad: Mi Ulima",
-        "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
-        "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
-        "El soporte técnico brindado ante las fallas del sistema informático",
-        "Tu facultad o programa",
         "La Universidad de Lima",
         "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
     ],
