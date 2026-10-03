@@ -1530,6 +1530,52 @@ PREGUNTAS_DOCENTE_UG: List[Dict[str, str]] = [
     },
 ]
 
+# ---- No Docente (la Dependencia) ----
+# Los `pregunta` son EXACTAMENTE las claves con las que Zoho manda cada columna
+# en data/zoho_pendientes (el texto del cuestionario nuevo), y los `nombre` son
+# los nombres publicados que elegimos (cortos) para el portal. Su identidad es la
+# Dependencia (id 'carrera', nombre publicado 'Dependencia'), que NO es una
+# carrera de pregrado: a diferencia de docente de pregrado, no se traduce con
+# CARRERA_FACULTAD (ver _NIVEL_FAC_MAP). Cierra con el par estándar de la
+# Dependencia y la Universidad, y su pregunta abierta es la del cuestionario
+# general (ver COMENTARIO_POR_NIVEL).
+PREGUNTAS_NONFACULTY: List[Dict[str, str]] = [
+    {"id": "id_respuesta", "nombre": "ID", "tipo": "identificador", "pregunta": "ID de respuesta", "escala": ""},
+    {"id": "inicio", "nombre": "Fecha de inicio", "tipo": "fecha", "pregunta": "Hora inicial de resuestas", "escala": ""},
+    {"id": "fin", "nombre": "Fecha de fin", "tipo": "fecha", "pregunta": "Hora final de resuestas", "escala": ""},
+    {"id": "nps", "nombre": "Recomendación (0 al 10)", "tipo": "medida", "pregunta": "En una escala del 0 al 10, donde 0 significa ‘Definitivamente, no la recomendaría’ y 10 ‘Definitivamente, sí la recomendaría’:¿Qué tan probable es que recomiendes la Universidad de Lima a un familiar o amigo como institución para trabajar?", "escala": "NPS"},
+    {"id": "carrera", "nombre": "Dependencia", "tipo": "agrupacion", "pregunta": "¿A qué dependencia perteneces?", "escala": ""},
+    {"id": "nd_antiguedad", "nombre": "Años en la Universidad", "tipo": "agrupacion", "pregunta": "¿Cuántos años laboras en la Universidad de Lima?", "escala": ""},
+    {"id": "nd_organizacion_puesto", "nombre": "Organización del puesto de trabajo", "tipo": "medida", "pregunta": "La organización en tu puesto de trabajo", "escala": "CSAT"},
+    {"id": "nd_claridad_funciones", "nombre": "Claridad de funciones y responsabilidades", "tipo": "medida", "pregunta": "La claridad en la definición de las funciones y responsabilidades de tu puesto de trabajo", "escala": "CSAT"},
+    {"id": "nd_carga_laboral", "nombre": "Distribución de la carga laboral", "tipo": "medida", "pregunta": "La distribución de carga laboral en tu dependencia", "escala": "CSAT"},
+    {"id": "nd_liderazgo", "nombre": "Liderazgo y compromiso de la jefatura", "tipo": "medida", "pregunta": "El liderazgo y compromiso del responsable de tu dependencia", "escala": "CSAT"},
+    {"id": "nd_comunicacion_jefatura", "nombre": "Comunicación de la jefatura", "tipo": "medida", "pregunta": "La comunicación oportuna y clara por parte de la jefatura de tu dependencia sobre asuntos que afectan tu trabajo", "escala": "CSAT"},
+    {"id": "nd_mecanismos_comunicacion", "nombre": "Mecanismos de comunicación y coordinación", "tipo": "medida", "pregunta": "Los mecanismos de comunicación y coordinación de la jefatura de tu dependencia", "escala": "CSAT"},
+    {"id": "nd_solucion_problemas", "nombre": "Solución de problemas", "tipo": "medida", "pregunta": "La oportunidad y eficacia en la solución de los problemas planteados a la jefatura de tu dependencia", "escala": "CSAT"},
+    {"id": "nd_trabajo_equipo", "nombre": "Trabajo en equipo", "tipo": "medida", "pregunta": "El trabajo en equipo para cumplir con las tareas asignadas", "escala": "CSAT"},
+    {"id": "nd_comunicacion_companeros", "nombre": "Comunicación con compañeros", "tipo": "medida", "pregunta": "La comunicación con tus compañeros de tu dependencia", "escala": "CSAT"},
+    {"id": "nd_coordinacion_dependencias", "nombre": "Coordinación con otras dependencias", "tipo": "medida", "pregunta": "La coordinación con otras dependencias de la Universidad", "escala": "CSAT"},
+    {"id": "nd_motivacion", "nombre": "Motivación para aportar ideas", "tipo": "medida", "pregunta": "La motivación para participar con aportes y sugerencias en tu dependencia", "escala": "CSAT"},
+    {"id": "nd_clima_laboral", "nombre": "Clima laboral", "tipo": "medida", "pregunta": "El clima laboral en tu dependencia", "escala": "CSAT"},
+    {"id": "nd_promocion_reconocimiento", "nombre": "Promoción y reconocimiento", "tipo": "medida", "pregunta": "El proceso de promoción y reconocimiento al personal no docente", "escala": "CSAT"},
+    {"id": "nd_retroalimentacion", "nombre": "Retroalimentación del desempeño", "tipo": "medida", "pregunta": "La retroalimentación de los resultados de la evaluación de tu desempeño por parte de tu superior inmediato", "escala": "CSAT"},
+    {"id": "nd_becas", "nombre": "Programa de becas internas", "tipo": "medida", "pregunta": "El programa de becas internas", "escala": "CSAT"},
+    {"id": "nd_capacitacion", "nombre": "Programas de capacitación", "tipo": "medida", "pregunta": "Los programas de capacitación a los cuales has sido invitado durante el año referido a la variedad de temas, pertinencia de horarios, pertinencia en la invitación, etcétera", "escala": "CSAT"},
+    {"id": "nd_servicio_medico", "nombre": "Servicio médico y su infraestructura", "tipo": "medida", "pregunta": "El servicio médico y su infraestructura", "escala": "CSAT"},
+    {"id": "nd_talleres", "nombre": "Talleres artísticos y culturales", "tipo": "medida", "pregunta": "Los talleres de actividades artísticas y culturales", "escala": "CSAT"},
+    {"id": "nd_actividades_deportivas", "nombre": "Actividades deportivas", "tipo": "medida", "pregunta": "Las actividades deportivas", "escala": "CSAT"},
+    {"id": "nd_instalaciones_sociales", "nombre": "Instalaciones para relación social", "tipo": "medida", "pregunta": "Las instalaciones para facilitar la relación social entre el personal no docente", "escala": "CSAT"},
+    {"id": "nd_oficinas", "nombre": "Oficinas o cubículos", "tipo": "medida", "pregunta": "Las oficinas o cubículos para el personal no docente", "escala": "CSAT"},
+    {"id": "nd_software", "nombre": "Software especializado", "tipo": "medida", "pregunta": "El software especializado empleado en tu trabajo", "escala": "CSAT"},
+    {"id": "nd_portal_mi_ulima", "nombre": "Portal web (Mi Ulima)", "tipo": "medida", "pregunta": "El portal web de la Universidad: Mi Ulima", "escala": "CSAT"},
+    {"id": "nd_aula_virtual", "nombre": "Aula virtual", "tipo": "medida", "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)", "escala": "CSAT"},
+    {"id": "nd_conexion_wifi", "nombre": "Conexión Wi-Fi", "tipo": "medida", "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual", "escala": "CSAT"},
+    {"id": "nd_soporte_tecnico", "nombre": "Soporte técnico", "tipo": "medida", "pregunta": "El soporte técnico brindado ante las fallas del sistema informático", "escala": "CSAT"},
+    {"id": "csat_sujeto", "nombre": "Satisfacción con tu dependencia", "tipo": "medida", "pregunta": "La dependencia a la que perteneces", "escala": "CSAT"},
+    {"id": "csat_universidad", "nombre": "Satisfacción con la Universidad", "tipo": "medida", "pregunta": "La Universidad de Lima", "escala": "CSAT"},
+]
+
 # Columnas publicadas por el ETL que no salen del formulario.
 DERIVADAS_PREGRADO: List[Dict[str, str]] = [
     {
@@ -1616,6 +1662,26 @@ DERIVADAS_DOCENTE_UG: List[Dict[str, str]] = [
     },
 ]
 
+# No docente: la encuesta tampoco pregunta el ciclo y su identidad es una
+# Dependencia (no una carrera de pregrado), así que la Facultad derivada queda en
+# 'Otra' (el ETL no la traduce con CARRERA_FACULTAD; ver _NIVEL_FAC_MAP).
+DERIVADAS_NONFACULTY: List[Dict[str, str]] = [
+    {
+        "id": "ciclo",
+        "nombre": "Ciclo",
+        "tipo": "agrupacion",
+        "pregunta": "Ciclo (derivado; la encuesta de no docente no lo pregunta)",
+        "escala": "",
+    },
+    {
+        "id": "facultad",
+        "nombre": "Facultad",
+        "tipo": "agrupacion",
+        "pregunta": "Facultad (derivada; una dependencia no es una carrera de pregrado)",
+        "escala": "",
+    },
+]
+
 # Declaracion completa por nivel interno: preguntas del formulario + derivadas.
 PREGUNTAS_POR_NIVEL: Dict[str, List[Dict[str, str]]] = {
     "undergraduate": PREGUNTAS_PREGRADO + DERIVADAS_PREGRADO,
@@ -1623,6 +1689,7 @@ PREGUNTAS_POR_NIVEL: Dict[str, List[Dict[str, str]]] = {
     "postgraduate": PREGUNTAS_POSTGRADO + DERIVADAS_POSTGRADO,
     "faculty-pg": PREGUNTAS_DOCENTE_PG + DERIVADAS_DOCENTE_PG,
     "faculty-ug": PREGUNTAS_DOCENTE_UG + DERIVADAS_DOCENTE_UG,
+    "nonfaculty": PREGUNTAS_NONFACULTY + DERIVADAS_NONFACULTY,
 }
 
 # Solo las preguntas del formulario de cada nivel (sin las derivadas): de aqui
@@ -1635,6 +1702,7 @@ PREGUNTAS_FORMULARIO: Dict[str, List[Dict[str, str]]] = {
     "postgraduate": PREGUNTAS_POSTGRADO,
     "faculty-pg": PREGUNTAS_DOCENTE_PG,
     "faculty-ug": PREGUNTAS_DOCENTE_UG,
+    "nonfaculty": PREGUNTAS_NONFACULTY,
 }
 
 # Texto de la pregunta abierta: el ETL la renombra, pero no se publica.
@@ -1651,6 +1719,10 @@ COMENTARIO_POR_NIVEL: Dict[str, str] = {
     "postgraduate": "",
     "faculty-pg": "Desde su experiencia, \u00bfqu\u00e9 aspecto deber\u00eda mejorarse prioritariamente en la Escuela de Posgrado? Si lo desea, incluya comentarios o sugerencias adicionales.",
     "faculty-ug": "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior (máx. 100 caracteres).",
+    # No docente usa el texto general del cuestionario (el mismo default de
+    # COMENTARIO_NPS_PREGUNTA), pero se declara explícito para que su pregunta
+    # abierta quede reconocida por su nivel y no por el prefijo histórico.
+    "nonfaculty": "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
 }
 
 
@@ -2184,8 +2256,8 @@ def resolver_config_etl(nivel: str, columnas_df) -> Dict[str, object]:
             if c.startswith("Explica con tus palabras"):
                 rename[c] = "Comentario NPS"
                 break
-    # Columnas clave de los niveles que aun no declaran sus preguntas (egresados,
-    # docente pregrado, no docente y empleadores): se resuelven por id declarado.
+    # Columnas clave de los niveles que aun no declaran sus preguntas (egresados y
+    # empleadores): se resuelven por id declarado.
     for id_col in ("id_respuesta", "nps"):
         declaracion = _declaracion_por_id(id_col)
         if declaracion["pregunta"] in colset:

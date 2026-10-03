@@ -51,8 +51,8 @@ CLAVE_ESTADO = "Estado de respuesta"
 ESTADO_COMPLETO = "COMPLETED"
 
 # Cabeceras por nivel SOLO para los niveles cuyo cuestionario aun NO se declara
-# en lib/config.py (egresados, no docente y empleadores). Los niveles declarados
-# (pregrado, graduados, los dos de posgrado y docente de pregrado) derivan sus
+# en lib/config.py (egresados y empleadores). Los niveles declarados (pregrado,
+# graduados, los dos de posgrado, docente de pregrado y no docente) derivan sus
 # cabeceras de la declaracion con cabeceras_de() (el texto de cada pregunta, en
 # el orden del formulario): dejan de ser una segunda copia que puede
 # desincronizarse en silencio y publicar columnas vacias. Si un nivel no esta ni
@@ -164,46 +164,8 @@ CABECERAS_POR_NIVEL: Dict[str, List[str]] = {
         "La Universidad de Lima",
         "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
     ],
-    # No Docente
-    "nonfaculty": [
-        "ID de respuesta",
-        "Estado de respuesta",
-        "Start time",
-        "Hora de finalización",
-        "Net Promoter Score (de un total de 10)",
-        "¿A qué dependencia perteneces?",
-        "¿Cuántos años laboras en la Universidad de Lima?",
-        "Misión, visión y valores de la universidad",
-        "La organización en tu puesto de trabajo",
-        "La claridad en la definición de las funciones y responsabilidades de tu puesto de trabajo",
-        "La distribución de carga laboral en tu dependencia",
-        "El liderazgo y compromiso del responsable de tu dependencia",
-        "La comunicación oportuna y clara por parte de la jefatura de tu dependencia sobre asuntos que afectan tu trabajo",
-        "Los mecanismos de comunicación y coordinación de la jefatura de tu dependencia",
-        "La oportunidad y eficacia en la solución de los problemas planteados a la jefatura de tu dependencia",
-        "El trabajo en equipo para cumplir con las tareas asignadas",
-        "La comunicación con tus compañeros de tu dependencia",
-        "La coordinación con otras dependencias de la Universidad",
-        "La motivación para participar con aportes y sugerencias en tu dependencia",
-        "El clima laboral en tu dependencia",
-        "El proceso de promoción y reconocimiento al personal no docente",
-        "La retroalimentación de los resultados de la evaluación de tu desempeño por parte de tu superior inmediato",
-        "El programa de becas internas",
-        "El programa de capacitación a los cuales ha sido invitado durante el año referido a la variedad de temas, pertinencia de horarios, pertinencia en la Invitación, etc.",
-        "El servicio médico y su infraestructura",
-        "Los talleres de actividades artísticas y culturales",
-        "Las actividades deportivas",
-        "Las instalaciones para facilitar la relación social entre el personal no docente",
-        "Las oficinas o cubículos para el personal no docente",
-        "El software especializado empleado en tu trabajo",
-        "El portal web de la universidad: Mi Ulima",
-        "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
-        "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
-        "El soporte técnico brindado ante las fallas del sistema informático",
-        "La dependencia a la que perteneces",
-        "La Universidad de Lima",
-        "Explica con tus palabras, las razones de la calificación que diste en la pregunta anterior. (máx. 100 caracteres)",
-    ],
+    # No Docente: sus cabeceras YA NO viven aquí. Se declaran una sola vez en
+    # lib/config.py (PREGUNTAS_NONFACULTY) y cabeceras_de() las deriva de ahí.
     # Empleadores (pregrado y posgrado)
     "employers": [
         "ID de respuesta",
