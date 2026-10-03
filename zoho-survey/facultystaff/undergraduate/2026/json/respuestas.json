@@ -1,0 +1,604 @@
+{
+  "version": "1.1",
+  "nivel": "faculty-ug",
+  "periodo": "2026",
+  "respuestas": 1,
+  "cabeceras": [
+    "Recomendación (0 al 10)",
+    "Carrera",
+    "Años en la Universidad",
+    "Perfil de egreso",
+    "Plan curricular y perfil de egreso",
+    "Cursos y contenidos",
+    "Horas asignadas",
+    "Carga de trabajo",
+    "Carga lectiva y no lectiva",
+    "Coordinación de asignaturas",
+    "Registro de notas",
+    "Liderazgo de las autoridades",
+    "Trato de las autoridades",
+    "Comunicación con las autoridades",
+    "Clima laboral",
+    "Promoción y reconocimiento",
+    "Internacionalización",
+    "Responsabilidad social",
+    "Retroalimentación ERD",
+    "Capacitación en competencias generales",
+    "Capacitación en pedagogía",
+    "Investigación (IDIC)",
+    "Investigación (carrera)",
+    "Recursos para investigación",
+    "Promoción de la investigación",
+    "Publicación en revistas indexadas",
+    "Difusión de investigaciones",
+    "Material bibliográfico",
+    "Servicio del personal administrativo",
+    "Servicio médico",
+    "Atención psicopedagógica",
+    "Talleres artísticos y culturales",
+    "Actividades deportivas",
+    "Aulas de clase",
+    "Ambientes y salas para estudio",
+    "Laboratorios (equipamiento)",
+    "Laboratorios (condiciones)",
+    "Instalaciones para relación social",
+    "Oficinas o cubículos",
+    "Software especializado",
+    "Portal web (Mi Ulima)",
+    "Aula virtual",
+    "Conexión Wi-Fi",
+    "Soporte técnico",
+    "Satisfacción con tu facultad o programa",
+    "Satisfacción con la Universidad",
+    "Ciclo",
+    "Facultad"
+  ],
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "pregunta": "En una escala del 0 al 10, donde 0 significa ‘Definitivamente, no la recomendaría’ y 10 ‘Definitivamente, sí la recomendaría’:¿Qué tan probable es que recomiendes la Universidad de Lima a un familiar o amigo como institución para trabajar?",
+      "escala": "NPS"
+    },
+    {
+      "id": "carrera",
+      "nombre": "Carrera",
+      "tipo": "agrupacion",
+      "pregunta": "¿A qué carrera o programa dedicas la mayor cantidad de horas en la Universidad de Lima?",
+      "escala": ""
+    },
+    {
+      "id": "dug_antiguedad",
+      "nombre": "Años en la Universidad",
+      "tipo": "agrupacion",
+      "pregunta": "¿Cuántos años laboras en la Universidad de Lima?",
+      "escala": ""
+    },
+    {
+      "id": "dug_perfil_egreso",
+      "nombre": "Perfil de egreso",
+      "tipo": "medida",
+      "pregunta": "El perfil de egreso de tu carrera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_plan_curricular",
+      "nombre": "Plan curricular y perfil de egreso",
+      "tipo": "medida",
+      "pregunta": "La correspondencia entre el perfil de egreso y el plan curricular de tu carrera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_cursos_contenidos",
+      "nombre": "Cursos y contenidos",
+      "tipo": "medida",
+      "pregunta": "Los cursos y contenidos de tu carrera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_horas_asignadas",
+      "nombre": "Horas asignadas",
+      "tipo": "medida",
+      "pregunta": "La cantidad de horas asignadas para el desarrollo de las asignaturas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_carga_trabajo",
+      "nombre": "Carga de trabajo",
+      "tipo": "medida",
+      "pregunta": "La carga de trabajo para el desarrollo de las asignaturas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_carga_lectiva",
+      "nombre": "Carga lectiva y no lectiva",
+      "tipo": "medida",
+      "pregunta": "La distribución de su carga lectiva y no lectiva",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_coordinacion_asignaturas",
+      "nombre": "Coordinación de asignaturas",
+      "tipo": "medida",
+      "pregunta": "La coordinación de las asignaturas a su cargo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_registro_notas",
+      "nombre": "Registro de notas",
+      "tipo": "medida",
+      "pregunta": "La administración del registro de notas de los alumnos",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_liderazgo_autoridades",
+      "nombre": "Liderazgo de las autoridades",
+      "tipo": "medida",
+      "pregunta": "El liderazgo y compromiso de las autoridades de tu facultad o programa",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_trato_autoridades",
+      "nombre": "Trato de las autoridades",
+      "tipo": "medida",
+      "pregunta": "El trato recibido por las autoridades de tu facultad o programa",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_comunicacion_autoridades",
+      "nombre": "Comunicación con las autoridades",
+      "tipo": "medida",
+      "pregunta": "Los mecanismos de comunicación y coordinación entre las autoridades de la carrera y los docentes",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_clima_laboral",
+      "nombre": "Clima laboral",
+      "tipo": "medida",
+      "pregunta": "El clima laboral en tu facultad o programa",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_promocion_reconocimiento",
+      "nombre": "Promoción y reconocimiento",
+      "tipo": "medida",
+      "pregunta": "El proceso de promoción y reconocimiento al docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_internacionalizacion",
+      "nombre": "Internacionalización",
+      "tipo": "medida",
+      "pregunta": "Las actividades de internacionalización como congresos, intercambios e investigación",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_responsabilidad_social",
+      "nombre": "Responsabilidad social",
+      "tipo": "medida",
+      "pregunta": "Las actividades de responsabilidad social universitaria como voluntariado, foros e investigación",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_retroalimentacion_erd",
+      "nombre": "Retroalimentación ERD",
+      "tipo": "medida",
+      "pregunta": "La retroalimentación de los resultados de la evaluación referencial docente (ERD) por parte de las autoridades de tu facultad o programa",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_capacitacion_generales",
+      "nombre": "Capacitación en competencias generales",
+      "tipo": "medida",
+      "pregunta": "La capacitación y perfeccionamiento para competencias generales",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_capacitacion_pedagogia",
+      "nombre": "Capacitación en pedagogía",
+      "tipo": "medida",
+      "pregunta": "La capacitación para el desarrollo de habilidades específicas en pedagogía",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_investigacion_idic",
+      "nombre": "Investigación (IDIC)",
+      "tipo": "medida",
+      "pregunta": "Las políticas y procedimientos establecidos por el IDIC para apoyar la investigación docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_investigacion_carrera",
+      "nombre": "Investigación (carrera)",
+      "tipo": "medida",
+      "pregunta": "Las políticas y procedimientos establecidos por la carrera para apoyar la investigación docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_recursos_investigacion",
+      "nombre": "Recursos para investigación",
+      "tipo": "medida",
+      "pregunta": "Los recursos proporcionados para el desarrollo de los proyectos de investigación docente",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_promocion_investigacion",
+      "nombre": "Promoción de la investigación",
+      "tipo": "medida",
+      "pregunta": "Los mecanismos para promover la investigación entre los docentes",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_publicacion_investigacion",
+      "nombre": "Publicación en revistas indexadas",
+      "tipo": "medida",
+      "pregunta": "Las facilidades para publicar las investigaciones en revistas indexadas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_difusion_investigacion",
+      "nombre": "Difusión de investigaciones",
+      "tipo": "medida",
+      "pregunta": "La difusión de los resultados de las investigaciones como sílabos, repositorio institucional, revistas, libros, etcétera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_material_bibliografico",
+      "nombre": "Material bibliográfico",
+      "tipo": "medida",
+      "pregunta": "El material bibliográfico físico o digital disponible en la Biblioteca",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_servicio_administrativo",
+      "nombre": "Servicio del personal administrativo",
+      "tipo": "medida",
+      "pregunta": "El servicio del personal administrativo",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_servicio_medico",
+      "nombre": "Servicio médico",
+      "tipo": "medida",
+      "pregunta": "El servicio médico y su infraestructura",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_atencion_psicopedagogica",
+      "nombre": "Atención psicopedagógica",
+      "tipo": "medida",
+      "pregunta": "El servicio de atención psicopedagógica",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_talleres_artisticos",
+      "nombre": "Talleres artísticos y culturales",
+      "tipo": "medida",
+      "pregunta": "Los talleres de actividades artísticas y culturales",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_actividades_deportivas",
+      "nombre": "Actividades deportivas",
+      "tipo": "medida",
+      "pregunta": "Las actividades deportivas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_aulas_clase",
+      "nombre": "Aulas de clase",
+      "tipo": "medida",
+      "pregunta": "Las aulas de clase",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_ambientes_estudio",
+      "nombre": "Ambientes y salas para estudio",
+      "tipo": "medida",
+      "pregunta": "Los ambientes y salas para estudio",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_laboratorios_equipamiento",
+      "nombre": "Laboratorios (equipamiento)",
+      "tipo": "medida",
+      "pregunta": "Los laboratorios en lo referido a equipamiento, tecnología y programas",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_laboratorios_condiciones",
+      "nombre": "Laboratorios (condiciones)",
+      "tipo": "medida",
+      "pregunta": "Los laboratorios en lo referido a iluminación, ventilación, facilidad de ubicación y señalización de seguridad",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_instalaciones_sociales",
+      "nombre": "Instalaciones para relación social",
+      "tipo": "medida",
+      "pregunta": "Las instalaciones para facilitar la relación social entre los docentes",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_oficinas_docentes",
+      "nombre": "Oficinas o cubículos",
+      "tipo": "medida",
+      "pregunta": "Las oficinas o cubículos de los docentes",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_software_especializado",
+      "nombre": "Software especializado",
+      "tipo": "medida",
+      "pregunta": "El software especializado empleado en la carrera",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_portal_mi_ulima",
+      "nombre": "Portal web (Mi Ulima)",
+      "tipo": "medida",
+      "pregunta": "El portal web de la Universidad: Mi Ulima",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "pregunta": "El aula virtual (Blackboard) y las herramientas de videoconferencia (Zoom)",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_conexion_wifi",
+      "nombre": "Conexión Wi-Fi",
+      "tipo": "medida",
+      "pregunta": "La conexión Wi-Fi del campus para acceder a los recursos institucionales como Mi Ulima, Blackboard, Zoom, correo institucional y biblioteca virtual",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_soporte_tecnico",
+      "nombre": "Soporte técnico",
+      "tipo": "medida",
+      "pregunta": "El soporte técnico brindado ante las fallas del sistema informático",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_sujeto",
+      "nombre": "Satisfacción con tu facultad o programa",
+      "tipo": "medida",
+      "pregunta": "Tu facultad o programa",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_universidad",
+      "nombre": "Satisfacción con la Universidad",
+      "tipo": "medida",
+      "pregunta": "La Universidad de Lima",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "pregunta": "Ciclo (derivado; la encuesta de docente pregrado no lo pregunta)",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "pregunta": "Facultad (derivada de la carrera)",
+      "escala": ""
+    }
+  ],
+  "opciones": {
+    "Recomendación (0 al 10)": [
+      "10"
+    ],
+    "Carrera": [
+      "Programa de Estudios Generales"
+    ],
+    "Años en la Universidad": [
+      "Menos de 2 años"
+    ],
+    "Perfil de egreso": [
+      "(sin respuesta)"
+    ],
+    "Plan curricular y perfil de egreso": [
+      "(sin respuesta)"
+    ],
+    "Cursos y contenidos": [
+      "Totalmente satisfecho"
+    ],
+    "Horas asignadas": [
+      "Totalmente satisfecho"
+    ],
+    "Carga de trabajo": [
+      "Totalmente satisfecho"
+    ],
+    "Carga lectiva y no lectiva": [
+      "Totalmente satisfecho"
+    ],
+    "Coordinación de asignaturas": [
+      "Totalmente satisfecho"
+    ],
+    "Registro de notas": [
+      "Totalmente satisfecho"
+    ],
+    "Liderazgo de las autoridades": [
+      "Totalmente satisfecho"
+    ],
+    "Trato de las autoridades": [
+      "Totalmente satisfecho"
+    ],
+    "Comunicación con las autoridades": [
+      "Totalmente satisfecho"
+    ],
+    "Clima laboral": [
+      "Totalmente satisfecho"
+    ],
+    "Promoción y reconocimiento": [
+      "Totalmente satisfecho"
+    ],
+    "Internacionalización": [
+      "Totalmente satisfecho"
+    ],
+    "Responsabilidad social": [
+      "Totalmente satisfecho"
+    ],
+    "Retroalimentación ERD": [
+      "Totalmente satisfecho"
+    ],
+    "Capacitación en competencias generales": [
+      "Totalmente satisfecho"
+    ],
+    "Capacitación en pedagogía": [
+      "Totalmente satisfecho"
+    ],
+    "Investigación (IDIC)": [
+      "Totalmente satisfecho"
+    ],
+    "Investigación (carrera)": [
+      "Totalmente satisfecho"
+    ],
+    "Recursos para investigación": [
+      "Totalmente satisfecho"
+    ],
+    "Promoción de la investigación": [
+      "Totalmente satisfecho"
+    ],
+    "Publicación en revistas indexadas": [
+      "Totalmente satisfecho"
+    ],
+    "Difusión de investigaciones": [
+      "Totalmente satisfecho"
+    ],
+    "Material bibliográfico": [
+      "Totalmente satisfecho"
+    ],
+    "Servicio del personal administrativo": [
+      "Totalmente satisfecho"
+    ],
+    "Servicio médico": [
+      "Totalmente satisfecho"
+    ],
+    "Atención psicopedagógica": [
+      "Totalmente satisfecho"
+    ],
+    "Talleres artísticos y culturales": [
+      "Totalmente satisfecho"
+    ],
+    "Actividades deportivas": [
+      "Totalmente satisfecho"
+    ],
+    "Aulas de clase": [
+      "Totalmente satisfecho"
+    ],
+    "Ambientes y salas para estudio": [
+      "Totalmente satisfecho"
+    ],
+    "Laboratorios (equipamiento)": [
+      "(sin respuesta)"
+    ],
+    "Laboratorios (condiciones)": [
+      "(sin respuesta)"
+    ],
+    "Instalaciones para relación social": [
+      "Totalmente satisfecho"
+    ],
+    "Oficinas o cubículos": [
+      "Totalmente satisfecho"
+    ],
+    "Software especializado": [
+      "(sin respuesta)"
+    ],
+    "Portal web (Mi Ulima)": [
+      "Totalmente satisfecho"
+    ],
+    "Aula virtual": [
+      "Totalmente satisfecho"
+    ],
+    "Conexión Wi-Fi": [
+      "Totalmente satisfecho"
+    ],
+    "Soporte técnico": [
+      "Totalmente satisfecho"
+    ],
+    "Satisfacción con tu facultad o programa": [
+      "Totalmente satisfecho"
+    ],
+    "Satisfacción con la Universidad": [
+      "Totalmente satisfecho"
+    ],
+    "Ciclo": [
+      "NA"
+    ],
+    "Facultad": [
+      "Otra"
+    ]
+  },
+  "filas": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "ids": [
+    "SCjcLy8c"
+  ],
+  "fechas": [
+    "2026-10-03"
+  ],
+  "excluidas": [
+    {
+      "pregunta": "Comentario NPS",
+      "motivo": "no es una pregunta"
+    }
+  ]
+}

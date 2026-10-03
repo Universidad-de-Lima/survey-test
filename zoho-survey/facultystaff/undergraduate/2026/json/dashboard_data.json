@@ -1,0 +1,362 @@
+{
+  "version": "2.1",
+  "resumen": {
+    "encuestas": 1,
+    "carreras": 1,
+    "facultades": 1,
+    "fecha_inicio": "2026-10-03",
+    "fecha_fin": "2026-10-03",
+    "dias": 1,
+    "dias_recoleccion": 1,
+    "año": 2026,
+    "periodo": "2026",
+    "nps": {
+      "score": 100.0,
+      "promotores": 1,
+      "pasivos": 0,
+      "detractores": 0,
+      "total": 1
+    },
+    "csat": {
+      "score": 100.0,
+      "t3b": 1,
+      "total": 1,
+      "t2b": 1,
+      "t2b_pct": 100.0,
+      "ponderado": 100.0
+    }
+  },
+  "hallazgos": {
+    "csat_pct": 100,
+    "nps_score": 100,
+    "nps_tipo": "Excelente",
+    "nps_etapas": {},
+    "tendencia": "se mantiene",
+    "delta": 0,
+    "top_dimensiones": [
+      {
+        "name": "Cursos y contenidos",
+        "score": 100.0
+      },
+      {
+        "name": "Horas asignadas",
+        "score": 100.0
+      }
+    ],
+    "top_facultades": [
+      {
+        "name": "Otra",
+        "score": 100.0
+      }
+    ]
+  },
+  "nps": {
+    "promotores": 1,
+    "pasivos": 0,
+    "detractores": 0,
+    "score": 100.0
+  },
+  "csat": {
+    "Totalmente satisfecho": 1,
+    "Muy satisfecho": 0,
+    "Satisfecho": 0,
+    "Insatisfecho": 0,
+    "Totalmente insatisfecho": 0,
+    "No utilizo": 0,
+    "No conozco": 0
+  },
+  "_export": {
+    "nombre_encuesta": "encuesta_de_satisfacción_docente_pregrado_2026",
+    "fecha_generacion": "2026-10-03"
+  },
+  "preguntas": [
+    {
+      "id": "nps",
+      "nombre": "Recomendación (0 al 10)",
+      "tipo": "medida",
+      "escala": "NPS"
+    },
+    {
+      "id": "carrera",
+      "nombre": "Carrera",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "dug_antiguedad",
+      "nombre": "Años en la Universidad",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "dug_perfil_egreso",
+      "nombre": "Perfil de egreso",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_plan_curricular",
+      "nombre": "Plan curricular y perfil de egreso",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_cursos_contenidos",
+      "nombre": "Cursos y contenidos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_horas_asignadas",
+      "nombre": "Horas asignadas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_carga_trabajo",
+      "nombre": "Carga de trabajo",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_carga_lectiva",
+      "nombre": "Carga lectiva y no lectiva",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_coordinacion_asignaturas",
+      "nombre": "Coordinación de asignaturas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_registro_notas",
+      "nombre": "Registro de notas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_liderazgo_autoridades",
+      "nombre": "Liderazgo de las autoridades",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_trato_autoridades",
+      "nombre": "Trato de las autoridades",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_comunicacion_autoridades",
+      "nombre": "Comunicación con las autoridades",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_clima_laboral",
+      "nombre": "Clima laboral",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_promocion_reconocimiento",
+      "nombre": "Promoción y reconocimiento",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_internacionalizacion",
+      "nombre": "Internacionalización",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_responsabilidad_social",
+      "nombre": "Responsabilidad social",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_retroalimentacion_erd",
+      "nombre": "Retroalimentación ERD",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_capacitacion_generales",
+      "nombre": "Capacitación en competencias generales",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_capacitacion_pedagogia",
+      "nombre": "Capacitación en pedagogía",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_investigacion_idic",
+      "nombre": "Investigación (IDIC)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_investigacion_carrera",
+      "nombre": "Investigación (carrera)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_recursos_investigacion",
+      "nombre": "Recursos para investigación",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_promocion_investigacion",
+      "nombre": "Promoción de la investigación",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_publicacion_investigacion",
+      "nombre": "Publicación en revistas indexadas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_difusion_investigacion",
+      "nombre": "Difusión de investigaciones",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_material_bibliografico",
+      "nombre": "Material bibliográfico",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_servicio_administrativo",
+      "nombre": "Servicio del personal administrativo",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_servicio_medico",
+      "nombre": "Servicio médico",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_atencion_psicopedagogica",
+      "nombre": "Atención psicopedagógica",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_talleres_artisticos",
+      "nombre": "Talleres artísticos y culturales",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_actividades_deportivas",
+      "nombre": "Actividades deportivas",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_aulas_clase",
+      "nombre": "Aulas de clase",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_ambientes_estudio",
+      "nombre": "Ambientes y salas para estudio",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_laboratorios_equipamiento",
+      "nombre": "Laboratorios (equipamiento)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_laboratorios_condiciones",
+      "nombre": "Laboratorios (condiciones)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_instalaciones_sociales",
+      "nombre": "Instalaciones para relación social",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_oficinas_docentes",
+      "nombre": "Oficinas o cubículos",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_software_especializado",
+      "nombre": "Software especializado",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_portal_mi_ulima",
+      "nombre": "Portal web (Mi Ulima)",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_aula_virtual",
+      "nombre": "Aula virtual",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_conexion_wifi",
+      "nombre": "Conexión Wi-Fi",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "dug_soporte_tecnico",
+      "nombre": "Soporte técnico",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_sujeto",
+      "nombre": "Satisfacción con tu facultad o programa",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "csat_universidad",
+      "nombre": "Satisfacción con la Universidad",
+      "tipo": "medida",
+      "escala": "CSAT"
+    },
+    {
+      "id": "ciclo",
+      "nombre": "Ciclo",
+      "tipo": "agrupacion",
+      "escala": ""
+    },
+    {
+      "id": "facultad",
+      "nombre": "Facultad",
+      "tipo": "agrupacion",
+      "escala": ""
+    }
+  ]
+}
